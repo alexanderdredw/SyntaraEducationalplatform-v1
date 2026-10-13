@@ -1,0 +1,24 @@
+{
+  "common": {
+    "appName": "Syntara Education Platform",
+    "tagline": "Өз қарқыныңмен оқы — қазақ және орыс тілдерінде",
+    "skipToContent": "Мазмұнға өту",
+    "sectionInDevelopment": "Бөлім әзірленуде",
+    "close": "Жабу"
+  },
+  "locale": {
+    "ru": "RU",
+    "kk": "KK",
+    "en": "EN",
+    "soon": "жақында"
+  },
+  "validation": {
+    "email": "Email енгізіңіз, мысалы name@example.com",
+    "required": "Өрісті толтырыңыз",
+    "tooLong": "Мәтін тым ұзын",
+    "invalidPhone": "Телефон нөмірін енгізіңіз, мысалы +7 700 000 00 00",
+    "min2": "Кемінде екі нұсқа қосыңыз",
+    "exactlyOneCorrect": "Тек бір дұрыс нұсқаны белгілеңіз",
+    "atLeastOneLanguage": "Кем дегенде бір тілді толтыр (RU, KK немесе EN)"
+  }
+}

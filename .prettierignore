@@ -1,0 +1,11 @@
+docs/
+pnpm-lock.yaml
+**/dist/
+**/.next/
+**/coverage/
+**/playwright-report/
+**/test-results/
+apps/api/openapi.json
+apps/web/lib/api/schema.d.ts
+CLAUDE.md
+START.md

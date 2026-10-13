@@ -1,0 +1,33 @@
+{
+  "name": "syntara",
+  "private": true,
+  "packageManager": "pnpm@10.34.7",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "infra:up": "docker compose -f infra/docker-compose.yml --env-file .env up -d && docker compose -f infra/docker-compose.yml --env-file .env up -d --wait postgres pgbouncer redis minio",
+    "infra:down": "docker compose -f infra/docker-compose.yml --env-file .env down",
+    "build": "turbo run build",
+    "lint": "turbo run lint && prettier --check .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "e2e": "pnpm --filter @syntara/e2e e2e",
+    "format": "prettier --write .",
+    "openapi": "pnpm --filter @syntara/api openapi:generate && pnpm --filter @syntara/web openapi:types",
+    "db:migrate": "pnpm --filter @syntara/db db:migrate"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^16.4.0",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.7",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.2"
+  }
+}

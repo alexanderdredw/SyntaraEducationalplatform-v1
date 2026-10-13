@@ -1,0 +1,108 @@
+# Локальная инфраструктура (раздел 2.1/2.3 SPEC). Запуск: `pnpm infra:up` (или `pnpm dev`).
+name: syntara
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: ['5432:5432']
+    volumes: ['pgdata:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    environment:
+      DB_HOST: postgres
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      AUTH_TYPE: scram-sha-256
+      # session — чтобы миграции и подготовленные запросы работали локально; в продуктиве — transaction.
+      POOL_MODE: session
+      MAX_CLIENT_CONN: 200
+    ports: ['6432:5432']
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports: ['6379:6379']
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Официальные образы minio/minio и minio/mc больше не публикуются (2025); используется сборка MinIO от Chainguard.
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    command: ['server', '/home/nonroot/data', '--console-address', ':9001']
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports: ['9000:9000', '9001:9001']
+    volumes: ['miniodata:/home/nonroot']
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Однократно создаёт бакет S3_BUCKET и завершается.
+  minio-init:
+    image: cgr.dev/chainguard/minio:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      /bin/sh -c "mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+      && mc mb --ignore-existing local/${S3_BUCKET}"
+    restart: 'no'
+
+  clamav:
+    image: clamav/clamav:stable
+    ports: ['3310:3310']
+    volumes: ['clamdb:/var/lib/clamav']
+    # Первая загрузка сигнатур занимает несколько минут; ~1–2 ГБ ОЗУ.
+    healthcheck:
+      test: ['CMD', 'clamdcheck.sh']
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
+
+  olevba:
+    build: ./olevba
+    ports: ['8080:8080']
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Локальный SMTP для разработки: UI писем — http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ['1025:1025', '8025:8025']
+
+volumes:
+  pgdata:
+  miniodata:
+  clamdb:

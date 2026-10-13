@@ -1,0 +1,18 @@
+{
+  "name": "@syntara/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Playwright: сценарии, визуальные эталоны, axe (раздел 2.2 SPEC)",
+  "scripts": {
+    "e2e": "turbo run build --filter=@syntara/web && playwright test",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.56.1",
+    "@syntara/shared": "workspace:*",
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3"
+  }
+}

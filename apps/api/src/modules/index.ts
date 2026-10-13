@@ -1,0 +1,30 @@
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { ClassesModule } from './classes/classes.module';
+import { ContentModule } from './content/content.module';
+import { QuizModule } from './quiz/quiz.module';
+import { AssignmentsModule } from './assignments/assignments.module';
+import { ResultsModule } from './results/results.module';
+import { GamificationModule } from './gamification/gamification.module';
+import { AiModule } from './ai/ai.module';
+import { SupportModule } from './support/support.module';
+import { PublicModule } from './public/public.module';
+import { FilesModule } from './files/files.module';
+import { AuditModule } from './audit/audit.module';
+
+/** Доменные модули модульного монолита (раздел 2.2 SPEC). */
+export const DOMAIN_MODULES = [
+  AuthModule,
+  UsersModule,
+  ClassesModule,
+  ContentModule,
+  QuizModule,
+  AssignmentsModule,
+  ResultsModule,
+  GamificationModule,
+  AiModule,
+  SupportModule,
+  PublicModule,
+  FilesModule,
+  AuditModule,
+];

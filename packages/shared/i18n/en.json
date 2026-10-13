@@ -1,0 +1,24 @@
+{
+  "common": {
+    "appName": "Syntara Education Platform",
+    "tagline": "Learn at your own pace — in Kazakh and Russian",
+    "skipToContent": "Skip to content",
+    "sectionInDevelopment": "Section under development",
+    "close": "Close"
+  },
+  "locale": {
+    "ru": "RU",
+    "kk": "KK",
+    "en": "EN",
+    "soon": "soon"
+  },
+  "validation": {
+    "email": "Enter an email, for example name@example.com",
+    "required": "Fill in this field",
+    "tooLong": "The text is too long",
+    "invalidPhone": "Enter a phone number, for example +7 700 000 00 00",
+    "min2": "Add at least two options",
+    "exactlyOneCorrect": "Mark exactly one correct option",
+    "atLeastOneLanguage": "Fill in at least one language (RU, KK or EN)"
+  }
+}

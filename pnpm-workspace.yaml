@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+  - e2e
+onlyBuiltDependencies:
+  - '@swc/core'
+  - '@nestjs/core'
+  - argon2
+  - esbuild
+  - sharp
+  - protobufjs
+  - unrs-resolver

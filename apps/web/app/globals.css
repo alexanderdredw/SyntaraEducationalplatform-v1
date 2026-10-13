@@ -1,0 +1,34 @@
+@import 'tailwindcss';
+@import '@syntara/ui/tokens.css';
+
+/* Классы компонентов packages/ui (REQ-GEN-DS-01). */
+@source '../../../packages/ui/src';
+
+/* Токены 3.1 доступны в Tailwind как bg-bg, text-muted, border-border и т. п. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-teacher: var(--surface-teacher);
+  --color-field: var(--field);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-teacher: var(--accent-teacher);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
+  --font-sans: var(--font-sans);
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+}

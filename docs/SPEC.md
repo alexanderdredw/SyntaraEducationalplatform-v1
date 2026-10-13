@@ -1,0 +1,1410 @@
+# 0. Инструкция для ИИ-агента
+
+## 0.1 Назначение документа
+
+Этот документ — спецификация Syntara Education Platform для реализации ИИ-агентом (Claude Code, Cursor, Copilot и аналоги). Он эквивалентен ТЗ «Syntara_ТЗ_краткое.docx» ред. 5.1 по функциональности, архитектуре и требованиям, но изложен как машинно-однозначный контракт: идентификаторы требований, схемы данных, API, правила в псевдокоде, конечные автоматы и проверяемые критерии.
+
+## 0.2 Правила работы агента
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| AG-01 | Реализуй только то, что описано в документе. Не добавляй страницы, поля, кнопки, тарифы, бейджи и правила, которых здесь нет. |
+| AG-02 | Если поведение не описано — используй значение из раздела 11 (конфигурация заглушек). Если и там нет — оставь `TODO(OWNER): <вопрос>` в коде и выключи функцию флагом; не придумывай значение. |
+| AG-03 | Все видимые тексты бери из этого документа дословно (в кавычках «…»). Тексты хранятся в файлах локализации, не в коде компонентов. |
+| AG-04 | Права доступа проверяются только на сервере. Скрытие кнопки в интерфейсе не считается защитой. |
+| AG-05 | Работай итерациями плана из раздела 12. После каждой итерации прогоняй тесты и проверки DoD этой итерации. |
+| AG-06 | Каждое требование имеет ID. Указывай ID в названии теста и в описании коммита: `feat(quiz): REQ-ST-QZ-03 one correct option`. |
+| AG-07 | Скриншоты-эталоны (S01–S26, T04–T10, U01–U13) — источник визуального соответствия. При расхождении скриншота и текста приоритет у текста. |
+| AG-08 | Демонстрационные данные со скриншотов (имена, классы, числа, даты) не хранить как константы. Они допустимы только в seed-данных для визуальных тестов. |
+| AG-09 | Не меняй схему БД без миграции. Не удаляй ограничения целостности из раздела 5. |
+| AG-10 | Секреты (ключи ИИ, SMTP, S3) — только в переменных окружения сервера. Никогда не передавай их в клиент. |
+
+## 0.3 Уровни обязательности
+
+| **Слово** | **Значение** |
+|------|-----------------------------|
+| MUST / ДОЛЖЕН | Обязательно; невыполнение — дефект, блокирующий приёмку |
+| MUST NOT / НЕ ДОЛЖЕН | Запрещено |
+| SHOULD / СЛЕДУЕТ | Рекомендуется; отклонение допустимо с комментарием в коде |
+| PLACEHOLDER | Временное значение из раздела 11; хранится в конфигурации, помечено `needs_confirmation=true` |
+
+## 0.4 Схема идентификаторов
+
+| **Префикс** | **Область** |
+|------|-----------------------------|
+| REQ-GEN-* | Общие требования (оболочка, дизайн, языки, формы, безопасность) |
+| REQ-PUB-* | Гостевой режим (публичные страницы) |
+| REQ-TCH-* | Кабинет учителя |
+| REQ-ST-* | Интерфейс ученика |
+| REQ-SUP-* | Служебная поддержка |
+| REQ-NFR-* | Нефункциональные требования |
+| BR-* | Бизнес-правила (раздел 7) |
+| SM-* | Конечные автоматы (раздел 9) |
+| API-* | Операции API (раздел 6) |
+| AC-* | Критерии приёмки (раздел 13) |
+| PH-* | Заглушки (раздел 11), соответствуют ЗГ-* исходного ТЗ |
+
+## 0.5 Определение готовности (Definition of Done) для любой задачи
+
+1.  Код проходит `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+2.  Для каждого затронутого REQ есть минимум один автоматический тест.
+3.  Все видимые строки — в `packages/shared/i18n/ru.json` (и ключи в kk.json, en.json).
+4.  Новые эндпоинты описаны в OpenAPI и покрыты тестом прав доступа (положительный и отрицательный случай).
+5.  Интерактивные элементы доступны с клавиатуры; axe-core без нарушений уровня serious/critical.
+6.  Миграции БД применяются и откатываются на чистой базе.
+
+# 1. Контекст продукта
+
+## 1.1 Что строим
+
+Syntara Education Platform — адаптивная веб-платформа для школ Республики Казахстан на языках KK, RU, EN. Три режима в одном приложении с общей моделью данных:
+
+| **Режим** | **Роль** | **Объём** |
+|-------|------|-----------------------------|
+| Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы |
+| Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса |
+| Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс |
+| Служебная поддержка | support_agent, onboarding_agent | Очереди обращений и школьных заявок |
+
+## 1.2 Матрица доступа (REQ-GEN-ACL)
+
+| **Ресурс / действие** | **guest** | **student** | **teacher** | **support_agent** | **onboarding_agent** |
+|-------------|---|---|---|---|---|
+| Публичные страницы, помощник, пробный вопрос, формы, правовые | R | R | R | R | R |
+| Подключение к классу по коду | → login | W | — | — | — |
+| Каталог, тема, квиз (только опубликованное, BR-VIS-01) | — | R | R (предпросмотр) | — | — |
+| Учебный ИИ, личные показатели, достижения | — | R/W (свои) | — | — | — |
+| Предметы, темы, вопросы, материалы | — | — | R/W (свои) | — | — |
+| Выдача предмета классу, задания, аналитика | — | — | R/W (свои классы) | — | — |
+| Очередь обращений | — | — | — | R/W | — |
+| Очередь школьных заявок | — | — | — | — | R/W |
+
+R — чтение, W — изменение, «→ login» — перенаправление на вход с сохранением цели. Служебные роли MUST NOT иметь доступ к учебным данным. Роли teacher/student MUST NOT иметь доступ к очередям поддержки.
+
+## 1.3 Вне объёма (MUST NOT реализовывать)
+
+Кабинеты школы и родителя; программа по классам (годам обучения); новые атласы; оплата и тарифы; офлайн-обучение. Для непоказанных экранов (история версий, уведомления, меню роли, профиль, «Ростер», «Карта освоения», «Мои курсы», «Мои задания», проверка работы) реализуется минимальная версия из раздела 11; точки входа (кнопки и ссылки) сохраняются всегда.
+
+## 1.4 Команда на старте
+
+| **Роль** | **Технологии** |
+|------|-----------------------------|
+| Фронтенд-разработчик (1–2) | Next.js, React, TypeScript, Tailwind, Radix UI |
+| Бэкенд-разработчик (1–2) | NestJS, PostgreSQL, Drizzle, Redis, BullMQ |
+| DevOps (частичная занятость) | Docker, Nginx, CI/CD, мониторинг, резервное копирование |
+| QA-инженер (1) | Playwright, axe-core, k6 |
+| Дизайнер (частичная занятость) | Figma, токены дизайна 3.1 |
+
+## 1.5 Эталонные изображения
+
+| **Набор** | **Файлы** | **Размер** | **Назначение** |
+|------|-------------|------|-------------|
+| S01–S26 | Передаются отдельно | — | Публичная часть |
+| T04–T10 | 04_teacher_class_access.jpg … 10_teacher_class_results.jpg | 1348 × 926 | Кабинет учителя |
+| U01–U13 | 01_opening_syntara_platform.jpg … student subjects .jpeg | 1348 × 926 (U03 — 1363 × 936) | Интерфейс ученика |
+
+Изображения T и U вставлены в разделы 8.3 и 8.4. Визуальные тесты сравнивают экран на эталонном размере с соответствующим файлом.
+
+# 2. Стек и структура репозитория
+
+## 2.1 Стек (фиксированный)
+
+| **Слой** | **Технология** |
+|------|-----------------------------|
+| Язык | TypeScript 5 (strict) везде |
+| Монорепозиторий | pnpm workspaces + Turborepo |
+| Web | Next.js 15+ (App Router), React 19, Tailwind CSS 4, Radix UI, Lucide, next-intl, React Hook Form + Zod, TanStack Query, react-markdown + rehype-sanitize, Serwist (manifest; офлайн-кеш выключен) |
+| API | Node.js 22 LTS+, NestJS 11, Drizzle ORM + drizzle-kit, Zod, @nestjs/swagger, argon2, @nestjs/throttler (Redis), AWS SDK v3 (S3), Vercel AI SDK за интерфейсом LLMProvider, SSE |
+| Worker | BullMQ, nodemailer, clamd-клиент, olevba (контейнер на Python) |
+| Данные | PostgreSQL 16+, PgBouncer, Redis 7 / Valkey, S3-совместимое хранилище (MinIO локально) |
+| Наблюдаемость | OpenTelemetry, Prometheus, Grafana, Loki, Sentry |
+| Тесты | Vitest, Testcontainers, Playwright, @axe-core/playwright, k6 |
+| Инфраструктура | Docker, Docker Compose на 2+ серверах (при росте — Kubernetes), Nginx, Let's Encrypt, CI (GitHub Actions или GitLab CI) |
+| Принципы | Модульный монолит (api) + отдельный worker; события и письма — через transactional outbox; пароли — Argon2id (допустим bcrypt); права — guards NestJS + RLS |
+
+![Архитектура системы и основные компоненты](media/arch.png)
+
+## 2.2 Структура репозитория
+
+```text
+syntara/
+├─ apps/
+│  ├─ web/                 # Next.js: публичные страницы, кабинеты, служебная поддержка
+│  │  ├─ app/[locale]/(public)/...   # /, /subjects, /about, /ai, /schools, /support, правовые
+│  │  ├─ app/[locale]/(auth)/...     # /auth/login, /auth/start, /join
+│  │  ├─ app/[locale]/(teacher)/...  # /teacher/...
+│  │  ├─ app/[locale]/(student)/...  # /learn/...
+│  │  ├─ app/[locale]/(staff)/...    # /staff/tickets, /staff/requests
+│  │  └─ components/        # компоненты страниц
+│  ├─ api/                 # NestJS
+│  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit}
+│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, recalc, cleanup
+├─ packages/
+│  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
+│  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
+│  └─ db/                  # Drizzle schema, миграции, seed (demo, visual)
+├─ infra/                  # docker-compose.yml, nginx.conf, grafana dashboards
+└─ e2e/                    # Playwright: сценарии, визуальные эталоны, axe
+```
+
+## 2.3 Переменные окружения
+
+| **Переменная** | **Пример** | **Где** |
+|---------|----------|----|
+| DATABASE_URL | postgres://syntara:***@pgbouncer:6432/syntara | api, worker |
+| REDIS_URL | redis://redis:6379 | api, worker |
+| S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY | http://minio:9000, syntara-files | api, worker |
+| SESSION_SECRET | 64 случайных байта | api |
+| APP_BASE_URL | https://syntara-edu.me | web, api |
+| API_INTERNAL_URL | http://api:3001 | web (SSR) |
+| LLM_PROVIDER | mock / openai-compatible / anthropic | api |
+| LLM_API_KEY, LLM_MODEL | — | api |
+| SMTP_URL, MAIL_FROM | smtp://..., noreply@syntara-edu.me | worker |
+| SUPPORT_EMAIL | PH-09 | api, web (через API config) |
+| CLAMD_HOST, OLEVBA_URL | clamav:3310, http://olevba:8080 | worker |
+| PLATFORM_TZ | Asia/Almaty (UTC+5) — PH-42 | api, worker |
+| SENTRY_DSN, OTEL_EXPORTER_OTLP_ENDPOINT | — | все |
+
+## 2.4 Команды
+
+```bash
+pnpm i                      # установка
+pnpm dev                    # web :3000, api :3001, worker; инфраструктура через docker compose
+pnpm db:migrate             # применить миграции
+pnpm db:seed --set=demo     # демо-данные (эталоны скриншотов)
+pnpm test                   # unit + integration (Vitest + Testcontainers)
+pnpm e2e                    # Playwright: сценарии, визуальные и axe-проверки
+pnpm lint && pnpm typecheck
+```
+
+# 3. Дизайн-система
+
+## 3.1 Токены (REQ-GEN-DS-01)
+
+Токены MUST быть объявлены как CSS-переменные в `packages/ui/tokens.css` и подключены в Tailwind. Значения — стартовые; критерий — совпадение с эталонами.
+
+```css
+:root, [data-theme="dark"] {
+  --bg: #070707;            /* фон страницы, диапазон #050505–#090909 */
+  --surface: #141518;       /* карточки, диапазон #101010–#1B1D22 */
+  --surface-teacher: #0D0D0D;
+  --field: #1C1F25;         /* поля ввода, #181818–#20242B */
+  --text: #F1F2F4;
+  --text-muted: #9A9EA7;    /* #92969F–#A5A8B1 */
+  --accent: #2F7DF0;        /* #1E63E4–#4A9CFA; кабинет: #1765E8 */
+  --accent-teacher: #1765E8;
+  --border: #292B30;
+  --success: #22A45D;       /* правильный ответ */
+  --danger: #E5484D;        /* низкий результат, «требуют внимания» */
+  --ai-gradient: linear-gradient(90deg, #8B5CF6, #EC4899);
+  --radius-card: 20px;      /* 16–24 */
+  --radius-pill: 999px;
+}
+[data-theme="light"] {
+  --bg: #FAFAFC; --surface: #FFFFFF; --sidebar: #F2F2F4; --text: #181818;
+}
+```
+
+| **Параметр** | **Значение** |
+|---------|-----------------------------|
+| Сетка отступов | 8, 12, 16, 24, 32, 48, 64 px |
+| Ширина контента | секции 1120–1240; хедер 1440–1600; формы 560–640; «Школам» 640–760; правовые 780–900; кабинет: формы ~664, задания и аналитика ~760; урок ~982 |
+| Шрифт | Inter или Manrope, self-hosted, `font-display: swap`; полная кириллица и казахские буквы (Ә Ғ Қ Ң Ө Ұ Ү Һ І) |
+| Размеры (публичные) | H1 главной 72–112; заголовки секций 28–64; текст 16–20; подписи 12–14 |
+| Размеры (кабинеты) | заголовок 28; блок 18; текст 14; пояснение 12 |
+| Иконки | Lucide, линейные, цвет `--accent` |
+| Спецсостояния | «Опубликовать» — светлая кнопка; ИИ-кнопка — `--ai-gradient`; правильный ответ — рамка `--success`; низкий результат — `--danger`; фокус поля — синий контур со свечением |
+
+## 3.2 Базовые компоненты (packages/ui)
+
+`Button` (variant: primary-blue, primary-white, secondary, text, publish, ai), `Card`, `Pill`, `Tabs` (капсульные), `SegmentedControl` (RU/KK/EN, тип, сложность, период), `Field` (label + input + error + hint), `Select`, `Textarea`, `Checkbox`, `Radio`, `Modal`, `Accordion`, `ProgressBar`, `Badge`, `EmptyState`, `Toast`, `Skeleton`, `Sidebar`, `Header`, `Footer`, `FloatingHelp`. Все компоненты MUST поддерживать клавиатуру и видимый фокус (Radix UI).
+
+## 3.3 Оболочка (REQ-GEN-SHELL)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-SHELL-01 | Публичный хедер: логотип Syntara; меню «Главная», «Предметы», «О проекте», «Syntara AI», «Школам», «Помощь» (активный пункт — светлая капсула); справа язык, «Экономия трафика выключена», переключатель темы, кнопка «Войти». Хедер закреплён сверху; якоря учитывают его высоту (`scroll-margin-top`). |
+| REQ-GEN-SHELL-02 | Хедер кабинетов: вместо меню — выбор роли («Учитель»/«Ученик»), язык, трафик, тема, уведомления, профиль (буква аватара + имя из аккаунта), «Выйти». У ученика дополнительно индикаторы серии (пламя) и XP из `GET /me/stats`. |
+| REQ-GEN-SHELL-03 | Боковая панель кабинетов ~70 px со значками; активный — синяя подложка и полоса слева. Значки без страницы ведут на заглушку «Раздел в разработке» (PH-24). |
+| REQ-GEN-SHELL-04 | Плавающие кнопки справа внизу: «?» — краткая справка по странице и ссылки поддержки; синяя кнопка диалога — публичный помощник. В кабинетах между ними жёлтая «лампочка» (PH-32). Кнопки не перекрывают поля ввода, cookie-баннер и чат. |
+| REQ-GEN-SHELL-05 | Футер (синий градиент): колонка бренда — «Учись в своём темпе — на казахском и русском», email поддержки (PH-09), «KK · RU · EN»; ПРОДУКТ — Главная, Предметы, О проекте, Syntara AI; ШКОЛАМ — Школам, Оставить заявку, Помощь, Войти, Подключиться к классу (в кабинетах последние две → «Кабинет»); ПРАВОВОЕ — три документа. Низ: «© 2026 Syntara Education Platform. Образовательный продукт.» |
+| REQ-GEN-SHELL-06 | Мобильная версия (< 1024 px): логотип, «Войти», кнопка «Меню». В меню: 6 разделов, язык, тема, трафик. Закрытие кнопкой, Escape, переходом; фокус возвращается на кнопку «Меню». |
+| REQ-GEN-SHELL-07 | 320–430 px: без горизонтальной прокрутки; одна колонка; зоны нажатия ≥ 44×44 px; размер шрифта полей ≥ 16 px; экранная клавиатура не перекрывает поле и кнопку отправки. Есть ссылка «К содержимому». |
+
+## 3.4 Язык, тема, трафик (REQ-GEN-PREF)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-PREF-01 | Локаль в URL-префиксе `/{ru|kk|en}/...`. Смена языка MUST NOT перезагружать страницу и терять введённые данные, выбранную тему урока и вкладку. Выбор сохраняется в cookie `locale` и в `user_preferences`. |
+| REQ-GEN-PREF-02 | Язык без готового перевода показывается в меню недоступным с подписью «скоро» (PH-04). Контент без перевода показывается на доступном языке; машинный перевод MUST NOT использоваться. Заранее подготовленные переводы текстов интерфейса в `kk.json` и `en.json` машинным переводом во время работы не являются и допустимы; KK-переводы помечаются `needs_review` до проверки носителем языка (решение владельца, ред. 2026-10-13). |
+| REQ-GEN-PREF-03 | Тема: при первом визите — `prefers-color-scheme`; ручной выбор сохраняется (cookie `theme` + `user_preferences`). Атрибут `data-theme` на `<html>` выставляется до отрисовки (без мигания). |
+| REQ-GEN-PREF-04 | Экономия трафика (`data_saver`): отключает анимации, автозагрузку изображений вне первого экрана и prefetch. Подпись кнопки: «Экономия трафика выключена» / «Экономия трафика включена». |
+| REQ-GEN-PREF-05 | Глобальный язык интерфейса и вкладки RU/KK/EN в редакторах — независимые состояния. |
+
+
+# 4. Маршруты
+
+Все маршруты имеют префикс локали `/{locale}`. Доступ проверяется middleware Next.js (перенаправление) и, обязательно, API (данные).
+
+| **Маршрут** | **Страница** | **Доступ** | **Эталон** | **Раздел** |
+|-----------|---------|-----|----|----|
+| / | Главная (гость) / главная ученика | все | S01–S07, U01 | 8.1.1, 8.4.1 |
+| /subjects | Предметы | все | S08 | 8.1.2 |
+| /about | О проекте | все | S09–S14 | 8.1.3 |
+| /ai | Syntara AI — помощник по платформе | все | S15 | 8.1.4 |
+| /schools | Школам | все | S16–S17 | 8.1.5 |
+| /schools/request | Заявка школы | все | S18 | 8.1.6 |
+| /support | Поддержка | все | S19 | 8.1.7 |
+| /terms, /privacy, /cookies | Правовые документы (PH-43) | все | S20–S26 | 8.1.8 |
+| /auth/login | Вход | guest | — | 8.2.1 |
+| /auth/start | Выбор роли и регистрация | guest | — | 8.2.1 |
+| /join | Подключение к классу | guest → login, student | — | 8.2.2 |
+| /account/privacy | Мои данные | авторизованные | — | 8.2.3 |
+| /teacher/courses | Мои курсы | teacher | — | 8.3 |
+| /teacher/subjects/new | Новый предмет | teacher | T05 | 8.3.1 |
+| /teacher/subjects/:id | Предмет: доступ классу и темы | teacher (владелец) | T04 | 8.3.2 |
+| /teacher/subjects/:id/topics/new, /teacher/topics/:id | Редактор темы | teacher (владелец) | T06–T07 | 8.3.3 |
+| /teacher/topics/:id/quiz | Квиз темы | teacher (владелец) | T08 | 8.3.5 |
+| /teacher/assignments | Задания | teacher | T09 | 8.3.6 |
+| /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
+| /learn/subjects | Каталог и класс | student | U13 | 8.4.2 |
+| /learn/sections/:id | Раздел каталога | student | U03 | 8.4.2 |
+| /learn/topics/:id?tab=overview|quiz|ai | Урок | student | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
+| /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
+| /learn/progress | Мои показатели | student | U08 | 8.4.6 |
+| /learn/achievements | Достижения | student | U10 | 8.4.7 |
+| /learn/assignments | Мои задания (PH-33) | student | — | 8.4.8 |
+| /staff/tickets, /staff/requests | Служебные очереди | support_agent / onboarding_agent | — | 8.5 |
+
+Правила: внешние ссылки атласов — из конфигурации (PH-10). `returnTo` — только относительный внутренний путь, проверенный по белому списку префиксов; иначе `/`. Прямой заход по URL отдаёт ту же страницу, что и навигация (SSR).
+
+# 5. База данных
+
+## 5.1 Соглашения
+
+- PostgreSQL 16+. Все PK — `uuid` (UUIDv7, генерация в приложении). Время — `timestamptz` (UTC).
+- Каждая таблица, кроме связующих, имеет `created_at timestamptz NOT NULL DEFAULT now()` и `updated_at timestamptz NOT NULL DEFAULT now()` (в DDL ниже опущены).
+- Переводы — таблицы `*_translations` с PK `(entity_id, locale)`.
+- Учебные сущности не удаляются физически: `archived_at timestamptz NULL`.
+- Миграции — drizzle-kit; ручные изменения схемы запрещены (AG-09).
+- Row-Level Security SHOULD быть включена для таблиц со `school_id` как второй уровень защиты.
+
+![Схема БД: пользователи, классы и учебный контент](media/er1a.png)
+
+![Схема БД: квизы и задания](media/er1b.png)
+
+![Схема БД: результаты, геймификация, ИИ, поддержка и служебные таблицы](media/er2.png)
+
+## 5.2 Перечисления
+
+```sql
+CREATE TYPE locale            AS ENUM ('ru','kk','en');
+CREATE TYPE user_role         AS ENUM ('student','teacher','support_agent','onboarding_agent');
+CREATE TYPE topic_status      AS ENUM ('draft','published');
+CREATE TYPE question_type     AS ENUM ('single_choice','true_false','text_input');
+CREATE TYPE difficulty        AS ENUM ('easy','medium','hard');
+CREATE TYPE membership_status AS ENUM ('active','left');
+CREATE TYPE submission_status AS ENUM ('submitted','in_review','graded');
+CREATE TYPE attempt_status    AS ENUM ('in_progress','finished','abandoned');
+CREATE TYPE ticket_status     AS ENUM ('new','in_progress','waiting_user','waiting_internal','resolved','closed','reopened');
+CREATE TYPE support_category  AS ENUM ('technical','school_onboarding','learning','account_access','data_privacy','other');
+CREATE TYPE request_status    AS ENUM ('new','in_progress','contacted','onboarded','rejected');
+CREATE TYPE media_kind        AS ENUM ('cover','material','illustration','brand');
+CREATE TYPE scan_status       AS ENUM ('pending','clean','rejected');
+CREATE TYPE ai_context        AS ENUM ('topic_tutor','general_tutor');
+CREATE TYPE ai_role           AS ENUM ('user','assistant');
+CREATE TYPE ai_msg_status     AS ENUM ('complete','partial','failed');
+```
+
+## 5.3 Пользователи, доступ, классы
+
+```sql
+CREATE TABLE schools (id uuid PRIMARY KEY, name text NOT NULL CHECK (length(name) <= 200),
+  region text, city text, status text NOT NULL DEFAULT 'active');
+
+CREATE TABLE users (id uuid PRIMARY KEY, email citext UNIQUE, display_name text NOT NULL,
+  login citext UNIQUE,                  -- PH-44: логин ученика, зарегистрированного по коду класса (требует уточнения)
+  password_hash text, is_child_safe boolean NOT NULL DEFAULT false, status text NOT NULL DEFAULT 'active',
+  last_login_at timestamptz,
+  CHECK (email IS NOT NULL OR is_child_safe));
+
+-- Решение владельца (ред. 2026-10-13): столбцы PK в PostgreSQL не могут быть NULL, поэтому вместо
+-- PRIMARY KEY (user_id, role, school_id) — суррогатный id и уникальность с NULLS NOT DISTINCT (PG 15+).
+CREATE TABLE user_roles (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, role user_role NOT NULL,
+  school_id uuid REFERENCES schools, UNIQUE NULLS NOT DISTINCT (user_id, role, school_id));
+
+CREATE TABLE user_preferences (user_id uuid PRIMARY KEY REFERENCES users,
+  locale locale NOT NULL DEFAULT 'ru', theme text NOT NULL DEFAULT 'system', data_saver boolean NOT NULL DEFAULT false);
+
+CREATE TABLE auth_sessions (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  token_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, revoked_at timestamptz, user_agent text);
+
+CREATE TABLE consents (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, consent_type text NOT NULL,
+  granted boolean NOT NULL, granted_by uuid REFERENCES users, granted_at timestamptz NOT NULL, revoked_at timestamptz);
+
+CREATE TABLE data_subject_requests (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('export','rectify','delete','revoke_consent')),
+  status text NOT NULL DEFAULT 'new', completed_at timestamptz);
+
+CREATE TABLE classes (id uuid PRIMARY KEY, school_id uuid REFERENCES schools, teacher_id uuid NOT NULL REFERENCES users,
+  name text NOT NULL CHECK (length(name) <= 50), archived_at timestamptz);
+
+CREATE TABLE class_memberships (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  student_id uuid NOT NULL REFERENCES users, status membership_status NOT NULL DEFAULT 'active',
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz);
+CREATE UNIQUE INDEX ux_membership_active ON class_memberships (class_id, student_id) WHERE status = 'active';
+CREATE INDEX ix_membership_student ON class_memberships (student_id) WHERE status = 'active';
+
+CREATE TABLE class_invite_codes (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  code_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, is_active boolean NOT NULL DEFAULT true,
+  created_by uuid NOT NULL REFERENCES users);
+```
+
+## 5.4 Учебный контент
+
+```sql
+CREATE TABLE catalog_sections (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, position int NOT NULL);
+CREATE TABLE catalog_section_translations (section_id uuid REFERENCES catalog_sections, locale locale,
+  title text NOT NULL, description text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE subjects (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, section_id uuid REFERENCES catalog_sections,
+  is_official boolean NOT NULL DEFAULT false, in_public_catalog boolean NOT NULL DEFAULT false, archived_at timestamptz,
+  CHECK (is_official OR owner_id IS NOT NULL));
+CREATE TABLE subject_translations (subject_id uuid REFERENCES subjects, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  PRIMARY KEY (subject_id, locale));
+
+CREATE TABLE class_subject_access (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, granted_by uuid NOT NULL REFERENCES users,
+  granted_at timestamptz NOT NULL DEFAULT now(), revoked_at timestamptz);
+CREATE UNIQUE INDEX ux_csa_active ON class_subject_access (class_id, subject_id) WHERE revoked_at IS NULL;
+
+CREATE TABLE media_files (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, kind media_kind NOT NULL,
+  original_name text NOT NULL, mime text NOT NULL, size_bytes bigint NOT NULL, sha256 bytea,
+  storage_key text NOT NULL UNIQUE, scan_status scan_status NOT NULL DEFAULT 'pending');
+
+CREATE TABLE topics (id uuid PRIMARY KEY, subject_id uuid NOT NULL REFERENCES subjects, position int NOT NULL,
+  status topic_status NOT NULL DEFAULT 'draft', cover_media_id uuid REFERENCES media_files, cover_url text,
+  published_at timestamptz, published_version_id uuid, archived_at timestamptz,
+  UNIQUE (subject_id, position) DEFERRABLE INITIALLY DEFERRED);
+CREATE TABLE topic_translations (topic_id uuid REFERENCES topics, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  fun_fact text CHECK (length(fun_fact) <= 500), body_md text CHECK (length(body_md) <= 50000), summary text,
+  PRIMARY KEY (topic_id, locale));
+
+CREATE TABLE topic_sections (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, position int NOT NULL,
+  illustration_media_id uuid REFERENCES media_files);
+CREATE TABLE topic_section_translations (section_id uuid REFERENCES topic_sections, locale locale,
+  title text NOT NULL, body text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE topic_versions (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, version_no int NOT NULL,
+  snapshot jsonb NOT NULL, change_note text CHECK (length(change_note) <= 500), created_by uuid NOT NULL REFERENCES users,
+  UNIQUE (topic_id, version_no));
+ALTER TABLE topics ADD FOREIGN KEY (published_version_id) REFERENCES topic_versions;
+
+CREATE TABLE topic_materials (topic_id uuid REFERENCES topics, media_id uuid REFERENCES media_files,
+  position int NOT NULL, PRIMARY KEY (topic_id, media_id));
+CREATE INDEX ix_topics_subject ON topics (subject_id, position);
+```
+
+## 5.5 Квизы и задания
+
+```sql
+CREATE TABLE quizzes (id uuid PRIMARY KEY, topic_id uuid NOT NULL UNIQUE REFERENCES topics);
+
+CREATE TABLE questions (id uuid PRIMARY KEY, quiz_id uuid NOT NULL REFERENCES quizzes, type question_type NOT NULL,
+  difficulty difficulty NOT NULL, position int NOT NULL, is_demo boolean NOT NULL DEFAULT false,
+  text_answer text,                     -- только для type = text_input
+  archived_at timestamptz);
+CREATE TABLE question_translations (question_id uuid REFERENCES questions, locale locale,
+  text text NOT NULL CHECK (length(text) <= 1000), explanation text CHECK (length(explanation) <= 2000),
+  PRIMARY KEY (question_id, locale));
+
+CREATE TABLE answer_options (id uuid PRIMARY KEY, question_id uuid NOT NULL REFERENCES questions,
+  position int NOT NULL, is_correct boolean NOT NULL DEFAULT false);
+CREATE UNIQUE INDEX ux_one_correct ON answer_options (question_id) WHERE is_correct;
+CREATE TABLE answer_option_translations (option_id uuid REFERENCES answer_options, locale locale,
+  text text NOT NULL CHECK (length(text) <= 300), PRIMARY KEY (option_id, locale));
+
+CREATE TABLE assignments (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, topic_id uuid NOT NULL REFERENCES topics,
+  due_at timestamptz NOT NULL, created_by uuid NOT NULL REFERENCES users);
+CREATE INDEX ix_assignments_class ON assignments (class_id, due_at);
+
+CREATE TABLE submissions (id uuid PRIMARY KEY, assignment_id uuid NOT NULL REFERENCES assignments,
+  student_id uuid NOT NULL REFERENCES users, status submission_status NOT NULL,
+  grade numeric(5,2), submitted_at timestamptz, graded_at timestamptz, graded_by uuid REFERENCES users,
+  UNIQUE (assignment_id, student_id));
+CREATE INDEX ix_submissions_status ON submissions (assignment_id, status);
+```
+
+Правило «тема принадлежит предмету» для `assignments` проверяется в сервисе и триггером `check_assignment_topic()`.
+
+## 5.6 Результаты и геймификация
+
+```sql
+CREATE TABLE quiz_attempts (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  quiz_id uuid NOT NULL REFERENCES quizzes, topic_version_id uuid REFERENCES topic_versions,
+  assignment_id uuid REFERENCES assignments, status attempt_status NOT NULL DEFAULT 'in_progress',
+  score_percent numeric(5,2), started_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz);
+CREATE INDEX ix_attempts_student ON quiz_attempts (student_id, finished_at);
+CREATE INDEX ix_attempts_quiz ON quiz_attempts (quiz_id);
+
+CREATE TABLE attempt_answers (attempt_id uuid REFERENCES quiz_attempts, question_id uuid REFERENCES questions,
+  option_id uuid REFERENCES answer_options, text_answer text, is_correct boolean NOT NULL,
+  answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
+
+CREATE TABLE learning_events (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question')),
+  subject_id uuid REFERENCES subjects, topic_id uuid REFERENCES topics, occurred_at timestamptz NOT NULL,
+  idempotency_key text NOT NULL, UNIQUE (student_id, idempotency_key));
+CREATE INDEX ix_events_student_time ON learning_events (student_id, occurred_at);
+
+CREATE TABLE topic_mastery (student_id uuid REFERENCES users, topic_id uuid REFERENCES topics,
+  best_percent numeric(5,2) NOT NULL, attempts_count int NOT NULL, mastered_at timestamptz,
+  PRIMARY KEY (student_id, topic_id));
+CREATE INDEX ix_mastery_topic ON topic_mastery (topic_id);
+
+CREATE TABLE student_stats (student_id uuid PRIMARY KEY REFERENCES users, xp_total int NOT NULL DEFAULT 0,
+  level int NOT NULL DEFAULT 1, streak_current int NOT NULL DEFAULT 0, streak_best int NOT NULL DEFAULT 0,
+  last_activity_date date);
+
+CREATE TABLE levels (level int PRIMARY KEY, xp_threshold int NOT NULL UNIQUE);
+CREATE TABLE level_translations (level int REFERENCES levels, locale locale, title text NOT NULL,
+  PRIMARY KEY (level, locale));
+
+CREATE TABLE badges (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, image_media_id uuid REFERENCES media_files,
+  rule jsonb NOT NULL, position int NOT NULL, is_active boolean NOT NULL DEFAULT true);
+CREATE TABLE badge_translations (badge_id uuid REFERENCES badges, locale locale, title text NOT NULL,
+  condition_text text NOT NULL, PRIMARY KEY (badge_id, locale));
+CREATE TABLE student_badges (student_id uuid REFERENCES users, badge_id uuid REFERENCES badges,
+  awarded_at timestamptz NOT NULL DEFAULT now(), source_event_id uuid REFERENCES learning_events,
+  PRIMARY KEY (student_id, badge_id));
+
+CREATE TABLE xp_ledger (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users, amount int NOT NULL,
+  reason text NOT NULL, source_event_id uuid NOT NULL REFERENCES learning_events,
+  UNIQUE (student_id, source_event_id, reason));
+```
+
+## 5.7 ИИ, поддержка, служебные таблицы
+
+```sql
+CREATE TABLE ai_conversations (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, context ai_context NOT NULL,
+  topic_id uuid REFERENCES topics, explain_level text NOT NULL DEFAULT 'beginner', archived_at timestamptz,
+  CHECK (context <> 'topic_tutor' OR topic_id IS NOT NULL));
+CREATE TABLE ai_messages (id uuid PRIMARY KEY, conversation_id uuid NOT NULL REFERENCES ai_conversations,
+  role ai_role NOT NULL, content text NOT NULL, status ai_msg_status NOT NULL DEFAULT 'complete',
+  quick_action text CHECK (quick_action IN ('simpler','more_detail','check_me')),
+  tokens_in int, tokens_out int, created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_ai_messages_conv ON ai_messages (conversation_id, created_at);
+
+CREATE TABLE school_requests (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL,
+  school_name text NOT NULL CHECK (length(school_name) <= 200), region text CHECK (length(region) <= 120),
+  city text CHECK (length(city) <= 120), contact_person text NOT NULL CHECK (length(contact_person) <= 200),
+  phone text, email citext NOT NULL, message text CHECK (length(message) <= 5000),
+  status request_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users);
+
+CREATE TABLE support_tickets (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL, category support_category NOT NULL,
+  subject text NOT NULL CHECK (length(subject) <= 200), name text CHECK (length(name) <= 200), email citext NOT NULL,
+  phone text, description text NOT NULL CHECK (length(description) <= 10000), user_id uuid REFERENCES users,
+  status ticket_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users, tech_context jsonb,
+  resolved_at timestamptz, closed_at timestamptz);
+CREATE INDEX ix_tickets_queue ON support_tickets (status, assignee_id);
+CREATE INDEX ix_tickets_email ON support_tickets (email);
+
+CREATE TABLE ticket_messages (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  direction text NOT NULL CHECK (direction IN ('in','out','note')), author_id uuid REFERENCES users,
+  body text NOT NULL, is_internal boolean NOT NULL DEFAULT false, sent_at timestamptz);
+CREATE TABLE ticket_status_history (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  from_status ticket_status, to_status ticket_status NOT NULL, changed_by uuid REFERENCES users,
+  changed_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE ticket_reply_tokens (ticket_id uuid REFERENCES support_tickets, token_hash bytea PRIMARY KEY,
+  expires_at timestamptz NOT NULL);
+CREATE TABLE response_templates (code text, locale locale, body text NOT NULL, PRIMARY KEY (code, locale));
+
+CREATE TABLE idempotency_keys (scope text, key text, request_hash bytea NOT NULL, response jsonb,
+  expires_at timestamptz NOT NULL, PRIMARY KEY (scope, key));
+CREATE TABLE outbox_events (id uuid PRIMARY KEY, type text NOT NULL, payload jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), processed_at timestamptz, attempts int NOT NULL DEFAULT 0, last_error text);
+CREATE TABLE email_queue (id uuid PRIMARY KEY, to_email citext NOT NULL, template text NOT NULL, payload jsonb NOT NULL,
+  status text NOT NULL DEFAULT 'pending', attempts int NOT NULL DEFAULT 0, sent_at timestamptz);
+CREATE TABLE notifications (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, type text NOT NULL,
+  payload jsonb NOT NULL, read_at timestamptz);
+CREATE TABLE audit_log (id bigserial PRIMARY KEY, actor_id uuid REFERENCES users, school_id uuid,
+  entity_type text NOT NULL, entity_id uuid, action text NOT NULL, before jsonb, after jsonb,
+  created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_audit_entity ON audit_log (entity_type, entity_id, created_at);
+REVOKE UPDATE, DELETE ON audit_log FROM app_user;
+
+CREATE TABLE feature_flags (key text PRIMARY KEY, enabled boolean NOT NULL, note text);
+CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confirmation boolean NOT NULL DEFAULT true,
+  confirmed_at timestamptz, confirmed_by text);
+```
+
+Таблицы `feature_flags` и `app_config` хранят флаги функций и значения заглушек раздела 11.
+
+## 5.8 Роли БД
+
+| **Роль** | **Права** |
+|------|-----------------------------|
+| app_user | SELECT/INSERT/UPDATE на рабочие таблицы; только INSERT в audit_log; без DDL |
+| migrator | DDL; используется только CI при миграции |
+| analytics_ro | SELECT на реплике |
+
+
+# 6. API
+
+## 6.1 Общие правила
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| API-GEN-01 | Базовый путь `/api`. Формат — JSON, UTF-8. Описание — OpenAPI 3, генерируется из декораторов NestJS; клиент для web генерируется из OpenAPI. |
+| API-GEN-02 | Аутентификация — cookie `sid` (HttpOnly, Secure, SameSite=Lax, срок до 14 дней с продлением). Изменяющие запросы требуют заголовок `X-CSRF-Token` (double-submit cookie `csrf`). |
+| API-GEN-03 | Локаль запроса — заголовок `Accept-Language` (ru, kk, en); ответы с переводами содержат поле `locale` — фактически отданный язык. |
+| API-GEN-04 | Формат ошибки: `{ "code": "VALIDATION_FAILED", "message": "…", "fieldErrors": { "email": "…" }, "requestId": "…" }`. HTTP-коды: 400, 401, 403, 404, 409, 413, 422, 429, 500, 503. |
+| API-GEN-05 | Все POST публичных форм требуют заголовок `Idempotency-Key` (UUID). Тот же ключ и то же тело → прежний ответ; тот же ключ и другое тело → 409 `IDEMPOTENCY_MISMATCH`. Срок хранения ключа — 24 ч. |
+| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20. Ответ 429 содержит `retryAfterSeconds`. |
+| API-GEN-07 | Списки — курсорная пагинация: `?cursor=&limit=` (limit ≤ 100), ответ `{ items, nextCursor }`. |
+| API-GEN-08 | Все обращения к данным проверяют владение/членство (BR-ACL-*). Нарушение → 404 (не раскрывать существование объекта). |
+
+## 6.2 Публичные операции (без входа)
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` |
+| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, version, text, options: [{ id, text }] }` — без `isCorrect` |
+| API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
+| API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-06 | POST /api/public/assistant | `{ message (≤2000), history: [{role, content}] (≤20) }` | SSE: `event: delta {text}` … `event: done {}` / `event: error {code}` |
+| API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
+| API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса |
+
+## 6.3 Аутентификация и профиль
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-AUTH-01 | POST /api/auth/login | `{ email, password }` | 200 `{ user: MeDto }` + cookie `sid` |
+| API-AUTH-02 | POST /api/auth/logout | — | 204 |
+| API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06, PH-17) | 201 `{ user }`; письмо подтверждения |
+| API-AUTH-04 | POST /api/auth/password/forgot, /reset | `{ email }`, `{ token, password }` | 204 |
+| API-ME-01 | GET /api/me | — | `MeDto { id, displayName, initials, roles[], activeRole, preferences }` |
+| API-ME-02 | PATCH /api/me/preferences | `{ locale?, theme?, dataSaver? }` | 200 |
+| API-ME-03 | POST /api/me/active-role | `{ role }` | 200 |
+| API-ME-04 | GET /api/me/notifications | — | список (PH-32) |
+| API-ME-05 | POST /api/me/data-requests | `{ type: 'export'|'delete' }` | 201; создаёт обращение категории data_privacy (PH-08) |
+
+## 6.4 Учитель
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-T-01 | GET /api/teacher/subjects | Мои курсы (PH-24) |
+| API-T-02 | POST /api/teacher/subjects | Создать предмет: `{ translations: {ru?, kk?, en?: {title, description}}, inPublicCatalog }` — минимум один язык с title |
+| API-T-03 | GET / PATCH /api/teacher/subjects/:id | Получить / изменить предмет |
+| API-T-04 | GET /api/teacher/classes | Классы учителя: `[{ id, name, studentsCount }]` |
+| API-T-05 | POST /api/teacher/classes | Создать класс `{ name }` (PH-07) |
+| API-T-06 | POST /api/teacher/classes/:id/invite-codes | Выпустить код `{ code, expiresAt }` (код показывается один раз) |
+| API-T-07 | POST /api/teacher/subjects/:id/access | Выдать предмет классу `{ classId }`; повтор → 200 без дубля |
+| API-T-08 | DELETE /api/teacher/subjects/:id/access/:classId | Отозвать выдачу |
+| API-T-09 | POST /api/teacher/subjects/:id/topics | Создать тему (черновик) |
+| API-T-10 | GET / PUT /api/teacher/topics/:id | Получить / сохранить тему: `{ translations, coverMediaId?, coverUrl?, materialIds[] }` |
+| API-T-11 | POST /api/teacher/topics/:id/ai-draft | ИИ-черновик: ответ `{ ru: {description, funFact, bodyMd}, kk: {...} }`; ничего не сохраняет |
+| API-T-12 | POST /api/teacher/topics/:id/publish | `{ changeNote? }` → создаёт topic_version, status = published |
+| API-T-13 | POST /api/teacher/topics/:id/unpublish | Снять с публикации (PH-27) |
+| API-T-14 | GET /api/teacher/topics/:id/versions | История версий (PH-25) |
+| API-T-15 | GET /api/teacher/topics/:id/preview | Представление темы глазами ученика (без публикации) |
+| API-T-16 | POST /api/files/upload-url | `{ kind: 'cover'|'material', topicId?, fileName, mime, size }` → `{ mediaId, uploadUrl, headers }` после проверки лимитов BR-FILE-* |
+| API-T-17 | POST /api/files/:mediaId/complete | Подтвердить загрузку → постановка в очередь проверки (scan_status = pending) |
+| API-T-18 | GET /api/teacher/gallery | Обложки пользователя |
+| API-T-19 | GET /api/teacher/topics/:id/quiz | Квиз и вопросы |
+| API-T-20 | POST /api/teacher/topics/:id/quiz/questions | Создать вопрос `QuestionDto` (6.7) |
+| API-T-21 | PUT / DELETE /api/teacher/questions/:id | Изменить / архивировать вопрос |
+| API-T-22 | POST /api/teacher/assignments | `{ classId, subjectId, topicId, dueAt }` |
+| API-T-23 | GET /api/teacher/assignments | `[{ id, topicTitle, className, dueAt, counts: { submitted, inReview, graded } }]` |
+| API-T-24 | GET /api/teacher/review-queue | Работы на проверку (PH-29 — пустой список) |
+| API-T-25 | GET /api/teacher/classes/:id/analytics | `{ avgPercent, engagement: { active, total, windowDays: 7 }, weakTopics: [{ topicId, title, students, percent, color }], attention: [{ studentId, name, lastActivityAt, reason: 'inactive' }] }` |
+| API-T-26 | GET /api/teacher/classes/:id/roster | Ростер (PH-24) |
+
+## 6.5 Ученик
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02) |
+| API-S-02 | GET /api/student/class | `{ classId, className, teacherName, schoolName } | null` |
+| API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
+| API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available' }] }` |
+| API-S-05 | GET /api/student/sections/:id | Предметы раздела |
+| API-S-06 | GET /api/student/topics/:id | `{ id, subject: {id, title}, title, number, questionsCount, summary, bodyMd?, illustrationUrl?, sections: [{ id, number, title, body }], next: { id, title } | null, locale }` |
+| API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` |
+| API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, explanation }` (PH-37) |
+| API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
+| API-S-10 | GET /api/student/assignments | Мои задания (PH-33) |
+| API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }` |
+| API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content, quickAction? }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial) |
+| API-S-13 | GET /api/student/ai/conversations/:id | История сообщений |
+| API-S-14 | GET /api/student/progress | `?period=today|7d|30d|90d|quarter|year` → `{ range: {from, to}, compareRange, nextStep: {action, reason, href}, progress: { mastered, total, percent, deltaPercent }, streak: { days, lastActivityDate, delta } }` |
+| API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` |
+| API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal }` для хедера |
+| API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
+
+## 6.6 Служебная поддержка
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-SUP-01 | GET /api/staff/tickets | Фильтры: `status, assigneeId, category, dueBefore, q` (номер или email) |
+| API-SUP-02 | GET /api/staff/tickets/:id | Обращение, tech_context, сообщения, заметки, история статусов |
+| API-SUP-03 | POST /api/staff/tickets/:id/assign | `{ assigneeId }` |
+| API-SUP-04 | POST /api/staff/tickets/:id/reply | `{ body, templateCode? }` → email_queue; статус по SM-TICKET |
+| API-SUP-05 | POST /api/staff/tickets/:id/notes | Внутренняя заметка (не отправляется клиенту) |
+| API-SUP-06 | POST /api/staff/tickets/:id/status | `{ to }` — только разрешённые переходы SM-TICKET |
+| API-SUP-07 | GET / POST … /api/staff/requests | Аналогично для школьных заявок (роль onboarding_agent) |
+| API-SUP-08 | POST /api/inbound/email | Вебхук входящих писем; связь по токену из ticket_reply_tokens; ответ после resolved/closed → reopened |
+
+## 6.7 Схемы DTO (Zod, packages/shared)
+
+```ts
+export const Locale = z.enum(['ru', 'kk', 'en']);
+const email = z.string().trim().email().max(254);
+const phone = z.string().trim().regex(/^\+?[0-9 ()-]{6,20}$/).optional().or(z.literal(''));
+
+export const SchoolRequestDto = z.object({
+  schoolName: z.string().trim().min(1).max(200),
+  region: z.string().trim().max(120).optional(),
+  city: z.string().trim().max(120).optional(),
+  contactPerson: z.string().trim().min(1).max(200),
+  phone,
+  email,
+  message: z.string().trim().max(5000).optional(),
+});
+
+export const SupportCategory = z.enum(['technical', 'school_onboarding', 'learning', 'account_access', 'data_privacy', 'other']);
+export const SupportTicketDto = z.object({
+  category: SupportCategory,
+  subject: z.string().trim().min(1).max(200),
+  name: z.string().trim().max(200).optional(),
+  email,
+  phone,
+  description: z.string().trim().min(1).max(10000),
+  techContext: z.object({ route: z.string(), appVersion: z.string(), locale: Locale,
+    dataSaver: z.boolean(), userAgent: z.string().max(300) }).optional(),
+});
+
+const LangText = z.object({ text: z.string().trim().min(1).max(1000), explanation: z.string().max(2000).optional() });
+export const QuestionDto = z.object({
+  type: z.enum(['single_choice', 'true_false', 'text_input']),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  translations: z.record(Locale, LangText).refine(t => Object.keys(t).length >= 1),
+  options: z.array(z.object({ translations: z.record(Locale, z.string().trim().min(1).max(300)),
+    isCorrect: z.boolean() })).optional(),
+  textAnswer: z.string().trim().max(300).optional(),
+}).superRefine((q, ctx) => {
+  if (q.type !== 'text_input') {
+    const n = q.options?.length ?? 0, correct = q.options?.filter(o => o.isCorrect).length ?? 0;
+    if (n < 2) ctx.addIssue({ code: 'custom', path: ['options'], message: 'min2' });
+    if (correct !== 1) ctx.addIssue({ code: 'custom', path: ['options'], message: 'exactlyOneCorrect' });
+  } else if (!q.textAnswer) ctx.addIssue({ code: 'custom', path: ['textAnswer'], message: 'required' });
+});
+```
+
+Тексты ошибок валидации — ключи i18n; пример RU для email: «Введите email, например name@example.com».
+
+# 7. Бизнес-правила
+
+## 7.1 Доступ и видимость
+
+```text
+BR-VIS-01  canStudentSeeTopic(student, topic):
+             topic.status == 'published'
+             AND topic.archived_at IS NULL
+             AND ( subject(topic).in_public_catalog
+                   OR EXISTS class_subject_access csa
+                        JOIN class_memberships m ON m.class_id = csa.class_id
+                      WHERE csa.subject_id = topic.subject_id AND csa.revoked_at IS NULL
+                        AND m.student_id = student.id AND m.status = 'active' )
+           Применяется к: API-S-04..S-09, S-12 (topic_tutor), выдаче файлов материалов.
+BR-VIS-02  Черновик (status='draft') MUST NOT отдаваться ученику ни одним эндпоинтом. Предпросмотр учителя (API-T-15)
+           доступен только владельцу предмета.
+BR-VIS-03  Флаг каталога (subjects.in_public_catalog), выдача классу (class_subject_access) и публикация (topics.status) —
+           три независимых признака; объединять в одно поле запрещено.
+BR-ACL-01  Учитель изменяет только subjects.owner_id = me и всё, что к ним относится (topics, questions, materials).
+BR-ACL-02  Учитель работает только со своими классами (classes.teacher_id = me): выдача, задания, аналитика, коды.
+BR-ACL-03  Ученик читает только свои attempts, events, stats, badges, ai_conversations, submissions.
+BR-ACL-04  Служебные роли не имеют доступа к /api/teacher/*, /api/student/*; учебные роли — к /api/staff/*.
+```
+
+## 7.2 Квиз
+
+```text
+BR-QZ-01  Правильный ответ (is_correct, text_answer) MUST NOT присутствовать в ответах API до ответа на вопрос.
+BR-QZ-02  single_choice и true_false: ровно один правильный вариант (ux_one_correct + Zod).
+          true_false: два фиксированных варианта «Верно» / «Неверно» (PH-28).
+BR-QZ-03  text_input: сравнение normalize(a) == normalize(b), где normalize = trim, схлопнуть пробелы, lower-case (PH-28).
+BR-QZ-04  Проверка ответа — сразу после выбора (PH-37): возвращаются correct, correctOptionId, explanation.
+BR-QZ-05  score_percent = round(100 * correct_answers / questions_count, 2) при finish.
+BR-QZ-06  Попытки не ограничены; в зачёт идёт лучшая (topic_mastery.best_percent = max). Незавершённая попытка
+          (in_progress) продолжается при повторном входе (API-S-07 возвращает уже данные ответы).
+BR-QZ-07  Тема освоена: best_percent >= 80 (PH-38) → mastered_at = now() при первом достижении.
+BR-QZ-08  Попытка связана с topic_version_id опубликованной версии на момент старта.
+BR-QZ-09  Гостевой пробный вопрос: questions.is_demo = true; баллы и события не начисляются.
+```
+
+## 7.3 Геймификация (PH-39)
+
+```text
+BR-XP-01  События и XP:
+            quiz_finished                → +10 XP
+            quiz_finished с score >= 80  → ещё +10 XP (reason = 'quiz_high_score')
+            lesson_opened (первое для темы) → +5 XP
+BR-XP-02  Идемпотентность: каждая запись xp_ledger уникальна по (student_id, source_event_id, reason);
+          повторная обработка события не начисляет XP повторно.
+BR-XP-03  level = floor(xp_total / 100) + 1; xpToNext = 100 * level - xp_total.
+          Ранг: level 1 → «Новичок»; иначе «Уровень N».
+BR-BDG-01 Бейджи и правила (rule jsonb):
+            first_step        quiz_finished count >= 1                         «Первый шаг» — «Пройден первый квиз»
+            warmup            streak >= 3                                       «Разогрев» — «Серия из 3 дней подряд»
+            week_power        streak >= 7                                       «Неделя силы» — «Серия из 7 дней подряд»
+            marathon          streak >= 30                                      «Марафонец» — «Серия из 30 дней подряд»
+            topic_mastered    mastered topics >= 1                              «Тема освоена» — «Первая тема пройдена на 80%+»
+            five_topics       mastered topics >= 5                              «Пятёрка знаний» — «5 тем освоено»
+            erudition         mastered topics >= 10                             «Эрудиция» — «10 тем освоено»
+            subject_conquered all published topics of a subject mastered        «Предмет покорён» — «Все темы предмета освоены»
+            erudite           level >= 5                                        «Эрудит» — «Достигнут 5-й уровень»
+            legend            level >= 10                                       «Легенда» — «Достигнут 10-й уровень»
+            comeback          topic mastered after a failed attempt (<50%)      «Исправился» — «Тема, которая сначала не давалась, потом взята»
+            bug_fixing        5 such topics                                     «Работа над ошибками» — «Пять тем вытянуто с неудачной попытки»
+          Пороги «неудачной попытки» (<50%) — PH-39. Ещё 5 бейджей не создаются; totalCount = 12.
+BR-BDG-02 Бейдж выдаётся один раз (PK student_id, badge_id).
+```
+
+## 7.4 Показатели (PH-38)
+
+```text
+BR-ST-01  Часовой пояс расчётов — PLATFORM_TZ (UTC+5).
+BR-ST-02  День активности — календарный день, в котором есть learning_events типа quiz_finished или lesson_opened.
+BR-ST-03  streak_current = число подряд идущих дней активности, заканчивающихся сегодня или вчера; иначе 0.
+BR-ST-04  Периоды: today; 7d/30d/90d — последние N дней включая сегодня; quarter — текущая четверть из app_config
+          'calendar.quarters'; year — 'calendar.school_year' (по умолчанию 01.09–31.05).
+          compareRange — предыдущий период той же длины.
+BR-ST-05  progress.total = число опубликованных тем во всех предметах, где у ученика есть хотя бы одно событие;
+          progress.mastered = число освоенных из них; percent = round(100 * mastered / total, 1).
+BR-ST-06  nextStep: (1) незавершённое назначение с ближайшим сроком → (2) начатая тема с минимальным best_percent < 80
+          → (3) следующая тема после последней открытой → (4) каталог.
+```
+
+## 7.5 Аналитика класса (PH-30)
+
+```text
+BR-AN-01  Данные только по выбранному классу и его активным ученикам.
+BR-AN-02  avgPercent = среднее best_percent учеников класса по темам, назначенным классу (assignments);
+          если назначений нет — по всем темам выданных классу предметов, которые ученики проходили.
+BR-AN-03  engagement.active = число учеников с learning_events за последние 7 дней; total = число активных учеников.
+BR-AN-04  weakTopics: по каждой теме — students = число учеников класса с попытками; percent = среднее best_percent;
+          сортировка по возрастанию percent; максимум 10 строк.
+          color: percent < 50 → 'red'; 50 ≤ percent < 80 → 'blue'; percent ≥ 80 → 'green'.
+BR-AN-05  attention: ученики без learning_events 7 дней и более; reason = 'inactive'; lastActivityAt — время последнего события.
+```
+
+## 7.6 Задания
+
+```text
+BR-ASG-01 topic MUST принадлежать subject; класс MUST принадлежать учителю; subject — свой или is_official.
+BR-ASG-02 Список тем в форме фильтруется по выбранному предмету; при смене предмета выбранная тема сбрасывается.
+BR-ASG-03 Сдача (PH-29): завершение попытки квиза темы, начатой в контексте назначения (attempt.assignment_id),
+          создаёт/обновляет submission: status = 'graded', grade = score_percent (лучший).
+          Счётчики: submitted = число submissions; inReview = status 'in_review' (сейчас всегда 0); graded = status 'graded'.
+          Категории пересекаются (сданная и оценённая работа учитывается в обоих счётчиках).
+```
+
+## 7.7 Классы
+
+```text
+BR-CLS-01 Код класса: 6 символов из алфавита 23456789ABCDEFGHJKLMNPQRSTUVWXYZ; хранится только hash (SHA-256 с солью);
+          срок 30 дней; ввод нормализуется: trim, upper-case, удаление пробелов (PH-07).
+BR-CLS-02 До входа — только проверка годности кода (API-PUB-08) без данных класса. Вступление — после входа
+          и подтверждения; повторное вступление в тот же класс не создаёт второй записи (ux_membership_active).
+BR-CLS-03 Leave: membership.status = 'left', left_at = now(); доступ к предметам класса закрывается (BR-VIS-01);
+          личные результаты сохраняются.
+BR-CLS-04 Самостоятельная регистрация ученика выключена (PH-17): ученики создаются через класс учителя или школой.
+          Регистрация ученика возможна только по действующему коду класса — PH-44 (требует уточнения).
+```
+
+## 7.8 Файлы
+
+```text
+BR-FILE-01 Обложка: mime ∈ {image/jpeg, image/png, image/webp, image/gif}; size ≤ 5 МБ (1 МБ = 1 048 576 байт).
+BR-FILE-02 Материалы: расширение и сигнатура ∈ {pdf, docx, xlsx, pptx, odt, txt, csv}; size ≤ 25 МБ;
+           на тему ≤ 20 файлов и ≤ 200 МБ суммарно (проверка до выдачи upload-url и повторно после загрузки).
+BR-FILE-03 После загрузки: проверка ClamAV и olevba; найден вирус или макрос → scan_status = 'rejected',
+           файл удаляется из хранилища, учителю показывается ошибка «Файл отклонён: обнаружены макросы или вредоносный код».
+BR-FILE-04 Ученикам отдаются только файлы со scan_status = 'clean' через подписанные ссылки сроком 10 минут.
+BR-FILE-05 Галерея обложек = media_files(kind='cover', owner_id = me). Выбор обложки — последнее действие побеждает (PH-26).
+```
+
+## 7.9 Формы и поддержка
+
+```text
+BR-FRM-01 Сохранение заявки/обращения, запись idempotency_keys и outbox_events('email.confirmation') — одна транзакция.
+BR-FRM-02 public_number: заявки 'SR-' + YYMMDD + '-' + 4 цифры; обращения 'T-' + YYMMDD + '-' + 4 цифры.
+BR-FRM-03 Письмо-подтверждение содержит номер, тип, способ ответа; без полного текста обращения.
+BR-FRM-04 Ошибка отправки письма не отменяет сохранённую запись.
+BR-SUP-01 Повторное открытие: входящий ответ пользователя на обращение в статусе resolved или closed → reopened.
+BR-SUP-02 Автозакрытие: resolved → closed через 7 дней без ответа пользователя (cron в worker).
+BR-SUP-03 Все смены статуса и ответственного пишутся в ticket_status_history и audit_log.
+```
+
+## 7.10 ИИ
+
+```text
+BR-AI-01 Клиент никогда не обращается к поставщику ИИ напрямую; только через API (LLMProvider).
+BR-AI-02 В промпт передаются: системная инструкция, база знаний (публичный) или текст текущей темы (topic_tutor),
+         уровень объяснения 'beginner', последние 20 сообщений. MUST NOT передаваться: email, телефон, ФИО, ID ученика.
+BR-AI-03 Ответ ИИ не вызывает никаких изменяющих операций (нет инструментов с записью).
+BR-AI-04 Отмена клиентом → сообщение сохраняется со status = 'partial' и пометкой «Ответ прерван».
+BR-AI-05 Гостевая история хранится только в памяти вкладки; на сервере не сохраняется.
+BR-AI-06 Пока LLM_PROVIDER = 'mock' или поставщик недоступен — поведение PH-19.
+BR-AI-07 Публичный помощник: ссылки в ответах только на внутренние маршруты раздела 4 и URL атласов из конфигурации;
+         остальные ссылки удаляются при санитизации.
+```
+
+
+# 8. Функциональные требования по экранам
+
+Формат: каждый экран — маршрут, эталон, требования с ID, точные тексты в «…». Компоненты из 3.2; операции из раздела 6.
+
+## 8.1 Гостевой режим
+
+### 8.1.1 Главная (/, S01–S07)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-HOME-01 | Секции строго в порядке: Hero → Коротко → Пробный вопрос → Как это работает → Предметы → Почему Syntara → Школам → Сохраняй прогресс → Футер. |
+| REQ-PUB-HOME-02 | Hero: метка «ОБРАЗОВАТЕЛЬНАЯ ПЛАТФОРМА»; H1 из трёх строк «Учишься.» / «Преподаёшь.» / «На своём языке.» (третья — `--accent`); текст «Уроки, квизы и ИИ-наставник на казахском и русском. Учителя создают свои курсы и следят за прогрессом. Работает даже на слабом интернете.»; белая кнопка «К предметам →» (/subjects); ссылка «Я учитель →» (/auth/start?role=teacher). Декоративный геометрический фон — `aria-hidden`. |
+| REQ-PUB-HOME-03 | «КОРОТКО» / «ЧТО ТАКОЕ SYNTARA» — текстовый блок о предметах, уроках, квизах, ИИ-наставнике, классе и языках. |
+| REQ-PUB-HOME-04 | Пробный вопрос: «БЕЗ РЕГИСТРАЦИИ» / «ОТВЕТЬ НА ВОПРОС ИЗ НАСТОЯЩЕГО УРОКА» / «Это тот же вопрос, который увидит ученик в квизе. Выбери ответ — и сразу получишь разбор.» Логика — SM-DEMO. |
+| REQ-PUB-HOME-05 | «КАК ЭТО РАБОТАЕТ» / «ОТ ПЕРВОГО УРОКА ДО СВОЕГО КЛАССА» / «Ученики учатся и растут, учителя ведут — всё в одном месте.» Три шага: «01 Учишься» (иконка книга), «02 Растёшь» (график), «03 Учителя ведут класс» (школа). |
+| REQ-PUB-HOME-06 | «ПРЕДМЕТЫ» / «ВЫБЕРИ, ЧТО ИЗУЧАТЬ» / пояснение из PH-01. Карточки из API-PUB-01: Биология — «Раздел: анатомия человека — и скоро больше»; Химия — «Элементы, реакции, молекулярные структуры»; Физика — «Механика, волны, термодинамика». Статус и кнопка «Открыть →» — только если status = 'open'. |
+| REQ-PUB-HOME-07 | Синяя секция «ОТЛИЧИЯ» / «ПОЧЕМУ SYNTARA?» / метка «ТРИ ЯЗЫКА» / «Сделано под казахстанскую школу и её реальные условия.» Переключаемый блок из 5 пунктов: «Казахский, русский, английский», «ИИ-наставник», «Работает на слабых устройствах», «Открытый доступ», «Достижения и прогресс». Справа панель выбранного пункта (тексты — PH-03), стрелка «далее», 5 индикаторов. Одно состояние `activeIndex`; без автопрокрутки; управление с клавиатуры (роль tablist). |
+| REQ-PUB-HOME-08 | «ШКОЛАМ» / «НЕ ТОЛЬКО УЧЕНИКАМ — ШКОЛЕ ЦЕЛИКОМ»; карточки «Журнал», «Дневник», «Домашняя работа»; кнопки «Смотреть для школ» (/schools) и «Оставить заявку» (/schools/request). |
+| REQ-PUB-HOME-09 | «СОХРАНЯЙ СВОЙ ПРОГРЕСС» / «Войди, чтобы сохранять результаты квизов и видеть прогресс. Учишься в классе — подключись по коду учителя.»; кнопки «Войти» и «Подключиться к классу» (/join). |
+
+### 8.1.2 Предметы (/subjects, S08)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-SUBJ-01 | Заголовок «Предметы»; карточки из API-PUB-01 (название, описание, иконка, статус, адрес). |
+| REQ-PUB-SUBJ-02 | Статусы: open — «Открыт для знакомства» + «Открыть →»; login_required — «Нужен вход» + переход на /auth/login?returnTo=…; soon — «Скоро», без кнопки, в отдельной группе после доступных. |
+| REQ-PUB-SUBJ-03 | Поиск и фильтры MUST NOT добавляться. |
+
+### 8.1.3 О проекте (/about, S09–S14)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-ABOUT-01 | Блоки по порядку: (1) «О ПРОЕКТЕ» / «Учиться может каждый», кнопки «К предметам →» и «Начать» (/auth/start), метрики «2 — языка полностью», «Пробный доступ — по условиям подключения», «PWA — устанавливается на телефон» (PH-11, PH-13), карточка «Учёба, которая остаётся доступной» с ролями Ученик / Учитель / Школа; (2) «Наша миссия» и цитата «Место, где родился ребёнок, не должно решать, какое образование он получит.»; (3) «Проблема, которую решаем»: образовательное неравенство в Казахстане, результаты PISA ниже среднего ОЭСР, разрыв города и села, нехватка контента на казахском, стоимость образовательных сервисов; (4) «Для кого Syntara»: карточки Ученику (#student), Учителю (#teacher), Школе (/schools), у каждой «Подробнее ↗»; (5) «Почему именно Syntara»: «Условия доступа», «Настоящий казахский», «Работает везде», «ИИ, а не видео»; (6) «Как это работает»: 1 Учишься, 2 Растёшь, 3 Учитель ведёт; (7) «Что внутри»: Уроки и тесты, ИИ-наставник, Мотивация, Казахский язык, Работает на слабом интернете (PH-13), Для учителей; (8) «С этого всё начиналось»: Mendeleev Atlas — «Химический атлас», Anatomy Atlas — «Атлас по анатомии», «Открыть сайт ↗» (PH-10); (9) «Команда»: Александр Заболотный — «Разработчик, идея и методология», zabolotnyyalexandr@gmail.com; Керейбаева Айгерим — «Учитель биологии · научный руководитель»; фото — PH-05; (10) «Цели устойчивого развития ООН»: 4 «Качественное образование», 9 «Инновации и инфраструктура», 10 «Меньше неравенства»; (11) «Присоединяйся», кнопка «Для школы →», email поддержки. |
+| REQ-PUB-ABOUT-02 | Утверждения про офлайн, рейтинги и «полный паритет языков» — только текст; соответствующие функции не реализуются. |
+
+### 8.1.4 Публичный помощник (/ai, S15)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-AI-01 | Слева: «ПОМОЩНИК ПО ПЛАТФОРМЕ», «Syntara AI», «Спроси что угодно про платформу: куда нажать, как учиться, что где найти. Регистрация не нужна.» Справа — чат: приветствие «Привет! Я Syntara. Помогу разобраться на платформе. С чего начнём?»; быстрые вопросы «Что это за платформа?», «С чего начать учёбу?», «Как сменить язык?», «Нужна ли регистрация?»; поле с placeholder «Напиши вопрос по платформе...»; кнопка «Отправить →». |
+| REQ-PUB-AI-02 | Быстрый вопрос отправляется сразу. Enter — отправить, Shift+Enter — перенос строки. Пустое сообщение не отправляется. Максимум 2000 символов, счётчик при > 1800. |
+| REQ-PUB-AI-03 | Во время ответа — статус «Готовлю ответ...» и кнопка «Остановить». Прерванный ответ помечается «Ответ прерван». |
+| REQ-PUB-AI-04 | Ошибка: текст вопроса сохраняется, кнопка «Повторить». 429: «Слишком много вопросов. Попробуйте через N сек.» |
+| REQ-PUB-AI-05 | Нет ответа в базе знаний → «Не могу точно ответить. Напишите в поддержку» + ссылка /support. Помощник MUST NOT утверждать, что отправил заявку или изменил данные. |
+| REQ-PUB-AI-06 | История — только в памяти вкладки; кнопка «Очистить диалог». Режим без поставщика — PH-19. |
+
+### 8.1.5 Школам (/schools, S16–S17)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-SCH-01 | «Школьный журнал, который ведёт в учебник»; кнопки «Оставить заявку» (/schools/request) и «Задать вопрос» (/support?category=school_onboarding). |
+| REQ-PUB-SCH-02 | «Что получает школа»: 6 карточек — Журнал, Дневник, Расписание, Домашняя работа, Табель, Общение. |
+| REQ-PUB-SCH-03 | «Чем отличается»; «Как подключить»: 1 Оставить заявку, 2 Мы заводим школу, 3 Заводите классы и учеников, 4 Начинаете вести; «Данные детей» со ссылкой «Политика конфиденциальности»; «Пробный период»: «Школа начинает бесплатно и решает после того, как поработает четверть, а не по презентации.» + «Оставить заявку». Цены не показываются. |
+
+### 8.1.6 Заявка школы (/schools/request, S18)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-REQ-01 | Заголовок «Подключить школу к Syntara LMS». Поля по порядку (DTO SchoolRequestDto): «Название школы»* (placeholder «Школа-гимназия №1», полная ширина); «Регион» («Алматинская обл.») и «Город / село» («Алматы») — в одной строке; «Контактное лицо»* («Директор / завуч») и «Телефон» («+7 700 000 00 00») — в одной строке; «Email»* («school@example.kz»); «Сообщение» («Сколько классов, что важно, когда хотите начать...», многострочное). |
+| REQ-PUB-REQ-02 | Внизу «← На главную» и белая кнопка «Оставить заявку». Отправка — SM-FORM. Текст согласия — PH-15. |
+
+### 8.1.7 Поддержка (/support, S19)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-SUP-01 | Заголовок «Поддержка», подзаголовок для гостя «Опишите вопрос — ответим на указанный email». |
+| REQ-PUB-SUP-02 | Поля (SupportTicketDto): «Категория» (select: «Техническая проблема» — по умолчанию, «Подключение школы», «Вопрос по обучению», «Аккаунт и доступ», «Данные и конфиденциальность», «Другое») и «Тема» — ряд 1; «Ваше имя (необязательно)» и «Email для ответа» — ряд 2; «Телефон (необязательно)»; «Опишите проблему». Кнопка «Отправить обращение»; ниже карточки «← На главную». |
+| REQ-PUB-SUP-03 | techContext заполняется автоматически (маршрут, версия, язык, режим трафика, user-agent); пароли, токены и учебные работы MUST NOT передаваться. Пользователь видит подпись «К обращению будут добавлены технические сведения: страница, язык, браузер». |
+
+### 8.1.8 Правовые страницы и cookie (S20–S26)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-PUB-LEGAL-01 | Шаблон: заголовок, «Обновлено: 2026-09-14», нумерованные разделы (соглашение — 13, политика конфиденциальности — 13, cookie — 7); внизу ссылки «Мои данные», три документа, «← На главную». Тексты — PH-14 (плашка «Черновик редакции — не действует до утверждения»). |
+| REQ-PUB-LEGAL-02 | Cookie-баннер при первом визите: «Только необходимые» и «Принять все». Необязательные категории выключены по умолчанию. Решение хранится в cookie `consent` 12 месяцев. Отказ не ломает функции сайта. |
+
+### 8.1.9 Формы: общий автомат отправки (SM-FORM)
+
+```text
+idle → validating → (errors) → idle с ошибками у полей + сводка сверху + фокус на первое ошибочное поле
+validating → submitting: кнопка «Отправляем...», disabled; Idempotency-Key генерируется один раз на содержимое формы
+submitting → success: только после 201; показать «Заявка получена» / «Обращение получено», номер и email; очистить форму
+submitting → network_error: «Нет соединения. Проверьте интернет и повторите отправку» — ввод сохранён, ключ тот же
+submitting → server_error | timeout(15 с): «Не удалось подтвердить отправку. Повторите попытку» — ключ тот же
+Изменение содержимого после ошибки → новый Idempotency-Key.
+Уход со страницы с заполненной неотправленной формой → beforeunload-предупреждение. Черновик формы не сохраняется в localStorage.
+Валидация: при отправке и при уходе с поля (blur) у уже затронутых полей; верные поля не очищаются.
+```
+
+### 8.1.10 Пробный вопрос (SM-DEMO)
+
+```text
+loading → (error) → «Не удалось загрузить вопрос» + «Повторить загрузку»
+loading → question: варианты как radio-группа; кнопка «Проверить ответ» disabled до выбора
+question → answered: POST demo-answer; показать «Верно» или «Пока неверно» (текст + иконка, не только цвет),
+           подсветить выбранный и правильный варианты, объяснение
+answered → question: «Попробовать ещё раз» (сброс выбора того же вопроса)
+answered → loading: «Другой вопрос» (скрыта, если вопрос один — PH-02)
+answered: ссылка «Перейти к предмету». Баллы не начисляются; правильный ответ не приходит до проверки (BR-QZ-01).
+```
+
+## 8.2 Аккаунты (PH-06, PH-07, PH-08)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-AUTH-01 | /auth/login: поля Email, Пароль; кнопка «Войти»; ссылка «Забыли пароль?». После входа — переход на returnTo или по роли (/teacher/courses, /learn/subjects). |
+| REQ-GEN-AUTH-02 | /auth/start: выбор «Ученик» или «Учитель» с объяснением. «Учитель» → регистрация (email, имя, пароль ≥ 8 символов, подтверждение email). «Ученик» → текст «Ученики подключаются через класс учителя или школу» и ссылка /join (BR-CLS-04). |
+| REQ-GEN-AUTH-03 | /join: поле кода (вставка, trim, сохранение символов по BR-CLS-01); до входа — API-PUB-08 и сообщение «Код подходит. Войдите, чтобы присоединиться»; неверный/истёкший код — «Код не найден или истёк. Проверьте код у учителя» + ссылка на поддержку. После входа — экран подтверждения «Присоединиться к классу?» и API-S-01. Гость без аккаунта после проверки кода может зарегистрироваться как ученик — PH-44. |
+| REQ-GEN-AUTH-04 | /account/privacy: список хранимых данных; кнопки «Запросить копию» и «Запросить удаление» (API-ME-05). |
+
+## 8.3 Кабинет учителя
+
+### 8.3.1 Новый предмет (/teacher/subjects/new, T05)
+
+![T05 — Создание предмета](media/image2.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-SUBJ-01 | Заголовок «Новый предмет», ссылка «← К моим курсам». Сегмент RU/KK/EN (независим от языка интерфейса); поля «Название», «Описание» для каждого языка; переключение вкладки не теряет введённое. Машинный перевод не выполняется. |
+| REQ-TCH-SUBJ-02 | Подсказка «Заполни хотя бы один язык (RU, KK или EN)». Ошибка, если ни в одном языке нет названия. Длины — PH-23. |
+| REQ-TCH-SUBJ-03 | Флажок «Показывать предмет в общем каталоге» с пояснением «Предмет увидят все пользователи, но только опубликованные темы будут доступны ученикам.» |
+| REQ-TCH-SUBJ-04 | Кнопка «Создать» → API-T-02 → переход на /teacher/subjects/:id. |
+
+### 8.3.2 Предмет: доступ классу и темы (/teacher/subjects/:id, T04)
+
+![T04 — Доступ классу и темы предмета](media/image1.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-ACC-01 | Блок «Выдать предмет классу» с пояснением «После подключения ученики этого класса увидят предмет и его опубликованные темы в „Курсах".»; список классов учителя: название, «Учеников: N», кнопка «Выдать классу» (API-T-07). Для уже выданного — состояние «Выдан» и действие «Отозвать». |
+| REQ-TCH-ACC-02 | Блок «Темы», кнопка «+ Добавить тему» (API-T-09 → редактор). Пустое состояние «Пока нет тем — добавьте первую». Список тем: номер, название, статус (Черновик / Опубликована). |
+
+### 8.3.3 Редактор темы (/teacher/topics/:id, T06–T07)
+
+![T06 — Редактор темы: ИИ-черновик и текстовые поля](media/image3.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-TOP-01 | Заголовок «Новая тема», ссылка «← К предмету». Порядок: панель ИИ → RU/KK/EN → «Название» → «Описание» → «Интересный факт» → «Текст урока» → «Обложка темы» → «Материалы урока» → «Сохранить» → блок публикации (8.3.4). |
+| REQ-TCH-TOP-02 | Кнопка «Сгенерировать черновик ИИ» (`--ai-gradient`) → API-T-11; заполняет описание, факт и текст урока для RU и KK в форме; не сохраняет и не публикует. При недоступности ИИ — сообщение «ИИ-черновик сейчас недоступен». |
+| REQ-TCH-TOP-03 | «Текст урока» — Markdown (заголовки `##`, списки, жирный, курсив) с вкладкой «Просмотр»; рендер через rehype-sanitize. |
+| REQ-TCH-TOP-04 | «Обложка темы»: поле «Ссылка на изображение (необязательно)» или «Загрузить файл»; JPG, PNG, WEBP, GIF до 5 МБ; миниатюры галереи (API-T-18); выбор — синяя рамка (PH-26). |
+| REQ-TCH-TOP-05 | «Материалы урока»: «Добавить файл»; PDF, DOCX, XLSX, PPTX, ODT, TXT, CSV; до 25 МБ на файл, до 20 файлов и 200 МБ на тему; статус проверки файла (Проверяется / Готов / Отклонён) по BR-FILE-*. |
+| REQ-TCH-TOP-06 | «Сохранить» → API-T-10; статус темы не меняется. Сообщение «Сохранено». |
+
+### 8.3.4 Публикация темы (T07)
+
+![T07 — Обложка, материалы и публикация темы](media/image4.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-PUB-01 | Статус-капсула: draft — «Черновик — ученики не видят»; published — «Опубликована». |
+| REQ-TCH-PUB-02 | Кнопки: «Посмотреть глазами ученика» (API-T-15, открывает представление 8.4.3 без публикации); «Опубликовать» (светлая; API-T-12); «История версий» (API-T-14, PH-25); для опубликованной — «Снять с публикации» (API-T-13). |
+| REQ-TCH-PUB-03 | Поле «Что изменилось (необязательно)», ≤ 500 символов; передаётся в API-T-12 как changeNote. |
+| REQ-TCH-PUB-04 | Кнопка «Редактировать квиз» → /teacher/topics/:id/quiz. |
+| REQ-TCH-PUB-05 | Изменения опубликованной темы видны ученикам только после повторного «Опубликовать» (ученик видит снимок published_version_id). |
+
+### 8.3.5 Вопрос квиза (/teacher/topics/:id/quiz, T08)
+
+![T08 — Добавление вопроса квиза](media/image5.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-QZ-01 | Блок «+ Добавить вопрос». Сегменты: тип («Выбор варианта», «Верно/Неверно», «Вписать ответ»); сложность («Лёгкий», «Средний», «Сложный»); язык RU/KK/EN. |
+| REQ-TCH-QZ-02 | «Выбор варианта»: поле вопроса; варианты — поле + radio; ровно один правильный (зелёная рамка); «+ Добавить вариант» (2–8 вариантов); удаление варианта. «Верно/Неверно»: два фиксированных варианта, выбор правильного. «Вписать ответ»: поле «Правильный ответ». |
+| REQ-TCH-QZ-03 | Поле «Объяснение». Подсказка «Заполни хотя бы один язык (RU, KK или EN)». Кнопка «Создать» → API-T-20. Правильность хранится в варианте и одинакова для всех языков. |
+| REQ-TCH-QZ-04 | Список существующих вопросов с порядком, редактированием и архивированием (API-T-21). |
+
+### 8.3.6 Задания (/teacher/assignments, T09)
+
+![T09 — Задания: выдача, список, проверка](media/image6.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-ASG-01 | Блок «Выдать задание»: «Назначь тему своему классу — и ученики увидят задание у себя в „Мои задания". Можно выбрать как свой предмет, так и официальный.» Поля: Класс, Предмет, Тема (фильтр по предмету, BR-ASG-02), Срок сдачи (дата и время, формат PH-31). Кнопка «Выдать» → API-T-22. |
+| REQ-TCH-ASG-02 | «Выданные задания»: карточки — тема, «класс · срок», счётчики «Сдано: N · На проверку: N · Оценено: N» (BR-ASG-03). |
+| REQ-TCH-ASG-03 | «Проверка»: очередь API-T-24; пустое состояние «Нет работ на проверку». |
+
+### 8.3.7 Аналитика класса (/teacher/classes/:id/analytics, T10)
+
+![T10 — Аналитика класса](media/image7.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-TCH-AN-01 | Ссылка «← К классам», название класса, вкладки «Ростер», «Карта освоения», «Аналитика класса»; класс сохраняется при переключении вкладок. «Ростер» и «Карта освоения» — PH-24. |
+| REQ-TCH-AN-02 | Карточки «Средняя успеваемость класса» (avgPercent, %) и «Вовлечённость» («active/total», подпись «за последние 7 дней»). |
+| REQ-TCH-AN-03 | «Слабые темы класса»: строки — название, «N уч.», процент, полоса шириной = percent%; цвет по BR-AN-04. |
+| REQ-TCH-AN-04 | «Требуют внимания» (красная рамка): имя, «N дней назад», метка «неактивен». Пустое — «Все ученики активны». |
+
+## 8.4 Интерфейс ученика
+
+### 8.4.1 Главная ученика (/, U01)
+
+![U01 — Главная ученика](media/image8.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-HOME-01 | Тот же Hero, что у гостя; вместо кнопок — светлая «Продолжить учёбу →»: href = последняя открытая тема, иначе /learn/subjects (PH-34). |
+
+### 8.4.2 Каталог и класс (/learn/subjects, U13, U03)
+
+![U13 — Каталог предметов и карточка класса](media/image10.jpeg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-CAT-01 | Карточка класса (API-S-02): «Вы в классе «{name}»», «Учитель: {teacher} · {school}», кнопка «Выйти из класса» (EN-эталон U13: «You're in class «{name}»», «Teacher: {teacher} · {school}», «Leave»). Выход из аккаунта в хедере — «Выйти» / EN «Log out». Подтверждение «Выйти из класса «{name}»?» → API-S-03 (PH-40). Это не выход из аккаунта. Без класса — поле «Подключиться к классу». |
+| REQ-ST-CAT-02 | Заголовок «Предметы платформы» (EN «Platform subjects»); сетка 3 колонки: разделы (статус «Раздел»/«Section») и доступные предметы («Доступно»/«Available»); вся карточка кликабельна, без отдельной кнопки. Пользовательские названия не переводятся. Эталон U13 (EN), 7 карточек по порядку: Biology — Human Anatomy (Section); Natural sciences — Physics · Geography (Section); Exact sciences — Mathematics · Algebra · Geometry · Informatics (Section); Humanities — History of Kazakhstan (Section); Languages — Kazakh language · Russian language · English language (Section); ботаника — растение, животные (Available, название учителя не переводится); Chemistry — Elements, reactions, molecular structures (Available). |
+| REQ-ST-CAT-03 | /learn/sections/:id: «← Предметы», заголовок раздела, карточки предметов (пример U03: «Анатомия человека», «11 систем организма», «Доступно»). |
+
+### 8.4.3 Урок (/learn/topics/:id, U04, U09, U12)
+
+![U04 — Обзор темы (тёмная тема)](media/image11.jpg)
+
+![U09 — Меню языка и английская версия урока](media/image17.jpg)
+
+![U12 — Обзор темы в светлой теме](media/image18.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-LES-01 | Хлебные крошки «← {Предмет} / {Тема}», заголовок, «Тема {N}», «{K} вопросов». Вкладки «Обзор», «Квиз», «Syntara AI» — параметр `?tab=`; переключение без перезагрузки. |
+| REQ-ST-LES-02 | «Обзор»: краткое описание; текст; иллюстрация справа (~336×190); аккордеон разделов (все свёрнуты, можно раскрыть несколько — PH-36). Эталон U04/U11 (RU): «01 Основные функции», «02 Состав сердечно-сосудистой системы», «03 Строение сердца», «04 Круги кровообращения», «05 Кровеносные сосуды и давление»; U09 (EN): «Main Functions», «Components of the Cardiovascular System», «Structure of the Heart», «Circulatory Pathways», «Blood Vessels and Pressure Regulation», «06 Microcirculation». Для авторских тем — Markdown целиком. |
+| REQ-ST-LES-03 | Внизу карточка «СЛЕДУЮЩАЯ — {Тема} →» (по position, PH-35); переход не засчитывает текущую тему. |
+| REQ-ST-LES-04 | Открытие темы → API-S-17 (lesson_opened, idempotencyKey = `lesson:{topicId}:{date}`). |
+| REQ-ST-LES-05 | Смена языка или темы оформления сохраняет тему, вкладку и результаты. |
+
+### 8.4.4 Квиз (?tab=quiz, U05)
+
+![U05 — Первый вопрос квиза](media/image12.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-QZ-01 | Маркеры прогресса, сложность («Лёгкий»/«Средний»/«Сложный»), «Вопрос {i} из {n}», текст, варианты A–D (radio-группа). Логика — SM-ATTEMPT и BR-QZ-*. |
+| REQ-ST-QZ-02 | После выбора — сразу результат: «Верно»/«Неверно», правильный вариант, объяснение; кнопка «Далее». В конце — «Результат: {score}%», начисленные XP и бейджи, «Пройти ещё раз». |
+
+### 8.4.5 Учебный ИИ (?tab=ai, /learn/assistant; U06, U07, U02)
+
+![U06 — ИИ в теме: ввод вопроса](media/image13.jpg)
+
+![U07 — ИИ в теме: ответ](media/image14.jpg)
+
+![U02 — Отдельная страница учебного помощника](media/image9.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-AI-01 | Во вкладке темы: приветствие «Привет! Я Syntara. Спроси меня о теме «{Тема}» — я помогу разобраться.»; поле «Задайте вопрос наставнику...»; кнопка «Спросить»; быстрые действия «Объясни проще», «Расскажи подробнее», «Проверь меня» (PH-21); подпись «Объясняю под твой уровень: Начальный». |
+| REQ-ST-AI-02 | Сообщения ученика справа (синие, подпись «Вы»), ответы слева (подпись «Syntara»); потоковый вывод; кнопка «Остановить». Постоянный текст под полем: «Это ИИ. Он может ошибаться. Важное проверяйте по учебнику.» |
+| REQ-ST-AI-03 | /learn/assistant: «Syntara AI», «Ваш личный помощник в учёбе»; кнопки «Начать обучение с ИИ» (фокус в поле) и «Как это работает» (модальное окно, PH-21); статус «Онлайн»; «Режим академической поддержки»; «Я помогу вам:» — «Объяснить непонятное простыми словами», «Связать тему с тем, что уже знаете», «Определить слабые места», «Создать адаптивные тесты», «Составить структурированное резюме» (описание возможностей, отдельных экранов нет); поле «Задайте вопрос по теме, которую разбираете.»; context = general_tutor. |
+| REQ-ST-AI-04 | Сообщения сохраняются (API-S-12); ИИ не изменяет данные (BR-AI-03). Недоступность — PH-19. |
+
+### 8.4.6 Мои показатели (/learn/progress, U08)
+
+![U08 — Мои показатели](media/image15.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-PRG-01 | Метка «ПЕРИОД», заголовок «Мои показатели»; сегменты «Сегодня», «7 дней», «30 дней», «90 дней», «Четверть», «Учебный год»; строка с датами периода и «Сравнение с: …». |
+| REQ-ST-PRG-02 | Блок «Начни отсюда» / «С чего начать сейчас?»: «Что делать» и «Почему» (BR-ST-06). |
+| REQ-ST-PRG-03 | Карточки «Мой прогресс» («{mastered} из {total} тем», «{percent} %», дельта) и «Серия» («{days} дн.», последнее занятие, дельта). Кнопки «Что это значит» и «Как считается» — модальные окна с текстом правил BR-ST-*. |
+| REQ-ST-PRG-04 | Смена периода → API-S-14, пересчёт всех значений. |
+
+### 8.4.7 Достижения (/learn/achievements, U10)
+
+![U10 — Достижения и бейджи](media/image16.jpg)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-ACH-01 | Карточка уровня: номер, ранг (BR-XP-03), «Серия: {n} дн.», «{xp} XP всего», «До следующего уровня: {n} XP», полоса прогресса. |
+| REQ-ST-ACH-02 | «Бейджи — Получено {earned} из {total}»; сетка 4 колонки; полученные — цветные, закрытые — серые с замком и «ЗАКРЫТО». Список и условия — BR-BDG-01. |
+
+### 8.4.8 Мои задания (/learn/assignments, PH-33)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-ST-ASG-01 | Список назначений класса: тема, предмет, срок, статус («Не начато», «Сдано», «Оценено: {grade}%»); переход открывает квиз темы с assignment_id. Просроченные помечены «Срок прошёл». |
+
+## 8.5 Служебная поддержка (/staff)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-SUP-01 | Вход только для support_agent / onboarding_agent. Очередь: фильтры (тип, статус, ответственный, срок), поиск по номеру и email, сортировка по дате. |
+| REQ-SUP-02 | Карточка: исходное обращение, tech_context, история переписки, внутренние заметки (визуально отличаются, не отправляются клиенту), история статусов. |
+| REQ-SUP-03 | Действия: назначить, ответить (шаблоны response_templates: подтверждение, уточнение, решение, задержка; текст и адрес видны перед отправкой), сменить статус по SM-TICKET, эскалировать (waiting_internal). |
+| REQ-SUP-04 | Работает при недоступном ИИ. Цель первого ответа — 1 рабочий день (PH-22), не показывается пользователю. |
+
+# 9. Конечные автоматы
+
+```text
+SM-TOPIC        draft --publish--> published --unpublish--> draft
+                published --edit+save--> published (изменения в черновом содержимом; ученик видит published_version)
+                published --publish--> published (новая topic_version)
+
+SM-ATTEMPT      (none) --start--> in_progress --answer*--> in_progress --finish--> finished
+                in_progress --(30 дней без активности)--> abandoned
+
+SM-SUBMISSION   (none) --attempt.finish(assignment)--> graded   [PH-29; submitted/in_review зарезервированы]
+
+SM-MEMBERSHIP   (none) --join(code)--> active --leave--> left ; left --join--> новая запись active
+
+SM-TICKET       new --assign--> in_progress
+                in_progress --ask_user--> waiting_user --user_reply--> in_progress
+                in_progress --escalate--> waiting_internal --resume--> in_progress
+                in_progress | waiting_* --resolve--> resolved --(7 дней)--> closed
+                resolved | closed --user_reply--> reopened --assign--> in_progress
+
+SM-REQUEST      new --> in_progress --> contacted --> onboarded | rejected
+
+SM-FILE         pending --scan ok--> clean ; pending --virus|macro--> rejected (файл удалён)
+
+SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; streaming --error--> failed
+```
+
+Недопустимые переходы возвращают 409 `INVALID_TRANSITION`.
+
+
+# 10. Нефункциональные требования
+
+| **ID** | **Требование** | **Как проверить** |
+|---|-----------------------|--------------|
+| REQ-NFR-SEC-01 | Только HTTPS (TLS 1.2+), HSTS, заголовки CSP, X-Content-Type-Options, Referrer-Policy, frame-ancestors 'none'. | Тест заголовков в e2e |
+| REQ-NFR-SEC-02 | Пароли — Argon2id; токены сессий и кодов классов хранятся только хешами. | Unit-тест сервиса auth |
+| REQ-NFR-SEC-03 | Cookie сессии HttpOnly, Secure, SameSite=Lax; срок ≤ 14 дней; CSRF для изменяющих запросов. | Integration-тест |
+| REQ-NFR-SEC-04 | Подстановка чужого ID в любой эндпоинт /api/teacher/*, /api/student/* → 404. | Генерируемый тест по всем маршрутам |
+| REQ-NFR-SEC-05 | Журнал аудита: оценки, состав классов, выдача предметов, публикация тем, статусы обращений. | Integration-тест |
+| REQ-NFR-SEC-06 | Санитизация Markdown, ответов ИИ и пользовательского текста; без исполнения скриптов. | Тест XSS-полезных нагрузок |
+| REQ-NFR-SEC-07 | В журналах нет содержимого форм, чата, паролей, токенов; есть requestId. | Проверка логов в тесте |
+| REQ-NFR-DATA-01 | Все серверы, БД, файлы, журналы, резервные копии — в Республике Казахстан (PH-16). | Инфраструктурный чек-лист |
+| REQ-NFR-DATA-03 | Обработка ПД по Закону РК «О персональных данных и их защите»; ученики — только через класс учителя или child-safe аккаунты школы без email (PH-17); согласия фиксируются в consents. | Юридическая проверка (ручн.) |
+| REQ-NFR-DATA-02 | Сроки хранения — PH-18; очистка выполняется задачами worker. | Integration-тест задач очистки |
+| REQ-NFR-PERF-01 | Главная: ≤ 500 КБ сжатых ресурсов при первой загрузке; ИИ-модуль — динамический импорт. | Lighthouse CI, бюджет в next.config |
+| REQ-NFR-PERF-02 | p75 мобильный профиль: LCP ≤ 2,5 с; INP ≤ 200 мс; CLS ≤ 0,1. | Lighthouse CI |
+| REQ-NFR-PERF-03 | p95 API: чтение ≤ 500 мс; сохранение ≤ 2 с; клиентские таймауты: формы 15 с, первый токен ИИ 45 с. | k6 |
+| REQ-NFR-PERF-04 | Нагрузка — PH-41 (2 000 одновременных сессий) с запасом ×2. | k6 |
+| REQ-NFR-A11Y-01 | WCAG 2.1 AA: клавиатура, видимый фокус, контраст 4,5:1 / 3:1, масштаб 200 %, `prefers-reduced-motion`, alt у изображений, статусы через aria-live. | axe-core + ручная проверка NVDA/VoiceOver |
+| REQ-NFR-I18N-01 | Все строки — в i18n-файлах; ключи совпадают в ru/kk/en; даты и числа форматируются по локали (Intl); часовой пояс PLATFORM_TZ. | Тест сравнения ключей |
+| REQ-NFR-COMP-01 | Chrome и Safari (десктоп), Safari iOS, Chrome Android — две последние версии; Edge и Firefox — последние. Ширины 320, 390, 768, 1440 px. | Playwright projects |
+| REQ-NFR-OBS-01 | Метрики: сохранение обращений, задержка API, длина очереди писем, ошибки ИИ; алерты в Grafana; Sentry для ошибок. | Наличие дашбордов и алертов |
+| REQ-NFR-OPS-01 | Ежедневный бэкап PostgreSQL (pgBackRest) + WAL; проверка восстановления до запуска. | Протокол восстановления |
+
+# 11. Конфигурация заглушек
+
+Все значения хранятся в `app_config` (seed `packages/db/seed/config.json`) с `needs_confirmation = true` и доступны в коде через `config.get('<key>')`. Каждой заглушке соответствует ЗГ-* исходного ТЗ (PH-NN = ЗГ-NN). Перед выпуском `pnpm config:report` выводит все неподтверждённые ключи; ключи с `prodBlocked: true` блокируют сборку продуктива.
+
+```json
+{
+  "PH-01 catalog.public_subjects": ["biology", "chemistry", "physics"],
+  "PH-01 home.subjects_subtitle": "Предметы на казахском и русском — открывай любой",
+  "PH-02 demo.questions": [{
+    "text": "Какой сосуд несёт кровь от сердца к телу?",
+    "options": ["Аорта", "Полая вена", "Капилляр", "Лимфатический сосуд"], "correct": 0,
+    "explanation": "Аорта — главная артерия: по ней кровь из левого желудочка идёт ко всем органам тела."
+  }],
+  "PH-03 home.benefits": [
+    "Интерфейс, уроки и квизы на казахском, русском и английском",
+    "ИИ-наставник объясняет тему простыми словами",
+    "Работает на обычных телефонах и слабом интернете",
+    "Уроки и квизы доступны после входа",
+    "Опыт, серии и бейджи показывают прогресс"
+  ],
+  "PH-04 i18n.enabled_locales": ["ru", "kk", "en"],
+  "PH-04 i18n.review_status": { "kk": "needs_review", "en": "prepared" },
+  "PH-05 brand.use_text_logo": true,
+  "PH-05 team.photos": "initials",
+  "PH-06 auth.password_min_length": 8,
+  "PH-06 auth.reset_link_ttl_hours": 24,
+  "PH-07 class.code": { "length": 6, "alphabet": "23456789ABCDEFGHJKLMNPQRSTUVWXYZ", "ttl_days": 30 },
+  "PH-08 privacy.requests_as_tickets": true,
+  "PH-09 support.email": { "value": "support@syntara-edu.me", "prodBlocked": true },
+  "PH-10 atlas.urls": { "mendeleev": null, "anatomy": null, "label_when_null": "Ссылка скоро появится" },
+  "PH-11 about.metric_access": "Пробный доступ — по условиям подключения",
+  "PH-11 pricing.visible": false,
+  "PH-12 schools.trial": "Одна учебная четверть; даты — по договорённости при подключении",
+  "PH-13 features.offline": false,
+  "PH-13 about.metric_pwa": "PWA — устанавливается на телефон",
+  "PH-14 legal.draft_banner": { "value": "Черновик редакции — не действует до утверждения", "prodBlocked": true },
+  "PH-15 forms.consent_text": "Отправляя форму, вы соглашаетесь с обработкой данных по Политике конфиденциальности.",
+  "PH-16 infra.data_residency": "KZ",
+  "PH-17 auth.student_self_registration": false,
+  "PH-18 retention_days": { "tickets": 1095, "requests": 1095, "logs": 365, "backups": 30, "ai_messages": 365 },
+  "PH-19 ai.mode": "mock",
+  "PH-19 ai.public_quick_answers": {
+    "Что это за платформа?": "Syntara — учебная платформа: уроки, квизы и ИИ-наставник на казахском и русском.",
+    "С чего начать учёбу?": "Откройте «Предметы» и выберите предмет. Чтобы сохранять результаты, войдите или подключитесь к классу.",
+    "Как сменить язык?": "Нажмите на переключатель языка в верхней панели.",
+    "Нужна ли регистрация?": "Нет, чтобы смотреть сайт и попробовать вопрос. Для сохранения прогресса нужен вход."
+  },
+  "PH-19 ai.unavailable_public": "Помощник пока недоступен. Напишите в поддержку",
+  "PH-19 ai.unavailable_tutor": "Учебный ИИ скоро будет доступен",
+  "PH-20 ai.limits": { "per_minute": 10, "per_day": 50, "max_chars": 2000 },
+  "PH-21 ai.quick_actions": { "simpler": "Объясни проще", "more_detail": "Расскажи подробнее", "check_me": "Проверь меня: задай 3 вопроса по теме" },
+  "PH-21 ai.explain_level": "beginner",
+  "PH-22 support.hours": { "days": "mon-fri", "from": "09:00", "to": "18:00", "tz": "UTC+5", "first_response_business_days": 1 },
+  "PH-23 limits": { "title": 150, "description": 1000, "fun_fact": 500, "body_md": 50000, "question": 1000, "option": 300, "explanation": 2000, "min_options": 2 },
+  "PH-24 teacher.mastery_map": "stub",
+  "PH-25 topic.versions_restore": false,
+  "PH-26 cover.selection": "last_action_wins",
+  "PH-27 topic.unpublish_enabled": true,
+  "PH-28 quiz.text_answer_normalize": ["trim", "collapse_spaces", "lowercase"],
+  "PH-29 assignments.manual_review": false,
+  "PH-30 analytics": { "red_below": 50, "green_from": 80, "max_rows": 10, "inactive_days": 7 },
+  "PH-31 datetime.format": "DD.MM.YYYY HH:mm",
+  "PH-32 notifications.limit": 20,
+  "PH-33 student.assignments_page": true,
+  "PH-34 student.continue_target": "last_opened_topic",
+  "PH-35 topics.sequential_lock": false,
+  "PH-36 overview.accordion_multi": true,
+  "PH-37 quiz": { "check_mode": "immediate", "attempts_limit": null, "score": "best", "resume": true },
+  "PH-38 progress": { "mastery_threshold": 80, "school_year": { "from": "09-01", "to": "05-31" }, "quarters": [] },
+  "PH-39 xp": { "quiz_finished": 10, "high_score_bonus": 10, "high_score_threshold": 80, "first_lesson_open": 5, "per_level": 100, "failed_attempt_below": 50 },
+  "PH-40 class.leave_confirm": true,
+  "PH-41 load.expected": { "schools": 50, "students": 20000, "concurrent_sessions": 2000 },
+  "PH-42 platform.tz": "Asia/Almaty",
+  "PH-43 routes.legal": { "terms": "/terms", "privacy": "/privacy", "cookies": "/cookies" },
+  "PH-44 auth.student_registration_by_class_code": {
+    "enabled": true, "requires_valid_code": true, "email_required": false,
+    "fields": ["displayName", "login", "password", "email?"], "status": "требует уточнения"
+  }
+}
+```
+
+В JSON префикс «PH-NN » в ключе показан для связи с таблицей; в реальном seed ключ — только часть после пробела, а PH-ID хранится в поле `note`.
+
+**PH-44 — регистрация ученика по коду класса (заглушка, требует уточнения; решение владельца, ред. 2026-10-13).**
+Ученик регистрируется только по действующему коду класса (BR-CLS-01). На `/join` после успешной проверки кода (API-PUB-08) гость без аккаунта вводит имя, логин и пароль (email необязателен; пароль — не короче PH-06). Сервер повторно проверяет код, создаёт пользователя с ролью `student` (без email — `is_child_safe = true`, вход по логину), фиксирует согласие в `consents` и создаёт активное членство в классе в одной транзакции. Без действующего кода регистрация ученика невозможна; ответ сервера не раскрывает данных класса до входа. Эндпоинт — `POST /api/auth/register-student { code, displayName, login, password, email? }` (лимиты как у проверки кода, API-GEN-06). Открытые вопросы: правила формата логина, согласие родителя для детей, вход по логину на /auth/login (поле «Email или логин»), восстановление пароля без email. Тексты экрана — `needs_confirmation`.
+
+**Недостающие тексты.** Видимые тексты, которых нет в документе, задаются заглушками в i18n-файлах и перечисляются в `packages/shared/i18n/needs_confirmation.json` (решение владельца, ред. 2026-10-13).
+
+# 12. План реализации
+
+Каждая итерация завершается выполнением DoD (0.5) и критериев AC, указанных в столбце «Готово, когда».
+
+| **№** | **Итерация** | **Задачи** | **Готово, когда** |
+|---|-----------|-----------------------|------------|
+| 1 | Каркас | Монорепозиторий, Docker Compose (Postgres, Redis, MinIO, ClamAV), CI, линтеры, tokens.css, базовые компоненты, i18n-каркас, OpenAPI, Sentry/OTel | `pnpm dev` поднимает всё; CI зелёный |
+| 2 | База данных | Миграции раздела 5, seed (config, демо, визуальные данные), RLS-политики | Миграции применяются и откатываются; seed проходит |
+| 3 | Оболочка и публичные страницы | Хедер, футер, мобильное меню, плавающие кнопки, 10 страниц раздела 8.1 (без форм и ИИ), язык/тема/трафик, cookie-баннер | AC-PUB-01..03, AC-GEN-01..03 |
+| 4 | Формы и поддержка | API-PUB-04/05, idempotency, outbox, email worker, служебная очередь /staff | AC-FRM-01..05, AC-SUP-01..02 |
+| 5 | Пробный вопрос и публичный помощник | API-PUB-02/03/06, SM-DEMO, LLMProvider (mock + реальный), лимиты | AC-PUB-04..06 |
+| 6 | Аккаунты и классы | Вход, регистрация учителя, сессии, CSRF, классы, коды, /join, Leave, «Мои данные» | AC-AUTH-01..04 |
+| 7 | Кабинет учителя: контент | Предметы, выдача классу, темы, Markdown, файлы и проверка, публикация, версии, квиз | AC-TCH-01..07 |
+| 8 | Интерфейс ученика: обучение | Каталог, урок, квиз, события, mastery, XP, бейджи | AC-ST-01..05 |
+| 9 | Учебный ИИ | Диалоги, SSE, отмена, быстрые действия, /learn/assistant | AC-ST-06..07 |
+| 10 | Задания, показатели, аналитика | Назначения, «Мои задания», /learn/progress, /learn/achievements, аналитика класса | AC-TCH-08..09, AC-ST-08..09 |
+| 11 | Качество и выпуск | Визуальные тесты по эталонам, axe, k6, проверка безопасности, бэкап/восстановление, отчёт заглушек | Все AC; REQ-NFR-*; отчёт `config:report` |
+
+# 13. Критерии приёмки
+
+Формат: Дано / Когда / Тогда. Каждый критерий реализуется как автоматический тест (Playwright или integration), кроме помеченных «ручн.».
+
+| **ID** | **Дано** | **Когда** | **Тогда** |
+|---|--------|--------|------------|
+| AC-GEN-01 | Гость на любой публичной странице | Открывает страницу по прямому URL | Та же страница, что при переходе из меню; активный пункт меню соответствует странице |
+| AC-GEN-02 | Форма заполнена наполовину, открыт урок | Пользователь меняет язык или тему | Введённые данные, тема урока и вкладка сохранены; выбор сохранён после перезагрузки |
+| AC-GEN-03 | Ширина 320 px | Открыты все публичные страницы | Нет горизонтальной прокрутки; меню открывается и закрывается Escape; фокус возвращается |
+| AC-PUB-01 | Главная | Загрузка | Секции в порядке REQ-PUB-HOME-01; H1 из трёх строк, третья синяя |
+| AC-PUB-02 | Блок «Почему Syntara» | Клик по стрелке и клавиши ←/→ | Меняется активный пункт, панель и индикатор синхронно; нет автопрокрутки |
+| AC-PUB-03 | Первый визит | Нажать «Только необходимые» | Аналитические cookie не ставятся; сайт работает; баннер больше не показывается |
+| AC-PUB-04 | Пробный вопрос загружен | Ответ сети проверен до выбора | В ответе нет isCorrect; кнопка «Проверить ответ» неактивна до выбора |
+| AC-PUB-05 | Выбран неверный вариант | «Проверить ответ» | «Пока неверно», подсвечены выбранный и правильный, показано объяснение; баллы не начислены |
+| AC-PUB-06 | Публичный помощник, ai.mode = mock | Клик по быстрому вопросу; ввод своего вопроса | Ответ-справка из PH-19; на свой вопрос — «Помощник пока недоступен…» со ссылкой на /support |
+| AC-FRM-01 | Форма заявки с пустыми обязательными полями | «Оставить заявку» | Ошибки у полей и сводка сверху; фокус на первом ошибочном; запрос не отправлен |
+| AC-FRM-02 | Валидная заявка | Отправка | «Отправляем...»; после 201 — «Заявка получена», номер SR-…, email; в БД одна запись; outbox-событие создано в той же транзакции |
+| AC-FRM-03 | Отправка с таймаутом | Повтор с тем же Idempotency-Key | В БД одна запись, ответ тот же |
+| AC-FRM-04 | Нет сети | Отправка | «Нет соединения. Проверьте интернет и повторите отправку»; ввод сохранён |
+| AC-FRM-05 | SMTP недоступен | Отправка формы | Заявка сохранена, успех показан; письмо в email_queue с повтором |
+| AC-SUP-01 | Обращение в статусе new | Сотрудник назначает себя, отвечает, решает | Статусы по SM-TICKET; письмо в очереди; история и автор сохранены; заметка не попала в письмо |
+| AC-SUP-02 | Обращение resolved | Пользователь отвечает на письмо | Статус reopened |
+| AC-AUTH-01 | Гость на /join с годным кодом | Вводит код | «Код подходит. Войдите, чтобы присоединиться»; данных класса в ответе нет |
+| AC-AUTH-02 | Ученик вошёл с кодом | Подтверждает вступление дважды | Одна активная запись membership |
+| AC-AUTH-03 | 11 попыток проверки кода за 15 минут | Ещё попытка | 429 с retryAfterSeconds |
+| AC-AUTH-04 | Ученик в классе | «Выйти из класса» и подтверждение | Карточка класса исчезает; предметы класса недоступны; личные результаты сохранены |
+| AC-TCH-01 | Учитель | Создаёт предмет только с KK-названием | Предмет создан; данные RU/EN-вкладок, введённые ранее, не потеряны при переключении |
+| AC-TCH-02 | Предмет с флагом каталога и черновой темой | Ученик запрашивает тему по ID | 404 |
+| AC-TCH-03 | Учитель выдал предмет классу | Ученик класса открывает каталог | Видны предмет и только опубликованные темы |
+| AC-TCH-04 | Тема | «Сгенерировать черновик ИИ» | Заполнены описание, факт, текст для RU и KK; тема не сохранена и не опубликована |
+| AC-TCH-05 | Загрузка DOCX с макросом | Проверка файла | scan_status = rejected; сообщение «Файл отклонён…»; файл не доступен ученику |
+| AC-TCH-06 | 20 материалов уже загружено | Загрузка 21-го | 413/422 с понятной ошибкой до загрузки |
+| AC-TCH-07 | Форма вопроса «Выбор варианта» | Отмечены два правильных или один вариант | Ошибка валидации; вопрос не создан |
+| AC-TCH-08 | Учитель назначил тему классу | Ученик открывает «Мои задания», проходит квиз | Назначение видно; после finish — submission graded; счётчики учителя обновлены |
+| AC-TCH-09 | Класс с результатами | Открыть «Аналитика класса» | Значения совпадают с BR-AN-*; цвета по порогам; ученик без событий 7 дней в «Требуют внимания» |
+| AC-ST-01 | Ученик открыл урок | Переключает вкладки и язык | URL меняет ?tab; тема и прогресс те же |
+| AC-ST-02 | Квиз | Ответ на вопрос | Сразу «Верно/Неверно», правильный вариант, объяснение; правильный ответ не приходил ранее |
+| AC-ST-03 | Попытка не завершена | Ученик уходит и возвращается | Продолжение с того же вопроса |
+| AC-ST-04 | Квиз завершён с 85 % | finish | +20 XP; тема освоена; бейджи «Первый шаг» и «Тема освоена» при первом выполнении |
+| AC-ST-05 | Событие quiz_finished обработано | Повторная обработка того же события | XP и бейджи не начислены повторно |
+| AC-ST-06 | Вкладка Syntara AI | Вопрос и «Остановить» во время ответа | Сообщение сохранено со status partial и пометкой «Ответ прерван» |
+| AC-ST-07 | Учебный ИИ | Ответ модели содержит ссылку и HTML-скрипт | Скрипт удалён; ИИ не изменил данные |
+| AC-ST-08 | Мои показатели | Смена периода на «7 дней» | Даты периода и сравнения, прогресс и серия пересчитаны по BR-ST-* |
+| AC-ST-09 | Ученик A | Запрос /api/student/... с ID объектов ученика B | 404 |
+| AC-VIS-01 | Seed visual | Скриншот-тесты на эталонных размерах | Совпадение с T04–T10, U01–U13, S01–S26 в пределах порога (ручн. для итогового сравнения) |
+
+# 14. Трассировка к исходному ТЗ
+
+| **Исходное ТЗ (краткое, ред. 5.1)** | **Этот документ** |
+|---------------------|---------------------|
+| 1. Общие сведения | 0, 1 |
+| 2.1–2.4 Дизайн, оболочка, мобильная версия, язык | 3 |
+| 2.5 Публичные формы | 6.7, 7.9, 8.1.6–8.1.9 |
+| 2.6 Служба поддержки | 6.6, 7.9, 8.5, 9 (SM-TICKET) |
+| 2.7 Сервер и API | 6 |
+| 2.8 Безопасность | 7.1, 7.8, 7.10, 10 |
+| 2.9 Доступность и скорость | 10 |
+| 3. Гостевой режим | 4, 8.1, 8.2 |
+| 4. Кабинет учителя | 6.4, 7.5–7.8, 8.3 |
+| 5. Интерфейс ученика | 6.5, 7.2–7.4, 8.4 |
+| 6. Модель данных, 9. Архитектура БД | 5 |
+| 7. Открытые вопросы, 11. Заглушки | 11, 15 (демо-данные) |
+| 8. Приёмка | 13 |
+| 10. Технологический стек | 2 |
+
+# 15. Демо-данные эталонов (seed `visual`)
+
+Эти значения со скриншотов загружаются только командой `pnpm db:seed --set=visual` для визуальных тестов (AG-08). В рабочем коде они MUST NOT использоваться как константы.
+
+| **Экран** | **Данные** |
+|-------|-----------------------------|
+| Пользователь | Учитель и ученик «Alexandr», буква аватара «A»; школа «Школа-гимназия №73» |
+| T04 | Классы «9» (Учеников: 1), «5» (Учеников: 0), «7» (Учеников: 0); тем нет |
+| T05 | Предмет «Биология: сердце и кровообращение», описание «Материалы урока о строении сердца и движении крови.»; флажок каталога выключен |
+| T06–T07 | Тема «Как работает сердце»; описание «Разбираем четыре камеры сердца и два круга кровообращения.»; факт «Клапаны помогают крови двигаться в одном направлении.»; текст урока с разделами «## Четыре камеры сердца», «## Два круга кровообращения», «## Проверьте себя»; 3 миниатюры в галерее; статус «Черновик — ученики не видят» |
+| T08 | Вопрос «Какая камера сердца направляет кровь в аорту?»; варианты «Левый желудочек» (верный), «Правое предсердие»; объяснение «Левый желудочек выталкивает кровь в аорту, откуда она поступает к органам тела.»; тип «Выбор варианта», сложность «Лёгкий» |
+| T09 | Форма: класс «9», предмет «Анатомия человека», тема «Сердечно-сосудистая система»; выданное задание «Фотосинтез», класс «7», «Сдано: 1 · На проверку: 0 · Оценено: 1»; очередь пуста |
+| T10 | Класс «9»: успеваемость 64 %, вовлечённость 0/1; слабые темы: Сердечно-сосудистая система 33 % (красный), Дыхательная система 43 % (красный), Пищеварительная система 43 % (красный), Проценты 67 % (синий), Порядок слов 100 % (зелёный), у каждой «1 уч.»; «Требуют внимания»: Alexandr, «24 дня назад», «неактивен» |
+| U01 | Хедер ученика: серия 1, 20 XP |
+| U03 | Раздел «Биология» → «Анатомия человека», «11 систем организма», «Доступно» |
+| U04, U09, U11, U12 | Предмет «Анатомия человека», тема «Сердечно-сосудистая система» / «Cardiovascular system», «Тема 1», «9 вопросов»; описание «Сердце и сосуды, обеспечивающие кровообращение.»; разделы 01–05 (+06 в EN); следующая тема «Дыхательная система» |
+| U05 | «Вопрос 1 из 9», сложность «Средний», «Какой сосуд несёт кровь от сердца к телу?» — A Аорта, B Полая вена, C Капилляр, D Лимфатический сосуд |
+| U06–U07 | Вопрос ученика «Почему у сердца четыре камеры?»; ответ — аналогия с домом из четырёх комнат и уточняющий вопрос |
+| U08 | Период «30 дней», 30.08.2026 — 28.09.2026, сравнение 31.07.2026 — 29.08.2026; «Пройти короткий квиз сегодня» / «серия прервана»; прогресс 1 из 41 = 2,4 %; серия 0 дн., последнее занятие 05.09.2026 |
+| U10 | Уровень 1 «Новичок», «Серия: 1 дн.», 20 XP, до следующего уровня 80 XP; получены «Первый шаг» и «Тема освоена» (на эталоне «2 из 17»; в продукте — «из 12», PH-39) |
+| U13 | Класс «7», учитель Alexandr, школа «Школа-гимназия №73»; 7 карточек каталога из REQ-ST-CAT-02 |
+
+
+
+# 16. Журнал изменений редакции
+
+| **Дата** | **Изменение** | **Основание** |
+|------|-----------------------------|------|
+| 2026-10-13 | 5.3: `user_roles` — суррогатный `id` и `UNIQUE NULLS NOT DISTINCT (user_id, role, school_id)` вместо PK с nullable-столбцом | Решение владельца по Q-15 (docs/PLAN.md) |
+| 2026-10-13 | 5.3: `users.login citext UNIQUE`; 7.7 BR-CLS-04, 8.2 REQ-GEN-AUTH-03, 11: заглушка PH-44 — регистрация ученика только по действующему коду класса (требует уточнения) | Решение владельца по Q-16 |
+| 2026-10-13 | 3.4 REQ-GEN-PREF-02, 11 PH-04: включены все три языка (ru, kk, en); заранее подготовленные переводы kk/en допустимы, KK — `needs_review` | Решение владельца по Q-07 |
+| 2026-10-13 | 11: недостающие тексты — заглушки с пометкой `needs_confirmation` | Решение владельца по Q-05, Q-06, Q-09 |

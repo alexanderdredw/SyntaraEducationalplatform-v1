@@ -1,0 +1,24 @@
+{
+  "common": {
+    "appName": "Syntara Education Platform",
+    "tagline": "Учись в своём темпе — на казахском и русском",
+    "skipToContent": "К содержимому",
+    "sectionInDevelopment": "Раздел в разработке",
+    "close": "Закрыть"
+  },
+  "locale": {
+    "ru": "RU",
+    "kk": "KK",
+    "en": "EN",
+    "soon": "скоро"
+  },
+  "validation": {
+    "email": "Введите email, например name@example.com",
+    "required": "Заполните поле",
+    "tooLong": "Слишком длинный текст",
+    "invalidPhone": "Введите телефон, например +7 700 000 00 00",
+    "min2": "Добавьте минимум два варианта",
+    "exactlyOneCorrect": "Отметьте ровно один правильный вариант",
+    "atLeastOneLanguage": "Заполни хотя бы один язык (RU, KK или EN)"
+  }
+}

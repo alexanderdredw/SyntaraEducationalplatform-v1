@@ -1,0 +1,22 @@
+{
+  "_comment": "Статус проверки KK-переводов носителем языка (решение владельца по Q-07). Значения: needs_review | reviewed. Новые ключи добавляет `pnpm --filter @syntara/shared i18n:sync`.",
+  "locale": "kk",
+  "keys": {
+    "common.appName": "needs_review",
+    "common.tagline": "needs_review",
+    "common.skipToContent": "needs_review",
+    "common.sectionInDevelopment": "needs_review",
+    "common.close": "needs_review",
+    "locale.ru": "needs_review",
+    "locale.kk": "needs_review",
+    "locale.en": "needs_review",
+    "locale.soon": "needs_review",
+    "validation.email": "needs_review",
+    "validation.required": "needs_review",
+    "validation.tooLong": "needs_review",
+    "validation.invalidPhone": "needs_review",
+    "validation.min2": "needs_review",
+    "validation.exactlyOneCorrect": "needs_review",
+    "validation.atLeastOneLanguage": "needs_review"
+  }
+}

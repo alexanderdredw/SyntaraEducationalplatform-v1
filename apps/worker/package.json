@@ -1,0 +1,33 @@
+{
+  "name": "@syntara/worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "BullMQ-процессоры: outbox, email, file-scan, recalc, cleanup (раздел 2.2 SPEC)",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "node --env-file-if-exists=../../.env --watch --import tsx src/main.ts",
+    "start": "node --env-file-if-exists=../../.env dist/main.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@opentelemetry/auto-instrumentations-node": "^0.81.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.223.0",
+    "@opentelemetry/sdk-node": "^0.223.0",
+    "@sentry/node": "^10.76.2",
+    "@syntara/shared": "workspace:*",
+    "bullmq": "^5.81.5",
+    "ioredis": "^5.11.1",
+    "pino": "^9.14.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@testcontainers/redis": "^12.2.1",
+    "@types/node": "^22.20.5",
+    "testcontainers": "^12.2.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
