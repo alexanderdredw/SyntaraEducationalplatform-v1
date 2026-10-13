@@ -1,10 +1,11 @@
 import { Global, Inject, Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import Redis from 'ioredis';
 import { createDb, type Database } from '@syntara/db';
+import { AppConfigService } from '../config/app-config.service';
 import { ENV, type Env, loadEnv } from '../config/env';
+import { DB, REDIS } from './tokens';
 
-export const DB = Symbol('DB');
-export const REDIS = Symbol('REDIS');
+export { DB, REDIS };
 
 /** Подключения к PostgreSQL и Redis; создаются лениво, закрываются при остановке. */
 @Global()
@@ -27,8 +28,9 @@ export const REDIS = Symbol('REDIS');
         return client;
       },
     },
+    AppConfigService,
   ],
-  exports: [ENV, DB, REDIS],
+  exports: [ENV, DB, REDIS, AppConfigService],
 })
 export class InfraModule implements OnApplicationShutdown {
   constructor(

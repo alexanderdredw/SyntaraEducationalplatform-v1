@@ -9,24 +9,52 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./migrator": {
+      "types": "./dist/migrator.d.ts",
+      "default": "./dist/migrator.js"
+    },
+    "./seed": {
+      "types": "./dist/seed/index.d.ts",
+      "default": "./dist/seed/index.js"
     }
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "db:migrate": "node --env-file-if-exists=../../.env --import tsx src/migrate.ts"
+    "test": "vitest run",
+    "db:migrate": "node --env-file-if-exists=../../.env --import tsx src/cli.ts migrate",
+    "db:rollback": "node --env-file-if-exists=../../.env --import tsx src/cli.ts rollback",
+    "db:reset": "node --env-file-if-exists=../../.env --import tsx src/cli.ts reset",
+    "db:seed": "node --env-file-if-exists=../../.env --import tsx src/cli.ts seed",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "node --env-file-if-exists=../../.env node_modules/drizzle-kit/bin.cjs studio"
   },
   "dependencies": {
+    "@syntara/shared": "workspace:*",
+    "argon2": "^0.44.0",
     "drizzle-orm": "^0.45.4",
-    "postgres": "^3.4.9"
+    "postgres": "^3.4.9",
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^12.2.1",
     "@types/node": "^22.20.5",
     "drizzle-kit": "^0.31.11",
+    "testcontainers": "^12.2.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^3.2.7"
+  },
+  "typesVersions": {
+    "*": {
+      "migrator": [
+        "dist/migrator.d.ts"
+      ],
+      "seed": [
+        "dist/seed/index.d.ts"
+      ]
+    }
   }
 }

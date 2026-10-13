@@ -9,3 +9,4 @@ apps/api/openapi.json
 apps/web/lib/api/schema.d.ts
 CLAUDE.md
 START.md
+packages/db/migrations/

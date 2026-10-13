@@ -5,7 +5,7 @@
     "moduleResolution": "node10",
     "outDir": "dist",
     "rootDir": ".",
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src", "drizzle.config.ts"]
+  "include": ["src", "test", "drizzle.config.ts", "vitest.config.ts"]
 }

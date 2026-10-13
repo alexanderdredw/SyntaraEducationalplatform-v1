@@ -16,7 +16,11 @@
     "e2e": "pnpm --filter @syntara/e2e e2e",
     "format": "prettier --write .",
     "openapi": "pnpm --filter @syntara/api openapi:generate && pnpm --filter @syntara/web openapi:types",
-    "db:migrate": "pnpm --filter @syntara/db db:migrate"
+    "db:migrate": "pnpm --filter @syntara/db db:migrate",
+    "db:rollback": "pnpm --filter @syntara/db db:rollback",
+    "db:reset": "pnpm --filter @syntara/db db:reset",
+    "db:seed": "pnpm --filter @syntara/db db:seed",
+    "db:studio": "pnpm --filter @syntara/db db:studio"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

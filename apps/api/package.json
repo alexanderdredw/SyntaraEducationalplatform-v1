@@ -23,6 +23,7 @@
     "@sentry/node": "^10.76.2",
     "@syntara/db": "workspace:*",
     "@syntara/shared": "workspace:*",
+    "drizzle-orm": "^0.45.4",
     "helmet": "^8.3.0",
     "ioredis": "^5.11.1",
     "nestjs-pino": "^4.4.1",

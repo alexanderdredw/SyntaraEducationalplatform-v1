@@ -1,0 +1,23 @@
+{
+  "_comment": "Тексты в seed-данных, требующие проверки. needs_review — KK-переводы (проверит носитель языка, решение владельца по Q-07); needs_confirmation — тексты, которых нет в SPEC (решение владельца по Q-09).",
+  "needs_review": {
+    "src/seed/demo.ts": [
+      "level_translations (kk): «Жаңадан бастаушы», «N-деңгей»",
+      "badge_translations (kk): 12 бейджей BR-BDG-01",
+      "response_templates (kk): confirmation, clarification, resolution, delay",
+      "catalog_section_translations (kk): biology, chemistry, physics",
+      "subject_translations (kk): «Адам анатомиясы»",
+      "topic_translations (kk): «Жүрек-қантамыр жүйесі»",
+      "question/answer_option_translations (kk): пробный вопрос PH-02"
+    ],
+    "src/seed/visual.ts": [
+      "catalog_section_translations (kk): разделы U13",
+      "subject/topic_translations (kk): Химия, Математика, Ағылшын тілі, Тыныс алу жүйесі, Ас қорыту жүйесі, Пайыздар, Сөз тәртібі"
+    ]
+  },
+  "needs_confirmation": {
+    "response_templates": "Тексты шаблонов ответов поддержки (подтверждение, уточнение, решение, задержка) — в SPEC не заданы",
+    "badges.rule": "Формат JSON-правил бейджей — придуман по BR-BDG-01; движок правил — итерация 8",
+    "levels": "Количество уровней в справочнике — 10 (до бейджа legend); формула BR-XP-03 работает для любого уровня"
+  }
+}

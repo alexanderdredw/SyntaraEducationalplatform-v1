@@ -1,0 +1,377 @@
+{
+  "_comment": "Заглушки раздела 11 SPEC (сгенерировано из docs/SPEC.md). needs_confirmation = true для всех ключей.",
+  "entries": [
+    {
+      "key": "catalog.public_subjects",
+      "note": "PH-01",
+      "value": ["biology", "chemistry", "physics"]
+    },
+    {
+      "key": "home.subjects_subtitle",
+      "note": "PH-01",
+      "value": "Предметы на казахском и русском — открывай любой"
+    },
+    {
+      "key": "demo.questions",
+      "note": "PH-02",
+      "value": [
+        {
+          "text": "Какой сосуд несёт кровь от сердца к телу?",
+          "options": ["Аорта", "Полая вена", "Капилляр", "Лимфатический сосуд"],
+          "correct": 0,
+          "explanation": "Аорта — главная артерия: по ней кровь из левого желудочка идёт ко всем органам тела."
+        }
+      ]
+    },
+    {
+      "key": "home.benefits",
+      "note": "PH-03",
+      "value": [
+        "Интерфейс, уроки и квизы на казахском, русском и английском",
+        "ИИ-наставник объясняет тему простыми словами",
+        "Работает на обычных телефонах и слабом интернете",
+        "Уроки и квизы доступны после входа",
+        "Опыт, серии и бейджи показывают прогресс"
+      ]
+    },
+    {
+      "key": "i18n.enabled_locales",
+      "note": "PH-04",
+      "value": ["ru", "kk", "en"]
+    },
+    {
+      "key": "i18n.review_status",
+      "note": "PH-04",
+      "value": {
+        "kk": "needs_review",
+        "en": "prepared"
+      }
+    },
+    {
+      "key": "brand.use_text_logo",
+      "note": "PH-05",
+      "value": true
+    },
+    {
+      "key": "team.photos",
+      "note": "PH-05",
+      "value": "initials"
+    },
+    {
+      "key": "auth.password_min_length",
+      "note": "PH-06",
+      "value": 8
+    },
+    {
+      "key": "auth.reset_link_ttl_hours",
+      "note": "PH-06",
+      "value": 24
+    },
+    {
+      "key": "class.code",
+      "note": "PH-07",
+      "value": {
+        "length": 6,
+        "alphabet": "23456789ABCDEFGHJKLMNPQRSTUVWXYZ",
+        "ttl_days": 30
+      }
+    },
+    {
+      "key": "privacy.requests_as_tickets",
+      "note": "PH-08",
+      "value": true
+    },
+    {
+      "key": "support.email",
+      "note": "PH-09",
+      "value": {
+        "value": "support@syntara-edu.me",
+        "prodBlocked": true
+      }
+    },
+    {
+      "key": "atlas.urls",
+      "note": "PH-10",
+      "value": {
+        "mendeleev": null,
+        "anatomy": null,
+        "label_when_null": "Ссылка скоро появится"
+      }
+    },
+    {
+      "key": "about.metric_access",
+      "note": "PH-11",
+      "value": "Пробный доступ — по условиям подключения"
+    },
+    {
+      "key": "pricing.visible",
+      "note": "PH-11",
+      "value": false
+    },
+    {
+      "key": "schools.trial",
+      "note": "PH-12",
+      "value": "Одна учебная четверть; даты — по договорённости при подключении"
+    },
+    {
+      "key": "features.offline",
+      "note": "PH-13",
+      "value": false
+    },
+    {
+      "key": "about.metric_pwa",
+      "note": "PH-13",
+      "value": "PWA — устанавливается на телефон"
+    },
+    {
+      "key": "legal.draft_banner",
+      "note": "PH-14",
+      "value": {
+        "value": "Черновик редакции — не действует до утверждения",
+        "prodBlocked": true
+      }
+    },
+    {
+      "key": "forms.consent_text",
+      "note": "PH-15",
+      "value": "Отправляя форму, вы соглашаетесь с обработкой данных по Политике конфиденциальности."
+    },
+    {
+      "key": "infra.data_residency",
+      "note": "PH-16",
+      "value": "KZ"
+    },
+    {
+      "key": "auth.student_self_registration",
+      "note": "PH-17",
+      "value": false
+    },
+    {
+      "key": "retention_days",
+      "note": "PH-18",
+      "value": {
+        "tickets": 1095,
+        "requests": 1095,
+        "logs": 365,
+        "backups": 30,
+        "ai_messages": 365
+      }
+    },
+    {
+      "key": "ai.mode",
+      "note": "PH-19",
+      "value": "mock"
+    },
+    {
+      "key": "ai.public_quick_answers",
+      "note": "PH-19",
+      "value": {
+        "Что это за платформа?": "Syntara — учебная платформа: уроки, квизы и ИИ-наставник на казахском и русском.",
+        "С чего начать учёбу?": "Откройте «Предметы» и выберите предмет. Чтобы сохранять результаты, войдите или подключитесь к классу.",
+        "Как сменить язык?": "Нажмите на переключатель языка в верхней панели.",
+        "Нужна ли регистрация?": "Нет, чтобы смотреть сайт и попробовать вопрос. Для сохранения прогресса нужен вход."
+      }
+    },
+    {
+      "key": "ai.unavailable_public",
+      "note": "PH-19",
+      "value": "Помощник пока недоступен. Напишите в поддержку"
+    },
+    {
+      "key": "ai.unavailable_tutor",
+      "note": "PH-19",
+      "value": "Учебный ИИ скоро будет доступен"
+    },
+    {
+      "key": "ai.limits",
+      "note": "PH-20",
+      "value": {
+        "per_minute": 10,
+        "per_day": 50,
+        "max_chars": 2000
+      }
+    },
+    {
+      "key": "ai.quick_actions",
+      "note": "PH-21",
+      "value": {
+        "simpler": "Объясни проще",
+        "more_detail": "Расскажи подробнее",
+        "check_me": "Проверь меня: задай 3 вопроса по теме"
+      }
+    },
+    {
+      "key": "ai.explain_level",
+      "note": "PH-21",
+      "value": "beginner"
+    },
+    {
+      "key": "support.hours",
+      "note": "PH-22",
+      "value": {
+        "days": "mon-fri",
+        "from": "09:00",
+        "to": "18:00",
+        "tz": "UTC+5",
+        "first_response_business_days": 1
+      }
+    },
+    {
+      "key": "limits",
+      "note": "PH-23",
+      "value": {
+        "title": 150,
+        "description": 1000,
+        "fun_fact": 500,
+        "body_md": 50000,
+        "question": 1000,
+        "option": 300,
+        "explanation": 2000,
+        "min_options": 2
+      }
+    },
+    {
+      "key": "teacher.mastery_map",
+      "note": "PH-24",
+      "value": "stub"
+    },
+    {
+      "key": "topic.versions_restore",
+      "note": "PH-25",
+      "value": false
+    },
+    {
+      "key": "cover.selection",
+      "note": "PH-26",
+      "value": "last_action_wins"
+    },
+    {
+      "key": "topic.unpublish_enabled",
+      "note": "PH-27",
+      "value": true
+    },
+    {
+      "key": "quiz.text_answer_normalize",
+      "note": "PH-28",
+      "value": ["trim", "collapse_spaces", "lowercase"]
+    },
+    {
+      "key": "assignments.manual_review",
+      "note": "PH-29",
+      "value": false
+    },
+    {
+      "key": "analytics",
+      "note": "PH-30",
+      "value": {
+        "red_below": 50,
+        "green_from": 80,
+        "max_rows": 10,
+        "inactive_days": 7
+      }
+    },
+    {
+      "key": "datetime.format",
+      "note": "PH-31",
+      "value": "DD.MM.YYYY HH:mm"
+    },
+    {
+      "key": "notifications.limit",
+      "note": "PH-32",
+      "value": 20
+    },
+    {
+      "key": "student.assignments_page",
+      "note": "PH-33",
+      "value": true
+    },
+    {
+      "key": "student.continue_target",
+      "note": "PH-34",
+      "value": "last_opened_topic"
+    },
+    {
+      "key": "topics.sequential_lock",
+      "note": "PH-35",
+      "value": false
+    },
+    {
+      "key": "overview.accordion_multi",
+      "note": "PH-36",
+      "value": true
+    },
+    {
+      "key": "quiz",
+      "note": "PH-37",
+      "value": {
+        "check_mode": "immediate",
+        "attempts_limit": null,
+        "score": "best",
+        "resume": true
+      }
+    },
+    {
+      "key": "progress",
+      "note": "PH-38",
+      "value": {
+        "mastery_threshold": 80,
+        "school_year": {
+          "from": "09-01",
+          "to": "05-31"
+        },
+        "quarters": []
+      }
+    },
+    {
+      "key": "xp",
+      "note": "PH-39",
+      "value": {
+        "quiz_finished": 10,
+        "high_score_bonus": 10,
+        "high_score_threshold": 80,
+        "first_lesson_open": 5,
+        "per_level": 100,
+        "failed_attempt_below": 50
+      }
+    },
+    {
+      "key": "class.leave_confirm",
+      "note": "PH-40",
+      "value": true
+    },
+    {
+      "key": "load.expected",
+      "note": "PH-41",
+      "value": {
+        "schools": 50,
+        "students": 20000,
+        "concurrent_sessions": 2000
+      }
+    },
+    {
+      "key": "platform.tz",
+      "note": "PH-42",
+      "value": "Asia/Almaty"
+    },
+    {
+      "key": "routes.legal",
+      "note": "PH-43",
+      "value": {
+        "terms": "/terms",
+        "privacy": "/privacy",
+        "cookies": "/cookies"
+      }
+    },
+    {
+      "key": "auth.student_registration_by_class_code",
+      "note": "PH-44",
+      "value": {
+        "enabled": true,
+        "requires_valid_code": true,
+        "email_required": false,
+        "fields": ["displayName", "login", "password", "email?"],
+        "status": "требует уточнения"
+      }
+    }
+  ]
+}
