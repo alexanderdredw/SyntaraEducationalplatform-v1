@@ -33,7 +33,7 @@ import {
   users,
   xpLedger,
 } from '../schema';
-import { DEMO_IDS } from './demo';
+import { anatomyQuizId, anatomyTopicId, DEMO_IDS, generalBiologyTopicId } from './demo';
 import { assertNotProduction, hashPassword, rows } from './helpers';
 import { seedId } from './ids';
 
@@ -71,8 +71,9 @@ export const VISUAL_IDS = {
   subjectMath: seedId('visual:subject:math'),
   subjectEnglish: seedId('visual:subject:english'),
   topicHowHeartWorks: seedId('visual:topic:how-heart-works'),
-  topicRespiratory: seedId('visual:topic:respiratory'),
-  topicDigestive: seedId('visual:topic:digestive'),
+  topicRespiratory: anatomyTopicId('respiratory'),
+  topicDigestive: anatomyTopicId('digestive'),
+  topicGeneralBiology1: generalBiologyTopicId(1),
   topicPhotosynthesis: seedId('visual:topic:photosynthesis'),
   topicPercents: seedId('visual:topic:percents'),
   topicWordOrder: seedId('visual:topic:word-order'),
@@ -112,7 +113,7 @@ export async function seedVisual(db: Database): Promise<void> {
       .insert(classMemberships)
       .values({
         id: seedId('visual:membership:9'),
-        classId: I.class9,
+        classId: I.class7,
         studentId: I.alexandr,
         joinedAt: at('2026-09-01T09:00:00'),
       })
@@ -322,28 +323,6 @@ export async function seedVisual(db: Database): Promise<void> {
         },
       },
       {
-        key: 'respiratory',
-        subjectId: DEMO_IDS.subjectAnatomy,
-        position: 2,
-        status: 'published',
-        tr: {
-          ru: { title: 'Дыхательная система' },
-          kk: { title: 'Тыныс алу жүйесі' },
-          en: { title: 'Respiratory system' },
-        },
-      },
-      {
-        key: 'digestive',
-        subjectId: DEMO_IDS.subjectAnatomy,
-        position: 3,
-        status: 'published',
-        tr: {
-          ru: { title: 'Пищеварительная система' },
-          kk: { title: 'Ас қорыту жүйесі' },
-          en: { title: 'Digestive system' },
-        },
-      },
-      {
         key: 'photosynthesis',
         subjectId: I.subjectBotany,
         position: 1,
@@ -453,13 +432,19 @@ export async function seedVisual(db: Database): Promise<void> {
         .onConflictDoNothing();
     }
 
-    // Выдача предметов классу 9 (видимость тем для T10 и каталога U13).
-    for (const subjectId of [DEMO_IDS.subjectAnatomy, I.subjectBotany, I.subjectMath, I.subjectEnglish]) {
+    // Выдача предметов классу «7» (ученик Alexandr — в классе «7», решение владельца).
+    for (const subjectId of [
+      DEMO_IDS.subjectAnatomy,
+      DEMO_IDS.subjectGeneralBiology,
+      I.subjectBotany,
+      I.subjectMath,
+      I.subjectEnglish,
+    ]) {
       await tx
         .insert(classSubjectAccess)
         .values({
           id: seedId(`visual:csa:9:${subjectId}`),
-          classId: I.class9,
+          classId: I.class7,
           subjectId,
           grantedBy: I.alexandr,
         })
@@ -467,14 +452,14 @@ export async function seedVisual(db: Database): Promise<void> {
     }
 
     // T10: результаты Alexandr — 33 %, 43 %, 43 %, 67 %, 100 %; последняя активность 05.09.2026 (U08).
-    const results: Array<[string, string, string, number]> = [
-      ['cardio', DEMO_IDS.topicCardio, DEMO_IDS.quizCardio, 33.33],
-      ['respiratory', I.topicRespiratory, seedId('visual:quiz:respiratory'), 42.86],
-      ['digestive', I.topicDigestive, seedId('visual:quiz:digestive'), 42.86],
-      ['percents', I.topicPercents, seedId('visual:quiz:percents'), 66.67],
-      ['word-order', I.topicWordOrder, seedId('visual:quiz:word-order'), 100],
+    const results: Array<[string, string, string, string, number]> = [
+      ['cardio', DEMO_IDS.subjectAnatomy, DEMO_IDS.topicCardio, DEMO_IDS.quizCardio, 33.33],
+      ['respiratory', DEMO_IDS.subjectAnatomy, I.topicRespiratory, anatomyQuizId('respiratory'), 42.86],
+      ['digestive', DEMO_IDS.subjectAnatomy, I.topicDigestive, anatomyQuizId('digestive'), 42.86],
+      ['percents', I.subjectMath, I.topicPercents, seedId('visual:quiz:percents'), 66.67],
+      ['word-order', I.subjectEnglish, I.topicWordOrder, seedId('visual:quiz:word-order'), 100],
     ];
-    for (const [day, [key, topicId, quizId, percent]] of results.entries()) {
+    for (const [day, [key, subjectId, topicId, quizId, percent]] of results.entries()) {
       const finishedAt = at(`2026-09-0${day + 1}T18:00:00`);
       const attemptId = seedId(`visual:attempt:${key}`);
       const eventId = seedId(`visual:event:${key}`);
@@ -496,6 +481,7 @@ export async function seedVisual(db: Database): Promise<void> {
           id: eventId,
           studentId: I.alexandr,
           type: 'quiz_finished',
+          subjectId,
           topicId,
           occurredAt: finishedAt,
           idempotencyKey: `quiz_finished:${attemptId}`,
@@ -512,6 +498,20 @@ export async function seedVisual(db: Database): Promise<void> {
         })
         .onConflictDoNothing();
     }
+
+    // U08: «из 41 темы» — у ученика есть событие и в «Общей биологии» (11 + 28 + 1 + 1 опубликованных тем).
+    await tx
+      .insert(learningEvents)
+      .values({
+        id: seedId('visual:event:general-biology-1'),
+        studentId: I.alexandr,
+        type: 'lesson_opened',
+        subjectId: DEMO_IDS.subjectGeneralBiology,
+        topicId: I.topicGeneralBiology1,
+        occurredAt: at('2026-09-04T12:00:00'),
+        idempotencyKey: `lesson:${I.topicGeneralBiology1}:2026-09-04`,
+      })
+      .onConflictDoNothing();
 
     // U01/U10: 20 XP, уровень 1 «Новичок», серия 1; бейджи «Первый шаг» и «Тема освоена».
     const wordOrderEvent = seedId('visual:event:word-order');

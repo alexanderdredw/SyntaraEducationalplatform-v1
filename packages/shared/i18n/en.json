@@ -4,13 +4,19 @@
     "tagline": "Learn at your own pace — in Kazakh and Russian",
     "skipToContent": "Skip to content",
     "sectionInDevelopment": "Section under development",
-    "close": "Close"
+    "close": "Close",
+    "backHome": "← Back to home"
   },
   "locale": {
     "ru": "RU",
     "kk": "KK",
     "en": "EN",
-    "soon": "soon"
+    "soon": "soon",
+    "names": {
+      "ru": "Русский",
+      "kk": "Қазақша",
+      "en": "English"
+    }
   },
   "validation": {
     "email": "Enter an email, for example name@example.com",
@@ -20,5 +26,350 @@
     "min2": "Add at least two options",
     "exactlyOneCorrect": "Mark exactly one correct option",
     "atLeastOneLanguage": "Fill in at least one language (RU, KK or EN)"
+  },
+  "shell": {
+    "logoLabel": "Syntara — home",
+    "navLabel": "Main menu",
+    "nav": {
+      "home": "Home",
+      "subjects": "Subjects",
+      "about": "About",
+      "ai": "Syntara AI",
+      "schools": "For schools",
+      "help": "Help"
+    },
+    "login": "Log in",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "theme": {
+      "toLight": "Switch to light theme",
+      "toDark": "Switch to dark theme"
+    },
+    "dataSaver": {
+      "off": "Data saver is off",
+      "on": "Data saver is on"
+    }
+  },
+  "footer": {
+    "tagline": "Learn at your own pace — in Kazakh and Russian",
+    "languages": "KK · RU · EN",
+    "product": "PRODUCT",
+    "schools": "FOR SCHOOLS",
+    "legal": "LEGAL",
+    "requestSchool": "Submit a request",
+    "joinClass": "Join a class",
+    "cabinet": "Dashboard",
+    "copyright": "© 2026 Syntara Education Platform. An educational product."
+  },
+  "help": {
+    "open": "Help for this page",
+    "assistant": "Open Syntara AI",
+    "title": "Help",
+    "supportLink": "Contact support",
+    "emailLabel": "Support email",
+    "pages": {
+      "home": "Home page: a short overview of the platform, a trial question from a lesson and the list of subjects.",
+      "subjects": "All platform subjects are listed here. Lessons and quizzes open after you log in.",
+      "about": "About the project: our mission, team and how the platform works.",
+      "ai": "Syntara AI answers questions about the platform: where to click, how to study, where to find things.",
+      "schools": "What a school gets when it joins and how to submit a request.",
+      "schoolsRequest": "Fill in the form — we will contact you at the email you provide.",
+      "support": "Describe the problem — the answer will be sent to the email you provide.",
+      "legal": "Legal documents of the platform. The texts take effect once the final version is approved.",
+      "stub": "This section is still under development. Go back to the home page or contact support."
+    }
+  },
+  "cookieBanner": {
+    "label": "Cookie settings",
+    "text": "We use necessary cookies to make the site work: language, theme and your choices. Optional cookies are enabled only with your consent.",
+    "more": "More about cookies",
+    "necessary": "Necessary only",
+    "acceptAll": "Accept all"
+  },
+  "home": {
+    "hero": {
+      "label": "EDUCATIONAL PLATFORM",
+      "line1": "Learn.",
+      "line2": "Teach.",
+      "line3": "In your own language.",
+      "text": "Lessons, quizzes and an AI tutor in Kazakh and Russian. Teachers create their own courses and track progress. Works even on a slow connection.",
+      "cta": "To subjects →",
+      "teacher": "I'm a teacher →"
+    },
+    "short": {
+      "label": "IN SHORT",
+      "title": "WHAT IS SYNTARA",
+      "text": "Syntara is subjects with lessons and quizzes, an AI tutor that explains topics in simple words, and a class where the teacher sees students' progress. The interface and lessons are in Kazakh, Russian and English."
+    },
+    "demo": {
+      "label": "NO SIGN-UP",
+      "title": "ANSWER A QUESTION FROM A REAL LESSON",
+      "text": "This is the same question a student sees in the quiz. Pick an answer and get an explanation right away."
+    },
+    "how": {
+      "label": "HOW IT WORKS",
+      "title": "FROM THE FIRST LESSON TO YOUR OWN CLASS",
+      "text": "Students learn and grow, teachers lead — all in one place.",
+      "learn": {
+        "number": "01",
+        "title": "You learn",
+        "text": "Read a lesson, take a quiz and ask the AI tutor questions."
+      },
+      "grow": {
+        "number": "02",
+        "title": "You grow",
+        "text": "See your progress, study streak and earned badges."
+      },
+      "teach": {
+        "number": "03",
+        "title": "Teachers lead the class",
+        "text": "The teacher assigns subjects and tasks to the class and views analytics."
+      }
+    },
+    "subjects": {
+      "label": "SUBJECTS",
+      "title": "CHOOSE WHAT TO STUDY",
+      "subtitle": "Subjects in Kazakh and Russian — open any of them",
+      "open": "Open →"
+    },
+    "why": {
+      "label": "WHAT'S DIFFERENT",
+      "title": "WHY SYNTARA?",
+      "tag": "THREE LANGUAGES",
+      "text": "Built for Kazakhstan's schools and their real conditions.",
+      "listLabel": "What makes Syntara different",
+      "next": "Next item",
+      "items": {
+        "languages": "Kazakh, Russian, English",
+        "tutor": "AI tutor",
+        "devices": "Works on low-end devices",
+        "access": "Open access",
+        "progress": "Achievements and progress"
+      },
+      "panels": {
+        "languages": "Interface, lessons and quizzes in Kazakh, Russian and English",
+        "tutor": "The AI tutor explains topics in simple words",
+        "devices": "Works on ordinary phones and slow internet",
+        "access": "Lessons and quizzes are available after you log in",
+        "progress": "XP, streaks and badges show your progress"
+      }
+    },
+    "schools": {
+      "label": "FOR SCHOOLS",
+      "title": "NOT JUST FOR STUDENTS — FOR THE WHOLE SCHOOL",
+      "journal": {
+        "title": "Gradebook",
+        "text": "Class grades and attendance in one place."
+      },
+      "diary": {
+        "title": "Student diary",
+        "text": "Students and parents see grades and assignments."
+      },
+      "homework": {
+        "title": "Homework",
+        "text": "Assignments with deadlines that lead straight to the lesson."
+      },
+      "see": "See for schools",
+      "request": "Submit a request"
+    },
+    "progress": {
+      "title": "SAVE YOUR PROGRESS",
+      "text": "Log in to save quiz results and see your progress. Studying in a class? Join with your teacher's code.",
+      "login": "Log in",
+      "join": "Join a class"
+    }
+  },
+  "subjects": {
+    "title": "Subjects",
+    "status": {
+      "open": "Open to explore",
+      "login_required": "Login required",
+      "soon": "Coming soon"
+    },
+    "open": "Open →",
+    "soonGroup": "Coming soon",
+    "empty": "Subjects are coming soon"
+  },
+  "about": {
+    "hero": {
+      "label": "ABOUT THE PROJECT",
+      "title": "Anyone can learn",
+      "text": "Syntara helps students learn in their native language — in cities and villages, on any phone.",
+      "toSubjects": "To subjects →",
+      "start": "Get started"
+    },
+    "metrics": {
+      "languagesValue": "2",
+      "languagesLabel": "fully supported languages",
+      "accessValue": "Trial access",
+      "accessLabel": "on connection terms",
+      "pwaValue": "PWA",
+      "pwaLabel": "installs on your phone"
+    },
+    "card": {
+      "title": "Learning that stays accessible",
+      "student": "Student",
+      "studentText": "Lessons, quizzes and an AI tutor at your own pace.",
+      "teacher": "Teacher",
+      "teacherText": "Your own courses, assignments and class analytics.",
+      "school": "School",
+      "schoolText": "Gradebook, diary and homework in one system."
+    },
+    "mission": {
+      "title": "Our mission",
+      "text": "We want a good explanation of every topic to be available to every student, wherever they live.",
+      "quote": "Where a child was born should not decide what education they get."
+    },
+    "problem": {
+      "title": "The problem we solve",
+      "inequality": "Educational inequality in Kazakhstan: students' opportunities depend heavily on their school and region.",
+      "pisa": "PISA results below the OECD average.",
+      "urbanRural": "A gap between urban and rural schools.",
+      "kazakhContent": "A shortage of quality learning content in Kazakh.",
+      "cost": "The high cost of educational services for families."
+    },
+    "audience": {
+      "title": "Who Syntara is for",
+      "student": "For students",
+      "studentText": "Clear lessons, quizzes with explanations and an AI tutor.",
+      "teacher": "For teachers",
+      "teacherText": "Creating courses, assigning tasks and class analytics.",
+      "school": "For schools",
+      "schoolText": "One system for the gradebook, diary and homework.",
+      "more": "Learn more ↗"
+    },
+    "why": {
+      "title": "Why Syntara",
+      "access": "Access terms",
+      "accessText": "Trial access for schools — on connection terms.",
+      "kazakh": "Real Kazakh",
+      "kazakhText": "Materials written in Kazakh, not machine-translated.",
+      "everywhere": "Works everywhere",
+      "everywhereText": "On an ordinary phone and with slow internet.",
+      "ai": "AI, not videos",
+      "aiText": "The AI tutor answers questions about the lesson topic."
+    },
+    "how": {
+      "title": "How it works",
+      "learn": "You learn",
+      "learnText": "A lesson, a quiz and questions to the AI tutor.",
+      "grow": "You grow",
+      "growText": "Progress, streaks and badges.",
+      "teacher": "The teacher leads",
+      "teacherText": "Assignments and class analytics."
+    },
+    "inside": {
+      "title": "What's inside",
+      "lessons": "Lessons and tests",
+      "lessonsText": "Clearly written topics and quizzes with answer explanations.",
+      "tutor": "AI tutor",
+      "tutorText": "Explains a topic more simply or in more detail on request.",
+      "motivation": "Motivation",
+      "motivationText": "XP, levels, study streaks and badges.",
+      "kazakh": "Kazakh language",
+      "kazakhText": "Interface and materials in Kazakh.",
+      "lowBandwidth": "Works on slow internet",
+      "lowBandwidthText": "Data saver mode turns off heavy elements.",
+      "teachers": "For teachers",
+      "teachersText": "Your own subjects, topics, questions and assignments."
+    },
+    "origins": {
+      "title": "Where it all began",
+      "mendeleevName": "Mendeleev Atlas",
+      "mendeleevText": "A chemistry atlas",
+      "anatomyName": "Anatomy Atlas",
+      "anatomyText": "An anatomy atlas",
+      "open": "Open website ↗",
+      "soon": "The link is coming soon"
+    },
+    "team": {
+      "title": "Team",
+      "alexandrName": "Александр Заболотный",
+      "alexandrRole": "Developer, idea and methodology",
+      "aigerimName": "Керейбаева Айгерим",
+      "aigerimRole": "Biology teacher · academic advisor"
+    },
+    "sdg": {
+      "title": "UN Sustainable Development Goals",
+      "goal4": "Quality education",
+      "goal9": "Industry, innovation and infrastructure",
+      "goal10": "Reduced inequalities"
+    },
+    "join": {
+      "title": "Join us",
+      "text": "Connect your school or write to us — we will explain how to start.",
+      "forSchool": "For schools →"
+    }
+  },
+  "ai": {
+    "label": "PLATFORM ASSISTANT",
+    "title": "Syntara AI",
+    "text": "Ask anything about the platform: where to click, how to study, where to find things. No sign-up needed."
+  },
+  "schools": {
+    "hero": {
+      "title": "A school gradebook that leads to the textbook",
+      "text": "The gradebook, diary and homework are linked to Syntara lessons and quizzes.",
+      "request": "Submit a request",
+      "ask": "Ask a question"
+    },
+    "gets": {
+      "title": "What the school gets",
+      "journal": "Gradebook",
+      "journalText": "Grades and attendance by class and subject.",
+      "diary": "Student diary",
+      "diaryText": "Grades and assignments visible to students and parents.",
+      "schedule": "Timetable",
+      "scheduleText": "Weekly lessons for classes and teachers.",
+      "homework": "Homework",
+      "homeworkText": "Assignments with deadlines that lead straight to the lesson.",
+      "reportCard": "Report card",
+      "reportCardText": "Final grades for the term and the year.",
+      "communication": "Messaging",
+      "communicationText": "Messages between the school, teachers and families."
+    },
+    "diff": {
+      "title": "What makes it different",
+      "lessons": "An assignment leads to a lesson and a quiz, not to an empty cell.",
+      "languages": "Everything in Kazakh and Russian.",
+      "devices": "Works on ordinary phones and slow internet."
+    },
+    "connect": {
+      "title": "How to connect",
+      "step1": "Submit a request",
+      "step2": "We set up your school",
+      "step3": "You add classes and students",
+      "step4": "You start teaching"
+    },
+    "data": {
+      "title": "Children's data",
+      "text": "Student data is processed under the Law of the Republic of Kazakhstan «On personal data and its protection» and stored in Kazakhstan. Details are in the document:",
+      "privacyLink": "Privacy policy"
+    },
+    "trial": {
+      "title": "Trial period",
+      "text": "A school starts for free and decides after working with it for a term, not after a presentation.",
+      "details": "One school term; dates are agreed when connecting",
+      "request": "Submit a request"
+    }
+  },
+  "schoolRequest": {
+    "title": "Connect your school to Syntara LMS"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Describe your question — we will reply to the email you provide"
+  },
+  "legal": {
+    "updated": "Updated: {date}",
+    "draftBanner": "Draft version — not in effect until approved",
+    "section": "Section {n}",
+    "sectionPlaceholder": "The text of this section will be published once the final version is approved.",
+    "myData": "My data",
+    "docsLabel": "Legal documents",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "cookies": "Cookie policy"
   }
 }

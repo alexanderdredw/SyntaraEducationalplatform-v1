@@ -8,7 +8,7 @@ import { cn } from './cn';
 export type ButtonVariant = 'primary-blue' | 'primary-white' | 'secondary' | 'text' | 'publish' | 'ai';
 
 const variants: Record<ButtonVariant, string> = {
-  'primary-blue': 'bg-[var(--accent)] text-white hover:brightness-110',
+  'primary-blue': 'bg-[var(--accent-strong)] text-white hover:brightness-110',
   'primary-white': 'bg-white text-[#070707] hover:bg-white/90',
   secondary: 'border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--field)]',
   text: 'bg-transparent text-[var(--accent)] hover:underline',

@@ -31,6 +31,61 @@
           "system"
         ]
       }
+    },
+    "/api/public/subjects": {
+      "get": {
+        "operationId": "PublicController_subjects",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "ru, kk или en (API-GEN-03)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PublicSubjectDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/config": {
+      "get": {
+        "operationId": "PublicController_config",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicConfigDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
     }
   },
   "info": {
@@ -90,6 +145,133 @@
         "required": [
           "status",
           "checks"
+        ]
+      },
+      "PublicSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "description": "Код раздела каталога (PH-01)"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "description": "Имя иконки Lucide"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "login_required",
+              "soon"
+            ]
+          },
+          "href": {
+            "type": "string",
+            "nullable": true,
+            "description": "Внутренний относительный путь"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "title",
+          "description",
+          "icon",
+          "status",
+          "href",
+          "locale"
+        ]
+      },
+      "AtlasUrlsDto": {
+        "type": "object",
+        "properties": {
+          "mendeleev": {
+            "type": "string",
+            "nullable": true
+          },
+          "anatomy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "mendeleev",
+          "anatomy"
+        ]
+      },
+      "PublicFeaturesDto": {
+        "type": "object",
+        "properties": {
+          "offline": {
+            "type": "boolean",
+            "description": "PH-13 features.offline"
+          },
+          "pricingVisible": {
+            "type": "boolean",
+            "description": "PH-11 pricing.visible"
+          },
+          "enabledLocales": {
+            "type": "array",
+            "description": "PH-04 i18n.enabled_locales",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ru",
+                "kk",
+                "en"
+              ]
+            }
+          }
+        },
+        "required": [
+          "offline",
+          "pricingVisible",
+          "enabledLocales"
+        ]
+      },
+      "PublicConfigDto": {
+        "type": "object",
+        "properties": {
+          "supportEmail": {
+            "type": "string",
+            "description": "PH-09 support.email"
+          },
+          "atlasUrls": {
+            "description": "PH-10 atlas.urls",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasUrlsDto"
+              }
+            ]
+          },
+          "features": {
+            "$ref": "#/components/schemas/PublicFeaturesDto"
+          }
+        },
+        "required": [
+          "supportEmail",
+          "atlasUrls",
+          "features"
         ]
       }
     }

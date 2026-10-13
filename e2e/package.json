@@ -4,7 +4,7 @@
   "private": true,
   "description": "Playwright: сценарии, визуальные эталоны, axe (раздел 2.2 SPEC)",
   "scripts": {
-    "e2e": "turbo run build --filter=@syntara/web && playwright test",
+    "e2e": "turbo run build --filter=@syntara/web --filter=@syntara/api && playwright test",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },

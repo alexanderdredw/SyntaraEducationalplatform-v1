@@ -22,6 +22,13 @@ import {
   userRoles,
   users,
 } from '../schema';
+import {
+  ANATOMY_TOPICS,
+  CARDIO_EXTRA_QUESTIONS,
+  type DemoQuestion,
+  GENERAL_BIOLOGY_TOPICS,
+  type Tri,
+} from './demo-content';
 import { seedId } from './ids';
 import { assertNotProduction, hashPassword, rows, type Tr } from './helpers';
 
@@ -243,7 +250,92 @@ export const DEMO_IDS = {
   student: seedId('user:dev:student'),
   support: seedId('user:dev:support'),
   onboarding: seedId('user:dev:onboarding'),
+  subjectGeneralBiology: seedId('subject:general-biology'),
 };
+
+export const anatomyTopicId = (key: string) => seedId(`topic:anatomy:${key}`);
+export const anatomyQuizId = (key: string) => seedId(`quiz:anatomy:${key}`);
+export const generalBiologyTopicId = (n: number) => seedId(`topic:general-biology:${n}`);
+
+type Tx = Parameters<Parameters<Database['transaction']>[0]>[0];
+const tri = <T extends string>(t: Tri, wrap: (v: string) => Record<T, string>) => ({
+  ru: wrap(t[0]),
+  kk: wrap(t[1]),
+  en: wrap(t[2]),
+});
+
+/** Опубликованная тема с версией 1 и пустым квизом (идемпотентно). */
+async function publishedTopic(
+  tx: Tx,
+  t: { id: string; subjectId: string; position: number; title: Tri; quizId?: string },
+): Promise<void> {
+  const tr = tri(t.title, (title) => ({ title }));
+  const versionId = seedId(`topic-version:${t.id}:1`);
+  await tx
+    .insert(topics)
+    .values({ id: t.id, subjectId: t.subjectId, position: t.position })
+    .onConflictDoNothing({ target: topics.id });
+  await tx
+    .insert(topicTranslations)
+    .values(rows('topicId', t.id, tr))
+    .onConflictDoNothing();
+  await tx
+    .insert(topicVersions)
+    .values({
+      id: versionId,
+      topicId: t.id,
+      versionNo: 1,
+      snapshot: { translations: tr, sections: [] },
+      createdBy: DEMO_IDS.teacher,
+    })
+    .onConflictDoNothing();
+  await tx
+    .update(topics)
+    .set({
+      status: 'published',
+      publishedVersionId: versionId,
+      publishedAt: new Date('2026-09-01T00:00:00Z'),
+    })
+    .where(eq(topics.id, t.id));
+  if (t.quizId) await tx.insert(quizzes).values({ id: t.quizId, topicId: t.id }).onConflictDoNothing();
+}
+
+/** Вопрос «Выбор варианта» с переводами и вариантами (идемпотентно). */
+async function demoQuestion(
+  tx: Tx,
+  quizId: string,
+  key: string,
+  position: number,
+  dq: DemoQuestion,
+): Promise<void> {
+  const questionId = seedId(`question:${key}`);
+  await tx
+    .insert(questions)
+    .values({ id: questionId, quizId, type: 'single_choice', difficulty: dq.difficulty, position })
+    .onConflictDoNothing();
+  await tx
+    .insert(questionTranslations)
+    .values(
+      (['ru', 'kk', 'en'] as const).map((locale, i) => ({
+        questionId,
+        locale,
+        text: dq.text[i]!,
+        explanation: dq.explanation[i]!,
+      })),
+    )
+    .onConflictDoNothing();
+  for (const [o, option] of dq.options.entries()) {
+    const optionId = seedId(`option:${key}:${o}`);
+    await tx
+      .insert(answerOptions)
+      .values({ id: optionId, questionId, position: o + 1, isCorrect: o === dq.correct })
+      .onConflictDoNothing();
+    await tx
+      .insert(answerOptionTranslations)
+      .values((['ru', 'kk', 'en'] as const).map((locale, i) => ({ optionId, locale, text: option[i]! })))
+      .onConflictDoNothing();
+  }
+}
 
 const CARDIO_TOPIC_TR: Tr<{ title: string }> = {
   ru: { title: 'Сердечно-сосудистая система' },
@@ -399,6 +491,52 @@ export async function seedDemo(db: Database): Promise<void> {
           })),
         )
         .onConflictDoNothing();
+    }
+
+    // Демо-контент (решение владельца): ещё 8 вопросов темы «Сердечно-сосудистая система» (всего 9),
+    // остальные 10 систем «Анатомии человека» (по 3 вопроса) и предмет «Общая биология» (28 тем).
+    for (const [i, dq] of CARDIO_EXTRA_QUESTIONS.entries()) {
+      await demoQuestion(tx, DEMO_IDS.quizCardio, `anatomy:cardiovascular:${i + 2}`, i + 2, dq);
+    }
+    for (const [i, topic] of ANATOMY_TOPICS.entries()) {
+      const quizId = anatomyQuizId(topic.key);
+      await publishedTopic(tx, {
+        id: anatomyTopicId(topic.key),
+        subjectId: DEMO_IDS.subjectAnatomy,
+        position: i + 2,
+        title: topic.title,
+        quizId,
+      });
+      for (const [n, dq] of topic.questions.entries()) {
+        await demoQuestion(tx, quizId, `anatomy:${topic.key}:${n + 1}`, n + 1, dq);
+      }
+    }
+    await tx
+      .insert(subjects)
+      .values({
+        id: DEMO_IDS.subjectGeneralBiology,
+        sectionId: DEMO_IDS.sectionBiology,
+        isOfficial: true,
+        inPublicCatalog: true,
+      })
+      .onConflictDoNothing();
+    await tx
+      .insert(subjectTranslations)
+      .values(
+        rows(
+          'subjectId',
+          DEMO_IDS.subjectGeneralBiology,
+          tri(['Общая биология', 'Жалпы биология', 'General biology'], (title) => ({ title })),
+        ),
+      )
+      .onConflictDoNothing();
+    for (const [i, title] of GENERAL_BIOLOGY_TOPICS.entries()) {
+      await publishedTopic(tx, {
+        id: generalBiologyTopicId(i + 1),
+        subjectId: DEMO_IDS.subjectGeneralBiology,
+        position: i + 1,
+        title,
+      });
     }
 
     // Учётные записи для разработки (пароль — SEED_DEV_PASSWORD; вход появится в итерациях 4 и 6).

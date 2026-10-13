@@ -538,7 +538,8 @@ REVOKE UPDATE, DELETE ON audit_log FROM app_user;
 
 CREATE TABLE feature_flags (key text PRIMARY KEY, enabled boolean NOT NULL, note text);
 CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confirmation boolean NOT NULL DEFAULT true,
-  confirmed_at timestamptz, confirmed_by text);
+  confirmed_at timestamptz, confirmed_by text,
+  note text);                           -- PH-ID заглушки раздела 11 (решение владельца, ред. 2026-10-13)
 ```
 
 Таблицы `feature_flags` и `app_config` хранят флаги функций и значения заглушек раздела 11.
@@ -547,7 +548,8 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 
 | **Роль** | **Права** |
 |------|-----------------------------|
-| app_user | SELECT/INSERT/UPDATE на рабочие таблицы; только INSERT в audit_log; без DDL |
+| app_user | SELECT/INSERT/UPDATE на рабочие таблицы; только INSERT в audit_log; без DDL; без DELETE |
+| app_maintenance | Только для фоновых задач worker: SELECT и DELETE на таблицы с ограниченным сроком хранения и технические таблицы — support_tickets, ticket_messages, ticket_status_history, ticket_reply_tokens, school_requests, ai_conversations, ai_messages (очистка по срокам PH-18), media_files, topic_materials (удаление отклонённых и откреплённых файлов, BR-FILE-03), idempotency_keys, outbox_events, email_queue, auth_sessions (истёкшие записи); без INSERT/UPDATE, без DDL; к audit_log доступа нет (решение владельца, ред. 2026-10-13) |
 | migrator | DDL; используется только CI при миграции |
 | analytics_ro | SELECT на реплике |
 
@@ -1408,3 +1410,6 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-13 | 5.3: `users.login citext UNIQUE`; 7.7 BR-CLS-04, 8.2 REQ-GEN-AUTH-03, 11: заглушка PH-44 — регистрация ученика только по действующему коду класса (требует уточнения) | Решение владельца по Q-16 |
 | 2026-10-13 | 3.4 REQ-GEN-PREF-02, 11 PH-04: включены все три языка (ru, kk, en); заранее подготовленные переводы kk/en допустимы, KK — `needs_review` | Решение владельца по Q-07 |
 | 2026-10-13 | 11: недостающие тексты — заглушки с пометкой `needs_confirmation` | Решение владельца по Q-05, Q-06, Q-09 |
+| 2026-10-13 | 5.7: столбец `app_config.note` (PH-ID) | Решение владельца по итогам итерации 2 |
+| 2026-10-13 | 5.8: роль `app_maintenance` для фоновых задач worker (DELETE по срокам хранения и для файлов); у `app_user` DELETE нет | Решение владельца по итогам итерации 2 |
+| 2026-10-13 | 15: в seed ученик «Alexandr» — в классе «7»; визуальные тесты сравнивают внешний вид и расположение, динамические значения (числа, даты, XP, серии) маскируются | Решение владельца по итогам итерации 2 |

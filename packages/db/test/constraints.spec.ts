@@ -45,7 +45,7 @@ describe('constraints, triggers, roles, RLS (integration)', () => {
 
   it('BR-CLS-02 ux_membership_active: no second active membership; a left one allows re-join', async () => {
     const dup = await pgErrorCode(
-      db.insert(classMemberships).values({ classId: VISUAL_IDS.class9, studentId: VISUAL_IDS.alexandr }),
+      db.insert(classMemberships).values({ classId: VISUAL_IDS.class7, studentId: VISUAL_IDS.alexandr }),
     );
     expect(dup).toBe('23505');
     await db.insert(classMemberships).values({
@@ -171,6 +171,44 @@ describe('constraints, triggers, roles, RLS (integration)', () => {
       const code = await pgErrorCode(
         db.transaction(async (tx) => {
           await tx.execute(sql`set local role app_user`);
+          await tx.execute(statement);
+        }),
+      );
+      expect(code).toBe('42501');
+    }
+  });
+
+  it('5.8 app_user cannot DELETE even from retention tables', async () => {
+    for (const statement of [sql`delete from ai_messages`, sql`delete from media_files`]) {
+      const code = await pgErrorCode(
+        db.transaction(async (tx) => {
+          await tx.execute(sql`set local role app_user`);
+          await tx.execute(statement);
+        }),
+      );
+      expect(code).toBe('42501');
+    }
+  });
+
+  it('5.8 app_maintenance deletes only retention/technical rows (PH-18, BR-FILE-03)', async () => {
+    await db.transaction(async (tx) => {
+      await tx.execute(sql`set local role app_maintenance`);
+      await tx.execute(sql`delete from ai_messages where created_at < now() - interval '365 days'`);
+      await tx.execute(sql`delete from media_files where scan_status = 'rejected'`);
+      await tx.execute(sql`delete from idempotency_keys where expires_at < now()`);
+    });
+    for (const statement of [
+      sql`delete from users`,
+      sql`delete from classes`,
+      sql`delete from audit_log`,
+      sql`select * from audit_log`,
+      sql`insert into outbox_events (id, type, payload) values (gen_random_uuid(), 'x', '{}')`,
+      sql`update support_tickets set status = 'closed'`,
+      sql`create table hack (id int)`,
+    ]) {
+      const code = await pgErrorCode(
+        db.transaction(async (tx) => {
+          await tx.execute(sql`set local role app_maintenance`);
           await tx.execute(statement);
         }),
       );

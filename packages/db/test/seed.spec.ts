@@ -3,8 +3,17 @@ import { eq, sql } from 'drizzle-orm';
 import { CONFIG_KEYS } from '@syntara/shared';
 import { type Database } from '../src';
 import { migrateUp } from '../src/migrator';
-import { answerOptions, appConfig, badgeTranslations, badges, levelTranslations, users } from '../src/schema';
-import { loadConfigSeed, runSeed } from '../src/seed';
+import {
+  answerOptions,
+  appConfig,
+  badgeTranslations,
+  badges,
+  levelTranslations,
+  questions,
+  topics,
+  users,
+} from '../src/schema';
+import { DEMO_IDS, loadConfigSeed, runSeed } from '../src/seed';
 import { startPostgres } from './pg';
 
 const ALL_TABLES = sql`select table_name as t from information_schema.tables where table_schema = 'public'`;
@@ -74,9 +83,27 @@ describe('seed (integration)', () => {
     expect(level1?.title).toBe('Новичок');
   });
 
-  it('BR-QZ-09, PH-02 seed demo: one demo question with exactly one correct option', async () => {
+  it('BR-QZ-09, PH-02 seed demo: one demo question; every question has exactly one correct option', async () => {
+    const demo = await db.select().from(questions).where(eq(questions.isDemo, true));
+    expect(demo).toHaveLength(1);
+    const all = await db.select({ id: questions.id }).from(questions);
     const options = await db.select().from(answerOptions);
-    expect(options.filter((o) => o.isCorrect)).toHaveLength(1);
+    for (const { id } of all) {
+      expect(options.filter((o) => o.questionId === id && o.isCorrect)).toHaveLength(1);
+    }
+  });
+
+  it('demo content: «Анатомия человека» has 11 topics, the cardiovascular quiz has 9 questions', async () => {
+    const anatomy = await db.select().from(topics).where(eq(topics.subjectId, DEMO_IDS.subjectAnatomy));
+    expect(anatomy).toHaveLength(11);
+    expect(anatomy.every((t) => t.status === 'published' && t.publishedVersionId)).toBe(true);
+    const cardio = await db.select().from(questions).where(eq(questions.quizId, DEMO_IDS.quizCardio));
+    expect(cardio).toHaveLength(9);
+    const general = await db
+      .select()
+      .from(topics)
+      .where(eq(topics.subjectId, DEMO_IDS.subjectGeneralBiology));
+    expect(general).toHaveLength(28);
   });
 
   it('REQ-NFR-SEC-02 dev accounts store Argon2id hashes, not passwords', async () => {

@@ -32,3 +32,21 @@ body {
   min-height: 100dvh;
   background: var(--bg);
 }
+
+/* REQ-GEN-SHELL-01: якоря не прячутся под закреплённым хедером. */
+[id] {
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+/* REQ-GEN-PREF-04: в режиме экономии трафика декоративная графика не загружается и не отображается. */
+[data-data-saver='true'] [data-decorative] {
+  display: none;
+}
+
+/* REQ-GEN-SHELL-07: длинные слова в заголовках (например, «конфиденциальности») переносятся на 320 px. */
+h1,
+h2,
+h3 {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}

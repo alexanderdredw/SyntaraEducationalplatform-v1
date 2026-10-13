@@ -79,7 +79,17 @@ export function Sidebar({
   );
 }
 
-/** FloatingHelp: плавающие кнопки справа внизу (REQ-GEN-SHELL-04); не перекрывают поля и баннеры. */
+/**
+ * FloatingHelp: плавающие кнопки справа внизу (REQ-GEN-SHELL-04). Поднимаются над cookie-баннером:
+ * баннер публикует свою высоту в CSS-переменной --cookie-banner-h.
+ */
 export function FloatingHelp({ children }: { children: ReactNode }) {
-  return <div className="fixed bottom-4 right-4 z-30 flex flex-col items-center gap-3">{children}</div>;
+  return (
+    <div
+      className="fixed right-4 z-30 flex flex-col items-center gap-3"
+      style={{ bottom: 'calc(var(--cookie-banner-h, 0px) + 16px)' }}
+    >
+      {children}
+    </div>
+  );
 }

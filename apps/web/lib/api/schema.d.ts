@@ -20,6 +20,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/subjects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicController_subjects"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicController_config"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -34,6 +66,41 @@ export interface components {
             /** @enum {string} */
             status: "ok" | "degraded";
             checks: components["schemas"]["HealthChecksDto"];
+        };
+        PublicSubjectDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description Код раздела каталога (PH-01) */
+            code: string;
+            title: string;
+            description: string | null;
+            /** @description Имя иконки Lucide */
+            icon: string;
+            /** @enum {string} */
+            status: "open" | "login_required" | "soon";
+            /** @description Внутренний относительный путь */
+            href: string | null;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+        };
+        AtlasUrlsDto: {
+            mendeleev: string | null;
+            anatomy: string | null;
+        };
+        PublicFeaturesDto: {
+            /** @description PH-13 features.offline */
+            offline: boolean;
+            /** @description PH-11 pricing.visible */
+            pricingVisible: boolean;
+            /** @description PH-04 i18n.enabled_locales */
+            enabledLocales: ("ru" | "kk" | "en")[];
+        };
+        PublicConfigDto: {
+            /** @description PH-09 support.email */
+            supportEmail: string;
+            /** @description PH-10 atlas.urls */
+            atlasUrls: components["schemas"]["AtlasUrlsDto"];
+            features: components["schemas"]["PublicFeaturesDto"];
         };
     };
     responses: never;
@@ -67,6 +134,47 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthDto"];
+                };
+            };
+        };
+    };
+    PublicController_subjects: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ru, kk или en (API-GEN-03) */
+                "Accept-Language"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicSubjectDto"][];
+                };
+            };
+        };
+    };
+    PublicController_config: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicConfigDto"];
                 };
             };
         };

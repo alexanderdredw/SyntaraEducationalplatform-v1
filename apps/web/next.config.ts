@@ -3,22 +3,32 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
+const API_INTERNAL_URL = process.env.API_INTERNAL_URL ?? 'http://localhost:3001';
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   transpilePackages: ['@syntara/ui'],
-  // Полный набор заголовков безопасности (CSP, HSTS, Referrer-Policy) — итерация 3 (REQ-NFR-SEC-01).
+  // REQ-NFR-PERF-01: импорт только используемых компонентов из «бочковых» модулей.
+  experimental: { optimizePackageImports: ['@syntara/ui', 'radix-ui', 'lucide-react'] },
+  // REQ-NFR-SEC-01: заголовки безопасности; CSP с nonce выставляет middleware.
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
     ];
+  },
+  // В продуктиве /api обслуживает nginx; при локальном запуске web проксирует на api (тот же origin).
+  async rewrites() {
+    return [{ source: '/api/:path*', destination: `${API_INTERNAL_URL}/api/:path*` }];
   },
 };
 

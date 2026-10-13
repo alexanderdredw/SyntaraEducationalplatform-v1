@@ -14,9 +14,34 @@ jobs:
     name: lint · typecheck · test · build · e2e
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Postgres и Redis для e2e (api + web). Unit/integration-тесты поднимают свои контейнеры (Testcontainers).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: syntara
+          POSTGRES_PASSWORD: syntara
+          POSTGRES_DB: syntara
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U syntara" --health-interval 5s --health-timeout 5s --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 20
     env:
       TURBO_TELEMETRY_DISABLED: '1'
       NEXT_TELEMETRY_DISABLED: '1'
+      DATABASE_URL: postgres://syntara:syntara@localhost:5432/syntara
+      REDIS_URL: redis://localhost:6379
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: syntara-files
+      S3_ACCESS_KEY: ci
+      S3_SECRET_KEY: ci-secret
+      SESSION_SECRET: ci-only-session-secret-ci-only-session-secret-ci-only-session-secret-0001
+      APP_BASE_URL: http://localhost:3000
+      API_INTERNAL_URL: http://localhost:3001
     steps:
       - uses: actions/checkout@v4
 
@@ -56,6 +81,11 @@ jobs:
 
       - name: Install Playwright browsers
         run: pnpm --filter @syntara/e2e exec playwright install --with-deps chromium
+
+      - name: Database for e2e (migrations + seed demo)
+        run: |
+          pnpm db:migrate
+          pnpm db:seed --set=demo
 
       - name: E2E
         run: pnpm e2e
