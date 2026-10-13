@@ -166,16 +166,16 @@ test.describe('Оболочка и навигация', () => {
     }
   });
 
-  test('REQ-NFR-A11Y-01 axe: all public pages, dark and light themes', async ({ page, baseURL }) => {
-    for (const theme of ['dark', 'light'] as const) {
-      await page.context().addCookies([{ name: 'theme', value: theme, url: baseURL! }]);
-      for (const p of PUBLIC_PAGES) {
+  for (const theme of ['dark', 'light'] as const) {
+    for (const p of PUBLIC_PAGES) {
+      test(`REQ-NFR-A11Y-01 axe: ${p.path} in ${theme} theme`, async ({ page, baseURL }) => {
+        await page.context().addCookies([{ name: 'theme', value: theme, url: baseURL! }]);
         await page.goto(`/ru${p.path}`);
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
         await expectNoSeriousA11yViolations(page);
-      }
+      });
     }
-  });
+  }
 
   test('REQ-NFR-SEC-01 security headers on web pages', async ({ request }) => {
     const headers = (await request.get('/ru')).headers();
