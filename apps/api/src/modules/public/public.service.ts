@@ -8,7 +8,7 @@ import { DB } from '../../infra/tokens';
 import { type PublicConfigDto, type PublicSubjectDto } from './public.dto';
 
 /**
- * Иконки карточек публичных предметов (Lucide). В SPEC не заданы — TODO(OWNER): подтвердить по эталону S08.
+ * Иконки карточек публичных предметов (Lucide). В SPEC не заданы; набор подтверждён владельцем (2026-10-14).
  */
 const SUBJECT_ICONS: Record<string, string> = {
   biology: 'dna',

@@ -12,7 +12,7 @@ concurrency:
 jobs:
   checks:
     name: lint · typecheck · test · build · e2e
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     # Postgres и Redis для e2e (api + web). Unit/integration-тесты поднимают свои контейнеры (Testcontainers).
     services:
@@ -43,11 +43,11 @@ jobs:
       APP_BASE_URL: http://localhost:3000
       API_INTERNAL_URL: http://localhost:3001
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -90,7 +90,7 @@ jobs:
       - name: E2E
         run: pnpm e2e
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
