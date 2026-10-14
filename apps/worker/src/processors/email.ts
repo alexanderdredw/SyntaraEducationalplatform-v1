@@ -4,6 +4,7 @@ import { eq, sql } from 'drizzle-orm';
 import { type Logger } from 'pino';
 import {
   EMAIL_TEMPLATES,
+  emailVerifyKey,
   passwordResetKey,
   type PasswordResetPayload,
   type TicketReplyEmailPayload,
@@ -50,6 +51,20 @@ async function resetLinkFor(deps: EmailDeps, payload: PasswordResetPayload): Pro
   await deps.tokens.set(passwordResetKey(hash), payload.userId, 'EX', hours * 60 * 60);
   const base = deps.appBaseUrl.replace(/\/$/, '');
   return `${base}/${payload.locale}/auth/login?resetToken=${encodeURIComponent(token)}`;
+}
+
+/**
+ * API-AUTH-06: одноразовая ссылка подтверждения email. Токен создаётся при отправке, в Redis — только хеш;
+ * срок — как у ссылок восстановления (PH-06 `auth.reset_link_ttl_hours`).
+ * TODO(OWNER): отдельный срок для ссылки подтверждения email.
+ */
+async function verifyLinkFor(deps: EmailDeps, payload: { locale: string; userId: string }): Promise<string> {
+  const token = randomBytes(32).toString('base64url');
+  const hours = await config<number>(deps.db, 'auth.reset_link_ttl_hours');
+  const hash = createHash('sha256').update(token).digest('hex');
+  await deps.tokens.set(emailVerifyKey(hash), payload.userId, 'EX', hours * 60 * 60);
+  const base = deps.appBaseUrl.replace(/\/$/, '');
+  return `${base}/${payload.locale}/auth/login?verifyToken=${encodeURIComponent(token)}`;
 }
 
 export interface EmailJobData {
@@ -106,7 +121,11 @@ export async function sendEmail(job: Job<EmailJobData>, deps: EmailDeps): Promis
       email.template === EMAIL_TEMPLATES.passwordReset
         ? await resetLinkFor(deps, email.payload as PasswordResetPayload)
         : undefined;
-    const rendered = renderEmail(email.template, email.payload, { resetUrl });
+    const verifyUrl =
+      email.template === EMAIL_TEMPLATES.accountRegistered || email.template === EMAIL_TEMPLATES.emailVerify
+        ? await verifyLinkFor(deps, email.payload as { locale: string; userId: string })
+        : undefined;
+    const rendered = renderEmail(email.template, email.payload, { resetUrl, verifyUrl });
     const replyTo =
       email.template === EMAIL_TEMPLATES.ticketReply
         ? await replyToFor(db, email.payload as TicketReplyEmailPayload)

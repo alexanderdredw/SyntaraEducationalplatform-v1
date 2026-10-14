@@ -8,6 +8,7 @@ import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { useErrorText } from '../forms/form-parts';
+import { ClassRoster } from './class-roster';
 
 type TeacherClass = components['schemas']['TeacherClassDto'];
 type IssuedCode = components['schemas']['IssuedCodeDto'];
@@ -31,6 +32,7 @@ export function TeacherClasses({ timeZone }: { timeZone: string }) {
   const [failed, setFailed] = useState(false);
   const [issued, setIssued] = useState<{ cls: TeacherClass; code: IssuedCode } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [openRoster, setOpenRoster] = useState<string | null>(null);
 
   const classes = useQuery({
     queryKey: KEY,
@@ -115,9 +117,23 @@ export function TeacherClasses({ timeZone }: { timeZone: string }) {
                   {t('students', { count: cls.studentsCount })}
                 </p>
               </div>
-              <Button variant="secondary" onClick={() => void issue(cls)}>
-                {t('issueCode')}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="text"
+                  aria-expanded={openRoster === cls.id}
+                  onClick={() => setOpenRoster(openRoster === cls.id ? null : cls.id)}
+                >
+                  {t('showStudents')}
+                </Button>
+                <Button variant="secondary" onClick={() => void issue(cls)}>
+                  {t('issueCode')}
+                </Button>
+              </div>
+              {openRoster === cls.id ? (
+                <div className="w-full">
+                  <ClassRoster classId={cls.id} />
+                </div>
+              ) : null}
             </Card>
           </li>
         ))}

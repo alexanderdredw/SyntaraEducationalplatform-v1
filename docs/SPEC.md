@@ -320,12 +320,14 @@ CREATE TYPE ai_msg_status     AS ENUM ('complete','partial','failed');
 
 ```sql
 CREATE TABLE schools (id uuid PRIMARY KEY, name text NOT NULL CHECK (length(name) <= 200),
-  region text, city text, status text NOT NULL DEFAULT 'active');
+  region text, city text, status text NOT NULL DEFAULT 'active');   -- 'unverified' — школа, введённая учеником вручную
 
 CREATE TABLE users (id uuid PRIMARY KEY, email citext UNIQUE, display_name text NOT NULL,
-  login citext UNIQUE,                  -- PH-44: логин ученика, зарегистрированного по коду класса (требует уточнения)
+  login citext UNIQUE,                  -- логин ученика (PH-44: 3–32 символа a-z 0-9 . _ -)
   password_hash text, is_child_safe boolean NOT NULL DEFAULT false, status text NOT NULL DEFAULT 'active',
   last_login_at timestamptz,
+  email_verified_at timestamptz,        -- подтверждение email (API-AUTH-06; вход до подтверждения разрешён)
+  must_change_password boolean NOT NULL DEFAULT false,  -- временный пароль от учителя (API-T-27)
   CHECK (email IS NOT NULL OR is_child_safe));
 
 -- Решение владельца (ред. 2026-10-13): столбцы PK в PostgreSQL не могут быть NULL, поэтому вместо
@@ -581,6 +583,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-PUB-06 | POST /api/public/assistant | `{ message (≤2000), history: [{role, content}] (≤20) }` | SSE: `event: delta {text}` … `event: done {}` / `event: error {code}` |
 | API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
 | API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса |
+| API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
 
 ## 6.3 Аутентификация и профиль
 
@@ -588,9 +591,12 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 |---|------------|------------|------------|
 | API-AUTH-01 | POST /api/auth/login | `{ email, password }` | 200 `{ user: MeDto }` + cookie `sid` |
 | API-AUTH-02 | POST /api/auth/logout | — | 204 |
-| API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06, PH-17) | 201 `{ user }`; письмо подтверждения |
+| API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06) | 201 `{ user }` и вход; письмо со ссылкой подтверждения email (API-AUTH-06) |
+| API-AUTH-03S | POST /api/auth/register-student | `{ displayName, login, password, email?, schoolId?, schoolName?, code? }` (PH-06, PH-17, PH-44) | 201 `{ user }` и вход; верный код — сразу членство в классе и школа класса; неверный код — 400 без создания аккаунта |
 | API-AUTH-04 | POST /api/auth/password/forgot, /reset | `{ email }`, `{ token, password }` | 204 |
-| API-ME-01 | GET /api/me | — | `MeDto { id, displayName, initials, roles[], activeRole, preferences }` |
+| API-AUTH-05 | POST /api/auth/password/change | `{ currentPassword?, password }` | 204; при `mustChangePassword` (временный пароль) текущий пароль не нужен |
+| API-AUTH-06 | POST /api/auth/email/verify, /email/resend | `{ token }`, — | 204; повторная отправка — только вошедшему с неподтверждённым email |
+| API-ME-01 | GET /api/me | — | `MeDto { id, displayName, initials, roles[], activeRole, preferences, emailVerified, mustChangePassword }`; `emailVerified` = null без email |
 | API-ME-02 | PATCH /api/me/preferences | `{ locale?, theme?, dataSaver? }` | 200 |
 | API-ME-03 | POST /api/me/active-role | `{ role }` | 200 |
 | API-ME-04 | GET /api/me/notifications | — | список (PH-32) |
@@ -625,7 +631,8 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-T-23 | GET /api/teacher/assignments | `[{ id, topicTitle, className, dueAt, counts: { submitted, inReview, graded } }]` |
 | API-T-24 | GET /api/teacher/review-queue | Работы на проверку (PH-29 — пустой список) |
 | API-T-25 | GET /api/teacher/classes/:id/analytics | `{ avgPercent, engagement: { active, total, windowDays: 7 }, weakTopics: [{ topicId, title, students, percent, color }], attention: [{ studentId, name, lastActivityAt, reason: 'inactive' }] }` |
-| API-T-26 | GET /api/teacher/classes/:id/roster | Ростер (PH-24) |
+| API-T-26 | GET /api/teacher/classes/:id/roster | Ростер: минимальная версия — `[{ id, displayName, login, hasEmail }]` активных учеников (страница «Ростер» — PH-24) |
+| API-T-27 | POST /api/teacher/classes/:id/students/:studentId/temporary-password | Временный пароль ученику своего класса без email → `{ temporaryPassword }` (показывается один раз); ученик меняет его при входе (API-AUTH-05) |
 
 ## 6.5 Ученик
 
@@ -826,8 +833,11 @@ BR-CLS-02 До входа — только проверка годности к�
           и подтверждения; повторное вступление в тот же класс не создаёт второй записи (ux_membership_active).
 BR-CLS-03 Leave: membership.status = 'left', left_at = now(); доступ к предметам класса закрывается (BR-VIS-01);
           личные результаты сохраняются.
-BR-CLS-04 Самостоятельная регистрация ученика выключена (PH-17): ученики создаются через класс учителя или школой.
-          Регистрация ученика возможна только по действующему коду класса — PH-44 (требует уточнения).
+BR-CLS-04 Ученик регистрируется сам (PH-17 = true): имя, логин, пароль, email и школа — необязательные; код класса
+          необязателен. Верный код — ученик сразу становится членом класса, школа берётся из класса; неверный код —
+          ошибка без создания аккаунта. Без класса ученик может подключиться позже (/join, API-S-01).
+BR-CLS-05 Восстановление пароля: с email — по письму (API-AUTH-04); без email — учитель класса задаёт временный пароль
+          (API-T-27), ученик обязан сменить его при входе (API-AUTH-05). Роль «завуч» — TODO(OWNER).
 ```
 
 ## 7.8 Файлы
@@ -974,9 +984,9 @@ answered: ссылка «Перейти к предмету». Баллы не �
 
 | **ID** | **Требование** |
 |---|-----------------------------|
-| REQ-GEN-AUTH-01 | /auth/login: поля Email, Пароль; кнопка «Войти»; ссылка «Забыли пароль?». После входа — переход на returnTo или по роли (/teacher/courses, /learn/subjects). |
-| REQ-GEN-AUTH-02 | /auth/start: выбор «Ученик» или «Учитель» с объяснением. «Учитель» → регистрация (email, имя, пароль ≥ 8 символов, подтверждение email). «Ученик» → текст «Ученики подключаются через класс учителя или школу» и ссылка /join (BR-CLS-04). |
-| REQ-GEN-AUTH-03 | /join: поле кода (вставка, trim, сохранение символов по BR-CLS-01); до входа — API-PUB-08 и сообщение «Код подходит. Войдите, чтобы присоединиться»; неверный/истёкший код — «Код не найден или истёк. Проверьте код у учителя» + ссылка на поддержку. После входа — экран подтверждения «Присоединиться к классу?» и API-S-01. Гость без аккаунта после проверки кода может зарегистрироваться как ученик — PH-44. |
+| REQ-GEN-AUTH-01 | /auth/login: поля «Email или логин», «Пароль»; кнопка «Войти»; ссылка «Забыли пароль?». После входа — переход на returnTo или по роли (/teacher/courses, /learn/subjects); с временным паролем — сначала смена пароля (API-AUTH-05). |
+| REQ-GEN-AUTH-02 | /auth/start: выбор «Ученик» или «Учитель». «Учитель» → регистрация (email, имя, пароль ≥ 8 символов); вход сразу, подтверждение email — по ссылке из письма, до подтверждения в кабинете напоминание «Подтвердите email» с повторной отправкой. «Ученик» (`/auth/start?role=student`, эталон `media/student-auth.png`) → «Syntara», «УЧЕНИК», заголовок «Вход или регистрация», вкладки «Регистрация» / «Вход». Регистрация: «Имя»*, «Логин»* (если введён email — подсказка), «Пароль»* с показом и подсказкой «Минимум 8 символов», «Email» (необязательно), «Школа» (поиск API-PUB-09, «Нет в списке? Ввести вручную» — школа сохраняется со статусом «не проверена»), «Код класса (необязательно)» (ABC123); «Создать аккаунт» → API-AUTH-03S и сразу кабинет ученика. Под кнопкой — согласие со ссылками «Пользовательское соглашение» и «Политика конфиденциальности», «Аккаунт нужен только для сохранения прогресса — изучать можно без него», блок «Забыл пароль?» и «Продолжить без входа →» (гостевой режим). Вход: «Email или логин», «Пароль», «Забыли пароль?». Обращение к ученику — на «ты». |
+| REQ-GEN-AUTH-03 | /join: поле кода (вставка, trim, сохранение символов по BR-CLS-01); до входа — API-PUB-08 и сообщение «Код подходит. Войдите, чтобы присоединиться»; неверный/истёкший код — «Код не найден или истёк. Проверьте код у учителя» + ссылка на поддержку. После входа — экран подтверждения «Присоединиться к классу?» и API-S-01. Гость с годным кодом переходит на форму ученика (REQ-GEN-AUTH-02) с заполненным кодом. Ученик без класса в кабинете видит блок «Подключиться к классу». |
 | REQ-GEN-AUTH-04 | /account/privacy: список хранимых данных; кнопки «Запросить копию» и «Запросить удаление» (API-ME-05). |
 
 ## 8.3 Кабинет учителя
@@ -1197,7 +1207,7 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | REQ-NFR-SEC-06 | Санитизация Markdown, ответов ИИ и пользовательского текста; без исполнения скриптов. | Тест XSS-полезных нагрузок |
 | REQ-NFR-SEC-07 | В журналах нет содержимого форм, чата, паролей, токенов; есть requestId. | Проверка логов в тесте |
 | REQ-NFR-DATA-01 | Все серверы, БД, файлы, журналы, резервные копии — в Республике Казахстан (PH-16). | Инфраструктурный чек-лист |
-| REQ-NFR-DATA-03 | Обработка ПД по Закону РК «О персональных данных и их защите»; ученики — только через класс учителя или child-safe аккаунты школы без email (PH-17); согласия фиксируются в consents. | Юридическая проверка (ручн.) |
+| REQ-NFR-DATA-03 | Обработка ПД по Закону РК «О персональных данных и их защите»; ученики регистрируются сами (PH-17), аккаунт без email — child-safe; согласия фиксируются в consents (согласие родителя — TODO(OWNER)). | Юридическая проверка (ручн.) |
 | REQ-NFR-DATA-02 | Сроки хранения — PH-18; очистка выполняется задачами worker. | Integration-тест задач очистки |
 | REQ-NFR-PERF-01 | Главная: ≤ 500 КБ сжатых ресурсов при первой загрузке; ИИ-модуль — динамический импорт. | Lighthouse CI, бюджет в next.config |
 | REQ-NFR-PERF-02 | p75 мобильный профиль: LCP ≤ 2,5 с; INP ≤ 200 мс; CLS ≤ 0,1. | Lighthouse CI |
@@ -1247,7 +1257,7 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
   "PH-14 legal.draft_banner": { "value": "Черновик редакции — не действует до утверждения", "prodBlocked": true },
   "PH-15 forms.consent_text": "Отправляя форму, вы соглашаетесь с обработкой данных по Политике конфиденциальности.",
   "PH-16 infra.data_residency": "KZ",
-  "PH-17 auth.student_self_registration": false,
+  "PH-17 auth.student_self_registration": true,
   "PH-18 retention_days": { "tickets": 1095, "requests": 1095, "logs": 365, "backups": 30, "ai_messages": 365 },
   "PH-19 ai.mode": "mock",
   "PH-19 ai.public_quick_answers": {
@@ -1292,7 +1302,8 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 
 В JSON префикс «PH-NN » в ключе показан для связи с таблицей; в реальном seed ключ — только часть после пробела, а PH-ID хранится в поле `note`.
 
-**PH-44 — регистрация ученика по коду класса (заглушка, требует уточнения; решение владельца, ред. 2026-10-13).**
+**PH-44 — регистрация ученика.** Q-16 решён владельцем 2026-10-14: ограничение «только по коду класса» отменено — ученик регистрируется сам (PH-17 = true, BR-CLS-04, REQ-GEN-AUTH-02), код класса необязателен. Ниже — исходная редакция от 2026-10-13 (для истории).
+**Исходная редакция (отменена):**
 Ученик регистрируется только по действующему коду класса (BR-CLS-01). На `/join` после успешной проверки кода (API-PUB-08) гость без аккаунта вводит имя, логин и пароль (email необязателен; пароль — не короче PH-06). Сервер повторно проверяет код, создаёт пользователя с ролью `student` (без email — `is_child_safe = true`, вход по логину), фиксирует согласие в `consents` и создаёт активное членство в классе в одной транзакции. Без действующего кода регистрация ученика невозможна; ответ сервера не раскрывает данных класса до входа. Эндпоинт — `POST /api/auth/register-student { code, displayName, login, password, email? }` (лимиты как у проверки кода, API-GEN-06). Открытые вопросы: правила формата логина, согласие родителя для детей, вход по логину на /auth/login (поле «Email или логин»), восстановление пароля без email. Тексты экрана — `needs_confirmation`.
 
 **Недостающие тексты.** Видимые тексты, которых нет в документе, задаются заглушками в i18n-файлах и перечисляются в `packages/shared/i18n/needs_confirmation.json` (решение владельца, ред. 2026-10-13).
@@ -1340,6 +1351,10 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | AC-AUTH-01 | Гость на /join с годным кодом | Вводит код | «Код подходит. Войдите, чтобы присоединиться»; данных класса в ответе нет |
 | AC-AUTH-02 | Ученик вошёл с кодом | Подтверждает вступление дважды | Одна активная запись membership |
 | AC-AUTH-03 | 11 попыток проверки кода за 15 минут | Ещё попытка | 429 с retryAfterSeconds |
+| AC-AUTH-05 | Гость на /auth/start?role=student | Регистрируется без кода и без email | Аккаунт child-safe; вход по логину; кабинет ученика с блоком «Подключиться к классу» |
+| AC-AUTH-06 | Гость с годным кодом | Регистрируется с кодом | Ученик сразу в классе; школа — из класса |
+| AC-AUTH-07 | Ученик без email в классе | Учитель задаёт временный пароль; ученик входит | Требуется смена пароля; старые сессии завершены; после смены — кабинет |
+| AC-AUTH-08 | Учитель зарегистрировался | Открывает ссылку из письма | email подтверждён; напоминание «Подтвердите email» исчезает |
 | AC-AUTH-04 | Ученик в классе | «Выйти из класса» и подтверждение | Карточка класса исчезает; предметы класса недоступны; личные результаты сохранены |
 | AC-TCH-01 | Учитель | Создаёт предмет только с KK-названием | Предмет создан; данные RU/EN-вкладок, введённые ранее, не потеряны при переключении |
 | AC-TCH-02 | Предмет с флагом каталога и черновой темой | Ученик запрашивает тему по ID | 404 |
@@ -1418,3 +1433,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-14 | 9 SM-TICKET, 6.6 API-SUP-04: ответ по шаблону «Уточнение» переводит обращение в waiting_user, по шаблону «Решение» — в resolved; ручная смена статуса сохраняется | Решение владельца по итогам итерации 4 |
 | 2026-10-14 | 8.5 REQ-SUP-04, 11 PH-22: срок первого ответа считается в рабочих часах PH-22 (пн–пт 09:00–18:00, UTC+5): `first_response_business_days` рабочих дней от ближайшего рабочего момента после создания | Решение владельца по итогам итерации 4 |
 | 2026-10-14 | 6.2 API-PUB-02: поле `hasAnother` (есть ли другие пробные вопросы) и `locale` в ответе | Решение владельца по итогам итерации 5 |
+| 2026-10-14 | 5.3 (`users.email_verified_at`, `users.must_change_password`, `schools.status = unverified`), 6.2 API-PUB-09, 6.3 API-AUTH-03S/05/06 и MeDto, 6.4 API-T-26/27, 7.7 BR-CLS-04/05, 8.2 REQ-GEN-AUTH-01..03, 10 REQ-NFR-DATA-03, 11 PH-17 = true и PH-44 (Q-16 решён), 13 AC-AUTH-05..08: самостоятельная регистрация ученика (эталон `media/student-auth.png`), временный пароль от учителя, подтверждение email учителя | Решение владельца по итогам итерации 6 |

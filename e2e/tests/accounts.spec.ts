@@ -47,16 +47,15 @@ async function classWithCode(page: Page, name: string): Promise<string> {
 test.describe('Аккаунты и классы (итерация 6)', () => {
   test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
 
-  test('REQ-GEN-AUTH-02 /auth/start: student → join hint and link; teacher → sign-up → teacher cabinet', async ({
+  test('REQ-GEN-AUTH-02 /auth/start: student → «Вход или регистрация»; teacher → sign-up → teacher cabinet', async ({
     page,
   }) => {
     await page.goto('/ru/auth/start');
     await page.getByTestId('start-student').click();
-    await expect(page.getByTestId('start-student-info')).toContainText(ru.auth.start.studentText);
-    await expect(
-      page.getByTestId('start-student-info').getByRole('link', { name: ru.auth.start.studentLink }),
-    ).toHaveAttribute('href', '/ru/join');
+    await expect(page).toHaveURL(/\/ru\/auth\/start\?role=student$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.studentAuth.title);
 
+    await page.goto('/ru/auth/start');
     await page.getByTestId('start-teacher').click();
     const form = page.getByTestId('teacher-register');
     await form.getByRole('button', { name: ru.auth.start.submit }).click();
@@ -141,11 +140,15 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     );
 
     const login = `kid.${uid()}`;
-    const reg = g.getByTestId('join-register');
-    await reg.getByRole('textbox', { name: ru.join.register.displayName }).fill('Асель');
-    await reg.getByRole('textbox', { name: ru.join.register.login }).fill(login);
-    await reg.getByLabel(ru.join.register.password).fill('student-pass-1');
-    await reg.getByRole('button', { name: ru.join.register.submit }).click();
+    // Та же форма ученика с заполненным кодом (REQ-GEN-AUTH-03).
+    const reg = g.getByTestId('student-auth');
+    await expect(reg.getByRole('textbox', { name: ru.studentAuth.code })).toHaveValue(
+      ` ${code.toLowerCase()} `,
+    );
+    await reg.getByRole('textbox', { name: ru.studentAuth.name }).fill('Асель');
+    await reg.getByRole('textbox', { name: ru.studentAuth.login }).fill(login);
+    await reg.getByLabel(ru.studentAuth.password, { exact: true }).fill('student-pass-1');
+    await reg.getByRole('button', { name: ru.studentAuth.submit }).click();
 
     await expect(g).toHaveURL(/\/ru\/learn\/subjects$/);
     await expect(g.getByTestId('student-class-card')).toContainText('Вы в классе «5 «А»»');

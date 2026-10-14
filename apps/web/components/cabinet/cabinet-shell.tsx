@@ -8,6 +8,7 @@ import { SiteFooter } from '../shell/site-footer';
 import { CabinetHeader } from './cabinet-header';
 import { CabinetSidebar } from './cabinet-sidebar';
 import { CABINET_NAV } from './nav';
+import { VerifyEmailBanner } from './verify-email-banner';
 
 /** Оболочка кабинетов учителя и ученика (3.3): хедер, боковая панель, футер с «Кабинет», плавающие кнопки. */
 export async function CabinetShell({
@@ -26,6 +27,7 @@ export async function CabinetShell({
   return (
     <>
       <CabinetHeader me={me} role={role} stats={stats} enabledLocales={enabledLocales} />
+      {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}
       <div className="md:flex">
         <CabinetSidebar items={CABINET_NAV[role] ?? []} />
         <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none">

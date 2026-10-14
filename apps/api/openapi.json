@@ -160,6 +160,96 @@
         ]
       }
     },
+    "/api/auth/password/change": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/email/verify": {
+      "post": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/email/resend": {
+      "post": {
+        "operationId": "AuthController_resendVerification",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/auth/logout": {
       "post": {
         "operationId": "AuthController_logout",
@@ -488,6 +578,108 @@
         ]
       }
     },
+    "/api/teacher/classes/{id}/roster": {
+      "get": {
+        "operationId": "TeacherClassesController_roster",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RosterStudentDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/students/{studentId}/temporary-password": {
+      "post": {
+        "operationId": "TeacherClassesController_temporaryPassword",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemporaryPasswordDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "У ученика есть email — сброс по почте"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
     "/api/teacher/classes/{id}/invite-codes": {
       "post": {
         "operationId": "TeacherClassesController_issue",
@@ -704,8 +896,11 @@
               }
             }
           },
-          "404": {
-            "description": "Код не найден или истёк"
+          "400": {
+            "description": "Ошибки полей; неверный код — fieldErrors.code = invalidCode"
+          },
+          "409": {
+            "description": "Логин или email заняты"
           },
           "429": {
             "description": "Превышен лимит; retryAfterSeconds в теле"
@@ -1612,6 +1807,38 @@
         ]
       }
     },
+    "/api/public/schools": {
+      "get": {
+        "operationId": "PublicController_schools",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "Часть названия или города",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SchoolDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/api/public/config": {
       "get": {
         "operationId": "PublicController_config",
@@ -1776,6 +2003,15 @@
           },
           "preferences": {
             "$ref": "#/components/schemas/PreferencesDto"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Email подтверждён; null — email нет (API-AUTH-06)"
+          },
+          "mustChangePassword": {
+            "type": "boolean",
+            "description": "Временный пароль от учителя — нужно сменить (API-AUTH-05)"
           }
         },
         "required": [
@@ -1784,7 +2020,9 @@
           "initials",
           "roles",
           "activeRole",
-          "preferences"
+          "preferences",
+          "emailVerified",
+          "mustChangePassword"
         ]
       },
       "LoginResponse": {
@@ -1857,6 +2095,34 @@
         "required": [
           "token",
           "password"
+        ]
+      },
+      "ChangePasswordBody": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "VerifyEmailBody": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
         ]
       },
       "PreferencesBody": {
@@ -2018,6 +2284,42 @@
           "name"
         ]
       },
+      "RosterStudentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasEmail": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "login",
+          "hasEmail"
+        ]
+      },
+      "TemporaryPasswordDto": {
+        "type": "object",
+        "properties": {
+          "temporaryPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "temporaryPassword"
+        ]
+      },
       "IssuedCodeDto": {
         "type": "object",
         "properties": {
@@ -2086,10 +2388,6 @@
       "RegisterStudentBody": {
         "type": "object",
         "properties": {
-          "code": {
-            "type": "string",
-            "description": "Код класса (BR-CLS-01)"
-          },
           "displayName": {
             "type": "string",
             "maxLength": 100
@@ -2106,10 +2404,23 @@
           "email": {
             "type": "string",
             "format": "email"
+          },
+          "schoolId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Школа из справочника (API-PUB-09)"
+          },
+          "schoolName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Школа вручную — «не проверена»"
+          },
+          "code": {
+            "type": "string",
+            "description": "Код класса (необязательно, BR-CLS-01)"
           }
         },
         "required": [
-          "code",
           "displayName",
           "login",
           "password"
@@ -3087,6 +3398,32 @@
           "correctOptionId",
           "explanation",
           "locale"
+        ]
+      },
+      "SchoolDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "city",
+          "region"
         ]
       },
       "AtlasUrlsDto": {

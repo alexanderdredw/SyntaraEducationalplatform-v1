@@ -1,6 +1,8 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Req, Res } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBody,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiExtraModels,
   ApiNoContentResponse,
@@ -24,8 +26,10 @@ import {
   CodeCheckDto,
   CreateClassBody,
   IssuedCodeDto,
+  RosterStudentDto,
   StudentClassDto,
   TeacherClassDto,
+  TemporaryPasswordDto,
 } from './classes.dto';
 import { ClassesService } from './classes.service';
 
@@ -53,6 +57,28 @@ export class TeacherClassesController {
     @Req() req: AuthRequest,
   ): Promise<TeacherClassDto> {
     return this.classes.create(req.user!.id, dto.name);
+  }
+
+  /** API-T-26 (минимальная версия): ученики класса. */
+  @Get(':id/roster')
+  @ApiOkResponse({ type: RosterStudentDto, isArray: true })
+  @ApiNotFoundResponse()
+  roster(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<RosterStudentDto[]> {
+    return this.classes.roster(req.user!.id, id);
+  }
+
+  /** API-T-27: временный пароль ученику без email (BR-CLS-05). */
+  @Post(':id/students/:studentId/temporary-password')
+  @HttpCode(201)
+  @ApiCreatedResponse({ type: TemporaryPasswordDto })
+  @ApiNotFoundResponse()
+  @ApiConflictResponse({ description: 'У ученика есть email — сброс по почте' })
+  temporaryPassword(
+    @Param('id', new UuidParamPipe()) id: string,
+    @Param('studentId', new UuidParamPipe()) studentId: string,
+    @Req() req: AuthRequest,
+  ): Promise<TemporaryPasswordDto> {
+    return this.classes.temporaryPassword(req.user!.id, id, studentId);
   }
 
   /** API-T-06 */
@@ -105,7 +131,7 @@ export class StudentClassController {
   }
 }
 
-/** Публичная проверка кода и регистрация ученика по коду (API-PUB-08, PH-44). */
+/** Публичная проверка кода (API-PUB-08) и регистрация ученика (API-AUTH-03S, BR-CLS-04). */
 @ApiTags('public')
 @Controller()
 export class JoinController {
@@ -121,14 +147,15 @@ export class JoinController {
     return this.classes.check(dto.code);
   }
 
-  /** PH-44: регистрация ученика по действующему коду класса; сразу выполняется вход. */
+  /** API-AUTH-03S: самостоятельная регистрация ученика; код класса необязателен; сразу выполняется вход. */
   @Post('auth/register-student')
   @HttpCode(201)
   @RateLimit('join')
   @ApiTags('auth')
   @ApiBody({ type: RegisterStudentBody })
   @ApiCreatedResponse({ type: LoginResponse })
-  @ApiNotFoundResponse({ description: 'Код не найден или истёк' })
+  @ApiBadRequestResponse({ description: 'Ошибки полей; неверный код — fieldErrors.code = invalidCode' })
+  @ApiConflictResponse({ description: 'Логин или email заняты' })
   async registerStudent(
     @Body(new ZodValidationPipe(RegisterStudentDto)) dto: Dto<typeof RegisterStudentDto>,
     @Req() req: AuthRequest,

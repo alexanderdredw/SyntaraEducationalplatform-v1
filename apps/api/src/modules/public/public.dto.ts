@@ -64,3 +64,11 @@ export class DemoAnswerResponse {
   @ApiProperty({ type: String, nullable: true }) explanation: string | null;
   @ApiProperty({ enum: LOCALES }) locale: Locale;
 }
+
+/** API-PUB-09 */
+export class SchoolDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() name: string;
+  @ApiProperty({ type: String, nullable: true }) city: string | null;
+  @ApiProperty({ type: String, nullable: true }) region: string | null;
+}

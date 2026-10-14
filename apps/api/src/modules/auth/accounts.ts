@@ -11,6 +11,8 @@ export interface NewAccount {
   passwordHash: string;
   role: UserRole;
   locale: Locale;
+  /** Школа роли (user_roles.school_id): ученик — из класса, справочника или введённая вручную. */
+  schoolId?: string | null;
 }
 
 /** Согласие с условиями и политикой конфиденциальности при регистрации (REQ-NFR-DATA-03, consents). */
@@ -47,7 +49,7 @@ export async function createAccount(tx: Tx, account: NewAccount): Promise<string
       [field]: field === 'login' ? 'loginTaken' : 'emailTaken',
     });
   }
-  await tx.insert(userRoles).values({ userId, role: account.role });
+  await tx.insert(userRoles).values({ userId, role: account.role, schoolId: account.schoolId ?? null });
   await tx.insert(userPreferences).values({ userId, locale: account.locale });
   // TODO(OWNER): согласие родителя для учеников-детей (PH-44 «требует уточнения»); сейчас фиксируется согласие самого пользователя.
   await tx.insert(consents).values({

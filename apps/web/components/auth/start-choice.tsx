@@ -15,9 +15,9 @@ type Fields = 'email' | 'displayName' | 'password';
 /**
  * /auth/start (REQ-GEN-AUTH-02): выбор «Ученик» или «Учитель» с объяснением.
  * Учитель → регистрация (email, имя, пароль ≥ 8, API-AUTH-03); ученик → «Ученики подключаются через класс
- * учителя или школу» и ссылка на /join (BR-CLS-04).
+ * ученик → экран «Вход или регистрация» (`?role=student`, BR-CLS-04).
  */
-export function StartChoice({ initialRole }: { initialRole: Role | null }) {
+export function StartChoice({ initialRole }: { initialRole: 'teacher' | null }) {
   const t = useTranslations('auth.start');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
@@ -57,7 +57,7 @@ export function StartChoice({ initialRole }: { initialRole: Role | null }) {
       type="button"
       aria-pressed={role === value}
       data-testid={`start-${value}`}
-      onClick={() => setRole(value)}
+      onClick={() => (value === 'student' ? router.push('/auth/start?role=student') : setRole(value))}
       className={cn(
         'flex min-h-11 flex-1 flex-col items-start gap-2 rounded-[var(--radius-card)] border p-5 text-left',
         role === value
@@ -79,18 +79,6 @@ export function StartChoice({ initialRole }: { initialRole: Role | null }) {
         {option('student', GraduationCap)}
         {option('teacher', School)}
       </div>
-
-      {role === 'student' ? (
-        <Card data-testid="start-student-info">
-          <p>{t('studentText')}</p>
-          <AppLink
-            href="/join"
-            className="mt-3 inline-flex min-h-11 items-center font-semibold text-[var(--accent)] hover:underline"
-          >
-            {t('studentLink')}
-          </AppLink>
-        </Card>
-      ) : null}
 
       {role === 'teacher' ? (
         <Card data-testid="teacher-register">

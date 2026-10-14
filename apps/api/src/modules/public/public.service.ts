@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, eq, ilike, inArray, isNull, or } from 'drizzle-orm';
 import { type Locale } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { AppConfigService } from '../../config/app-config.service';
 import { pickTranslation } from '../../common/locale';
+import { likeEscape } from '../support/pagination';
 import { DB } from '../../infra/tokens';
-import { type PublicConfigDto, type PublicSubjectDto } from './public.dto';
+import { type PublicConfigDto, type PublicSubjectDto, type SchoolDto } from './public.dto';
 
 /**
  * Иконки карточек публичных предметов (Lucide). В SPEC не заданы; набор подтверждён владельцем (2026-10-14).
@@ -88,6 +89,23 @@ export class PublicService {
         ];
       });
     return [...items.filter((i) => i.status !== 'soon'), ...items.filter((i) => i.status === 'soon')];
+  }
+
+  /**
+   * API-PUB-09: автодополнение школы — только подтверждённые школы справочника (status = 'active');
+   * введённые учениками вручную ('unverified') в подсказки не попадают.
+   */
+  async schools(q: string): Promise<SchoolDto[]> {
+    const { schools } = schema;
+    const pattern = `%${likeEscape(q)}%`;
+    return this.db
+      .select({ id: schools.id, name: schools.name, city: schools.city, region: schools.region })
+      .from(schools)
+      .where(
+        and(eq(schools.status, 'active'), or(ilike(schools.name, pattern), ilike(schools.city, pattern))),
+      )
+      .orderBy(asc(schools.name), asc(schools.id))
+      .limit(10);
   }
 
   /** API-PUB-07: только публичные значения (PH-04, PH-09, PH-10, PH-11, PH-13). */

@@ -37,15 +37,20 @@ export function LoginForm({ returnTo, notice }: { returnTo: string | null; notic
   const onSubmit = form.handleSubmit(async (values) => {
     setPending(true);
     setProblem(null);
-    const result = await apiRequest<{ user: { roles: UserRole[]; activeRole: UserRole } }>(
-      '/api/auth/login',
-      {
-        method: 'POST',
-        body: values,
-        locale,
-      },
-    );
+    const result = await apiRequest<{
+      user: { roles: UserRole[]; activeRole: UserRole; mustChangePassword: boolean };
+    }>('/api/auth/login', {
+      method: 'POST',
+      body: values,
+      locale,
+    });
     if (result.kind === 'ok') {
+      // BR-CLS-05: с временным паролем — сначала смена пароля.
+      if (result.data.user.mustChangePassword) {
+        router.replace('/auth/login?change=1');
+        router.refresh();
+        return;
+      }
       const target = safeReturnTo(returnTo);
       router.replace(target !== '/' ? target : HOME_BY_ROLE[result.data.user.activeRole]);
       router.refresh();

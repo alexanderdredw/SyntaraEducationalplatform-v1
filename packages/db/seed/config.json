@@ -144,7 +144,7 @@
     {
       "key": "auth.student_self_registration",
       "note": "PH-17",
-      "value": false
+      "value": true
     },
     {
       "key": "retention_days",

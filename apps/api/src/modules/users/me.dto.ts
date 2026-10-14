@@ -15,6 +15,14 @@ export class MeDto {
   @ApiProperty({ enum: UserRole.options, isArray: true }) roles: UserRole[];
   @ApiProperty({ enum: UserRole.options }) activeRole: UserRole;
   @ApiProperty({ type: PreferencesDto }) preferences: PreferencesDto;
+  @ApiProperty({
+    type: Boolean,
+    nullable: true,
+    description: 'Email подтверждён; null — email нет (API-AUTH-06)',
+  })
+  emailVerified: boolean | null;
+  @ApiProperty({ description: 'Временный пароль от учителя — нужно сменить (API-AUTH-05)' })
+  mustChangePassword: boolean;
 }
 
 export class PreferencesBody {

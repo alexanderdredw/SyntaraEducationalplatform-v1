@@ -12,6 +12,7 @@ import { DB } from '../../infra/tokens';
 export interface ActiveCode {
   classId: string;
   className: string;
+  schoolId: string | null;
 }
 
 /**
@@ -58,7 +59,7 @@ export class ClassCodesService {
     if (!isWellFormedClassCode(code, cfg)) return null;
     const { classInviteCodes: c, classes } = schema;
     const [row] = await tx
-      .select({ classId: classes.id, className: classes.name })
+      .select({ classId: classes.id, className: classes.name, schoolId: classes.schoolId })
       .from(c)
       .innerJoin(classes, eq(classes.id, c.classId))
       .where(

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/swagger';
 import { type Request } from 'express';
 import { z } from 'zod';
-import { DemoAnswerDto } from '@syntara/shared';
+import { DemoAnswerDto, SchoolsQuery } from '@syntara/shared';
 import { type Dto } from '../../common/dto';
 import { resolveLocale } from '../../common/locale';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
@@ -21,6 +21,7 @@ import {
   DemoQuestionDto,
   PublicConfigDto,
   PublicSubjectDto,
+  SchoolDto,
 } from './public.dto';
 import { PublicService } from './public.service';
 
@@ -74,6 +75,14 @@ export class PublicController {
     @Req() req: Request,
   ): Promise<DemoAnswerResponse> {
     return this.demo.answer(dto, resolveLocale(req.headers['accept-language']));
+  }
+
+  /** API-PUB-09: поиск школы (≥ 2 символа), до 10 подтверждённых школ. */
+  @Get('schools')
+  @ApiQuery({ name: 'q', required: true, description: 'Часть названия или города' })
+  @ApiOkResponse({ type: SchoolDto, isArray: true })
+  schools(@Query(new ZodValidationPipe(SchoolsQuery)) query: Dto<typeof SchoolsQuery>): Promise<SchoolDto[]> {
+    return this.service.schools(query.q);
   }
 
   /** API-PUB-07 */

@@ -33,3 +33,16 @@ export class StudentClassDto {
   @ApiProperty() teacherName: string;
   @ApiProperty({ type: String, nullable: true }) schoolName: string | null;
 }
+
+/** API-T-26 (минимальная версия) */
+export class RosterStudentDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() displayName: string;
+  @ApiProperty({ type: String, nullable: true }) login: string | null;
+  @ApiProperty() hasEmail: boolean;
+}
+
+/** API-T-27: показывается один раз. */
+export class TemporaryPasswordDto {
+  @ApiProperty() temporaryPassword: string;
+}

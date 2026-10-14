@@ -9,17 +9,26 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { type Response } from 'express';
-import { ForgotPasswordDto, LoginDto, RegisterTeacherDto, ResetPasswordDto } from '@syntara/shared';
+import {
+  ChangePasswordDto,
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterTeacherDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
+} from '@syntara/shared';
 import { type Dto } from '../../common/dto';
 import { resolveLocale } from '../../common/locale';
 import { RateLimit } from '../../common/rate-limit';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import {
+  ChangePasswordBody,
   ForgotPasswordBody,
   LoginBody,
   LoginResponse,
   RegisterTeacherBody,
   ResetPasswordBody,
+  VerifyEmailBody,
 } from './auth.dto';
 import { Roles } from './auth.guards';
 import { AuthService } from './auth.service';
@@ -100,6 +109,39 @@ export class AuthController {
   @ApiNoContentResponse()
   reset(@Body(new ZodValidationPipe(ResetPasswordDto)) dto: Dto<typeof ResetPasswordDto>): Promise<void> {
     return this.auth.resetPassword(dto);
+  }
+
+  /** API-AUTH-05: смена пароля (временный пароль от учителя — без текущего). */
+  @Post('password/change')
+  @HttpCode(204)
+  @Roles()
+  @ApiBody({ type: ChangePasswordBody })
+  @ApiNoContentResponse()
+  changePassword(
+    @Body(new ZodValidationPipe(ChangePasswordDto)) dto: Dto<typeof ChangePasswordDto>,
+    @Req() req: AuthRequest,
+  ): Promise<void> {
+    return this.auth.changePassword(req.user!, dto);
+  }
+
+  /** API-AUTH-06: подтверждение email по ссылке из письма. */
+  @Post('email/verify')
+  @HttpCode(204)
+  @RateLimit('forms')
+  @ApiBody({ type: VerifyEmailBody })
+  @ApiNoContentResponse()
+  verifyEmail(@Body(new ZodValidationPipe(VerifyEmailDto)) dto: Dto<typeof VerifyEmailDto>): Promise<void> {
+    return this.auth.verifyEmail(dto);
+  }
+
+  /** API-AUTH-06: повторная отправка ссылки подтверждения. */
+  @Post('email/resend')
+  @HttpCode(204)
+  @Roles()
+  @RateLimit('forms')
+  @ApiNoContentResponse()
+  resendVerification(@Req() req: AuthRequest): Promise<void> {
+    return this.auth.resendVerification(req.user!, resolveLocale(req.headers['accept-language']));
   }
 
   /** API-AUTH-02 */

@@ -84,6 +84,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/password/change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/email/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_verifyEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/email/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_resendVerification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/logout": {
         parameters: {
             query?: never;
@@ -206,6 +254,38 @@ export interface paths {
         get: operations["TeacherClassesController_list"];
         put?: never;
         post: operations["TeacherClassesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/classes/{id}/roster": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherClassesController_roster"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/classes/{id}/students/{studentId}/temporary-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherClassesController_temporaryPassword"];
         delete?: never;
         options?: never;
         head?: never;
@@ -580,6 +660,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/schools": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicController_schools"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/config": {
         parameters: {
             query?: never;
@@ -632,6 +728,10 @@ export interface components {
             /** @enum {string} */
             activeRole: "student" | "teacher" | "support_agent" | "onboarding_agent";
             preferences: components["schemas"]["PreferencesDto"];
+            /** @description Email подтверждён; null — email нет (API-AUTH-06) */
+            emailVerified: boolean | null;
+            /** @description Временный пароль от учителя — нужно сменить (API-AUTH-05) */
+            mustChangePassword: boolean;
         };
         LoginResponse: {
             user: components["schemas"]["MeDto"];
@@ -652,6 +752,13 @@ export interface components {
         ResetPasswordBody: {
             token: string;
             password: string;
+        };
+        ChangePasswordBody: {
+            currentPassword?: string;
+            password: string;
+        };
+        VerifyEmailBody: {
+            token: string;
         };
         PreferencesBody: {
             /** @enum {string} */
@@ -698,6 +805,16 @@ export interface components {
         CreateClassBody: {
             name: string;
         };
+        RosterStudentDto: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
+            login: string | null;
+            hasEmail: boolean;
+        };
+        TemporaryPasswordDto: {
+            temporaryPassword: string;
+        };
         IssuedCodeDto: {
             /** @example K7M2QX */
             code: string;
@@ -719,14 +836,21 @@ export interface components {
             valid: boolean;
         };
         RegisterStudentBody: {
-            /** @description Код класса (BR-CLS-01) */
-            code: string;
             displayName: string;
             /** @description PH-44: 3–32 символа a-z 0-9 . _ - */
             login: string;
             password: string;
             /** Format: email */
             email?: string;
+            /**
+             * Format: uuid
+             * @description Школа из справочника (API-PUB-09)
+             */
+            schoolId?: string;
+            /** @description Школа вручную — «не проверена» */
+            schoolName?: string;
+            /** @description Код класса (необязательно, BR-CLS-01) */
+            code?: string;
         };
         ChatMessageBody: {
             /** @enum {string} */
@@ -977,6 +1101,13 @@ export interface components {
             /** @enum {string} */
             locale: "ru" | "kk" | "en";
         };
+        SchoolDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            city: string | null;
+            region: string | null;
+        };
         AtlasUrlsDto: {
             mendeleev: string | null;
             anatomy: string | null;
@@ -1148,6 +1279,107 @@ export interface operations {
         };
         responses: {
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_verifyEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyEmailBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_resendVerification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1473,6 +1705,96 @@ export interface operations {
             };
         };
     };
+    TeacherClassesController_roster: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RosterStudentDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherClassesController_temporaryPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                studentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TemporaryPasswordDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description У ученика есть email — сброс по почте */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     TeacherClassesController_issue: {
         parameters: {
             query?: never;
@@ -1687,8 +2009,15 @@ export interface operations {
                     "application/json": components["schemas"]["LoginResponse"];
                 };
             };
-            /** @description Код не найден или истёк */
-            404: {
+            /** @description Ошибки полей; неверный код — fieldErrors.code = invalidCode */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Логин или email заняты */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2375,6 +2704,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    PublicController_schools: {
+        parameters: {
+            query: {
+                /** @description Часть названия или города */
+                q: unknown;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SchoolDto"][];
+                };
             };
         };
     };

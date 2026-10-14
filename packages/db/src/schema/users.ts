@@ -12,6 +12,7 @@ export const schools = pgTable(
     name: text('name').notNull(),
     region: text('region'),
     city: text('city'),
+    /** 'active' — справочник; 'unverified' — школа, введённая учеником вручную (не проверена). */
     status: text('status').notNull().default('active'),
     ...timestamps,
   },
@@ -30,6 +31,10 @@ export const users = pgTable(
     isChildSafe: boolean('is_child_safe').notNull().default(false),
     status: text('status').notNull().default('active'),
     lastLoginAt: tstz('last_login_at'),
+    /** API-AUTH-06: подтверждение email; вход до подтверждения разрешён. */
+    emailVerifiedAt: tstz('email_verified_at'),
+    /** API-T-27: временный пароль от учителя — ученик меняет его при входе (API-AUTH-05). */
+    mustChangePassword: boolean('must_change_password').notNull().default(false),
     ...timestamps,
   },
   (t) => [check('users_email_or_child_safe', sql`${t.email} IS NOT NULL OR ${t.isChildSafe}`)],

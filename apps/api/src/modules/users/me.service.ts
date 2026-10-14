@@ -51,6 +51,14 @@ export class MeService {
       .select()
       .from(schema.userPreferences)
       .where(eq(schema.userPreferences.userId, user.id));
+    const [account] = await this.db
+      .select({
+        email: schema.users.email,
+        verifiedAt: schema.users.emailVerifiedAt,
+        mustChange: schema.users.mustChangePassword,
+      })
+      .from(schema.users)
+      .where(eq(schema.users.id, user.id));
     return {
       id: user.id,
       displayName: user.displayName,
@@ -62,6 +70,8 @@ export class MeService {
         theme: prefs?.theme ?? 'system',
         dataSaver: prefs?.dataSaver ?? false,
       },
+      emailVerified: account?.email ? account.verifiedAt !== null : null,
+      mustChangePassword: account?.mustChange ?? false,
     };
   }
 

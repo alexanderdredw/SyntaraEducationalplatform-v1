@@ -18,7 +18,13 @@ const displayName = z.string().trim().min(1, 'required').max(100, 'tooLong');
  * TODO(OWNER): правила формата логина (PH-44 «требует уточнения»).
  */
 export const LOGIN_PATTERN = /^[a-z0-9][a-z0-9._-]{2,31}$/;
-const login = z.string().trim().toLowerCase().regex(LOGIN_PATTERN, 'invalidLogin');
+const login = z
+  .string()
+  .trim()
+  .toLowerCase()
+  // Email в поле логина — отдельная понятная подсказка (REQ-GEN-AUTH-02).
+  .refine((v) => !v.includes('@'), 'loginIsEmail')
+  .refine((v) => v.includes('@') || LOGIN_PATTERN.test(v), 'invalidLogin');
 
 /** API-AUTH-03: регистрация доступна только учителю (PH-17). */
 export const RegisterTeacherDto = z.object({
@@ -29,13 +35,18 @@ export const RegisterTeacherDto = z.object({
 });
 export type RegisterTeacherDto = z.infer<typeof RegisterTeacherDto>;
 
-/** PH-44: регистрация ученика только по действующему коду класса. */
+/**
+ * API-AUTH-03S, BR-CLS-04 (PH-17 = true): ученик регистрируется сам. Email, школа и код класса — необязательны.
+ * Школа — из справочника (schoolId) или вручную (schoolName, статус «не проверена»); при верном коде — из класса.
+ */
 export const RegisterStudentDto = z.object({
-  code: z.string().max(32, 'tooLong'),
   displayName,
   login,
   password,
   email: email.optional().or(z.literal('')),
+  schoolId: z.uuid('invalidSchool').optional().or(z.literal('')),
+  schoolName: z.string().trim().max(200, 'tooLong').optional(),
+  code: z.string().max(32, 'tooLong').optional(),
 });
 export type RegisterStudentDto = z.infer<typeof RegisterStudentDto>;
 
@@ -84,3 +95,18 @@ export function normalizeClassCode(raw: string): string {
 export function isWellFormedClassCode(code: string, config: ClassCodeConfig): boolean {
   return code.length === config.length && [...code].every((ch) => config.alphabet.includes(ch));
 }
+
+/** API-AUTH-05: смена пароля; при временном пароле (mustChangePassword) текущий не нужен. */
+export const ChangePasswordDto = z.object({
+  currentPassword: z.string().max(200, 'tooLong').optional(),
+  password,
+});
+export type ChangePasswordDto = z.infer<typeof ChangePasswordDto>;
+
+/** API-AUTH-06 */
+export const VerifyEmailDto = z.object({ token: z.string().min(16, 'invalidToken').max(200) });
+export type VerifyEmailDto = z.infer<typeof VerifyEmailDto>;
+
+/** API-PUB-09: поиск школы для автодополнения. */
+export const SchoolsQuery = z.object({ q: z.string().trim().min(2, 'tooShort').max(100, 'tooLong') });
+export type SchoolsQuery = z.infer<typeof SchoolsQuery>;

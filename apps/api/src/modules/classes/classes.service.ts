@@ -1,4 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { randomInt } from 'node:crypto';
 import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
 import { type Response } from 'express';
 import { type Locale, type RegisterStudentDto } from '@syntara/shared';
@@ -15,9 +16,23 @@ import { SessionService } from '../auth/session.service';
 import { type MeDto } from '../users/me.dto';
 import { MeService } from '../users/me.service';
 import { ClassCodesService } from './class-codes.service';
-import { type IssuedCodeDto, type StudentClassDto, type TeacherClassDto } from './classes.dto';
+import {
+  type IssuedCodeDto,
+  type RosterStudentDto,
+  type StudentClassDto,
+  type TeacherClassDto,
+  type TemporaryPasswordDto,
+} from './classes.dto';
 
 const { classes, classMemberships: m, schools } = schema;
+
+/** Временный пароль: без похожих символов (0/O, 1/l/I). */
+const TEMP_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
+
+export const invalidCodeField = () =>
+  new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Code not found or expired', {
+    code: 'invalidCode',
+  });
 
 export const codeNotFound = () =>
   new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Code not found or expired', { code: 'invalidCode' });
@@ -137,8 +152,14 @@ export class ClassesService {
     userAgent: string | undefined,
     res: Response,
   ): Promise<MeDto> {
-    const settings = await this.config.get<{ enabled: boolean }>('auth.student_registration_by_class_code');
-    if (!settings.enabled) throw new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
+    const code = dto.code?.trim() ? dto.code : null;
+    // PH-17 = true (решение владельца 2026-10-14): без кода регистрация разрешена; при false — только по коду.
+    const selfRegistration = await this.config.get<boolean>('auth.student_self_registration');
+    if (!selfRegistration && !code) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Class code is required', {
+        code: 'required',
+      });
+    }
     const min = await this.config.get<number>('auth.password_min_length');
     if (dto.password.length < min) {
       throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Password is too short', {
@@ -147,8 +168,10 @@ export class ClassesService {
     }
     const passwordHash = await hashPassword(dto.password);
     const userId = await this.db.transaction(async (tx) => {
-      const active = await this.codes.findActive(dto.code, tx);
-      if (!active) throw codeNotFound();
+      // Неверный код — ошибка поля без создания аккаунта; данных класса ответ не раскрывает.
+      const active = code ? await this.codes.findActive(code, tx) : null;
+      if (code && !active) throw invalidCodeField();
+      const schoolId = await this.schoolFor(tx, active?.schoolId ?? null, dto);
       const id = await createAccount(tx, {
         email: dto.email ? dto.email : null,
         login: dto.login,
@@ -156,12 +179,102 @@ export class ClassesService {
         passwordHash,
         role: 'student',
         locale,
+        schoolId,
       });
-      await this.addMember(tx, active.classId, id, id);
+      if (active) await this.addMember(tx, active.classId, id, id);
       return id;
     });
     await this.sessions.create(userId, userAgent, res);
     return this.me.me({ id: userId, displayName: dto.displayName, roles: ['student'], sessionId: '' });
+  }
+
+  /**
+   * Школа ученика: из класса (верный код), иначе из справочника (только status = 'active'), иначе введённая
+   * вручную — новая запись schools со статусом 'unverified' («не проверена»).
+   */
+  private async schoolFor(tx: Tx, fromClass: string | null, dto: RegisterStudentDto): Promise<string | null> {
+    if (fromClass) return fromClass;
+    if (dto.schoolId) {
+      const [school] = await tx
+        .select({ id: schools.id })
+        .from(schools)
+        .where(and(eq(schools.id, dto.schoolId), eq(schools.status, 'active')));
+      if (!school) {
+        throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Unknown school', {
+          schoolId: 'invalidSchool',
+        });
+      }
+      return school.id;
+    }
+    if (dto.schoolName?.trim()) {
+      const [school] = await tx
+        .insert(schools)
+        .values({ name: dto.schoolName.trim(), status: 'unverified' })
+        .returning({ id: schools.id });
+      return school!.id;
+    }
+    return null;
+  }
+
+  /** API-T-26 (минимальная версия): активные ученики своего класса. */
+  async roster(teacherId: string, classId: string): Promise<RosterStudentDto[]> {
+    await this.ownClass(teacherId, classId);
+    const { users } = schema;
+    const rows = await this.db
+      .select({ id: users.id, displayName: users.displayName, login: users.login, email: users.email })
+      .from(m)
+      .innerJoin(users, eq(users.id, m.studentId))
+      .where(and(eq(m.classId, classId), eq(m.status, 'active')))
+      .orderBy(asc(users.displayName), asc(users.id));
+    return rows.map(({ email, ...r }) => ({ ...r, hasEmail: email !== null }));
+  }
+
+  /**
+   * API-T-27 (BR-CLS-05): временный пароль ученику своего класса без email; показывается учителю один раз,
+   * ученик меняет его при входе (API-AUTH-05). Сессии ученика завершаются. Ученику с email — сброс по почте.
+   * TODO(OWNER): роль «завуч» (школьный администратор) — в 5.2 такой роли нет.
+   */
+  async temporaryPassword(
+    teacherId: string,
+    classId: string,
+    studentId: string,
+  ): Promise<TemporaryPasswordDto> {
+    await this.ownClass(teacherId, classId);
+    const { users, authSessions } = schema;
+    const [student] = await this.db
+      .select({ id: users.id, email: users.email })
+      .from(m)
+      .innerJoin(users, eq(users.id, m.studentId))
+      .where(and(eq(m.classId, classId), eq(m.studentId, studentId), eq(m.status, 'active')));
+    if (!student) throw new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
+    if (student.email) {
+      throw new ApiException(HttpStatus.CONFLICT, 'CONFLICT', 'Student has an email — use password reset', {
+        studentId: 'studentHasEmail',
+      });
+    }
+    const temporaryPassword = Array.from(
+      { length: 10 },
+      () => TEMP_ALPHABET[randomInt(0, TEMP_ALPHABET.length)],
+    ).join('');
+    const passwordHash = await hashPassword(temporaryPassword);
+    await this.db.transaction(async (tx) => {
+      await tx.update(users).set({ passwordHash, mustChangePassword: true }).where(eq(users.id, studentId));
+      await tx
+        .update(authSessions)
+        .set({ revokedAt: new Date() })
+        .where(and(eq(authSessions.userId, studentId), isNull(authSessions.revokedAt)));
+      await this.audit.record(
+        {
+          actorId: teacherId,
+          entityType: 'user',
+          entityId: studentId,
+          action: 'temporary_password_set',
+          after: { classId },
+        },
+        tx,
+      );
+    });
+    return { temporaryPassword };
   }
 
   private async addMember(tx: Tx, classId: string, studentId: string, actorId: string): Promise<void> {

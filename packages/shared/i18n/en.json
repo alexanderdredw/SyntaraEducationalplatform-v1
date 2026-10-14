@@ -32,7 +32,13 @@
     "emailTaken": "This email is already registered",
     "loginTaken": "This login is already taken",
     "invalidLogin": "Login: 3–32 characters — Latin letters, digits, «.», «_» or «-»",
-    "invalidToken": "The link is invalid or has expired"
+    "invalidToken": "The link is invalid or has expired",
+    "loginIsEmail": "This is an email. Make up a login from Latin letters and digits, and enter the email below",
+    "invalidCode": "Code not found or expired. Check the code with your teacher",
+    "invalidSchool": "Choose a school from the list or enter it manually",
+    "invalidPassword": "Wrong current password",
+    "studentHasEmail": "The student has an email — they can reset the password by email",
+    "tooShort": "Text is too short"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -510,7 +516,7 @@
     "start": {
       "title": "Where shall we start?",
       "student": "Student",
-      "studentText": "Students join through their teacher’s class or school",
+      "studentText": "Save your progress and join a class with your teacher’s code.",
       "studentLink": "Join a class",
       "teacher": "Teacher",
       "teacherText": "Create courses, give them to classes and follow the progress.",
@@ -521,6 +527,18 @@
       "passwordHint": "At least 8 characters",
       "submit": "Sign up",
       "haveAccount": "Already have an account? Sign in"
+    },
+    "change": {
+      "title": "Change your password",
+      "text": "Your teacher gave you a temporary password. Create a new one to continue.",
+      "current": "Current password",
+      "password": "New password",
+      "hint": "At least 8 characters",
+      "submit": "Save password"
+    },
+    "verify": {
+      "done": "Email confirmed.",
+      "invalid": "The confirmation link is invalid or has expired."
     }
   },
   "staff": {
@@ -659,7 +677,9 @@
       "registeredBody": "{name}, your teacher account has been created. Sign in to create your first class and course.",
       "resetSubject": "Password recovery",
       "resetBody": "To set a new password, open the link:",
-      "resetIgnore": "If you did not request a password reset, just ignore this email."
+      "resetIgnore": "If you did not request a password reset, just ignore this email.",
+      "verifySubject": "Confirm your email",
+      "verifyBody": "To confirm your email, open the link:"
     }
   },
   "join": {
@@ -711,6 +731,11 @@
       "progress": "My progress",
       "achievements": "Achievements",
       "support": "Support"
+    },
+    "verify": {
+      "text": "Confirm your email",
+      "resend": "Send the email again",
+      "resent": "Email sent"
     }
   },
   "teacher": {
@@ -724,7 +749,13 @@
       "codeOnce": "The code is shown only once — save it. Valid until {date}.",
       "copy": "Copy code",
       "copied": "Code copied",
-      "empty": "No classes yet — create the first one"
+      "empty": "No classes yet — create the first one",
+      "showStudents": "Students",
+      "noStudents": "No students in the class yet",
+      "tempPassword": "Temporary password",
+      "tempTitle": "Temporary password for «{name}»",
+      "tempOnce": "Give the password to the student: they will create a new one when signing in. The password is shown only once.",
+      "hasEmail": "has an email — reset by email"
     }
   },
   "student": {
@@ -763,5 +794,40 @@
       "export": "Request for a copy of personal data",
       "delete": "Request to delete personal data"
     }
+  },
+  "studentAuth": {
+    "label": "STUDENT",
+    "title": "Sign in or sign up",
+    "tabsLabel": "Sign in or sign up",
+    "tabRegister": "Sign up",
+    "tabLogin": "Sign in",
+    "name": "Name",
+    "namePlaceholder": "What’s your name?",
+    "login": "Login",
+    "password": "Password",
+    "passwordHint": "At least 8 characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "school": "School",
+    "schoolPlaceholder": "Start typing your school name…",
+    "schoolManual": "Not in the list? Enter manually",
+    "schoolFromList": "Choose from the list",
+    "schoolManualPlaceholder": "School name and city",
+    "schoolHint": "Choose your school. If your teacher gave you a class code, the school is filled in automatically — you can skip this field.",
+    "schoolUnverified": "The school will be saved as “not verified”.",
+    "schoolNoResults": "Nothing found — enter the school manually",
+    "code": "Class code (optional)",
+    "codePlaceholder": "ABC123",
+    "codeHint": "If your teacher gave you a code, enter it and we’ll add you to the class right away",
+    "submit": "Create account",
+    "consent": "By signing up, you accept the <terms>Terms of Service</terms> · <privacy>Privacy Policy</privacy>",
+    "accountNote": "An account is only needed to save progress — you can learn without one",
+    "forgotNote": "Forgot your password? If you signed up with an email, reset it by email. For a school account without an email, ask your class teacher or deputy principal.",
+    "forgotLink": "Forgot password?",
+    "guest": "Continue without signing in →",
+    "identifier": "Email or login",
+    "loginSubmit": "Sign in"
   }
 }

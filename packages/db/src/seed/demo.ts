@@ -20,6 +20,7 @@ import {
   topicVersions,
   userPreferences,
   userRoles,
+  schools,
   users,
 } from '../schema';
 import {
@@ -252,6 +253,25 @@ export const DEMO_IDS = {
   onboarding: seedId('user:dev:onboarding'),
   subjectGeneralBiology: seedId('subject:general-biology'),
 };
+
+/**
+ * Справочник школ для автодополнения на регистрации ученика (API-PUB-09).
+ * TODO(OWNER): реальный список школ (источник и формат загрузки) — сейчас демо-данные.
+ */
+export const DEMO_SCHOOLS: Array<{ key: string; name: string; region: string; city: string }> = [
+  { key: 'almaty-1', name: 'Школа-гимназия №1', region: 'Алматы', city: 'Алматы' },
+  { key: 'almaty-25', name: 'Школа-лицей №25', region: 'Алматы', city: 'Алматы' },
+  { key: 'astana-12', name: 'Средняя школа №12', region: 'Астана', city: 'Астана' },
+  { key: 'shymkent-7', name: 'Гимназия №7', region: 'Шымкент', city: 'Шымкент' },
+  {
+    key: 'karaganda-3',
+    name: 'Назарбаев Интеллектуальная школа (демо)',
+    region: 'Карагандинская обл.',
+    city: 'Караганда',
+  },
+  { key: 'talgar-2', name: 'Средняя школа №2', region: 'Алматинская обл.', city: 'Талгар' },
+];
+export const demoSchoolId = (key: string) => seedId(`school:demo:${key}`);
 
 export const anatomyTopicId = (key: string) => seedId(`topic:anatomy:${key}`);
 export const anatomyQuizId = (key: string) => seedId(`quiz:anatomy:${key}`);
@@ -539,6 +559,14 @@ export async function seedDemo(db: Database): Promise<void> {
       });
     }
 
+    // Справочник школ (API-PUB-09).
+    await tx
+      .insert(schools)
+      .values(
+        DEMO_SCHOOLS.map(({ key, ...school }) => ({ id: demoSchoolId(key), ...school, status: 'active' })),
+      )
+      .onConflictDoNothing();
+
     // Учётные записи для разработки (пароль — SEED_DEV_PASSWORD; вход появится в итерациях 4 и 6).
     const passwordHash = await hashPassword(process.env.SEED_DEV_PASSWORD ?? 'syntara-dev-password');
     const devUsers = [
@@ -569,10 +597,16 @@ export async function seedDemo(db: Database): Promise<void> {
       },
     ];
     for (const { role, ...user } of devUsers) {
+      // Демо-аккаунты с email считаются подтверждёнными (без напоминания «Подтвердите email»).
+      const emailVerifiedAt = 'email' in user ? new Date('2026-09-01T00:00:00Z') : null;
       await tx
         .insert(users)
-        .values({ ...user, passwordHash })
-        .onConflictDoUpdate({ target: users.id, set: { passwordHash } });
+        .values({
+          ...user,
+          passwordHash,
+          emailVerifiedAt,
+        })
+        .onConflictDoUpdate({ target: users.id, set: { passwordHash, emailVerifiedAt } });
       await tx
         .insert(userRoles)
         .values({ id: seedId(`role:${user.id}:${role}`), userId: user.id, role })

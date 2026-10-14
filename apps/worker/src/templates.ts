@@ -1,6 +1,7 @@
 import {
   type AccountRegisteredPayload,
   type ConfirmationEmailPayload,
+  type EmailVerifyPayload,
   type PasswordResetPayload,
   EMAIL_TEMPLATES,
   getMessage,
@@ -31,7 +32,7 @@ function t(locale: Locale, key: string, values: Record<string, string> = {}): st
 export function renderEmail(
   template: string,
   payload: unknown,
-  extras: { resetUrl?: string } = {},
+  extras: { resetUrl?: string; verifyUrl?: string } = {},
 ): RenderedEmail {
   switch (template) {
     case EMAIL_TEMPLATES.schoolRequestConfirmation: {
@@ -78,6 +79,7 @@ export function renderEmail(
         text: [
           t(p.locale, 'email.greeting'),
           t(p.locale, 'email.account.registeredBody', { name: p.displayName }),
+          ...(extras.verifyUrl ? [t(p.locale, 'email.account.verifyBody'), extras.verifyUrl] : []),
           t(p.locale, 'email.signature'),
         ].join('\n\n'),
       };
@@ -92,6 +94,19 @@ export function renderEmail(
           t(p.locale, 'email.account.resetBody'),
           extras.resetUrl,
           t(p.locale, 'email.account.resetIgnore'),
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.emailVerify: {
+      const p = payload as EmailVerifyPayload;
+      if (!extras.verifyUrl) throw new Error('verifyUrl is required');
+      return {
+        subject: t(p.locale, 'email.account.verifySubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.verifyBody'),
+          extras.verifyUrl,
           t(p.locale, 'email.signature'),
         ].join('\n\n'),
       };

@@ -24,6 +24,7 @@ export const EMAIL_TEMPLATES = {
   ticketReply: 'ticket.reply',
   accountRegistered: 'auth.registered',
   passwordReset: 'auth.password_reset',
+  emailVerify: 'auth.email_verify',
 } as const;
 export type EmailTemplate = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
 
@@ -44,10 +45,17 @@ export interface TicketReplyEmailPayload {
   ticketMessageId: string;
 }
 
-/** API-AUTH-03: письмо после регистрации учителя. */
+/** API-AUTH-03: письмо после регистрации учителя со ссылкой подтверждения email (API-AUTH-06). */
 export interface AccountRegisteredPayload {
   locale: Locale;
   displayName: string;
+  userId: string;
+}
+
+/** API-AUTH-06: повторная отправка ссылки подтверждения. */
+export interface EmailVerifyPayload {
+  locale: Locale;
+  userId: string;
 }
 
 /**
@@ -61,3 +69,6 @@ export interface PasswordResetPayload {
 
 /** Ключ Redis для хеша токена сброса пароля (sha256 hex). */
 export const passwordResetKey = (tokenHash: string) => `pwreset:${tokenHash}`;
+
+/** Ключ Redis для хеша токена подтверждения email (sha256 hex). */
+export const emailVerifyKey = (tokenHash: string) => `emailverify:${tokenHash}`;

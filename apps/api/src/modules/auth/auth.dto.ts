@@ -19,11 +19,15 @@ export class RegisterTeacherBody {
 }
 
 export class RegisterStudentBody {
-  @ApiProperty({ description: 'Код класса (BR-CLS-01)' }) code: string;
   @ApiProperty({ maxLength: 100 }) displayName: string;
   @ApiProperty({ description: 'PH-44: 3–32 символа a-z 0-9 . _ -' }) login: string;
   @ApiProperty({ minLength: 8, maxLength: 200 }) password: string;
   @ApiProperty({ format: 'email', required: false }) email?: string;
+  @ApiProperty({ format: 'uuid', required: false, description: 'Школа из справочника (API-PUB-09)' })
+  schoolId?: string;
+  @ApiProperty({ maxLength: 200, required: false, description: 'Школа вручную — «не проверена»' })
+  schoolName?: string;
+  @ApiProperty({ required: false, description: 'Код класса (необязательно, BR-CLS-01)' }) code?: string;
 }
 
 export class ForgotPasswordBody {
@@ -33,4 +37,13 @@ export class ForgotPasswordBody {
 export class ResetPasswordBody {
   @ApiProperty() token: string;
   @ApiProperty({ minLength: 8, maxLength: 200 }) password: string;
+}
+
+export class ChangePasswordBody {
+  @ApiProperty({ required: false, maxLength: 200 }) currentPassword?: string;
+  @ApiProperty({ minLength: 8, maxLength: 200 }) password: string;
+}
+
+export class VerifyEmailBody {
+  @ApiProperty() token: string;
 }

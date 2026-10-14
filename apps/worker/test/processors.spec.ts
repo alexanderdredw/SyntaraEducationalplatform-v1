@@ -258,13 +258,13 @@ describe('worker processors', () => {
     expect(keys.map((k) => k.key)).toEqual(['live']);
   });
 
-  it('API-AUTH-03 registration email greets the teacher by name', async () => {
+  it('API-AUTH-03, API-AUTH-06 registration email greets the teacher and carries a verification link', async () => {
     const [email] = await db
       .insert(schema.emailQueue)
       .values({
         toEmail: 'new.teacher@example.kz',
         template: EMAIL_TEMPLATES.accountRegistered,
-        payload: { locale: 'ru', displayName: 'Айгерим' },
+        payload: { locale: 'ru', displayName: 'Айгерим', userId: '0190a1b2-0000-7000-8000-0000000000aa' },
       })
       .returning();
     await sendEmail(job(email!.id), {
@@ -276,6 +276,31 @@ describe('worker processors', () => {
     });
     expect(sent[0]).toMatchObject({ to: 'new.teacher@example.kz' });
     expect(sent[0]!.text).toContain('Айгерим');
+    const token = /verifyToken=([A-Za-z0-9_-]+)/.exec(sent[0]!.text)?.[1];
+    expect(sent[0]!.text).toContain('http://localhost:3000/ru/auth/login?verifyToken=');
+    expect(token).toBeDefined();
+    const key = `emailverify:${createHash('sha256').update(token!).digest('hex')}`;
+    expect(await connection.get(key)).toBe('0190a1b2-0000-7000-8000-0000000000aa');
+  });
+
+  it('API-AUTH-06 resend email: subject «Подтвердите email» and a fresh one-time link', async () => {
+    const [email] = await db
+      .insert(schema.emailQueue)
+      .values({
+        toEmail: 'resend@example.kz',
+        template: EMAIL_TEMPLATES.emailVerify,
+        payload: { locale: 'ru', userId: '0190a1b2-0000-7000-8000-0000000000bb' },
+      })
+      .returning();
+    await sendEmail(job(email!.id), {
+      db,
+      transport: okTransport,
+      mailFrom: 'noreply@syntara-edu.me',
+      logger,
+      ...extra(),
+    });
+    expect(sent[0]!.subject).toBe('Подтвердите email');
+    expect(sent[0]!.text).toMatch(/verifyToken=/);
   });
 
   it('API-AUTH-04 reset email carries a one-time link; Redis keeps only the token hash with PH-06 TTL', async () => {

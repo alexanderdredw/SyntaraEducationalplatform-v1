@@ -17,5 +17,10 @@ export async function requireUser(locale: string, role?: UserRole): Promise<Me> 
     throw new Error('unreachable');
   }
   if (role && !me.roles.includes(role)) notFound();
+  // BR-CLS-05: временный пароль от учителя нужно сменить до работы в кабинете.
+  if (me.mustChangePassword) {
+    redirect({ href: '/auth/login?change=1', locale });
+    throw new Error('unreachable');
+  }
   return me;
 }

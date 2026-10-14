@@ -17,6 +17,6 @@ export async function runSeed(db: Database, set: SeedSet): Promise<void> {
 }
 
 export { seedId } from './ids';
-export { DEMO_IDS } from './demo';
+export { DEMO_IDS, DEMO_SCHOOLS, demoSchoolId } from './demo';
 export { VISUAL_IDS, VISUAL_NOW } from './visual';
 export { loadConfigSeed } from './config';

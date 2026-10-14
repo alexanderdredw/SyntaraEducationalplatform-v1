@@ -184,15 +184,15 @@ describe('classes and joining (integration)', () => {
     });
   });
 
-  it('PH-44 invalid or expired code → 404 and no account; taken login → 409; optional email is stored', async () => {
+  it('API-AUTH-03S invalid or expired code → 400 invalidCode and no account; taken login → 409; optional email is stored', async () => {
     const before = await stack.db.select().from(schema.users);
     const bad = await registerStudent({
       code: 'ZZZZZZ',
       displayName: 'X',
       login: 'nobody1',
       password: 'student-pass-1',
-    }).expect(404);
-    expect(bad.body.code).toBe('NOT_FOUND');
+    }).expect(400);
+    expect(bad.body).toMatchObject({ code: 'VALIDATION_FAILED', fieldErrors: { code: 'invalidCode' } });
     expect(JSON.stringify(bad.body)).not.toMatch(/class/i);
     expect(await stack.db.select().from(schema.users)).toHaveLength(before.length);
 

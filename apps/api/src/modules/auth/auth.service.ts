@@ -1,11 +1,14 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { argon2id, hash, verify } from 'argon2';
 import { createHash } from 'node:crypto';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNull, ne } from 'drizzle-orm';
 import { type Response } from 'express';
 import Redis from 'ioredis';
 import {
   type AccountRegisteredPayload,
+  type ChangePasswordDto,
+  emailVerifyKey,
+  type EmailVerifyPayload,
   EMAIL_TEMPLATES,
   type ForgotPasswordDto,
   type Locale,
@@ -15,6 +18,7 @@ import {
   type PasswordResetPayload,
   type RegisterTeacherDto,
   type ResetPasswordDto,
+  type VerifyEmailDto,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
@@ -24,6 +28,7 @@ import { DB, REDIS } from '../../infra/tokens';
 import { type MeDto } from '../users/me.dto';
 import { MeService } from '../users/me.service';
 import { createAccount } from './accounts';
+import { type AuthUser } from './auth.types';
 import { SessionService, sortRoles } from './session.service';
 
 /** Пароли — Argon2id (REQ-NFR-SEC-02). */
@@ -100,8 +105,8 @@ export class AuthService {
   /**
    * API-AUTH-03: регистрация учителя (PH-06, PH-17). Аккаунт, роль, предпочтения, согласие и письмо —
    * одной транзакцией; затем вход (cookie сессии).
-   * TODO(OWNER): подтверждение email (Q-12) — нужен признак подтверждения в users (миграция); пока письмо
-   * сообщает о регистрации, вход до подтверждения разрешён.
+   * Письмо содержит ссылку подтверждения email (API-AUTH-06); вход до подтверждения разрешён (решение владельца
+   * 2026-10-14), в кабинете — напоминание «Подтвердите email».
    */
   async registerTeacher(
     dto: RegisterTeacherDto,
@@ -123,6 +128,7 @@ export class AuthService {
       await enqueueEmail(tx, OUTBOX_EVENT_TYPES.emailAccount, EMAIL_TEMPLATES.accountRegistered, dto.email, {
         locale,
         displayName: dto.displayName,
+        userId: id,
       } satisfies AccountRegisteredPayload);
       return id;
     });
@@ -172,6 +178,78 @@ export class AuthService {
         .set({ revokedAt: new Date() })
         .where(and(eq(authSessions.userId, userId), isNull(authSessions.revokedAt)));
     });
+  }
+
+  /**
+   * API-AUTH-05: смена пароля вошедшим пользователем. При временном пароле от учителя (mustChangePassword)
+   * текущий пароль не нужен; иначе он проверяется. Остальные сессии пользователя завершаются.
+   */
+  async changePassword(user: AuthUser, dto: ChangePasswordDto): Promise<void> {
+    await this.assertPasswordLength(dto.password);
+    const { users, authSessions } = schema;
+    const [row] = await this.db
+      .select({ passwordHash: users.passwordHash, mustChange: users.mustChangePassword })
+      .from(users)
+      .where(eq(users.id, user.id));
+    if (!row) throw invalidCredentials();
+    if (!row.mustChange) {
+      const ok = row.passwordHash
+        ? await verify(row.passwordHash, dto.currentPassword ?? '').catch(() => false)
+        : false;
+      if (!ok) {
+        throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Current password is wrong', {
+          currentPassword: 'invalidPassword',
+        });
+      }
+    }
+    const passwordHash = await hashPassword(dto.password);
+    await this.db.transaction(async (tx) => {
+      await tx.update(users).set({ passwordHash, mustChangePassword: false }).where(eq(users.id, user.id));
+      await tx
+        .update(authSessions)
+        .set({ revokedAt: new Date() })
+        .where(
+          and(
+            eq(authSessions.userId, user.id),
+            isNull(authSessions.revokedAt),
+            ne(authSessions.id, user.sessionId),
+          ),
+        );
+    });
+  }
+
+  /** API-AUTH-06: подтверждение email по одноразовому токену из письма. */
+  async verifyEmail(dto: VerifyEmailDto): Promise<void> {
+    if (this.redis.status === 'wait') await this.redis.connect();
+    const tokenHash = createHash('sha256').update(dto.token).digest('hex');
+    const userId = await this.redis.getdel(emailVerifyKey(tokenHash));
+    if (!userId) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Invalid or expired token', {
+        token: 'invalidToken',
+      });
+    }
+    await this.db
+      .update(schema.users)
+      .set({ emailVerifiedAt: new Date() })
+      .where(eq(schema.users.id, userId));
+  }
+
+  /** API-AUTH-06: повторная отправка ссылки — только вошедшему пользователю с неподтверждённым email. */
+  async resendVerification(user: AuthUser, locale: Locale): Promise<void> {
+    const { users } = schema;
+    const [row] = await this.db
+      .select({ email: users.email, verifiedAt: users.emailVerifiedAt })
+      .from(users)
+      .where(eq(users.id, user.id));
+    if (!row?.email || row.verifiedAt) {
+      throw new ApiException(HttpStatus.CONFLICT, 'CONFLICT', 'Nothing to verify');
+    }
+    await this.db.transaction((tx) =>
+      enqueueEmail(tx, OUTBOX_EVENT_TYPES.emailAccount, EMAIL_TEMPLATES.emailVerify, row.email!, {
+        locale,
+        userId: user.id,
+      } satisfies EmailVerifyPayload),
+    );
   }
 
   /** PH-06: минимальная длина пароля из app_config (схема Zod проверяет значение по умолчанию). */
