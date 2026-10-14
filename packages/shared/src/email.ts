@@ -9,6 +9,8 @@ export const OUTBOX_EVENT_TYPES = {
   emailConfirmation: 'email.confirmation',
   /** API-SUP-04: ответ сотрудника по обращению. */
   emailTicketReply: 'email.ticket_reply',
+  /** API-AUTH-03, API-AUTH-04: письма аккаунта. */
+  emailAccount: 'email.account',
 } as const;
 export type OutboxEventType = (typeof OUTBOX_EVENT_TYPES)[keyof typeof OUTBOX_EVENT_TYPES];
 
@@ -20,6 +22,8 @@ export const EMAIL_TEMPLATES = {
   schoolRequestConfirmation: 'school_request.confirmation',
   supportTicketConfirmation: 'support_ticket.confirmation',
   ticketReply: 'ticket.reply',
+  accountRegistered: 'auth.registered',
+  passwordReset: 'auth.password_reset',
 } as const;
 export type EmailTemplate = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
 
@@ -39,3 +43,21 @@ export interface TicketReplyEmailPayload {
   ticketId: string;
   ticketMessageId: string;
 }
+
+/** API-AUTH-03: письмо после регистрации учителя. */
+export interface AccountRegisteredPayload {
+  locale: Locale;
+  displayName: string;
+}
+
+/**
+ * API-AUTH-04: ссылку сброса создаёт worker при отправке — в БД и очереди нет самого токена;
+ * в Redis хранится только хеш токена с TTL PH-06 `auth.reset_link_ttl_hours`.
+ */
+export interface PasswordResetPayload {
+  locale: Locale;
+  userId: string;
+}
+
+/** Ключ Redis для хеша токена сброса пароля (sha256 hex). */
+export const passwordResetKey = (tokenHash: string) => `pwreset:${tokenHash}`;

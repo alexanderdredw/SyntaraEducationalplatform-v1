@@ -6,7 +6,7 @@ import { buildCsp } from './lib/csp';
 const handleI18n = createMiddleware(routing);
 
 /** Маршруты, требующие входа (раздел 4): без cookie сессии — на /auth/login с возвратом. */
-const PROTECTED = ['/staff', '/teacher', '/learn'];
+const PROTECTED = ['/staff', '/teacher', '/learn', '/account'];
 
 function withoutLocale(pathname: string): { locale: string | null; path: string } {
   const [, first, ...rest] = pathname.split('/');

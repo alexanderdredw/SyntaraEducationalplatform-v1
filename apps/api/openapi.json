@@ -58,7 +58,98 @@
             }
           },
           "401": {
-            "description": "Неверный email или пароль"
+            "description": "Неверный email/логин или пароль"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterTeacherBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email уже зарегистрирован (fieldErrors.email = emailTaken)"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/password/forgot": {
+      "post": {
+        "operationId": "AuthController_forgot",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/password/reset": {
+      "post": {
+        "operationId": "AuthController_reset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
           },
           "429": {
             "description": "Превышен лимит; retryAfterSeconds в теле"
@@ -122,6 +213,506 @@
           }
         ],
         "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/preferences": {
+      "patch": {
+        "operationId": "MeController_preferences",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/active-role": {
+      "post": {
+        "operationId": "MeController_activeRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActiveRoleBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/notifications": {
+      "get": {
+        "operationId": "MeController_notifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/data-requests": {
+      "post": {
+        "operationId": "MeController_dataRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/stats": {
+      "get": {
+        "operationId": "MeController_stats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeStatsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          },
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/teacher/classes": {
+      "get": {
+        "operationId": "TeacherClassesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TeacherClassDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "post": {
+        "operationId": "TeacherClassesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClassBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherClassDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/invite-codes": {
+      "post": {
+        "operationId": "TeacherClassesController_issue",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuedCodeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/student/join": {
+      "post": {
+        "operationId": "StudentClassController_join",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassCodeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentClassDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Код не найден или истёк"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/class": {
+      "get": {
+        "operationId": "StudentClassController_studentClass",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "nullable": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StudentClassDto"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/class/leave": {
+      "post": {
+        "operationId": "StudentClassController_leave",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Ученик не состоит в классе"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/public/join/check": {
+      "post": {
+        "operationId": "JoinController_check",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassCodeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCheckDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/auth/register-student": {
+      "post": {
+        "operationId": "JoinController_registerStudent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterStudentBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Код не найден или истёк"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public",
           "auth"
         ]
       }
@@ -1107,8 +1698,8 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
-            "maxLength": 254
+            "maxLength": 254,
+            "description": "Email или логин ученика (PH-44)"
           },
           "password": {
             "type": "string",
@@ -1205,6 +1796,323 @@
         },
         "required": [
           "user"
+        ]
+      },
+      "RegisterTeacherBody": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "teacher"
+            ]
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200,
+            "description": "PH-06"
+          }
+        },
+        "required": [
+          "role",
+          "email",
+          "displayName",
+          "password"
+        ]
+      },
+      "ForgotPasswordBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordBody": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "token",
+          "password"
+        ]
+      },
+      "PreferencesBody": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark",
+              "system"
+            ]
+          },
+          "dataSaver": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ActiveRoleBody": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "teacher",
+              "support_agent",
+              "onboarding_agent"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object"
+          },
+          "readAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "payload",
+          "readAt",
+          "createdAt"
+        ]
+      },
+      "DataRequestBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "export",
+              "delete"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "DataRequestResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "export",
+              "delete"
+            ]
+          },
+          "publicNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "publicNumber"
+        ]
+      },
+      "MeStatsDto": {
+        "type": "object",
+        "properties": {
+          "streakDays": {
+            "type": "number"
+          },
+          "xpTotal": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "streakDays",
+          "xpTotal"
+        ]
+      },
+      "TeacherClassDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "studentsCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "studentsCount"
+        ]
+      },
+      "CreateClassBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "IssuedCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "K7M2QX"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "code",
+          "expiresAt"
+        ]
+      },
+      "StudentClassDto": {
+        "type": "object",
+        "properties": {
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "className": {
+            "type": "string"
+          },
+          "teacherName": {
+            "type": "string"
+          },
+          "schoolName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "classId",
+          "className",
+          "teacherName",
+          "schoolName"
+        ]
+      },
+      "ClassCodeBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Код класса; нормализуется (BR-CLS-01)"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "CodeCheckDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "valid"
+        ]
+      },
+      "RegisterStudentBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Код класса (BR-CLS-01)"
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "login": {
+            "type": "string",
+            "description": "PH-44: 3–32 символа a-z 0-9 . _ -"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "code",
+          "displayName",
+          "login",
+          "password"
         ]
       },
       "ChatMessageBody": {

@@ -23,17 +23,19 @@ import { ApiException } from './api-exception';
 
 /**
  * Лимиты API-GEN-06 (Redis): формы — 5 в минуту на IP; вход — 10 за 15 минут на IP+email;
- * ИИ — PH-20 `ai.limits` (per_minute и per_day на IP). Проверка кода класса добавится в итерации 6.
+ * проверка кода класса — 10 за 15 минут на IP; ИИ — PH-20 `ai.limits` (per_minute и per_day на IP).
  */
 export const RATE_LIMITS = {
   forms: { limit: 5, ttl: 60_000 },
   login: { limit: 10, ttl: 15 * 60_000 },
+  join: { limit: 10, ttl: 15 * 60_000 },
 } as const;
 
 /** Группа лимитов маршрута → имена счётчиков (у ИИ — два окна). */
 export const RATE_LIMIT_GROUPS = {
   forms: ['forms'],
   login: ['login'],
+  join: ['join'],
   ai: ['ai_minute', 'ai_day'],
 } as const;
 export type RateLimitName = keyof typeof RATE_LIMIT_GROUPS;
@@ -114,6 +116,7 @@ export function throttlerOptions(
           return `${ip(req)}|${email}`;
         },
       },
+      { name: 'join', ...RATE_LIMITS.join, getTracker: ip, generateKey: sharedKey },
       {
         name: 'ai_minute',
         ttl: 60_000,

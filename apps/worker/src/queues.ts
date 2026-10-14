@@ -1,7 +1,7 @@
 import { Queue, Worker, type ConnectionOptions, type Job, type Processor } from 'bullmq';
 import { type Logger } from 'pino';
 import { type Database } from '@syntara/db';
-import { type EmailJobData, type MailTransport, sendEmail } from './processors/email';
+import { type EmailJobData, type MailTransport, sendEmail, type TokenStore } from './processors/email';
 import { autoCloseResolved, cleanupIdempotencyKeys } from './processors/maintenance';
 import { processOutbox } from './processors/outbox';
 
@@ -13,6 +13,8 @@ export interface WorkerDeps {
   db: Database;
   transport: MailTransport;
   mailFrom: string;
+  tokens: TokenStore;
+  appBaseUrl: string;
 }
 
 /** Периодические задачи (BullMQ job schedulers): опрос outbox, автозакрытие обращений, очистка ключей. */

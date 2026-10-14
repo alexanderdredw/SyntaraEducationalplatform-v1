@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Popover } from 'radix-ui';
-import { CircleHelp, MessageCircle, X } from 'lucide-react';
+import { CircleHelp, Lightbulb, MessageCircle, X } from 'lucide-react';
 import { FloatingHelp as FloatingHelpFrame } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { AppLink } from '../app-link';
@@ -10,10 +10,18 @@ import { helpKey } from './nav-items';
 
 /**
  * Плавающие кнопки справа внизу (REQ-GEN-SHELL-04): «?» — краткая справка по странице и ссылки поддержки,
- * синяя — публичный помощник (/ai). Поднимаются над cookie-баннером (переменная --cookie-banner-h).
+ * синяя — публичный помощник (/ai). В кабинетах между ними — жёлтая «лампочка» (PH-32; содержимое — Q-21,
+ * пока заглушка PH-24). Поднимаются над cookie-баннером (переменная --cookie-banner-h).
  */
-export function FloatingHelp({ supportEmail }: { supportEmail: string | null }) {
+export function FloatingHelp({
+  supportEmail,
+  lamp = false,
+}: {
+  supportEmail: string | null;
+  lamp?: boolean;
+}) {
   const t = useTranslations('help');
+  const tc = useTranslations();
   const pathname = usePathname();
   const round =
     'inline-flex size-12 items-center justify-center rounded-full shadow-lg transition hover:brightness-110';
@@ -66,6 +74,27 @@ export function FloatingHelp({ supportEmail }: { supportEmail: string | null }) 
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
+      {lamp ? (
+        <Popover.Root>
+          <Popover.Trigger
+            aria-label={tc('cabinet.lamp')}
+            data-testid="cabinet-lamp"
+            className={`${round} border border-[var(--border)] bg-[var(--surface)] text-[#f5b301]`}
+          >
+            <Lightbulb aria-hidden="true" className="size-5" />
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content
+              side="left"
+              sideOffset={8}
+              collisionPadding={16}
+              className="z-50 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-xl"
+            >
+              {tc('common.sectionInDevelopment')}
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
+      ) : null}
       <AppLink
         href="/ai"
         aria-label={t('assistant')}

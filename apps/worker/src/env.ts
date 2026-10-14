@@ -7,6 +7,7 @@ const EnvSchema = z.object({
   DATABASE_URL: z.url(),
   SMTP_URL: z.url(),
   MAIL_FROM: z.email(),
+  APP_BASE_URL: z.url(),
   PLATFORM_TZ: z.string().default('Asia/Almaty'),
   // CLAMD_HOST, OLEVBA_URL станут обязательными вместе с проверкой файлов (итерация 7).
 });

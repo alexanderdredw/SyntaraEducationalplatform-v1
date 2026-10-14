@@ -6,3 +6,4 @@ export * from './i18n';
 export * from './support';
 export * from './email';
 export * from './ai';
+export * from './accounts';

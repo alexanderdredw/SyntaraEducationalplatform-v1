@@ -14,6 +14,8 @@ export type AuthRequest = Request & { user?: AuthUser; id?: string };
 export const SESSION_COOKIE = 'sid';
 export const CSRF_COOKIE = 'csrf';
 export const CSRF_HEADER = 'x-csrf-token';
+/** API-ME-03: выбранная роль (проверяется по user_roles при каждом запросе). */
+export const ACTIVE_ROLE_COOKIE = 'role';
 
 /** API-GEN-02, REQ-NFR-SEC-03: срок сессии — до 14 дней с продлением. */
 export const SESSION_TTL_MS = 14 * 24 * 60 * 60 * 1000;

@@ -26,6 +26,8 @@ describe('worker processors', () => {
   const logger = pino({}, { write: (line: string) => lines.push(line) });
   const sent: MailMessage[] = [];
   const okTransport = { sendMail: async (m: MailMessage) => sent.push(m) };
+  const APP = 'http://localhost:3000';
+  const extra = () => ({ tokens: connection, appBaseUrl: APP });
 
   const job = (emailQueueId: string, attemptsMade = 0) =>
     ({
@@ -103,6 +105,7 @@ describe('worker processors', () => {
         db,
         transport: okTransport,
         mailFrom: 'noreply@syntara-edu.me',
+        ...extra(),
         logger,
       }),
     ).toBe('sent');
@@ -118,9 +121,9 @@ describe('worker processors', () => {
     expect(row).toMatchObject({ status: 'sent', attempts: 1 });
     expect(row!.sentAt).toBeInstanceOf(Date);
     // Повторная доставка того же задания письмо не дублирует.
-    expect(await sendEmail(job(email.id), { db, transport: okTransport, mailFrom: 'x@y.kz', logger })).toBe(
-      'skipped',
-    );
+    expect(
+      await sendEmail(job(email.id), { db, transport: okTransport, mailFrom: 'x@y.kz', logger, ...extra() }),
+    ).toBe('skipped');
     expect(sent).toHaveLength(1);
   });
 
@@ -135,7 +138,7 @@ describe('worker processors', () => {
       });
     });
     const down = nodemailer.createTransport({ host: '127.0.0.1', port, connectionTimeout: 3000 });
-    const deps = { db, transport: down, mailFrom: 'noreply@syntara-edu.me', logger };
+    const deps = { db, transport: down, mailFrom: 'noreply@syntara-edu.me', logger, ...extra() };
     await expect(sendEmail(job(email.id, 0), deps)).rejects.toThrow();
     await expect(sendEmail(job(email.id, 1), deps)).rejects.toThrow();
 
@@ -178,6 +181,7 @@ describe('worker processors', () => {
       db,
       transport: okTransport,
       mailFrom: 'noreply@syntara-edu.me',
+      ...extra(),
       logger,
     });
     const [mail] = sent;
@@ -252,6 +256,56 @@ describe('worker processors', () => {
     expect(await cleanupIdempotencyKeys(db)).toBe(1);
     const keys = await db.select({ key: schema.idempotencyKeys.key }).from(schema.idempotencyKeys);
     expect(keys.map((k) => k.key)).toEqual(['live']);
+  });
+
+  it('API-AUTH-03 registration email greets the teacher by name', async () => {
+    const [email] = await db
+      .insert(schema.emailQueue)
+      .values({
+        toEmail: 'new.teacher@example.kz',
+        template: EMAIL_TEMPLATES.accountRegistered,
+        payload: { locale: 'ru', displayName: 'Айгерим' },
+      })
+      .returning();
+    await sendEmail(job(email!.id), {
+      db,
+      transport: okTransport,
+      mailFrom: 'noreply@syntara-edu.me',
+      logger,
+      ...extra(),
+    });
+    expect(sent[0]).toMatchObject({ to: 'new.teacher@example.kz' });
+    expect(sent[0]!.text).toContain('Айгерим');
+  });
+
+  it('API-AUTH-04 reset email carries a one-time link; Redis keeps only the token hash with PH-06 TTL', async () => {
+    const userId = '0190a1b2-0000-7000-8000-000000000001';
+    const [email] = await db
+      .insert(schema.emailQueue)
+      .values({
+        toEmail: 'teacher@example.kz',
+        template: EMAIL_TEMPLATES.passwordReset,
+        payload: { locale: 'kk', userId },
+      })
+      .returning();
+    await sendEmail(job(email!.id), {
+      db,
+      transport: okTransport,
+      mailFrom: 'noreply@syntara-edu.me',
+      logger,
+      ...extra(),
+    });
+    const link = /http:\/\/localhost:3000\/kk\/auth\/login\?resetToken=([A-Za-z0-9_-]+)/.exec(sent[0]!.text);
+    expect(link).not.toBeNull();
+    const token = link![1]!;
+    const key = `pwreset:${createHash('sha256').update(token).digest('hex')}`;
+    expect(await connection.get(key)).toBe(userId);
+    const ttl = await connection.ttl(key);
+    expect(ttl).toBeGreaterThan(23 * 60 * 60);
+    expect(ttl).toBeLessThanOrEqual(24 * 60 * 60);
+    expect(await connection.keys(`*${token}*`)).toEqual([]);
+    const [row] = await db.select().from(schema.emailQueue).where(eq(schema.emailQueue.id, email!.id));
+    expect(JSON.stringify(row!.payload)).not.toContain(token);
   });
 
   it('REQ-NFR-SEC-07 worker logs contain neither email addresses nor message text', () => {

@@ -7,6 +7,7 @@ import { type Database, schema } from '@syntara/db';
 import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 import {
+  ACTIVE_ROLE_COOKIE,
   type AuthUser,
   CSRF_COOKIE,
   ROLE_ORDER,
@@ -100,6 +101,7 @@ export class SessionService {
     const { maxAge: _maxAge, ...options } = this.cookieOptions(true);
     res.clearCookie(SESSION_COOKIE, options);
     res.clearCookie(CSRF_COOKIE, { ...options, httpOnly: false });
+    res.clearCookie(ACTIVE_ROLE_COOKIE, options);
   }
 
   /** Сравнение CSRF-токенов за постоянное время. */

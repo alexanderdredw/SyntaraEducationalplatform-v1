@@ -16,3 +16,38 @@ export class MeDto {
   @ApiProperty({ enum: UserRole.options }) activeRole: UserRole;
   @ApiProperty({ type: PreferencesDto }) preferences: PreferencesDto;
 }
+
+export class PreferencesBody {
+  @ApiProperty({ enum: LOCALES, required: false }) locale?: Locale;
+  @ApiProperty({ enum: ['light', 'dark', 'system'], required: false }) theme?: string;
+  @ApiProperty({ required: false }) dataSaver?: boolean;
+}
+
+export class ActiveRoleBody {
+  @ApiProperty({ enum: UserRole.options }) role: UserRole;
+}
+
+export class NotificationDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() type: string;
+  @ApiProperty({ type: Object }) payload: Record<string, unknown>;
+  @ApiProperty({ type: String, nullable: true, format: 'date-time' }) readAt: string | null;
+  @ApiProperty({ format: 'date-time' }) createdAt: string;
+}
+
+export class DataRequestBody {
+  @ApiProperty({ enum: ['export', 'delete'] }) type: 'export' | 'delete';
+}
+
+/** API-ME-05: номер обращения data_privacy (PH-08), если оно создано. */
+export class DataRequestResponse {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ enum: ['export', 'delete'] }) type: 'export' | 'delete';
+  @ApiProperty({ type: String, nullable: true }) publicNumber: string | null;
+}
+
+/** API-S-16 */
+export class MeStatsDto {
+  @ApiProperty() streakDays: number;
+  @ApiProperty() xpTotal: number;
+}

@@ -8,6 +8,7 @@ import { Check, ChevronDown, Gauge, Languages, Moon, Sun } from 'lucide-react';
 import { LOCALES, type Locale } from '@syntara/shared';
 import { cn } from '@syntara/ui';
 import { COOKIE, writeCookie } from '@/lib/preferences';
+import { syncPreferences } from '@/lib/sync-preferences';
 import { usePreferences } from '../preferences/preferences-provider';
 
 /** Фактическая тема из атрибута data-theme на <html> (его ставит скрипт до отрисовки или переключатель). */
@@ -41,6 +42,7 @@ export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly 
   const switchTo = (next: Locale) => {
     if (next === locale) return;
     writeCookie(COOKIE.locale, next);
+    syncPreferences({ locale: next });
     const rest = pathname.replace(/^\/(ru|kk|en)(?=\/|$)/, '');
     router.replace(`/${next}${rest}${window.location.search}${window.location.hash}`, { scroll: false });
   };

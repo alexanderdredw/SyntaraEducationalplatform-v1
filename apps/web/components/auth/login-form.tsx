@@ -19,7 +19,7 @@ type Problem = 'invalid' | 'rateLimited' | 'network' | 'server' | null;
  * Вход (REQ-GEN-AUTH-01, API-AUTH-01): Email, Пароль, «Войти», «Забыли пароль?».
  * После входа — returnTo из белого списка или страница по роли. Регистрация и сброс пароля — итерация 6.
  */
-export function LoginForm({ returnTo }: { returnTo: string | null }) {
+export function LoginForm({ returnTo, notice }: { returnTo: string | null; notice?: string }) {
   const t = useTranslations('auth.login');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
@@ -75,6 +75,11 @@ export function LoginForm({ returnTo }: { returnTo: string | null }) {
 
   return (
     <form noValidate onSubmit={onSubmit} data-testid="login-form" className="flex flex-col gap-5">
+      {notice ? (
+        <p role="status" data-testid="login-notice">
+          {notice}
+        </p>
+      ) : null}
       <Field id="login-email" label={t('email')} required error={errorText(errors.email?.message)}>
         <Input {...form.register('email')} type="email" autoComplete="username" />
       </Field>
@@ -87,9 +92,8 @@ export function LoginForm({ returnTo }: { returnTo: string | null }) {
         </p>
       ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* API-AUTH-04 и его экран — итерация 6; до тех пор ссылка ведёт к обращению «Аккаунт и доступ». */}
         <AppLink
-          href="/support?category=account_access"
+          href="/auth/login?forgot=1"
           className="inline-flex min-h-11 items-center text-sm text-[var(--accent)] hover:underline"
         >
           {t('forgot')}

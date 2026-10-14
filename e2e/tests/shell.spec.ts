@@ -159,11 +159,11 @@ test.describe('Оболочка и навигация', () => {
     await expect(footer.getByText(ru.footer.copyright)).toBeVisible();
   });
 
-  test('PH-24 entry points without a page lead to «Раздел в разработке»', async ({ page }) => {
-    // /auth/login — с итерации 4 (минимальный вход, Q-01).
-    for (const path of ['/auth/start', '/join', '/account/privacy']) {
+  test('раздел 4: closed cabinet pages send a guest to the login page with returnTo', async ({ page }) => {
+    // Страницы PH-24 кабинетов проверяются в accounts.spec.ts после входа.
+    for (const path of ['/teacher/courses', '/learn/subjects', '/account/privacy']) {
       await page.goto(`/ru${path}`);
-      await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.common.sectionInDevelopment);
+      await expect(page).toHaveURL(new RegExp(`/ru/auth/login\\?returnTo=${encodeURIComponent(path)}$`));
     }
   });
 

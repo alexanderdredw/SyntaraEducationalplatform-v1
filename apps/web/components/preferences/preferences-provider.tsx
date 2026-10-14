@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { COOKIE, type Consent, type Theme, writeCookie } from '@/lib/preferences';
+import { syncPreferences } from '@/lib/sync-preferences';
 
 interface PreferencesValue {
   theme: Theme | undefined;
@@ -36,12 +37,14 @@ export function PreferencesProvider({
   const setTheme = useCallback((next: Theme) => {
     document.documentElement.setAttribute('data-theme', next);
     writeCookie(COOKIE.theme, next);
+    syncPreferences({ theme: next });
     setThemeState(next);
   }, []);
 
   const setDataSaver = useCallback((on: boolean) => {
     document.documentElement.setAttribute('data-data-saver', String(on));
     writeCookie(COOKIE.dataSaver, on ? '1' : '0');
+    syncPreferences({ dataSaver: on });
     setDataSaverState(on);
   }, []);
 

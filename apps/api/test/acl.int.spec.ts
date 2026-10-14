@@ -1,0 +1,127 @@
+import request from 'supertest';
+import { buildOpenApi } from '../src/setup';
+import { ACCOUNTS, freshIp, login, type Session } from './support/session';
+import { startStack, type TestStack } from './support/stack';
+
+type Method = 'get' | 'post' | 'put' | 'patch' | 'delete';
+interface Operation {
+  method: Method;
+  path: string;
+}
+
+const UNKNOWN_ID = '0190a1b2-0000-7000-8000-000000000000';
+
+/**
+ * REQ-NFR-SEC-04, BR-ACL-04: генерируемый тест прав по реестру маршрутов из OpenAPI.
+ * Для каждого /api/teacher/* и /api/student/*: без сессии — 401; служебная роль — 403;
+ * чужая учебная роль — 403; маршрут с ID: несуществующий или чужой объект — 404.
+ * Новые маршруты следующих итераций попадают в проверку автоматически.
+ */
+describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
+  let stack: TestStack;
+  let operations: Operation[];
+  let teacherA: Session;
+  let teacherB: Session;
+  let student: Session;
+  let support: Session;
+  let foreignClassId: string;
+  const http = () => request(stack.app.getHttpServer());
+
+  const call = (op: Operation, path: string, s?: Session) => {
+    let req = http()[op.method](path).set('X-Forwarded-For', freshIp());
+    if (s) req = req.set('Cookie', s.cookie).set('X-CSRF-Token', s.csrf);
+    return op.method === 'get' || op.method === 'delete' ? req : req.send({});
+  };
+  const fill = (path: string, id: string) => path.replace(/\{[^}]+\}/g, id);
+
+  beforeAll(async () => {
+    stack = await startStack('demo');
+    const doc = buildOpenApi(stack.app);
+    operations = Object.entries(doc.paths).flatMap(([path, item]) =>
+      /^\/api\/(teacher|student)\//.test(path)
+        ? (['get', 'post', 'put', 'patch', 'delete'] as const)
+            .filter((m) => (item as Record<string, unknown>)[m])
+            .map((method) => ({ method, path }))
+        : [],
+    );
+
+    teacherA = await login(http, ACCOUNTS.teacher);
+    await http()
+      .post('/api/auth/register')
+      .set('X-Forwarded-For', freshIp())
+      .send({
+        role: 'teacher',
+        email: 'acl.teacher@example.kz',
+        displayName: 'ACL',
+        password: 'strong-pass-1',
+      })
+      .expect(201);
+    teacherB = await login(http, 'acl.teacher@example.kz', 'strong-pass-1');
+    support = await login(http, ACCOUNTS.support);
+
+    const cls = await http()
+      .post('/api/teacher/classes')
+      .set('Cookie', teacherA.cookie)
+      .set('X-CSRF-Token', teacherA.csrf)
+      .send({ name: 'ACL' })
+      .expect(201);
+    foreignClassId = cls.body.id;
+    const code = await http()
+      .post(`/api/teacher/classes/${foreignClassId}/invite-codes`)
+      .set('Cookie', teacherA.cookie)
+      .set('X-CSRF-Token', teacherA.csrf)
+      .expect(201);
+    await http()
+      .post('/api/auth/register-student')
+      .set('X-Forwarded-For', freshIp())
+      .send({ code: code.body.code, displayName: 'ACL', login: 'acl.student', password: 'student-pass-1' })
+      .expect(201);
+    student = await login(http, 'acl.student', 'student-pass-1');
+  });
+
+  afterAll(() => stack?.stop());
+
+  it('REQ-NFR-SEC-04 the registry covers the teacher and student routes of this iteration', () => {
+    const keys = operations.map((o) => `${o.method.toUpperCase()} ${o.path}`);
+    expect(keys).toEqual(
+      expect.arrayContaining([
+        'GET /api/teacher/classes',
+        'POST /api/teacher/classes',
+        'POST /api/teacher/classes/{id}/invite-codes',
+        'POST /api/student/join',
+        'GET /api/student/class',
+        'POST /api/student/class/leave',
+      ]),
+    );
+  });
+
+  it('REQ-NFR-SEC-04 every route: guest → 401, staff → 403', async () => {
+    for (const op of operations) {
+      const path = fill(op.path, UNKNOWN_ID);
+      expect((await call(op, path)).status, `guest ${op.method} ${op.path}`).toBe(401);
+      expect((await call(op, path, support)).status, `staff ${op.method} ${op.path}`).toBe(403);
+    }
+  });
+
+  it('BR-ACL-04 learning roles cannot cross: teacher on /student → 403, student on /teacher → 403', async () => {
+    for (const op of operations) {
+      const path = fill(op.path, UNKNOWN_ID);
+      const other = op.path.startsWith('/api/teacher/') ? student : teacherA;
+      expect((await call(op, path, other)).status, `${op.method} ${op.path}`).toBe(403);
+    }
+  });
+
+  it('REQ-NFR-SEC-04, API-GEN-08 routes with an ID: unknown or foreign object → 404', async () => {
+    const withId = operations.filter((o) => o.path.includes('{'));
+    expect(withId.length).toBeGreaterThan(0);
+    for (const op of withId) {
+      const owner = op.path.startsWith('/api/teacher/') ? teacherB : student;
+      expect((await call(op, fill(op.path, UNKNOWN_ID), owner)).status, `unknown ${op.path}`).toBe(404);
+      if (op.path.startsWith('/api/teacher/classes/')) {
+        expect((await call(op, fill(op.path, foreignClassId), teacherB)).status, `foreign ${op.path}`).toBe(
+          404,
+        );
+      }
+    }
+  });
+});

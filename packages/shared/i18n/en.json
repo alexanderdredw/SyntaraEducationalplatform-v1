@@ -27,7 +27,12 @@
     "exactlyOneCorrect": "Mark exactly one correct option",
     "atLeastOneLanguage": "Fill in at least one language (RU, KK or EN)",
     "invalidAssignee": "Choose a staff member from the list",
-    "invalidTemplate": "Template not found"
+    "invalidTemplate": "Template not found",
+    "passwordTooShort": "The password must be at least 8 characters",
+    "emailTaken": "This email is already registered",
+    "loginTaken": "This login is already taken",
+    "invalidLogin": "Login: 3–32 characters — Latin letters, digits, «.», «_» or «-»",
+    "invalidToken": "The link is invalid or has expired"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -477,12 +482,45 @@
   "auth": {
     "login": {
       "title": "Sign in",
-      "email": "Email",
+      "email": "Email or login",
       "password": "Password",
       "submit": "Sign in",
       "forgot": "Forgot password?",
       "invalid": "Wrong email or password",
-      "rateLimited": "Too many sign-in attempts. Try again in {minutes} min."
+      "rateLimited": "Too many sign-in attempts. Try again in {minutes} min.",
+      "registered": "Password changed. Sign in with your new password.",
+      "noAccount": "No account?",
+      "start": "Get started"
+    },
+    "forgot": {
+      "title": "Password recovery",
+      "text": "Enter your email — we will send a link to set a new password.",
+      "email": "Email",
+      "submit": "Send link",
+      "sent": "If an account with this email exists, we have sent an email with a link.",
+      "back": "← Back to sign in"
+    },
+    "reset": {
+      "title": "New password",
+      "password": "New password",
+      "hint": "At least 8 characters",
+      "submit": "Save password",
+      "invalid": "The link is invalid or has expired. Request a new one."
+    },
+    "start": {
+      "title": "Where shall we start?",
+      "student": "Student",
+      "studentText": "Students join through their teacher’s class or school",
+      "studentLink": "Join a class",
+      "teacher": "Teacher",
+      "teacherText": "Create courses, give them to classes and follow the progress.",
+      "register": "Teacher sign-up",
+      "email": "Email",
+      "displayName": "Name",
+      "password": "Password",
+      "passwordHint": "At least 8 characters",
+      "submit": "Sign up",
+      "haveAccount": "Already have an account? Sign in"
     }
   },
   "staff": {
@@ -615,6 +653,115 @@
     "ticketReply": {
       "subject": "Reply to request {number}",
       "footer": "To reply, simply reply to this email."
+    },
+    "account": {
+      "registeredSubject": "Welcome to Syntara",
+      "registeredBody": "{name}, your teacher account has been created. Sign in to create your first class and course.",
+      "resetSubject": "Password recovery",
+      "resetBody": "To set a new password, open the link:",
+      "resetIgnore": "If you did not request a password reset, just ignore this email."
+    }
+  },
+  "join": {
+    "title": "Join a class",
+    "codeLabel": "Class code",
+    "check": "Check code",
+    "valid": "The code is valid. Sign in to join",
+    "invalid": "Code not found or expired. Check the code with your teacher",
+    "login": "Sign in",
+    "confirmTitle": "Join the class?",
+    "confirm": "Join",
+    "cancel": "Cancel",
+    "onlyStudents": "Only students can join a class.",
+    "tooMany": "Too many attempts. Try again in {minutes} min.",
+    "register": {
+      "title": "No account? Sign up as a student",
+      "displayName": "Name",
+      "login": "Login",
+      "loginHint": "3–32 characters: Latin letters, digits, «.», «_», «-»",
+      "password": "Password",
+      "email": "Email (optional)",
+      "submit": "Sign up and join"
+    }
+  },
+  "cabinet": {
+    "roleLabel": "Role",
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "support_agent": "Support",
+      "onboarding_agent": "School onboarding"
+    },
+    "streak": "Streak: {days} d",
+    "xp": "{xp} XP",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "profile": "Profile",
+    "myData": "My data",
+    "logout": "Log out",
+    "sidebarLabel": "Cabinet sections",
+    "lamp": "Tips",
+    "nav": {
+      "courses": "My courses",
+      "classes": "Classes",
+      "assignments": "Assignments",
+      "subjects": "Subjects",
+      "myAssignments": "My assignments",
+      "assistant": "Learning assistant",
+      "progress": "My progress",
+      "achievements": "Achievements",
+      "support": "Support"
+    }
+  },
+  "teacher": {
+    "classes": {
+      "title": "Classes",
+      "name": "Class name",
+      "create": "Create class",
+      "students": "Students: {count}",
+      "issueCode": "Issue code",
+      "codeTitle": "Code for class «{name}»",
+      "codeOnce": "The code is shown only once — save it. Valid until {date}.",
+      "copy": "Copy code",
+      "copied": "Code copied",
+      "empty": "No classes yet — create the first one"
+    }
+  },
+  "student": {
+    "class": {
+      "inClass": "You’re in class «{name}»",
+      "teacherSchool": "Teacher: {teacher} · {school}",
+      "teacher": "Teacher: {teacher}",
+      "leave": "Leave",
+      "leaveConfirm": "Leave class «{name}»?",
+      "leaveYes": "Leave",
+      "cancel": "Cancel",
+      "join": "Join a class",
+      "joinSubmit": "Join"
+    },
+    "subjects": {
+      "title": "Subjects"
+    }
+  },
+  "privacy": {
+    "title": "My data",
+    "intro": "This is the data the platform stores about you. You can request a copy or its deletion.",
+    "items": {
+      "account": "Account: name, email or login, role",
+      "preferences": "Settings: language, theme, data saver",
+      "classes": "Classes you belong to",
+      "learning": "Quiz results, progress, experience and achievements",
+      "ai": "Conversations with the learning AI",
+      "support": "Support requests",
+      "consents": "Consents to data processing"
+    },
+    "requestCopy": "Request a copy",
+    "requestDelete": "Request deletion",
+    "sent": "Request accepted. Request number: {number}.",
+    "sentNoNumber": "Request accepted.",
+    "ticket": {
+      "export": "Request for a copy of personal data",
+      "delete": "Request to delete personal data"
     }
   }
 }

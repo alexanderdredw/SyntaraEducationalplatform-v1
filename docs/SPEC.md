@@ -574,7 +574,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
 |---|------------|------------|------------|
 | API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` |
-| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, version, text, options: [{ id, text }] }` — без `isCorrect` |
+| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
 | API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
 | API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
 | API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
@@ -1417,3 +1417,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-13 | 15: в seed ученик «Alexandr» — в классе «7»; визуальные тесты сравнивают внешний вид и расположение, динамические значения (числа, даты, XP, серии) маскируются | Решение владельца по итогам итерации 2 |
 | 2026-10-14 | 9 SM-TICKET, 6.6 API-SUP-04: ответ по шаблону «Уточнение» переводит обращение в waiting_user, по шаблону «Решение» — в resolved; ручная смена статуса сохраняется | Решение владельца по итогам итерации 4 |
 | 2026-10-14 | 8.5 REQ-SUP-04, 11 PH-22: срок первого ответа считается в рабочих часах PH-22 (пн–пт 09:00–18:00, UTC+5): `first_response_business_days` рабочих дней от ближайшего рабочего момента после создания | Решение владельца по итогам итерации 4 |
+| 2026-10-14 | 6.2 API-PUB-02: поле `hasAnother` (есть ли другие пробные вопросы) и `locale` в ответе | Решение владельца по итогам итерации 5 |

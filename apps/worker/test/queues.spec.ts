@@ -13,6 +13,8 @@ describe('worker queues', () => {
     db: {} as Database,
     transport: { sendMail: async () => ({}) },
     mailFrom: 'noreply@syntara-edu.me',
+    tokens: { set: async () => 'OK' },
+    appBaseUrl: 'http://localhost:3000',
   };
 
   beforeAll(async () => {

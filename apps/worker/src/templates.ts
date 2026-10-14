@@ -1,5 +1,7 @@
 import {
+  type AccountRegisteredPayload,
   type ConfirmationEmailPayload,
+  type PasswordResetPayload,
   EMAIL_TEMPLATES,
   getMessage,
   type Locale,
@@ -26,7 +28,11 @@ function t(locale: Locale, key: string, values: Record<string, string> = {}): st
  * Тексты писем — из i18n (AG-03), язык — язык формы или обращения.
  * Подтверждение содержит номер, тип и способ ответа, без текста обращения (BR-FRM-03).
  */
-export function renderEmail(template: string, payload: unknown): RenderedEmail {
+export function renderEmail(
+  template: string,
+  payload: unknown,
+  extras: { resetUrl?: string } = {},
+): RenderedEmail {
   switch (template) {
     case EMAIL_TEMPLATES.schoolRequestConfirmation: {
       const p = payload as ConfirmationEmailPayload;
@@ -63,6 +69,31 @@ export function renderEmail(template: string, payload: unknown): RenderedEmail {
       return {
         subject: t(p.locale, 'email.ticketReply.subject', { number: p.publicNumber }),
         text: [p.body, t(p.locale, 'email.ticketReply.footer'), t(p.locale, 'email.signature')].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.accountRegistered: {
+      const p = payload as AccountRegisteredPayload;
+      return {
+        subject: t(p.locale, 'email.account.registeredSubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.registeredBody', { name: p.displayName }),
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.passwordReset: {
+      const p = payload as PasswordResetPayload;
+      if (!extras.resetUrl) throw new Error('resetUrl is required');
+      return {
+        subject: t(p.locale, 'email.account.resetSubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.resetBody'),
+          extras.resetUrl,
+          t(p.locale, 'email.account.resetIgnore'),
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
       };
     }
     default:

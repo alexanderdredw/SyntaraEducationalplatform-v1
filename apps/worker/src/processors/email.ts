@@ -2,7 +2,12 @@ import { createHash, randomBytes } from 'node:crypto';
 import { type Job } from 'bullmq';
 import { eq, sql } from 'drizzle-orm';
 import { type Logger } from 'pino';
-import { EMAIL_TEMPLATES, type TicketReplyEmailPayload } from '@syntara/shared';
+import {
+  EMAIL_TEMPLATES,
+  passwordResetKey,
+  type PasswordResetPayload,
+  type TicketReplyEmailPayload,
+} from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { renderEmail } from '../templates';
 
@@ -18,11 +23,33 @@ export interface MailTransport {
   sendMail(message: MailMessage): Promise<unknown>;
 }
 
+/** Хранилище одноразовых токенов (Redis): ключ → значение с TTL в секундах. */
+export interface TokenStore {
+  set(key: string, value: string, mode: 'EX', seconds: number): Promise<unknown>;
+}
+
 export interface EmailDeps {
   db: Database;
   transport: MailTransport;
   mailFrom: string;
   logger: Logger;
+  /** API-AUTH-04: токены сброса пароля. */
+  tokens: TokenStore;
+  /** APP_BASE_URL — для ссылок в письмах. */
+  appBaseUrl: string;
+}
+
+/**
+ * API-AUTH-04: одноразовая ссылка сброса пароля. Токен создаётся при отправке; в Redis — только его хеш
+ * со сроком PH-06 `auth.reset_link_ttl_hours`. Страница — /auth/login?resetToken=… (маршруты раздела 4).
+ */
+async function resetLinkFor(deps: EmailDeps, payload: PasswordResetPayload): Promise<string> {
+  const token = randomBytes(32).toString('base64url');
+  const hours = await config<number>(deps.db, 'auth.reset_link_ttl_hours');
+  const hash = createHash('sha256').update(token).digest('hex');
+  await deps.tokens.set(passwordResetKey(hash), payload.userId, 'EX', hours * 60 * 60);
+  const base = deps.appBaseUrl.replace(/\/$/, '');
+  return `${base}/${payload.locale}/auth/login?resetToken=${encodeURIComponent(token)}`;
 }
 
 export interface EmailJobData {
@@ -75,7 +102,11 @@ export async function sendEmail(job: Job<EmailJobData>, deps: EmailDeps): Promis
   if (email.status === 'sent') return 'skipped';
 
   try {
-    const rendered = renderEmail(email.template, email.payload);
+    const resetUrl =
+      email.template === EMAIL_TEMPLATES.passwordReset
+        ? await resetLinkFor(deps, email.payload as PasswordResetPayload)
+        : undefined;
+    const rendered = renderEmail(email.template, email.payload, { resetUrl });
     const replyTo =
       email.template === EMAIL_TEMPLATES.ticketReply
         ? await replyToFor(db, email.payload as TicketReplyEmailPayload)

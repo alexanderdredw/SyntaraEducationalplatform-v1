@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import request from 'supertest';
 import { and, eq } from 'drizzle-orm';
+import { firstResponseDueAt } from '@syntara/shared';
 import { schema } from '@syntara/db';
 import { DEMO_IDS } from '@syntara/db/seed';
 import { ACCOUNTS, freshIp, login, newKey, type Session } from './support/session';
@@ -363,8 +364,16 @@ describe('staff queues (integration)', () => {
     const item = list.body.items.find((i: { id: string }) => i.id === id);
     const due = new Date(item.dueAt).getTime();
     const created = new Date(item.createdAt).getTime();
-    expect(due - created).toBeGreaterThanOrEqual(24 * 60 * 60 * 1000);
-    expect(due - created).toBeLessThanOrEqual(3 * 24 * 60 * 60 * 1000);
+    // Тот же расчёт, что в packages/shared (PH-22: рабочие часы), — независимо от времени запуска теста.
+    const hours = {
+      days: 'mon-fri',
+      from: '09:00',
+      to: '18:00',
+      tz: 'UTC+5',
+      first_response_business_days: 1,
+    };
+    expect(due).toBe(firstResponseDueAt(new Date(created), hours, 'Asia/Almaty').getTime());
+    expect(due - created).toBeGreaterThan(0);
 
     const before = new Date(due - 1000).toISOString();
     const after = new Date(due + 1000).toISOString();

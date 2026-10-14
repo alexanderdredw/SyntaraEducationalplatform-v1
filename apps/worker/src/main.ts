@@ -13,7 +13,13 @@ const connection = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
 const db = createDb(env.DATABASE_URL, { max: 5 });
 const transport = nodemailer.createTransport(env.SMTP_URL);
 
-const { workers, close } = createWorkers(connection, logger, { db, transport, mailFrom: env.MAIL_FROM });
+const { workers, close } = createWorkers(connection, logger, {
+  db,
+  transport,
+  mailFrom: env.MAIL_FROM,
+  tokens: connection,
+  appBaseUrl: env.APP_BASE_URL,
+});
 void scheduleJobs(connection).catch((err: Error) => logger.error({ err: err.message }, 'scheduling failed'));
 logger.info({ queues: workers.map((w) => w.name) }, 'worker started');
 

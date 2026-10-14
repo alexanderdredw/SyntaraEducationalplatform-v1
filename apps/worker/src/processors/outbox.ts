@@ -16,6 +16,7 @@ const BATCH = 50;
 const EMAIL_EVENTS = new Set<string>([
   OUTBOX_EVENT_TYPES.emailConfirmation,
   OUTBOX_EVENT_TYPES.emailTicketReply,
+  OUTBOX_EVENT_TYPES.emailAccount,
 ]);
 
 /**

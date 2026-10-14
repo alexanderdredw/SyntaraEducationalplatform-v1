@@ -57,3 +57,12 @@ export const getMe = cache(async (cookieHeader: string): Promise<Me | null> => {
     api().GET('/api/me', { headers: { cookie: cookieHeader }, signal: signal(), cache: 'no-store' }),
   );
 });
+
+export type MeStats = components['schemas']['MeStatsDto'];
+
+/** API-S-16 для хедера ученика; при ошибке — нули. */
+export async function getMeStats(cookieHeader: string): Promise<MeStats> {
+  return safely<MeStats>('GET /api/me/stats', { streakDays: 0, xpTotal: 0 }, () =>
+    api().GET('/api/me/stats', { headers: { cookie: cookieHeader }, signal: signal(), cache: 'no-store' }),
+  );
+}

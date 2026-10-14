@@ -3,9 +3,15 @@ import { AppLink } from '../app-link';
 
 /**
  * Футер (REQ-GEN-SHELL-05): бренд, ПРОДУКТ, ШКОЛАМ, ПРАВОВОЕ, нижняя строка.
- * В кабинетах «Войти» и «Подключиться к классу» заменяются на «Кабинет» (итерация 6).
+ * В кабинетах «Войти» и «Подключиться к классу» заменяются на «Кабинет» (`cabinetHref`).
  */
-export async function SiteFooter({ supportEmail }: { supportEmail: string | null }) {
+export async function SiteFooter({
+  supportEmail,
+  cabinetHref,
+}: {
+  supportEmail: string | null;
+  cabinetHref?: string;
+}) {
   const t = await getTranslations();
   const linkClass = 'inline-flex min-h-11 items-center text-white/85 hover:text-white hover:underline';
   const column = (title: string, links: Array<[string, string]>) => (
@@ -46,8 +52,12 @@ export async function SiteFooter({ supportEmail }: { supportEmail: string | null
           ['/schools', t('shell.nav.schools')],
           ['/schools/request', t('footer.requestSchool')],
           ['/support', t('shell.nav.help')],
-          ['/auth/login', t('shell.login')],
-          ['/join', t('footer.joinClass')],
+          ...((cabinetHref
+            ? [[cabinetHref, t('footer.cabinet')]]
+            : [
+                ['/auth/login', t('shell.login')],
+                ['/join', t('footer.joinClass')],
+              ]) as Array<[string, string]>),
         ])}
         {column(t('footer.legal'), [
           ['/terms', t('legal.terms')],

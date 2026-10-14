@@ -75,9 +75,9 @@ describe('auth core (integration)', () => {
     const res = await http()
       .post('/api/auth/login')
       .set('X-Forwarded-For', freshIp())
-      .send({ email: 'x' })
+      .send({ email: ' ' })
       .expect(400);
-    expect(res.body.fieldErrors).toEqual({ email: 'email', password: expect.any(String) });
+    expect(res.body.fieldErrors).toEqual({ email: 'required', password: expect.any(String) });
   });
 
   it('API-ME-01 returns MeDto for a session (positive) and 401 without one (negative)', async () => {

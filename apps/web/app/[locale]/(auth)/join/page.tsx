@@ -1,8 +1,22 @@
-import { setRequestLocale } from 'next-intl/server';
-import { StubPage } from '@/components/public/stub-page';
+import { cookies } from 'next/headers';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMe } from '@/lib/api/server';
+import { JoinFlow } from '@/components/auth/join-flow';
 
-/** Заглушка PH-24: /join (REQ-GEN-AUTH-03, PH-44) — итерация 6. */
-export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+/** /join (REQ-GEN-AUTH-03, раздел 4: гость → вход, ученик — вступление). */
+export default async function JoinPage({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale);
-  return <StubPage />;
+  const t = await getTranslations('join');
+  const me = await getMe((await cookies()).toString());
+  const viewer = !me ? 'guest' : me.roles.includes('student') ? 'student' : 'other';
+  return (
+    <section data-testid="join-page" className="px-4 py-12 md:py-16">
+      <div className="mx-auto max-w-[560px]">
+        <h1 className="text-3xl font-bold md:text-4xl">{t('title')}</h1>
+        <div className="mt-8">
+          <JoinFlow viewer={viewer} />
+        </div>
+      </div>
+    </section>
+  );
 }
