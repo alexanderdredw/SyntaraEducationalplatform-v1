@@ -267,6 +267,51 @@ describe('staff queues (integration)', () => {
     expect(res.body.fieldErrors).toEqual({ assigneeId: 'invalidAssignee' });
   });
 
+  it('API-SUP-04, SM-TICKET reply with «Уточнение» → waiting_user, with «Решение» → resolved; manual change stays', async () => {
+    const { id } = await createTicket();
+    const tpl = async (code: string) =>
+      (await as(support).get(`/api/staff/tickets/${id}`).expect(200)).body.templates.find(
+        (t: { code: string }) => t.code === code,
+      ).body as string;
+
+    // Без назначения (new) переход ask_user недопустим — ответ уходит, статус не меняется.
+    const early = await as(support)
+      .post(`/api/staff/tickets/${id}/reply`, {
+        body: await tpl('clarification'),
+        templateCode: 'clarification',
+      })
+      .expect(200);
+    expect(early.body.status).toBe('new');
+
+    await as(support).post(`/api/staff/tickets/${id}/assign`, { assigneeId: support.userId }).expect(200);
+    const asked = await as(support)
+      .post(`/api/staff/tickets/${id}/reply`, {
+        body: await tpl('clarification'),
+        templateCode: 'clarification',
+      })
+      .expect(200);
+    expect(asked.body.status).toBe('waiting_user');
+    expect(asked.body.history.at(-1)).toMatchObject({ fromStatus: 'in_progress', toStatus: 'waiting_user' });
+
+    const resolved = await as(support)
+      .post(`/api/staff/tickets/${id}/reply`, { body: await tpl('resolution'), templateCode: 'resolution' })
+      .expect(200);
+    expect(resolved.body.status).toBe('resolved');
+    expect(resolved.body.resolvedAt).not.toBeNull();
+    expect(resolved.body.messages.filter((m: { direction: string }) => m.direction === 'out')).toHaveLength(
+      3,
+    );
+  });
+
+  it('API-SUP-04 replies without a template or with «Подтверждение»/«Задержка» do not change the status', async () => {
+    const { id } = await createTicket();
+    await as(support).post(`/api/staff/tickets/${id}/assign`, { assigneeId: support.userId }).expect(200);
+    for (const body of [{ body: 'Свой текст' }, { body: 'Ждите', templateCode: 'delay' }]) {
+      const res = await as(support).post(`/api/staff/tickets/${id}/reply`, body).expect(200);
+      expect(res.body.status).toBe('in_progress');
+    }
+  });
+
   it('API-SUP-04 unknown template code → 400; empty body → 400', async () => {
     const { id } = await createTicket();
     const unknown = await as(support)

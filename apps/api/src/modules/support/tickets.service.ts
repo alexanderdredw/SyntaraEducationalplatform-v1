@@ -1,10 +1,10 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, asc, eq, ilike, isNull, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, eq, ilike, isNull, lte, or, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import {
-  dueOffsetDays,
   EMAIL_TEMPLATES,
   firstResponseDueAt,
+  latestCreatedForDue,
   type Locale,
   OUTBOX_EVENT_TYPES,
   type OutboxEmailPayload,
@@ -37,6 +37,12 @@ const assignee = alias(users, 'assignee');
 
 type TicketRow = typeof t.$inferSelect;
 
+/** Ответ по шаблону меняет статус по SM-TICKET (раздел 9). */
+export const TEMPLATE_EVENTS: Readonly<Record<string, TicketEvent>> = {
+  clarification: 'ask_user',
+  resolution: 'resolve',
+};
+
 export const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 export const invalidTransition = (from: string, to: string) =>
   new ApiException(HttpStatus.CONFLICT, 'INVALID_TRANSITION', `Transition ${from} → ${to} is not allowed`);
@@ -66,7 +72,10 @@ export class TicketsService {
         : query.assigneeId
           ? eq(t.assigneeId, query.assigneeId)
           : undefined,
-      query.dueBefore ? sql`${this.dueAtSql(hours)} <= ${query.dueBefore}::timestamptz` : undefined,
+      // Срок монотонен по времени создания — фильтр по сроку точно сводится к границе created_at.
+      query.dueBefore
+        ? lte(t.createdAt, latestCreatedForDue(new Date(query.dueBefore), hours, this.env.PLATFORM_TZ))
+        : undefined,
       query.q
         ? or(ilike(t.publicNumber, `${likeEscape(query.q)}%`), ilike(t.email, `%${likeEscape(query.q)}%`))
         : undefined,
@@ -201,8 +210,8 @@ export class TicketsService {
 
   /**
    * API-SUP-04: ответ клиенту — сообщение 'out', строка email_queue и событие outbox в одной транзакции.
-   * TODO(OWNER): должен ли ответ сам менять статус (например, уточнение → waiting_user)? Сейчас статус
-   * меняется только явным действием (API-SUP-06).
+   * Шаблон задаёт переход SM-TICKET (решение владельца 2026-10-14): «Уточнение» → waiting_user (ask_user),
+   * «Решение» → resolved (resolve). Если из текущего статуса переход недопустим, ответ отправляется без смены статуса.
    */
   async reply(
     id: string,
@@ -255,6 +264,8 @@ export class TicketsService {
         },
         tx,
       );
+      const event = templateCode ? TEMPLATE_EVENTS[templateCode] : undefined;
+      if (event) await this.applyEvent(tx, ticket, event, actorId);
     });
     return this.get(id);
   }
@@ -332,16 +343,6 @@ export class TicketsService {
       tx,
     );
     ticket.status = to;
-  }
-
-  /** Срок первого ответа в SQL — тот же расчёт, что firstResponseDueAt (packages/shared). */
-  private dueAtSql(hours: SupportHours): SQL {
-    const offsets = dueOffsetDays(hours.days, hours.first_response_business_days);
-    const cases = Object.entries(offsets)
-      .map(([dow, days]) => `WHEN ${Number(dow)} THEN ${Number(days)}`)
-      .join(' ');
-    const dow = sql`extract(isodow from ${t.createdAt} at time zone ${this.env.PLATFORM_TZ})::int`;
-    return sql`(${t.createdAt} + make_interval(days => (CASE ${dow} ${sql.raw(cases)} ELSE 0 END)))`;
   }
 }
 

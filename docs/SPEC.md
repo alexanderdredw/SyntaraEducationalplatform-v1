@@ -656,7 +656,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-SUP-01 | GET /api/staff/tickets | Фильтры: `status, assigneeId, category, dueBefore, q` (номер или email) |
 | API-SUP-02 | GET /api/staff/tickets/:id | Обращение, tech_context, сообщения, заметки, история статусов |
 | API-SUP-03 | POST /api/staff/tickets/:id/assign | `{ assigneeId }` |
-| API-SUP-04 | POST /api/staff/tickets/:id/reply | `{ body, templateCode? }` → email_queue; статус по SM-TICKET |
+| API-SUP-04 | POST /api/staff/tickets/:id/reply | `{ body, templateCode? }` → email_queue; статус по SM-TICKET: шаблон «Уточнение» → waiting_user, «Решение» → resolved (если переход допустим); остальные ответы статус не меняют |
 | API-SUP-05 | POST /api/staff/tickets/:id/notes | Внутренняя заметка (не отправляется клиенту) |
 | API-SUP-06 | POST /api/staff/tickets/:id/status | `{ to }` — только разрешённые переходы SM-TICKET |
 | API-SUP-07 | GET / POST … /api/staff/requests | Аналогично для школьных заявок (роль onboarding_agent) |
@@ -1169,6 +1169,8 @@ SM-MEMBERSHIP   (none) --join(code)--> active --leave--> left ; left --join--> �
 
 SM-TICKET       new --assign--> in_progress
                 in_progress --ask_user--> waiting_user --user_reply--> in_progress
+                in_progress --reply(шаблон «Уточнение»)--> waiting_user              (= ask_user)
+                in_progress | waiting_* --reply(шаблон «Решение»)--> resolved          (= resolve)
                 in_progress --escalate--> waiting_internal --resume--> in_progress
                 in_progress | waiting_* --resolve--> resolved --(7 дней)--> closed
                 resolved | closed --user_reply--> reopened --assign--> in_progress
@@ -1413,3 +1415,5 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-13 | 5.7: столбец `app_config.note` (PH-ID) | Решение владельца по итогам итерации 2 |
 | 2026-10-13 | 5.8: роль `app_maintenance` для фоновых задач worker (DELETE по срокам хранения и для файлов); у `app_user` DELETE нет | Решение владельца по итогам итерации 2 |
 | 2026-10-13 | 15: в seed ученик «Alexandr» — в классе «7»; визуальные тесты сравнивают внешний вид и расположение, динамические значения (числа, даты, XP, серии) маскируются | Решение владельца по итогам итерации 2 |
+| 2026-10-14 | 9 SM-TICKET, 6.6 API-SUP-04: ответ по шаблону «Уточнение» переводит обращение в waiting_user, по шаблону «Решение» — в resolved; ручная смена статуса сохраняется | Решение владельца по итогам итерации 4 |
+| 2026-10-14 | 8.5 REQ-SUP-04, 11 PH-22: срок первого ответа считается в рабочих часах PH-22 (пн–пт 09:00–18:00, UTC+5): `first_response_business_days` рабочих дней от ближайшего рабочего момента после создания | Решение владельца по итогам итерации 4 |

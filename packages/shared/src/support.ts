@@ -90,38 +90,135 @@ export function workingIsoDays(days: string): Set<number> {
   return result;
 }
 
+const MINUTE = 60_000;
+const DAY = 24 * 60 * MINUTE;
+
+/** «09:00» → минуты от полуночи. */
+function minutesOf(hhmm: string): number {
+  const [h, m] = hhmm.split(':').map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+}
+
+/** Смещение «UTC+5», «UTC-03:30» в минутах; null — не фиксированное смещение. */
+export function parseUtcOffset(tz: string): number | null {
+  const match = /^UTC([+-])(\d{1,2})(?::?(\d{2}))?$/i.exec(tz.trim());
+  if (!match) return tz.trim().toUpperCase() === 'UTC' ? 0 : null;
+  const minutes = Number(match[2]) * 60 + Number(match[3] ?? 0);
+  return match[1] === '-' ? -minutes : minutes;
+}
+
+/** Смещение IANA-пояса в минутах на момент `date`. */
+function zoneOffset(date: Date, timeZone: string): number {
+  const name =
+    new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'longOffset' })
+      .formatToParts(date)
+      .find((p) => p.type === 'timeZoneName')?.value ?? 'GMT';
+  return parseUtcOffset(name.replace('GMT', 'UTC')) ?? 0;
+}
+
 /**
- * Сдвиг в календарных днях до срока первого ответа для каждого дня недели создания (1..7):
- * отсчитываются `businessDays` рабочих дней, время суток сохраняется.
- * Один и тот же расчёт используется в SQL-фильтре `dueBefore` (API-SUP-01) и при показе срока.
- * Часы работы (from/to) на срок не влияют — TODO(OWNER): учитывать ли время суток в цели первого ответа (PH-22)?
+ * Рабочее время PH-22 («mon-fri», 09:00–18:00, «UTC+5»). Расчёт ведётся в «локальных» миллисекундах
+ * (UTC + смещение пояса). Рабочие моменты — отрезок [from, to] каждого рабочего дня.
  */
-export function dueOffsetDays(days: string, businessDays: number): Record<number, number> {
-  const working = workingIsoDays(days);
-  const offsets: Record<number, number> = {};
-  for (let dow = 1; dow <= 7; dow++) {
-    let offset = 0;
-    let counted = 0;
-    let current = dow;
-    while (counted < businessDays && working.size > 0) {
-      offset += 1;
-      current = (current % 7) + 1;
-      if (working.has(current)) counted += 1;
-    }
-    offsets[dow] = offset;
+class WorkingTime {
+  private readonly days: Set<number>;
+  private readonly from: number;
+  private readonly to: number;
+  readonly offsetMs: number;
+
+  constructor(hours: SupportHours, fallbackTimeZone: string, at: Date) {
+    this.days = workingIsoDays(hours.days);
+    this.from = minutesOf(hours.from) * MINUTE;
+    this.to = minutesOf(hours.to) * MINUTE;
+    this.offsetMs = (parseUtcOffset(hours.tz) ?? zoneOffset(at, fallbackTimeZone)) * MINUTE;
   }
-  return offsets;
+
+  /** Длительность рабочего дня в мс. */
+  get dayLength(): number {
+    return Math.max(0, this.to - this.from);
+  }
+
+  private isWorking(dayStart: number): boolean {
+    // 1970-01-01 — четверг (ISO 4).
+    const iso = ((Math.floor(dayStart / DAY) + 3) % 7) + 1;
+    return this.days.has(iso);
+  }
+
+  private get usable(): boolean {
+    return this.days.size > 0 && this.dayLength > 0;
+  }
+
+  /** Ближайший рабочий момент не раньше `t`. */
+  forward(t: number): number {
+    if (!this.usable) return t;
+    for (;;) {
+      const d = Math.floor(t / DAY) * DAY;
+      if (this.isWorking(d)) {
+        if (t < d + this.from) return d + this.from;
+        if (t <= d + this.to) return t;
+      }
+      t = d + DAY;
+    }
+  }
+
+  /** Ближайший рабочий момент не позже `t`. */
+  backward(t: number): number {
+    if (!this.usable) return t;
+    for (;;) {
+      const d = Math.floor(t / DAY) * DAY;
+      if (this.isWorking(d)) {
+        if (t > d + this.to) return d + this.to;
+        if (t >= d + this.from) return t;
+      }
+      t = d - 1;
+    }
+  }
+
+  /** Прибавить рабочее время к рабочему моменту. */
+  add(t: number, ms: number): number {
+    if (!this.usable) return t + ms;
+    for (;;) {
+      const d = Math.floor(t / DAY) * DAY;
+      const available = d + this.to - t;
+      if (ms <= available) return t + ms;
+      ms -= available;
+      t = this.forward(d + DAY);
+    }
+  }
+
+  /** Вычесть рабочее время из рабочего момента. */
+  sub(t: number, ms: number): number {
+    if (!this.usable) return t - ms;
+    for (;;) {
+      const d = Math.floor(t / DAY) * DAY;
+      const available = t - (d + this.from);
+      if (ms <= available) return t - ms;
+      ms -= available;
+      t = this.backward(d - 1);
+    }
+  }
 }
 
-/** ISO-день недели (1 = пн) момента `date` в часовом поясе `timeZone`. */
-export function isoWeekday(date: Date, timeZone: string): number {
-  const short = new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short' }).format(date).toLowerCase();
-  return ISO_DAYS.indexOf(short.slice(0, 3) as (typeof ISO_DAYS)[number]) + 1;
-}
-
-/** Срок первого ответа (REQ-SUP-04, PH-22) — только для служебной очереди, пользователю не показывается. */
+/**
+ * Срок первого ответа (REQ-SUP-04, PH-22; решение владельца 2026-10-14): `first_response_business_days`
+ * рабочих дней рабочего времени, отсчитанных от ближайшего рабочего момента после создания.
+ * Например, при пн–пт 09:00–18:00: пн 10:00 → вт 10:00; пт 17:00 → пн 17:00; сб → пн 18:00.
+ * Только для служебной очереди, пользователю не показывается.
+ */
 export function firstResponseDueAt(createdAt: Date, hours: SupportHours, timeZone: string): Date {
-  const offset =
-    dueOffsetDays(hours.days, hours.first_response_business_days)[isoWeekday(createdAt, timeZone)] ?? 0;
-  return new Date(createdAt.getTime() + offset * 24 * 60 * 60 * 1000);
+  const w = new WorkingTime(hours, timeZone, createdAt);
+  const local = createdAt.getTime() + w.offsetMs;
+  const due = w.add(w.forward(local), hours.first_response_business_days * w.dayLength);
+  return new Date(due - w.offsetMs);
+}
+
+/**
+ * Обратная функция для фильтра «срок до» (API-SUP-01): срок монотонно не убывает со временем создания,
+ * поэтому `firstResponseDueAt(c) <= dueBefore` ⇔ `c <= latestCreatedForDue(dueBefore)`.
+ */
+export function latestCreatedForDue(dueBefore: Date, hours: SupportHours, timeZone: string): Date {
+  const w = new WorkingTime(hours, timeZone, dueBefore);
+  const local = dueBefore.getTime() + w.offsetMs;
+  const created = w.sub(w.backward(local), hours.first_response_business_days * w.dayLength);
+  return new Date(created - w.offsetMs);
 }

@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { RequestStatus, TicketStatus } from './enums';
 import {
   canTransitionRequest,
-  dueOffsetDays,
   firstResponseDueAt,
+  latestCreatedForDue,
+  parseUtcOffset,
   staffStatusTargets,
   TICKET_TRANSITIONS,
   ticketTransition,
@@ -88,16 +89,38 @@ describe('REQ-SUP-04 first response target (PH-22)', () => {
     expect([...workingIsoDays('mon,wed')]).toEqual([1, 3]);
   });
 
-  it('one business day: Mon–Thu → next day, Fri → Mon, Sat → Mon, Sun → Mon', () => {
-    expect(dueOffsetDays('mon-fri', 1)).toEqual({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 3, 6: 2, 7: 1 });
+  it('parses fixed UTC offsets of PH-22', () => {
+    expect(parseUtcOffset('UTC+5')).toBe(300);
+    expect(parseUtcOffset('UTC-03:30')).toBe(-210);
+    expect(parseUtcOffset('UTC')).toBe(0);
+    expect(parseUtcOffset('Asia/Almaty')).toBeNull();
   });
 
-  it('computes the due date in PLATFORM_TZ', () => {
-    // Пт 2026-10-16 23:30 в Алматы (UTC+5) = 18:30 UTC → срок — пн 2026-10-19 в то же время.
-    const friday = new Date('2026-10-16T18:30:00Z');
-    expect(firstResponseDueAt(friday, hours, 'Asia/Almaty').toISOString()).toBe('2026-10-19T18:30:00.000Z');
-    // То же время по UTC — уже суббота в Алматы (Сб 00:30) → тоже понедельник.
-    const saturday = new Date('2026-10-16T19:30:00Z');
-    expect(firstResponseDueAt(saturday, hours, 'Asia/Almaty').toISOString()).toBe('2026-10-18T19:30:00.000Z');
+  /** Время в UTC+5 → ISO UTC. */
+  const kz = (local: string) => new Date(`${local}+05:00`);
+  const due = (local: string) => firstResponseDueAt(kz(local), hours, 'Asia/Almaty').toISOString();
+
+  it('REQ-SUP-04 one business day of working hours (Mon–Fri 09:00–18:00, UTC+5)', () => {
+    // 2026-10-12 — понедельник.
+    expect(due('2026-10-12T10:00:00')).toBe(kz('2026-10-13T10:00:00').toISOString());
+    expect(due('2026-10-12T07:30:00')).toBe(kz('2026-10-12T18:00:00').toISOString());
+    expect(due('2026-10-12T20:00:00')).toBe(kz('2026-10-13T18:00:00').toISOString());
+    expect(due('2026-10-16T17:00:00')).toBe(kz('2026-10-19T17:00:00').toISOString());
+    expect(due('2026-10-17T12:00:00')).toBe(kz('2026-10-19T18:00:00').toISOString());
+    expect(due('2026-10-12T18:00:00')).toBe(kz('2026-10-13T18:00:00').toISOString());
+  });
+
+  it('REQ-SUP-01 «срок до» filter: due <= D exactly when created <= latestCreatedForDue(D)', () => {
+    let seed = 42;
+    const random = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
+    const start = kz('2026-10-01T00:00:00').getTime();
+    const span = 30 * 24 * 60 * 60 * 1000;
+    for (let i = 0; i < 2000; i++) {
+      const created = new Date(start + Math.floor(random() * span));
+      const d = new Date(start + Math.floor(random() * span));
+      const byDue = firstResponseDueAt(created, hours, 'Asia/Almaty') <= d;
+      const byBound = created <= latestCreatedForDue(d, hours, 'Asia/Almaty');
+      expect(byBound, `${created.toISOString()} / ${d.toISOString()}`).toBe(byDue);
+    }
   });
 });
