@@ -27,6 +27,8 @@
     "API_PORT",
     "TESTCONTAINERS_RYUK_DISABLED",
     "RATE_LIMITS_DISABLED",
+    "GITHUB_ACTIONS",
+    "CI",
     "SEED_DEV_PASSWORD"
   ],
   "tasks": {
