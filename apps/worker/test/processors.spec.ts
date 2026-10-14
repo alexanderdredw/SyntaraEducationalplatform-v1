@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { createServer } from 'node:net';
 import { type Job, Queue } from 'bullmq';
 import { eq } from 'drizzle-orm';
 import { Redis } from 'ioredis';
@@ -126,7 +127,14 @@ describe('worker processors', () => {
   it('AC-FRM-05, BR-FRM-04 SMTP failure keeps the record and the email in the queue with growing attempts', async () => {
     const { ticket, email } = await queueConfirmation('T-261014-0003');
     // Недоступный SMTP-сервер (как остановленный mailpit).
-    const down = nodemailer.createTransport('smtp://127.0.0.1:1');
+    // Свободный порт, на котором никто не слушает: соединение отклоняется сразу на любой ОС.
+    const port = await new Promise<number>((resolve) => {
+      const server = createServer().listen(0, '127.0.0.1', () => {
+        const { port: free } = server.address() as { port: number };
+        server.close(() => resolve(free));
+      });
+    });
+    const down = nodemailer.createTransport({ host: '127.0.0.1', port, connectionTimeout: 3000 });
     const deps = { db, transport: down, mailFrom: 'noreply@syntara-edu.me', logger };
     await expect(sendEmail(job(email.id, 0), deps)).rejects.toThrow();
     await expect(sendEmail(job(email.id, 1), deps)).rejects.toThrow();
