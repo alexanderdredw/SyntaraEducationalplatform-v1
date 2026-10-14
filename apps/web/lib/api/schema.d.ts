@@ -20,6 +20,262 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MeController_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/school-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormsController_schoolRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/support-tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormsController_supportTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StaffTicketsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StaffTicketsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets/{id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffTicketsController_assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets/{id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffTicketsController_reply"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets/{id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffTicketsController_note"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffTicketsController_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StaffRequestsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StaffRequestsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/requests/{id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffRequestsController_assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/requests/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffRequestsController_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/inbound/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InboundController_email"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/subjects": {
         parameters: {
             query?: never;
@@ -66,6 +322,224 @@ export interface components {
             /** @enum {string} */
             status: "ok" | "degraded";
             checks: components["schemas"]["HealthChecksDto"];
+        };
+        LoginBody: {
+            /** Format: email */
+            email: string;
+            password: string;
+        };
+        PreferencesDto: {
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+            /** @enum {string} */
+            theme: "system" | "light" | "dark";
+            dataSaver: boolean;
+        };
+        MeDto: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
+            initials: string;
+            roles: ("student" | "teacher" | "support_agent" | "onboarding_agent")[];
+            /** @enum {string} */
+            activeRole: "student" | "teacher" | "support_agent" | "onboarding_agent";
+            preferences: components["schemas"]["PreferencesDto"];
+        };
+        LoginResponse: {
+            user: components["schemas"]["MeDto"];
+        };
+        SchoolRequestBody: {
+            schoolName: string;
+            region?: string;
+            city?: string;
+            contactPerson: string;
+            /** @example +7 700 000 00 00 */
+            phone?: string;
+            /** Format: email */
+            email: string;
+            message?: string;
+        };
+        FormCreatedResponse: {
+            /** @example SR-261014-0042 */
+            publicNumber: string;
+            /** Format: email */
+            email: string;
+        };
+        TechContextBody: {
+            route: string;
+            appVersion: string;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+            dataSaver: boolean;
+            userAgent: string;
+        };
+        SupportTicketBody: {
+            /** @enum {string} */
+            category: "technical" | "school_onboarding" | "learning" | "account_access" | "data_privacy" | "other";
+            subject: string;
+            name?: string;
+            /** Format: email */
+            email: string;
+            phone?: string;
+            description: string;
+            techContext?: components["schemas"]["TechContextBody"];
+        };
+        StaffUserRef: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
+        };
+        TicketListItem: {
+            /** Format: uuid */
+            id: string;
+            publicNumber: string;
+            /** @enum {string} */
+            category: "technical" | "school_onboarding" | "learning" | "account_access" | "data_privacy" | "other";
+            subject: string;
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            status: "new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened";
+            assignee: components["schemas"]["StaffUserRef"] | null;
+            /** Format: date-time */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Срок первого ответа (PH-22), только для сотрудников
+             */
+            dueAt: string;
+        };
+        TicketListResponse: {
+            items: components["schemas"]["TicketListItem"][];
+            nextCursor: string | null;
+        };
+        TicketMessageDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            direction: "in" | "out" | "note";
+            body: string;
+            isInternal: boolean;
+            author: components["schemas"]["StaffUserRef"] | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            sentAt: string | null;
+        };
+        StatusHistoryDto: {
+            /** @enum {string|null} */
+            fromStatus: "new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened" | null;
+            /** @enum {string} */
+            toStatus: "new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened";
+            changedBy: components["schemas"]["StaffUserRef"] | null;
+            /** Format: date-time */
+            changedAt: string;
+        };
+        ReplyTemplateDto: {
+            code: string;
+            /** @description Текст шаблона с подставленным номером обращения */
+            body: string;
+        };
+        TicketDetail: {
+            /** Format: uuid */
+            id: string;
+            publicNumber: string;
+            /** @enum {string} */
+            category: "technical" | "school_onboarding" | "learning" | "account_access" | "data_privacy" | "other";
+            subject: string;
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            status: "new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened";
+            assignee: components["schemas"]["StaffUserRef"] | null;
+            /** Format: date-time */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Срок первого ответа (PH-22), только для сотрудников
+             */
+            dueAt: string;
+            name: string | null;
+            phone: string | null;
+            description: string;
+            techContext: components["schemas"]["TechContextBody"] | null;
+            /**
+             * @description Язык писем клиенту
+             * @enum {string}
+             */
+            locale: "ru" | "kk" | "en";
+            /** Format: date-time */
+            resolvedAt: string | null;
+            /** Format: date-time */
+            closedAt: string | null;
+            messages: components["schemas"]["TicketMessageDto"][];
+            history: components["schemas"]["StatusHistoryDto"][];
+            templates: components["schemas"]["ReplyTemplateDto"][];
+            /** @description Допустимые для API-SUP-06 статусы */
+            allowedStatuses: ("new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened")[];
+        };
+        AssignBody: {
+            /** Format: uuid */
+            assigneeId: string;
+        };
+        ReplyBody: {
+            body: string;
+            templateCode?: string;
+        };
+        NoteBody: {
+            body: string;
+        };
+        TicketStatusBody: {
+            /** @enum {string} */
+            to: "new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened";
+        };
+        RequestListItem: {
+            /** Format: uuid */
+            id: string;
+            publicNumber: string;
+            schoolName: string;
+            contactPerson: string;
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            status: "new" | "in_progress" | "contacted" | "onboarded" | "rejected";
+            assignee: components["schemas"]["StaffUserRef"] | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        RequestListResponse: {
+            items: components["schemas"]["RequestListItem"][];
+            nextCursor: string | null;
+        };
+        RequestDetail: {
+            /** Format: uuid */
+            id: string;
+            publicNumber: string;
+            schoolName: string;
+            contactPerson: string;
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            status: "new" | "in_progress" | "contacted" | "onboarded" | "rejected";
+            assignee: components["schemas"]["StaffUserRef"] | null;
+            /** Format: date-time */
+            createdAt: string;
+            region: string | null;
+            city: string | null;
+            phone: string | null;
+            message: string | null;
+            allowedStatuses: ("new" | "in_progress" | "contacted" | "onboarded" | "rejected")[];
+        };
+        RequestStatusBody: {
+            /** @enum {string} */
+            to: "new" | "in_progress" | "contacted" | "onboarded" | "rejected";
+        };
+        InboundEmailBody: {
+            /** @description Токен из адреса Reply-To */
+            token: string;
+            /** Format: email */
+            from: string;
+            text: string;
         };
         PublicSubjectDto: {
             /** Format: uuid */
@@ -135,6 +609,648 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HealthDto"];
                 };
+            };
+        };
+    };
+    AuthController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponse"];
+                };
+            };
+            /** @description Неверный email или пароль */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FormsController_schoolRequest: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Язык письма */
+                "Accept-Language"?: string;
+                /** @description UUID; тот же ключ и то же тело → прежний ответ (API-GEN-05) */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SchoolRequestBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormCreatedResponse"];
+                };
+            };
+            /** @description VALIDATION_FAILED; fieldErrors — ключи i18n validation.* */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description IDEMPOTENCY_MISMATCH */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FormsController_supportTicket: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Язык письма */
+                "Accept-Language"?: string;
+                /** @description UUID; тот же ключ и то же тело → прежний ответ (API-GEN-05) */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupportTicketBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormCreatedResponse"];
+                };
+            };
+            /** @description VALIDATION_FAILED; fieldErrors — ключи i18n validation.* */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description IDEMPOTENCY_MISMATCH */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_list: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: unknown;
+                /** @description Номер обращения или email */
+                q?: unknown;
+                /** @description ISO 8601: срок первого ответа не позже */
+                dueBefore?: unknown;
+                category?: "technical" | "school_onboarding" | "learning" | "account_access" | "data_privacy" | "other";
+                /** @description UUID или none */
+                assigneeId?: unknown;
+                status?: "new" | "in_progress" | "waiting_user" | "waiting_internal" | "resolved" | "closed" | "reopened";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketListResponse"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_reply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_note: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TicketStatusBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description INVALID_TRANSITION */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffRequestsController_list: {
+        parameters: {
+            query?: {
+                limit?: number;
+                cursor?: unknown;
+                /** @description Номер заявки или email */
+                q?: unknown;
+                /** @description UUID или none */
+                assigneeId?: unknown;
+                status?: "new" | "in_progress" | "contacted" | "onboarded" | "rejected";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestListResponse"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffRequestsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffRequestsController_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffRequestsController_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestStatusBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description INVALID_TRANSITION */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InboundController_email: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InboundEmailBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Функция выключена или токен не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

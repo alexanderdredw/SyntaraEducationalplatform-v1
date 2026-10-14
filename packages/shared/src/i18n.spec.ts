@@ -41,4 +41,45 @@ describe('i18n', () => {
     expect(ru.validation.email).toBe('Введите email, например name@example.com');
     expect(ru.locale.soon).toBe('скоро');
   });
+
+  it('AG-03 SM-FORM, REQ-PUB-REQ-01..02, REQ-PUB-SUP-01..03 form texts are verbatim from SPEC', () => {
+    expect(ru.forms.submitting).toBe('Отправляем...');
+    expect(ru.forms.networkError).toBe('Нет соединения. Проверьте интернет и повторите отправку');
+    expect(ru.forms.serverError).toBe('Не удалось подтвердить отправку. Повторите попытку');
+    expect(ru.schoolRequest.success).toBe('Заявка получена');
+    expect(ru.support.success).toBe('Обращение получено');
+    expect(ru.schoolRequest.fields).toEqual({
+      schoolName: 'Название школы',
+      region: 'Регион',
+      city: 'Город / село',
+      contactPerson: 'Контактное лицо',
+      phone: 'Телефон',
+      email: 'Email',
+      message: 'Сообщение',
+    });
+    expect(ru.schoolRequest.placeholders.message).toBe('Сколько классов, что важно, когда хотите начать...');
+    expect(ru.schoolRequest.submit).toBe('Оставить заявку');
+    expect(ru.support.fields).toEqual({
+      category: 'Категория',
+      subject: 'Тема',
+      name: 'Ваше имя (необязательно)',
+      email: 'Email для ответа',
+      phone: 'Телефон (необязательно)',
+      description: 'Опишите проблему',
+    });
+    expect(Object.values(ru.support.categories)).toEqual([
+      'Техническая проблема',
+      'Подключение школы',
+      'Вопрос по обучению',
+      'Аккаунт и доступ',
+      'Данные и конфиденциальность',
+      'Другое',
+    ]);
+    expect(ru.support.submit).toBe('Отправить обращение');
+    expect(ru.support.techContextNote).toBe(
+      'К обращению будут добавлены технические сведения: страница, язык, браузер',
+    );
+    expect(ru.auth.login.submit).toBe('Войти');
+    expect(ru.auth.login.forgot).toBe('Забыли пароль?');
+  });
 });

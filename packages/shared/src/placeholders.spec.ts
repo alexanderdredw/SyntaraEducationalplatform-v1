@@ -39,6 +39,10 @@ describe('i18n ↔ раздел 11', () => {
     expect(ru.schools.trial.details).toBe(config['schools.trial']);
   });
 
+  it('PH-15 forms.consent_text', () => {
+    expect(ru.forms.consent).toBe(config['forms.consent_text']);
+  });
+
   it('PH-14 legal.draft_banner', () => {
     expect(ru.legal.draftBanner).toBe((config['legal.draft_banner'] as { value: string }).value);
   });

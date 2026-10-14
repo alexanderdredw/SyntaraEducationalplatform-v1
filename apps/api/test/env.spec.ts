@@ -39,4 +39,12 @@ describe('env (раздел 2.3)', () => {
   it('treats empty strings from .env as unset', () => {
     expect(loadEnv({ ...base, LLM_PROVIDER: '' }).LLM_PROVIDER).toBe('mock');
   });
+
+  it('API-GEN-06 rate limits are on by default and cannot be disabled in production', () => {
+    expect(loadEnv(base).RATE_LIMITS_DISABLED).toBe(false);
+    expect(loadEnv({ ...base, RATE_LIMITS_DISABLED: 'true' }).RATE_LIMITS_DISABLED).toBe(true);
+    expect(() => loadEnv({ ...base, NODE_ENV: 'production', RATE_LIMITS_DISABLED: 'true' })).toThrow(
+      /RATE_LIMITS_DISABLED/,
+    );
+  });
 });

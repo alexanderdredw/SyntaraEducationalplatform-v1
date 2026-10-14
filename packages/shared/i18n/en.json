@@ -25,7 +25,9 @@
     "invalidPhone": "Enter a phone number, for example +7 700 000 00 00",
     "min2": "Add at least two options",
     "exactlyOneCorrect": "Mark exactly one correct option",
-    "atLeastOneLanguage": "Fill in at least one language (RU, KK or EN)"
+    "atLeastOneLanguage": "Fill in at least one language (RU, KK or EN)",
+    "invalidAssignee": "Choose a staff member from the list",
+    "invalidTemplate": "Template not found"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -355,11 +357,50 @@
     }
   },
   "schoolRequest": {
-    "title": "Connect your school to Syntara LMS"
+    "title": "Connect your school to Syntara LMS",
+    "fields": {
+      "schoolName": "School name",
+      "region": "Region",
+      "city": "City / village",
+      "contactPerson": "Contact person",
+      "phone": "Phone",
+      "email": "Email",
+      "message": "Message"
+    },
+    "placeholders": {
+      "schoolName": "School-gymnasium No. 1",
+      "region": "Almaty region",
+      "city": "Almaty",
+      "contactPerson": "Principal / deputy principal",
+      "phone": "+7 700 000 00 00",
+      "email": "school@example.kz",
+      "message": "How many classes, what matters, when you want to start..."
+    },
+    "submit": "Submit request",
+    "success": "Request received"
   },
   "support": {
     "title": "Support",
-    "subtitle": "Describe your question — we will reply to the email you provide"
+    "subtitle": "Describe your question — we will reply to the email you provide",
+    "fields": {
+      "category": "Category",
+      "subject": "Subject",
+      "name": "Your name (optional)",
+      "email": "Email for the reply",
+      "phone": "Phone (optional)",
+      "description": "Describe the problem"
+    },
+    "categories": {
+      "technical": "Technical problem",
+      "school_onboarding": "Connecting a school",
+      "learning": "Question about learning",
+      "account_access": "Account and access",
+      "data_privacy": "Data and privacy",
+      "other": "Other"
+    },
+    "submit": "Send request",
+    "techContextNote": "Technical details will be attached to the request: page, language, browser",
+    "success": "Request received"
   },
   "legal": {
     "updated": "Updated: {date}",
@@ -371,5 +412,158 @@
     "terms": "Terms of use",
     "privacy": "Privacy policy",
     "cookies": "Cookie policy"
+  },
+  "forms": {
+    "summaryTitle": "Please fix the errors in the form:",
+    "submitting": "Sending...",
+    "networkError": "No connection. Check your internet and send again",
+    "serverError": "Could not confirm the submission. Please try again",
+    "number": "Number: {number}",
+    "replyTo": "We will reply to {email}",
+    "consent": "By submitting the form, you agree to the processing of your data under the Privacy Policy.",
+    "required": "required field"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgot": "Forgot password?",
+      "invalid": "Wrong email or password",
+      "rateLimited": "Too many sign-in attempts. Try again in {minutes} min."
+    }
+  },
+  "staff": {
+    "navLabel": "Staff support",
+    "tickets": "Support requests",
+    "requests": "School requests",
+    "logout": "Sign out",
+    "filters": {
+      "label": "Filters",
+      "status": "Status",
+      "category": "Category",
+      "assignee": "Assignee",
+      "dueBefore": "Reply due by",
+      "search": "Search by number or email",
+      "all": "All",
+      "mine": "Mine",
+      "unassigned": "Unassigned",
+      "reset": "Reset filters"
+    },
+    "columns": {
+      "number": "Number",
+      "created": "Created",
+      "category": "Category",
+      "subject": "Subject",
+      "email": "Email",
+      "status": "Status",
+      "assignee": "Assignee",
+      "due": "Reply due",
+      "school": "School",
+      "contact": "Contact person"
+    },
+    "empty": "Nothing found",
+    "loadMore": "Show more",
+    "loading": "Loading...",
+    "selectHint": "Select an item in the list",
+    "backToList": "← Back to list",
+    "ticketStatus": {
+      "new": "New",
+      "in_progress": "In progress",
+      "waiting_user": "Waiting for user",
+      "waiting_internal": "Escalated",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "reopened": "Reopened"
+    },
+    "requestStatus": {
+      "new": "New",
+      "in_progress": "In progress",
+      "contacted": "Contacted",
+      "onboarded": "Onboarded",
+      "rejected": "Rejected"
+    },
+    "card": {
+      "original": "Original request",
+      "techContext": "Technical details",
+      "conversation": "Conversation",
+      "noMessages": "No messages yet",
+      "history": "Status history",
+      "system": "System",
+      "user": "User",
+      "internal": "Internal note — not sent to the customer",
+      "sent": "Sent",
+      "queued": "Queued for sending",
+      "unassigned": "unassigned",
+      "tech": {
+        "route": "Page",
+        "appVersion": "Version",
+        "locale": "Language",
+        "dataSaver": "Data saver",
+        "userAgent": "Browser",
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "direction": {
+      "in": "User",
+      "out": "Support reply",
+      "note": "Note"
+    },
+    "actions": {
+      "label": "Actions",
+      "assignMe": "Assign to me",
+      "reply": "Reply to customer",
+      "template": "Template",
+      "noTemplate": "No template",
+      "replyText": "Reply text",
+      "recipient": "Recipient: {email}",
+      "preview": "Email preview",
+      "send": "Send reply",
+      "note": "Internal note",
+      "noteText": "Note text",
+      "addNote": "Add note",
+      "status": "Change status",
+      "noStatusActions": "No transitions are available for this status",
+      "done": "Done",
+      "error": "Could not complete the action. Please try again",
+      "invalidTransition": "This status change is not available"
+    },
+    "templates": {
+      "confirmation": "Confirmation",
+      "clarification": "Clarification",
+      "resolution": "Resolution",
+      "delay": "Delay"
+    },
+    "ticketActions": {
+      "waiting_user": "Ask for details",
+      "waiting_internal": "Escalate",
+      "in_progress": "Back to work",
+      "resolved": "Resolved"
+    },
+    "requestActions": {
+      "in_progress": "Take into work",
+      "contacted": "Contacted",
+      "onboarded": "Onboarded",
+      "rejected": "Reject"
+    }
+  },
+  "email": {
+    "greeting": "Hello!",
+    "replyChannel": "We will reply to this address: {email}.",
+    "signature": "The Syntara team",
+    "schoolRequest": {
+      "subject": "Request {number} received",
+      "body": "We have received your request to connect a school to Syntara LMS. Request number: {number}."
+    },
+    "supportTicket": {
+      "subject": "Request {number} received",
+      "body": "We have received your support request. Request number: {number}. Type: {category}."
+    },
+    "ticketReply": {
+      "subject": "Reply to request {number}",
+      "footer": "To reply, simply reply to this email."
+    }
   }
 }

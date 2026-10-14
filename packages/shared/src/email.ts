@@ -1,0 +1,41 @@
+import { type Locale, type SupportCategory } from './enums';
+
+/**
+ * Письма через transactional outbox (раздел 2.1, BR-FRM-01): api в одной транзакции пишет запись,
+ * строку email_queue и событие outbox_events; worker публикует событие в очередь `email` и отправляет письмо.
+ */
+export const OUTBOX_EVENT_TYPES = {
+  /** BR-FRM-01: подтверждение заявки школы или обращения. */
+  emailConfirmation: 'email.confirmation',
+  /** API-SUP-04: ответ сотрудника по обращению. */
+  emailTicketReply: 'email.ticket_reply',
+} as const;
+export type OutboxEventType = (typeof OUTBOX_EVENT_TYPES)[keyof typeof OUTBOX_EVENT_TYPES];
+
+export interface OutboxEmailPayload {
+  emailQueueId: string;
+}
+
+export const EMAIL_TEMPLATES = {
+  schoolRequestConfirmation: 'school_request.confirmation',
+  supportTicketConfirmation: 'support_ticket.confirmation',
+  ticketReply: 'ticket.reply',
+} as const;
+export type EmailTemplate = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
+
+/** BR-FRM-03: номер, тип, способ ответа — без текста заявки или обращения. */
+export interface ConfirmationEmailPayload {
+  locale: Locale;
+  publicNumber: string;
+  replyEmail: string;
+  category?: SupportCategory;
+}
+
+/** API-SUP-04: текст ответа сотрудника; токен для Reply-To создаёт worker при отправке (в БД — только хеш). */
+export interface TicketReplyEmailPayload {
+  locale: Locale;
+  publicNumber: string;
+  body: string;
+  ticketId: string;
+  ticketMessageId: string;
+}

@@ -37,8 +37,9 @@ export function Pill({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
 export type BadgeTone = 'neutral' | 'accent' | 'success' | 'danger';
 const tones: Record<BadgeTone, string> = {
   neutral: 'bg-[var(--field)] text-[var(--text-muted)]',
-  accent: 'bg-[var(--accent)] text-white',
-  success: 'bg-[var(--success)] text-white',
+  accent: 'bg-[var(--accent-strong)] text-white',
+  // Белый на --success даёт 3.1:1 — для текста статуса нужен тёмный (REQ-NFR-A11Y-01).
+  success: 'bg-[var(--success)] text-[#070707]',
   danger: 'bg-[var(--danger)] text-white',
 };
 

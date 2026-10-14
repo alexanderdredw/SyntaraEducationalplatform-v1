@@ -32,6 +32,826 @@
         ]
       }
     },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Неверный email или пароль"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "MeController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/public/school-requests": {
+      "post": {
+        "operationId": "FormsController_schoolRequest",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Язык письма",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "UUID; тот же ключ и то же тело → прежний ответ (API-GEN-05)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchoolRequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormCreatedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "VALIDATION_FAILED; fieldErrors — ключи i18n validation.*"
+          },
+          "409": {
+            "description": "IDEMPOTENCY_MISMATCH"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/support-tickets": {
+      "post": {
+        "operationId": "FormsController_supportTicket",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Язык письма",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "UUID; тот же ключ и то же тело → прежний ответ (API-GEN-05)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportTicketBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormCreatedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "VALIDATION_FAILED; fieldErrors — ключи i18n validation.*"
+          },
+          "409": {
+            "description": "IDEMPOTENCY_MISMATCH"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/staff/tickets": {
+      "get": {
+        "operationId": "StaffTicketsController_list",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Номер обращения или email",
+            "schema": {}
+          },
+          {
+            "name": "dueBefore",
+            "required": false,
+            "in": "query",
+            "description": "ISO 8601: срок первого ответа не позже",
+            "schema": {}
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "technical",
+                "school_onboarding",
+                "learning",
+                "account_access",
+                "data_privacy",
+                "other"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigneeId",
+            "required": false,
+            "in": "query",
+            "description": "UUID или none",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "new",
+                "in_progress",
+                "waiting_user",
+                "waiting_internal",
+                "resolved",
+                "closed",
+                "reopened"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/tickets/{id}": {
+      "get": {
+        "operationId": "StaffTicketsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/tickets/{id}/assign": {
+      "post": {
+        "operationId": "StaffTicketsController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/tickets/{id}/reply": {
+      "post": {
+        "operationId": "StaffTicketsController_reply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplyBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/tickets/{id}/notes": {
+      "post": {
+        "operationId": "StaffTicketsController_note",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/tickets/{id}/status": {
+      "post": {
+        "operationId": "StaffTicketsController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TicketStatusBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "409": {
+            "description": "INVALID_TRANSITION"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/requests": {
+      "get": {
+        "operationId": "StaffRequestsController_list",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Номер заявки или email",
+            "schema": {}
+          },
+          {
+            "name": "assigneeId",
+            "required": false,
+            "in": "query",
+            "description": "UUID или none",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "new",
+                "in_progress",
+                "contacted",
+                "onboarded",
+                "rejected"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/requests/{id}": {
+      "get": {
+        "operationId": "StaffRequestsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/requests/{id}/assign": {
+      "post": {
+        "operationId": "StaffRequestsController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/requests/{id}/status": {
+      "post": {
+        "operationId": "StaffRequestsController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestStatusBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "409": {
+            "description": "INVALID_TRANSITION"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/inbound/email": {
+      "post": {
+        "operationId": "InboundController_email",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InboundEmailBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "Функция выключена или токен не найден"
+          }
+        },
+        "tags": [
+          "staff"
+        ]
+      }
+    },
     "/api/public/subjects": {
       "get": {
         "operationId": "PublicController_subjects",
@@ -145,6 +965,884 @@
         "required": [
           "status",
           "checks"
+        ]
+      },
+      "LoginBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "PreferencesDto": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "system",
+              "light",
+              "dark"
+            ]
+          },
+          "dataSaver": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "locale",
+          "theme",
+          "dataSaver"
+        ]
+      },
+      "MeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "initials": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "student",
+                "teacher",
+                "support_agent",
+                "onboarding_agent"
+              ]
+            }
+          },
+          "activeRole": {
+            "type": "string",
+            "enum": [
+              "student",
+              "teacher",
+              "support_agent",
+              "onboarding_agent"
+            ]
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/PreferencesDto"
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "initials",
+          "roles",
+          "activeRole",
+          "preferences"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/MeDto"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "SchoolRequestBody": {
+        "type": "object",
+        "properties": {
+          "schoolName": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "region": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "contactPerson": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "phone": {
+            "type": "string",
+            "example": "+7 700 000 00 00"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 5000
+          }
+        },
+        "required": [
+          "schoolName",
+          "contactPerson",
+          "email"
+        ]
+      },
+      "FormCreatedResponse": {
+        "type": "object",
+        "properties": {
+          "publicNumber": {
+            "type": "string",
+            "example": "SR-261014-0042"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "publicNumber",
+          "email"
+        ]
+      },
+      "TechContextBody": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string"
+          },
+          "appVersion": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          },
+          "dataSaver": {
+            "type": "boolean"
+          },
+          "userAgent": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "route",
+          "appVersion",
+          "locale",
+          "dataSaver",
+          "userAgent"
+        ]
+      },
+      "SupportTicketBody": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "technical",
+              "school_onboarding",
+              "learning",
+              "account_access",
+              "data_privacy",
+              "other"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "phone": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "techContext": {
+            "$ref": "#/components/schemas/TechContextBody"
+          }
+        },
+        "required": [
+          "category",
+          "subject",
+          "email",
+          "description"
+        ]
+      },
+      "StaffUserRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "displayName"
+        ]
+      },
+      "TicketListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publicNumber": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "technical",
+              "school_onboarding",
+              "learning",
+              "account_access",
+              "data_privacy",
+              "other"
+            ]
+          },
+          "subject": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "waiting_user",
+              "waiting_internal",
+              "resolved",
+              "closed",
+              "reopened"
+            ]
+          },
+          "assignee": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserRef"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Срок первого ответа (PH-22), только для сотрудников"
+          }
+        },
+        "required": [
+          "id",
+          "publicNumber",
+          "category",
+          "subject",
+          "email",
+          "status",
+          "assignee",
+          "createdAt",
+          "dueAt"
+        ]
+      },
+      "TicketListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TicketListItem"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "TicketMessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "in",
+              "out",
+              "note"
+            ]
+          },
+          "body": {
+            "type": "string"
+          },
+          "isInternal": {
+            "type": "boolean"
+          },
+          "author": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserRef"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "direction",
+          "body",
+          "isInternal",
+          "author",
+          "createdAt",
+          "sentAt"
+        ]
+      },
+      "StatusHistoryDto": {
+        "type": "object",
+        "properties": {
+          "fromStatus": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "waiting_user",
+              "waiting_internal",
+              "resolved",
+              "closed",
+              "reopened"
+            ],
+            "nullable": true
+          },
+          "toStatus": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "waiting_user",
+              "waiting_internal",
+              "resolved",
+              "closed",
+              "reopened"
+            ]
+          },
+          "changedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserRef"
+              }
+            ]
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "fromStatus",
+          "toStatus",
+          "changedBy",
+          "changedAt"
+        ]
+      },
+      "ReplyTemplateDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "description": "Текст шаблона с подставленным номером обращения"
+          }
+        },
+        "required": [
+          "code",
+          "body"
+        ]
+      },
+      "TicketDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publicNumber": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "technical",
+              "school_onboarding",
+              "learning",
+              "account_access",
+              "data_privacy",
+              "other"
+            ]
+          },
+          "subject": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "waiting_user",
+              "waiting_internal",
+              "resolved",
+              "closed",
+              "reopened"
+            ]
+          },
+          "assignee": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserRef"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Срок первого ответа (PH-22), только для сотрудников"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "techContext": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TechContextBody"
+              }
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ],
+            "description": "Язык писем клиенту"
+          },
+          "resolvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "closedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TicketMessageDto"
+            }
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusHistoryDto"
+            }
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReplyTemplateDto"
+            }
+          },
+          "allowedStatuses": {
+            "type": "array",
+            "description": "Допустимые для API-SUP-06 статусы",
+            "items": {
+              "type": "string",
+              "enum": [
+                "new",
+                "in_progress",
+                "waiting_user",
+                "waiting_internal",
+                "resolved",
+                "closed",
+                "reopened"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "publicNumber",
+          "category",
+          "subject",
+          "email",
+          "status",
+          "assignee",
+          "createdAt",
+          "dueAt",
+          "name",
+          "phone",
+          "description",
+          "techContext",
+          "locale",
+          "resolvedAt",
+          "closedAt",
+          "messages",
+          "history",
+          "templates",
+          "allowedStatuses"
+        ]
+      },
+      "AssignBody": {
+        "type": "object",
+        "properties": {
+          "assigneeId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "assigneeId"
+        ]
+      },
+      "ReplyBody": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "templateCode": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "NoteBody": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "TicketStatusBody": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "waiting_user",
+              "waiting_internal",
+              "resolved",
+              "closed",
+              "reopened"
+            ]
+          }
+        },
+        "required": [
+          "to"
+        ]
+      },
+      "RequestListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publicNumber": {
+            "type": "string"
+          },
+          "schoolName": {
+            "type": "string"
+          },
+          "contactPerson": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "contacted",
+              "onboarded",
+              "rejected"
+            ]
+          },
+          "assignee": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserRef"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "publicNumber",
+          "schoolName",
+          "contactPerson",
+          "email",
+          "status",
+          "assignee",
+          "createdAt"
+        ]
+      },
+      "RequestListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RequestListItem"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "RequestDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publicNumber": {
+            "type": "string"
+          },
+          "schoolName": {
+            "type": "string"
+          },
+          "contactPerson": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "contacted",
+              "onboarded",
+              "rejected"
+            ]
+          },
+          "assignee": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserRef"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "allowedStatuses": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "new",
+                "in_progress",
+                "contacted",
+                "onboarded",
+                "rejected"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "publicNumber",
+          "schoolName",
+          "contactPerson",
+          "email",
+          "status",
+          "assignee",
+          "createdAt",
+          "region",
+          "city",
+          "phone",
+          "message",
+          "allowedStatuses"
+        ]
+      },
+      "RequestStatusBody": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "enum": [
+              "new",
+              "in_progress",
+              "contacted",
+              "onboarded",
+              "rejected"
+            ]
+          }
+        },
+        "required": [
+          "to"
+        ]
+      },
+      "InboundEmailBody": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Токен из адреса Reply-To"
+          },
+          "from": {
+            "type": "string",
+            "format": "email"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "token",
+          "from",
+          "text"
         ]
       },
       "PublicSubjectDto": {

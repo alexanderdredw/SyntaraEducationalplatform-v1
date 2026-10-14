@@ -4,25 +4,38 @@ import { z } from 'zod';
  * Переменные окружения api (раздел 2.3 SPEC). Секреты — только здесь (AG-10): модуль не импортируется в web.
  * Приложение не стартует, если обязательная переменная отсутствует или некорректна.
  */
-const EnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  API_PORT: z.coerce.number().int().positive().default(3001),
-  DATABASE_URL: z.url(),
-  REDIS_URL: z.url(),
-  S3_ENDPOINT: z.url(),
-  S3_BUCKET: z.string().min(1),
-  S3_ACCESS_KEY: z.string().min(1),
-  S3_SECRET_KEY: z.string().min(1),
-  SESSION_SECRET: z.string().min(64, 'SESSION_SECRET must be at least 64 characters'),
-  APP_BASE_URL: z.url(),
-  LLM_PROVIDER: z.enum(['mock', 'openai-compatible', 'anthropic']).default('mock'),
-  LLM_API_KEY: z.string().optional(),
-  LLM_MODEL: z.string().optional(),
-  SUPPORT_EMAIL: z.email().optional(),
-  PLATFORM_TZ: z.string().default('Asia/Almaty'),
-  SENTRY_DSN: z.string().optional(),
-  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
-});
+const EnvSchema = z
+  .object({
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+    API_PORT: z.coerce.number().int().positive().default(3001),
+    DATABASE_URL: z.url(),
+    REDIS_URL: z.url(),
+    S3_ENDPOINT: z.url(),
+    S3_BUCKET: z.string().min(1),
+    S3_ACCESS_KEY: z.string().min(1),
+    S3_SECRET_KEY: z.string().min(1),
+    SESSION_SECRET: z.string().min(64, 'SESSION_SECRET must be at least 64 characters'),
+    APP_BASE_URL: z.url(),
+    LLM_PROVIDER: z.enum(['mock', 'openai-compatible', 'anthropic']).default('mock'),
+    LLM_API_KEY: z.string().optional(),
+    LLM_MODEL: z.string().optional(),
+    SUPPORT_EMAIL: z.email().optional(),
+    PLATFORM_TZ: z.string().default('Asia/Almaty'),
+    SENTRY_DSN: z.string().optional(),
+    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
+    /**
+     * Только для e2e: отключает лимиты API-GEN-06, чтобы сценарии с одного IP не упирались в 5 отправок в минуту.
+     * В продуктиве запрещено (проверка ниже); сами лимиты покрыты integration-тестами.
+     */
+    RATE_LIMITS_DISABLED: z
+      .enum(['true', 'false', '1', '0'])
+      .default('false')
+      .transform((v) => v === 'true' || v === '1'),
+  })
+  .refine((env) => !(env.NODE_ENV === 'production' && env.RATE_LIMITS_DISABLED), {
+    path: ['RATE_LIMITS_DISABLED'],
+    message: 'must not be set in production',
+  });
 
 export type Env = z.infer<typeof EnvSchema>;
 

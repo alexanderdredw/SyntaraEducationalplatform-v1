@@ -1,14 +1,30 @@
-import { Worker, type ConnectionOptions, type Job, type Processor } from 'bullmq';
+import { Queue, Worker, type ConnectionOptions, type Job, type Processor } from 'bullmq';
 import { type Logger } from 'pino';
+import { type Database } from '@syntara/db';
+import { type EmailJobData, type MailTransport, sendEmail } from './processors/email';
+import { autoCloseResolved, cleanupIdempotencyKeys } from './processors/maintenance';
+import { processOutbox } from './processors/outbox';
 
 /** Очереди worker (раздел 2.2 SPEC). */
 export const QUEUE_NAMES = ['outbox', 'email', 'file-scan', 'recalc', 'cleanup'] as const;
 export type QueueName = (typeof QUEUE_NAMES)[number];
 
+export interface WorkerDeps {
+  db: Database;
+  transport: MailTransport;
+  mailFrom: string;
+}
+
+/** Периодические задачи (BullMQ job schedulers): опрос outbox, автозакрытие обращений, очистка ключей. */
+export const SCHEDULES = [
+  { queue: 'outbox', id: 'outbox-poll', name: 'poll', every: 2_000 },
+  { queue: 'cleanup', id: 'auto-close-resolved', name: 'auto-close', every: 60 * 60_000 },
+  { queue: 'cleanup', id: 'idempotency-keys', name: 'idempotency-keys', every: 60 * 60_000 },
+] as const satisfies ReadonlyArray<{ queue: QueueName; id: string; name: string; every: number }>;
+
 /**
- * Процессоры-заготовки. Логика появляется по плану: outbox и email — итерация 4 (BR-FRM-*),
- * file-scan — итерация 7 (BR-FILE-03), recalc — итерация 8, cleanup — итерации 4 и 11 (PH-18).
- * Данные задания в журнал не пишутся (REQ-NFR-SEC-07).
+ * Процессоры-заготовки для очередей, логика которых появится позже: file-scan — итерация 7 (BR-FILE-03),
+ * recalc — итерация 8. Данные задания в журнал не пишутся (REQ-NFR-SEC-07).
  */
 export function placeholderProcessor(queue: QueueName, logger: Logger): Processor {
   return async (job: Job) => {
@@ -17,12 +33,58 @@ export function placeholderProcessor(queue: QueueName, logger: Logger): Processo
   };
 }
 
-export function createWorkers(connection: ConnectionOptions, logger: Logger): Worker[] {
-  return QUEUE_NAMES.map((queue) => {
-    const worker = new Worker(queue, placeholderProcessor(queue, logger), { connection });
+export function createProcessors(
+  connection: ConnectionOptions,
+  logger: Logger,
+  deps: WorkerDeps,
+): { processors: Record<QueueName, Processor>; close: () => Promise<void> } {
+  const emailQueue = new Queue('email', { connection });
+  const processors: Record<QueueName, Processor> = {
+    // BR-FRM-01: события outbox → очередь email.
+    outbox: async () => ({ published: await processOutbox(deps.db, emailQueue, logger) }),
+    // BR-FRM-03/04, API-SUP-04: отправка письма с повторами.
+    email: async (job: Job<EmailJobData>) => ({ result: await sendEmail(job, { ...deps, logger }) }),
+    'file-scan': placeholderProcessor('file-scan', logger),
+    recalc: placeholderProcessor('recalc', logger),
+    cleanup: async (job: Job) => {
+      if (job.name === 'auto-close') return { closed: await autoCloseResolved(deps.db) };
+      if (job.name === 'idempotency-keys') return { deleted: await cleanupIdempotencyKeys(deps.db) };
+      return { handled: false };
+    },
+  };
+  return { processors, close: () => emailQueue.close() };
+}
+
+export function createWorkers(
+  connection: ConnectionOptions,
+  logger: Logger,
+  deps: WorkerDeps,
+): { workers: Worker[]; close: () => Promise<void> } {
+  const { processors, close } = createProcessors(connection, logger, deps);
+  const workers = QUEUE_NAMES.map((queue) => {
+    const worker = new Worker(queue, processors[queue], { connection });
     worker.on('failed', (job, err) =>
       logger.error({ queue, jobId: job?.id, err: err.message }, 'job failed'),
     );
     return worker;
   });
+  return {
+    workers,
+    close: async () => {
+      await Promise.allSettled(workers.map((w) => w.close()));
+      await close();
+    },
+  };
+}
+
+export async function scheduleJobs(connection: ConnectionOptions): Promise<void> {
+  for (const s of SCHEDULES) {
+    const queue = new Queue(s.queue, { connection });
+    await queue.upsertJobScheduler(
+      s.id,
+      { every: s.every },
+      { name: s.name, opts: { removeOnComplete: 100, removeOnFail: 100 } },
+    );
+    await queue.close();
+  }
 }

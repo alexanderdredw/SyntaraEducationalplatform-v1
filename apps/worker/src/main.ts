@@ -1,26 +1,26 @@
 import './instrument';
 import { Redis } from 'ioredis';
+import nodemailer from 'nodemailer';
 import pino from 'pino';
-import { z } from 'zod';
-import { createWorkers } from './queues';
+import { createDb } from '@syntara/db';
+import { loadEnv } from './env';
+import { createWorkers, scheduleJobs } from './queues';
 
-const env = z
-  .object({
-    REDIS_URL: z.url(),
-    // DATABASE_URL, SMTP_URL, CLAMD_HOST, OLEVBA_URL станут обязательными вместе с процессорами (итерации 4, 7).
-  })
-  .parse(process.env);
-
+const env = loadEnv(process.env);
 const logger = pino({ name: 'worker' });
 // BullMQ требует maxRetriesPerRequest: null для блокирующих команд.
 const connection = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
-const workers = createWorkers(connection, logger);
+const db = createDb(env.DATABASE_URL, { max: 5 });
+const transport = nodemailer.createTransport(env.SMTP_URL);
+
+const { workers, close } = createWorkers(connection, logger, { db, transport, mailFrom: env.MAIL_FROM });
+void scheduleJobs(connection).catch((err: Error) => logger.error({ err: err.message }, 'scheduling failed'));
 logger.info({ queues: workers.map((w) => w.name) }, 'worker started');
 
 async function shutdown(signal: string): Promise<void> {
   logger.info({ signal }, 'worker stopping');
-  await Promise.allSettled(workers.map((w) => w.close()));
-  await connection.quit();
+  await close();
+  await Promise.allSettled([connection.quit(), db.$client.end({ timeout: 5 })]);
   process.exit(0);
 }
 process.once('SIGINT', () => void shutdown('SIGINT'));

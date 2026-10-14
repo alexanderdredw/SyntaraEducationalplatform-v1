@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
+import { ENV, type Env } from './config/env';
+import { RedisThrottlerStorage, throttlerOptions } from './common/rate-limit';
 import { ApiExceptionFilter } from './common/api-exception.filter';
 import { buildLoggerParams } from './common/logger';
 import { HealthController } from './health/health.controller';
@@ -12,6 +15,10 @@ import { DOMAIN_MODULES } from './modules';
   imports: [
     LoggerModule.forRoot(buildLoggerParams(process.env.NODE_ENV === 'test' ? 'silent' : 'info')),
     InfraModule,
+    ThrottlerModule.forRootAsync({
+      inject: [ENV, RedisThrottlerStorage],
+      useFactory: (env: Env, storage: RedisThrottlerStorage) => throttlerOptions(env, storage),
+    }),
     ...DOMAIN_MODULES,
   ],
   controllers: [HealthController, MetricsController],

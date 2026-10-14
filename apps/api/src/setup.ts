@@ -1,5 +1,7 @@
 import { type INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule, type OpenAPIObject } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
+import { type Express } from 'express';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 
@@ -10,6 +12,9 @@ export const API_PREFIX = 'api';
 export function configureApp(app: INestApplication): void {
   app.useLogger(app.get(Logger));
   app.setGlobalPrefix(API_PREFIX);
+  // Ровно один доверенный прокси перед api (nginx в продуктиве, web при локальном запуске): req.ip — адрес клиента (API-GEN-06).
+  (app.getHttpAdapter().getInstance() as Express).set('trust proxy', 1);
+  app.use(cookieParser());
   // Заголовки безопасности API (REQ-NFR-SEC-01; полный набор для web — итерация 3).
   app.use(
     helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] } } }),

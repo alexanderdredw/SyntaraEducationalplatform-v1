@@ -29,19 +29,23 @@ interface ControlA11yProps {
  * через id / aria-describedby / aria-invalid. Тексты передаются из i18n.
  */
 export function Field({
+  id: explicitId,
   label,
   hint,
   error,
   required,
   children,
 }: {
+  /** Явный id поля — для ссылок из сводки ошибок; иначе генерируется. */
+  id?: string;
   label: string;
   hint?: string;
   error?: string;
   required?: boolean;
   children: ReactElement<ControlA11yProps>;
 }) {
-  const id = useId();
+  const generatedId = useId();
+  const id = explicitId ?? generatedId;
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
@@ -66,7 +70,7 @@ export function Field({
         </p>
       ) : null}
       {error ? (
-        <p id={errorId} className="text-xs text-[var(--danger)]">
+        <p id={errorId} className="text-xs text-[var(--danger-text)]">
           {error}
         </p>
       ) : null}

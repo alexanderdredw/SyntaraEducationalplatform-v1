@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import pkg from './package.json' with { type: 'json' };
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
@@ -8,6 +9,8 @@ const API_INTERNAL_URL = process.env.API_INTERNAL_URL ?? 'http://localhost:3001'
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // REQ-PUB-SUP-03: версия приложения в techContext обращения.
+  env: { NEXT_PUBLIC_APP_VERSION: pkg.version },
   transpilePackages: ['@syntara/ui'],
   // REQ-NFR-PERF-01: импорт только используемых компонентов из «бочковых» модулей.
   experimental: { optimizePackageImports: ['@syntara/ui', 'radix-ui', 'lucide-react'] },

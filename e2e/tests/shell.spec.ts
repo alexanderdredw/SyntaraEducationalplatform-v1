@@ -160,7 +160,8 @@ test.describe('Оболочка и навигация', () => {
   });
 
   test('PH-24 entry points without a page lead to «Раздел в разработке»', async ({ page }) => {
-    for (const path of ['/auth/login', '/auth/start', '/join', '/account/privacy']) {
+    // /auth/login — с итерации 4 (минимальный вход, Q-01).
+    for (const path of ['/auth/start', '/join', '/account/privacy']) {
       await page.goto(`/ru${path}`);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.common.sectionInDevelopment);
     }

@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { type Locale } from '@syntara/shared';
 import { createApiClient } from './client';
 import type { components } from './schema';
@@ -43,3 +44,16 @@ export function getPublicConfig(): Promise<PublicConfig | null> {
     api().GET('/api/public/config', { signal: signal(), cache: 'no-store' }),
   );
 }
+
+export type Me = components['schemas']['MeDto'];
+
+/**
+ * API-ME-01 для SSR: пользователь по cookie запроса или null (нет сессии, api недоступен).
+ * Права проверяет api (AG-04); здесь — только выбор, что отрисовать.
+ */
+export const getMe = cache(async (cookieHeader: string): Promise<Me | null> => {
+  if (!cookieHeader.includes('sid=')) return null;
+  return safely<Me | null>('GET /api/me', null, () =>
+    api().GET('/api/me', { headers: { cookie: cookieHeader }, signal: signal(), cache: 'no-store' }),
+  );
+});

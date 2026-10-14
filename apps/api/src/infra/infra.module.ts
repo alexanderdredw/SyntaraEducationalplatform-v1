@@ -3,6 +3,9 @@ import Redis from 'ioredis';
 import { createDb, type Database } from '@syntara/db';
 import { AppConfigService } from '../config/app-config.service';
 import { ENV, type Env, loadEnv } from '../config/env';
+import { FeatureFlagsService } from '../config/feature-flags.service';
+import { IdempotencyService } from '../common/idempotency';
+import { RedisThrottlerStorage } from '../common/rate-limit';
 import { DB, REDIS } from './tokens';
 
 export { DB, REDIS };
@@ -29,8 +32,11 @@ export { DB, REDIS };
       },
     },
     AppConfigService,
+    FeatureFlagsService,
+    IdempotencyService,
+    RedisThrottlerStorage,
   ],
-  exports: [ENV, DB, REDIS, AppConfigService],
+  exports: [ENV, DB, REDIS, AppConfigService, FeatureFlagsService, IdempotencyService, RedisThrottlerStorage],
 })
 export class InfraModule implements OnApplicationShutdown {
   constructor(

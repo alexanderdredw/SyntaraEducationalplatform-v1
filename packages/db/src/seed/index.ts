@@ -1,5 +1,5 @@
 import { type Database } from '../index';
-import { seedConfig } from './config';
+import { seedConfig, seedFeatureFlags } from './config';
 import { seedDemo } from './demo';
 import { seedVisual } from './visual';
 
@@ -9,6 +9,7 @@ export type SeedSet = (typeof SEED_SETS)[number];
 
 export async function runSeed(db: Database, set: SeedSet): Promise<void> {
   await seedConfig(db);
+  await seedFeatureFlags(db);
   if (set === 'config') return;
   await seedDemo(db);
   if (set === 'demo') return;

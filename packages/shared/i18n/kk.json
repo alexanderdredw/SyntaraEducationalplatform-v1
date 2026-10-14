@@ -25,7 +25,9 @@
     "invalidPhone": "Телефон нөмірін енгізіңіз, мысалы +7 700 000 00 00",
     "min2": "Кемінде екі нұсқа қосыңыз",
     "exactlyOneCorrect": "Тек бір дұрыс нұсқаны белгілеңіз",
-    "atLeastOneLanguage": "Кем дегенде бір тілді толтыр (RU, KK немесе EN)"
+    "atLeastOneLanguage": "Кем дегенде бір тілді толтыр (RU, KK немесе EN)",
+    "invalidAssignee": "Тізімнен қызметкерді таңдаңыз",
+    "invalidTemplate": "Үлгі табылмады"
   },
   "shell": {
     "logoLabel": "Syntara — басты бетке",
@@ -355,11 +357,50 @@
     }
   },
   "schoolRequest": {
-    "title": "Мектепті Syntara LMS-ке қосу"
+    "title": "Мектепті Syntara LMS-ке қосу",
+    "fields": {
+      "schoolName": "Мектеп атауы",
+      "region": "Облыс",
+      "city": "Қала / ауыл",
+      "contactPerson": "Байланыс тұлғасы",
+      "phone": "Телефон",
+      "email": "Email",
+      "message": "Хабарлама"
+    },
+    "placeholders": {
+      "schoolName": "№1 мектеп-гимназия",
+      "region": "Алматы обл.",
+      "city": "Алматы",
+      "contactPerson": "Директор / оқу ісінің меңгерушісі",
+      "phone": "+7 700 000 00 00",
+      "email": "school@example.kz",
+      "message": "Қанша сынып, не маңызды, қашан бастағыңыз келеді..."
+    },
+    "submit": "Өтінім қалдыру",
+    "success": "Өтінім алынды"
   },
   "support": {
     "title": "Қолдау қызметі",
-    "subtitle": "Сұрағыңызды сипаттаңыз — көрсетілген email-ге жауап береміз"
+    "subtitle": "Сұрағыңызды сипаттаңыз — көрсетілген email-ге жауап береміз",
+    "fields": {
+      "category": "Санат",
+      "subject": "Тақырып",
+      "name": "Атыңыз (міндетті емес)",
+      "email": "Жауапқа арналған email",
+      "phone": "Телефон (міндетті емес)",
+      "description": "Мәселені сипаттаңыз"
+    },
+    "categories": {
+      "technical": "Техникалық мәселе",
+      "school_onboarding": "Мектепті қосу",
+      "learning": "Оқу бойынша сұрақ",
+      "account_access": "Аккаунт және қолжетімділік",
+      "data_privacy": "Деректер және құпиялылық",
+      "other": "Басқа"
+    },
+    "submit": "Өтінішті жіберу",
+    "techContextNote": "Өтінішке техникалық мәліметтер қосылады: бет, тіл, браузер",
+    "success": "Өтініш алынды"
   },
   "legal": {
     "updated": "Жаңартылды: {date}",
@@ -371,5 +412,158 @@
     "terms": "Пайдаланушы келісімі",
     "privacy": "Құпиялылық саясаты",
     "cookies": "Cookie саясаты"
+  },
+  "forms": {
+    "summaryTitle": "Формадағы қателерді түзетіңіз:",
+    "submitting": "Жіберіп жатырмыз...",
+    "networkError": "Байланыс жоқ. Интернетті тексеріп, қайта жіберіңіз",
+    "serverError": "Жіберуді растау мүмкін болмады. Қайталап көріңіз",
+    "number": "Нөмірі: {number}",
+    "replyTo": "{email} мекенжайына жауап береміз",
+    "consent": "Форманы жіберу арқылы сіз деректерді Құпиялылық саясатына сәйкес өңдеуге келісесіз.",
+    "required": "міндетті өріс"
+  },
+  "auth": {
+    "login": {
+      "title": "Кіру",
+      "email": "Email",
+      "password": "Құпиясөз",
+      "submit": "Кіру",
+      "forgot": "Құпиясөзді ұмыттыңыз ба?",
+      "invalid": "Email немесе құпиясөз қате",
+      "rateLimited": "Кіру әрекеттері тым көп. {minutes} минуттан кейін қайталаңыз."
+    }
+  },
+  "staff": {
+    "navLabel": "Қызметтік қолдау",
+    "tickets": "Өтініштер",
+    "requests": "Мектеп өтінімдері",
+    "logout": "Шығу",
+    "filters": {
+      "label": "Сүзгілер",
+      "status": "Мәртебе",
+      "category": "Санат",
+      "assignee": "Жауапты",
+      "dueBefore": "Жауап мерзімі дейін",
+      "search": "Нөмір немесе email бойынша іздеу",
+      "all": "Барлығы",
+      "mine": "Менікі",
+      "unassigned": "Жауаптысыз",
+      "reset": "Сүзгілерді тазалау"
+    },
+    "columns": {
+      "number": "Нөмір",
+      "created": "Құрылған",
+      "category": "Санат",
+      "subject": "Тақырып",
+      "email": "Email",
+      "status": "Мәртебе",
+      "assignee": "Жауапты",
+      "due": "Жауап мерзімі",
+      "school": "Мектеп",
+      "contact": "Байланыс тұлғасы"
+    },
+    "empty": "Ештеңе табылмады",
+    "loadMore": "Тағы көрсету",
+    "loading": "Жүктелуде...",
+    "selectHint": "Тізімнен жазбаны таңдаңыз",
+    "backToList": "← Тізімге",
+    "ticketStatus": {
+      "new": "Жаңа",
+      "in_progress": "Жұмыста",
+      "waiting_user": "Пайдаланушының жауабын күтуде",
+      "waiting_internal": "Жоғары деңгейге берілді",
+      "resolved": "Шешілді",
+      "closed": "Жабық",
+      "reopened": "Қайта ашылды"
+    },
+    "requestStatus": {
+      "new": "Жаңа",
+      "in_progress": "Жұмыста",
+      "contacted": "Байланыстық",
+      "onboarded": "Қосылды",
+      "rejected": "Қабылданбады"
+    },
+    "card": {
+      "original": "Бастапқы өтініш",
+      "techContext": "Техникалық мәліметтер",
+      "conversation": "Хат алмасу",
+      "noMessages": "Әзірге хабарлама жоқ",
+      "history": "Мәртебелер тарихы",
+      "system": "Жүйе",
+      "user": "Пайдаланушы",
+      "internal": "Ішкі жазба — клиентке жіберілмейді",
+      "sent": "Жіберілді",
+      "queued": "Жіберу кезегінде",
+      "unassigned": "тағайындалмаған",
+      "tech": {
+        "route": "Бет",
+        "appVersion": "Нұсқа",
+        "locale": "Тіл",
+        "dataSaver": "Трафикті үнемдеу",
+        "userAgent": "Браузер",
+        "yes": "Иә",
+        "no": "Жоқ"
+      }
+    },
+    "direction": {
+      "in": "Пайдаланушы",
+      "out": "Қолдау жауабы",
+      "note": "Жазба"
+    },
+    "actions": {
+      "label": "Әрекеттер",
+      "assignMe": "Маған тағайындау",
+      "reply": "Клиентке жауап",
+      "template": "Үлгі",
+      "noTemplate": "Үлгісіз",
+      "replyText": "Жауап мәтіні",
+      "recipient": "Алушы: {email}",
+      "preview": "Хатты алдын ала қарау",
+      "send": "Жауапты жіберу",
+      "note": "Ішкі жазба",
+      "noteText": "Жазба мәтіні",
+      "addNote": "Жазба қосу",
+      "status": "Мәртебені өзгерту",
+      "noStatusActions": "Бұл мәртебе үшін қолжетімді ауысулар жоқ",
+      "done": "Дайын",
+      "error": "Әрекетті орындау мүмкін болмады. Қайталап көріңіз",
+      "invalidTransition": "Мәртебенің бұл ауысуы қолжетімсіз"
+    },
+    "templates": {
+      "confirmation": "Растау",
+      "clarification": "Нақтылау",
+      "resolution": "Шешім",
+      "delay": "Кідіріс"
+    },
+    "ticketActions": {
+      "waiting_user": "Нақтылау сұрау",
+      "waiting_internal": "Жоғары деңгейге беру",
+      "in_progress": "Жұмысқа қайтару",
+      "resolved": "Шешілді"
+    },
+    "requestActions": {
+      "in_progress": "Жұмысқа алу",
+      "contacted": "Байланыстық",
+      "onboarded": "Қосылды",
+      "rejected": "Қабылдамау"
+    }
+  },
+  "email": {
+    "greeting": "Сәлеметсіз бе!",
+    "replyChannel": "Осы мекенжайға жауап береміз: {email}.",
+    "signature": "Syntara командасы",
+    "schoolRequest": {
+      "subject": "{number} өтінімі алынды",
+      "body": "Мектепті Syntara LMS-ке қосу туралы өтініміңізді алдық. Өтінім нөмірі: {number}."
+    },
+    "supportTicket": {
+      "subject": "{number} өтініші алынды",
+      "body": "Қолдау қызметіне жолдаған өтінішіңізді алдық. Өтініш нөмірі: {number}. Түрі: {category}."
+    },
+    "ticketReply": {
+      "subject": "{number} өтініші бойынша жауап",
+      "footer": "Жауап беру үшін осы хатқа жауап жазыңыз."
+    }
   }
 }

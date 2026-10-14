@@ -8,6 +8,7 @@ import {
   appConfig,
   badgeTranslations,
   badges,
+  featureFlags,
   levelTranslations,
   questions,
   topics,
@@ -67,6 +68,20 @@ describe('seed (integration)', () => {
     await runSeed(db, 'config');
     const [row] = await db.select().from(appConfig).where(eq(appConfig.key, 'support.email'));
     expect(row?.value).toBe('confirmed@syntara-edu.me');
+  });
+
+  it('AG-02, API-SUP-08 inbound email is off by a feature flag; seed keeps the value set by the owner', async () => {
+    const flag = () => db.select().from(featureFlags).where(eq(featureFlags.key, 'support.inbound_email'));
+    expect(await flag()).toEqual([
+      expect.objectContaining({ enabled: false, note: expect.stringContaining('Q-10') }),
+    ]);
+    await db.update(featureFlags).set({ enabled: true }).where(eq(featureFlags.key, 'support.inbound_email'));
+    await runSeed(db, 'config');
+    expect((await flag())[0]?.enabled).toBe(true);
+    await db
+      .update(featureFlags)
+      .set({ enabled: false })
+      .where(eq(featureFlags.key, 'support.inbound_email'));
   });
 
   it('BR-BDG-01, BR-XP-03 seed demo: 12 badges with RU titles from SPEC, level 1 «Новичок»', async () => {

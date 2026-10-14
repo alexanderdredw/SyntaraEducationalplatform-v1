@@ -25,7 +25,9 @@
     "invalidPhone": "Введите телефон, например +7 700 000 00 00",
     "min2": "Добавьте минимум два варианта",
     "exactlyOneCorrect": "Отметьте ровно один правильный вариант",
-    "atLeastOneLanguage": "Заполни хотя бы один язык (RU, KK или EN)"
+    "atLeastOneLanguage": "Заполни хотя бы один язык (RU, KK или EN)",
+    "invalidAssignee": "Выберите сотрудника из списка",
+    "invalidTemplate": "Шаблон не найден"
   },
   "shell": {
     "logoLabel": "Syntara — на главную",
@@ -355,11 +357,50 @@
     }
   },
   "schoolRequest": {
-    "title": "Подключить школу к Syntara LMS"
+    "title": "Подключить школу к Syntara LMS",
+    "fields": {
+      "schoolName": "Название школы",
+      "region": "Регион",
+      "city": "Город / село",
+      "contactPerson": "Контактное лицо",
+      "phone": "Телефон",
+      "email": "Email",
+      "message": "Сообщение"
+    },
+    "placeholders": {
+      "schoolName": "Школа-гимназия №1",
+      "region": "Алматинская обл.",
+      "city": "Алматы",
+      "contactPerson": "Директор / завуч",
+      "phone": "+7 700 000 00 00",
+      "email": "school@example.kz",
+      "message": "Сколько классов, что важно, когда хотите начать..."
+    },
+    "submit": "Оставить заявку",
+    "success": "Заявка получена"
   },
   "support": {
     "title": "Поддержка",
-    "subtitle": "Опишите вопрос — ответим на указанный email"
+    "subtitle": "Опишите вопрос — ответим на указанный email",
+    "fields": {
+      "category": "Категория",
+      "subject": "Тема",
+      "name": "Ваше имя (необязательно)",
+      "email": "Email для ответа",
+      "phone": "Телефон (необязательно)",
+      "description": "Опишите проблему"
+    },
+    "categories": {
+      "technical": "Техническая проблема",
+      "school_onboarding": "Подключение школы",
+      "learning": "Вопрос по обучению",
+      "account_access": "Аккаунт и доступ",
+      "data_privacy": "Данные и конфиденциальность",
+      "other": "Другое"
+    },
+    "submit": "Отправить обращение",
+    "techContextNote": "К обращению будут добавлены технические сведения: страница, язык, браузер",
+    "success": "Обращение получено"
   },
   "legal": {
     "updated": "Обновлено: {date}",
@@ -371,5 +412,158 @@
     "terms": "Пользовательское соглашение",
     "privacy": "Политика конфиденциальности",
     "cookies": "Политика cookie"
+  },
+  "forms": {
+    "summaryTitle": "Исправьте ошибки в форме:",
+    "submitting": "Отправляем...",
+    "networkError": "Нет соединения. Проверьте интернет и повторите отправку",
+    "serverError": "Не удалось подтвердить отправку. Повторите попытку",
+    "number": "Номер: {number}",
+    "replyTo": "Ответим на {email}",
+    "consent": "Отправляя форму, вы соглашаетесь с обработкой данных по Политике конфиденциальности.",
+    "required": "обязательное поле"
+  },
+  "auth": {
+    "login": {
+      "title": "Вход",
+      "email": "Email",
+      "password": "Пароль",
+      "submit": "Войти",
+      "forgot": "Забыли пароль?",
+      "invalid": "Неверный email или пароль",
+      "rateLimited": "Слишком много попыток входа. Повторите через {minutes} мин."
+    }
+  },
+  "staff": {
+    "navLabel": "Служебная поддержка",
+    "tickets": "Обращения",
+    "requests": "Заявки школ",
+    "logout": "Выйти",
+    "filters": {
+      "label": "Фильтры",
+      "status": "Статус",
+      "category": "Категория",
+      "assignee": "Ответственный",
+      "dueBefore": "Срок ответа до",
+      "search": "Поиск по номеру или email",
+      "all": "Все",
+      "mine": "Мои",
+      "unassigned": "Без ответственного",
+      "reset": "Сбросить фильтры"
+    },
+    "columns": {
+      "number": "Номер",
+      "created": "Создано",
+      "category": "Категория",
+      "subject": "Тема",
+      "email": "Email",
+      "status": "Статус",
+      "assignee": "Ответственный",
+      "due": "Срок ответа",
+      "school": "Школа",
+      "contact": "Контактное лицо"
+    },
+    "empty": "Ничего не найдено",
+    "loadMore": "Показать ещё",
+    "loading": "Загрузка...",
+    "selectHint": "Выберите запись в списке",
+    "backToList": "← К списку",
+    "ticketStatus": {
+      "new": "Новое",
+      "in_progress": "В работе",
+      "waiting_user": "Ждём ответа пользователя",
+      "waiting_internal": "Эскалировано",
+      "resolved": "Решено",
+      "closed": "Закрыто",
+      "reopened": "Открыто повторно"
+    },
+    "requestStatus": {
+      "new": "Новая",
+      "in_progress": "В работе",
+      "contacted": "Связались",
+      "onboarded": "Подключена",
+      "rejected": "Отклонена"
+    },
+    "card": {
+      "original": "Исходное обращение",
+      "techContext": "Технические сведения",
+      "conversation": "Переписка",
+      "noMessages": "Сообщений пока нет",
+      "history": "История статусов",
+      "system": "Система",
+      "user": "Пользователь",
+      "internal": "Внутренняя заметка — не отправляется клиенту",
+      "sent": "Отправлено",
+      "queued": "В очереди на отправку",
+      "unassigned": "не назначен",
+      "tech": {
+        "route": "Страница",
+        "appVersion": "Версия",
+        "locale": "Язык",
+        "dataSaver": "Экономия трафика",
+        "userAgent": "Браузер",
+        "yes": "Да",
+        "no": "Нет"
+      }
+    },
+    "direction": {
+      "in": "Пользователь",
+      "out": "Ответ поддержки",
+      "note": "Заметка"
+    },
+    "actions": {
+      "label": "Действия",
+      "assignMe": "Назначить мне",
+      "reply": "Ответ клиенту",
+      "template": "Шаблон",
+      "noTemplate": "Без шаблона",
+      "replyText": "Текст ответа",
+      "recipient": "Получатель: {email}",
+      "preview": "Предпросмотр письма",
+      "send": "Отправить ответ",
+      "note": "Внутренняя заметка",
+      "noteText": "Текст заметки",
+      "addNote": "Добавить заметку",
+      "status": "Смена статуса",
+      "noStatusActions": "Для этого статуса нет доступных переходов",
+      "done": "Готово",
+      "error": "Не удалось выполнить действие. Повторите попытку",
+      "invalidTransition": "Этот переход статуса недоступен"
+    },
+    "templates": {
+      "confirmation": "Подтверждение",
+      "clarification": "Уточнение",
+      "resolution": "Решение",
+      "delay": "Задержка"
+    },
+    "ticketActions": {
+      "waiting_user": "Запросить уточнение",
+      "waiting_internal": "Эскалировать",
+      "in_progress": "Вернуть в работу",
+      "resolved": "Решено"
+    },
+    "requestActions": {
+      "in_progress": "Взять в работу",
+      "contacted": "Связались",
+      "onboarded": "Подключена",
+      "rejected": "Отклонить"
+    }
+  },
+  "email": {
+    "greeting": "Здравствуйте!",
+    "replyChannel": "Ответим на этот адрес: {email}.",
+    "signature": "Команда Syntara",
+    "schoolRequest": {
+      "subject": "Заявка {number} получена",
+      "body": "Мы получили заявку на подключение школы к Syntara LMS. Номер заявки: {number}."
+    },
+    "supportTicket": {
+      "subject": "Обращение {number} получено",
+      "body": "Мы получили ваше обращение в поддержку. Номер обращения: {number}. Тип: {category}."
+    },
+    "ticketReply": {
+      "subject": "Ответ по обращению {number}",
+      "footer": "Чтобы ответить, просто ответьте на это письмо."
+    }
   }
 }
