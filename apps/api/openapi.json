@@ -126,6 +126,53 @@
         ]
       }
     },
+    "/api/public/assistant": {
+      "post": {
+        "operationId": "AssistantController_ask",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Язык ответа",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicAssistantBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Поток text/event-stream: delta {text} … done {} | error {code}",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "VALIDATION_FAILED: message ≤ 2000, history ≤ 20"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/api/public/school-requests": {
       "post": {
         "operationId": "FormsController_schoolRequest",
@@ -886,6 +933,94 @@
         ]
       }
     },
+    "/api/public/demo-question": {
+      "get": {
+        "operationId": "PublicController_demoQuestion",
+        "parameters": [
+          {
+            "name": "exclude",
+            "required": false,
+            "in": "query",
+            "description": "ID вопроса, который показать не нужно",
+            "schema": {}
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "ru, kk или en (API-GEN-03)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoQuestionDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пробных вопросов нет"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/demo-answer": {
+      "post": {
+        "operationId": "PublicController_demoAnswer",
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "ru, kk или en (API-GEN-03)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoAnswerBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoAnswerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "Вопрос изменился — загрузите его заново"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/api/public/config": {
       "get": {
         "operationId": "PublicController_config",
@@ -1070,6 +1205,44 @@
         },
         "required": [
           "user"
+        ]
+      },
+      "ChatMessageBody": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ]
+      },
+      "PublicAssistantBody": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "history": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageBody"
+            }
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "SchoolRequestBody": {
@@ -1897,6 +2070,114 @@
           "icon",
           "status",
           "href",
+          "locale"
+        ]
+      },
+      "DemoOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ]
+      },
+      "DemoQuestionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "description": "Версия содержимого вопроса"
+          },
+          "text": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DemoOptionDto"
+            }
+          },
+          "hasAnother": {
+            "type": "boolean"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "text",
+          "options",
+          "hasAnother",
+          "locale"
+        ]
+      },
+      "DemoAnswerBody": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string"
+          },
+          "optionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "questionId",
+          "version",
+          "optionId"
+        ]
+      },
+      "DemoAnswerResponse": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "correctOptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "explanation": {
+            "type": "string",
+            "nullable": true
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "correct",
+          "correctOptionId",
+          "explanation",
           "locale"
         ]
       },

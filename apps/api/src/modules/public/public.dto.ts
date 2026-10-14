@@ -35,3 +35,32 @@ export class PublicConfigDto {
   @ApiProperty({ type: AtlasUrlsDto, description: 'PH-10 atlas.urls' }) atlasUrls: AtlasUrlsDto;
   @ApiProperty({ type: PublicFeaturesDto }) features: PublicFeaturesDto;
 }
+
+class DemoOptionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() text: string;
+}
+
+/** API-PUB-02: без isCorrect (BR-QZ-01). `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02). */
+export class DemoQuestionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ description: 'Версия содержимого вопроса' }) version: string;
+  @ApiProperty() text: string;
+  @ApiProperty({ type: DemoOptionDto, isArray: true }) options: DemoOptionDto[];
+  @ApiProperty() hasAnother: boolean;
+  @ApiProperty({ enum: LOCALES }) locale: Locale;
+}
+
+export class DemoAnswerBody {
+  @ApiProperty({ format: 'uuid' }) questionId: string;
+  @ApiProperty() version: string;
+  @ApiProperty({ format: 'uuid' }) optionId: string;
+}
+
+/** API-PUB-03 */
+export class DemoAnswerResponse {
+  @ApiProperty() correct: boolean;
+  @ApiProperty({ format: 'uuid' }) correctOptionId: string;
+  @ApiProperty({ type: String, nullable: true }) explanation: string | null;
+  @ApiProperty({ enum: LOCALES }) locale: Locale;
+}

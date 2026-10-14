@@ -1,5 +1,5 @@
 import { type INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, type TestingModuleBuilder } from '@nestjs/testing';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { RedisContainer } from '@testcontainers/redis';
 import { createDb, type Database } from '@syntara/db';
@@ -15,7 +15,10 @@ export interface TestStack {
 }
 
 /** Integration: Postgres 16 + Redis 7 (Testcontainers), миграции, seed и полное приложение api. */
-export async function startStack(seed: SeedSet = 'demo'): Promise<TestStack> {
+export async function startStack(
+  seed: SeedSet = 'demo',
+  override: (builder: TestingModuleBuilder) => TestingModuleBuilder = (b) => b,
+): Promise<TestStack> {
   const [pg, redis] = await Promise.all([
     new PostgreSqlContainer('postgres:16-alpine').start(),
     new RedisContainer('redis:7-alpine').start(),
@@ -35,7 +38,7 @@ export async function startStack(seed: SeedSet = 'demo'): Promise<TestStack> {
   await migrateUp(db);
   await runSeed(db, seed);
 
-  const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+  const moduleRef = await override(Test.createTestingModule({ imports: [AppModule] })).compile();
   const app = moduleRef.createNestApplication({ bufferLogs: true });
   configureApp(app);
   await app.init();

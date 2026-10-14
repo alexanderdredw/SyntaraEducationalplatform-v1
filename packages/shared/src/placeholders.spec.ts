@@ -43,6 +43,20 @@ describe('i18n ↔ раздел 11', () => {
     expect(ru.forms.consent).toBe(config['forms.consent_text']);
   });
 
+  it('PH-19 ai.public_quick_answers: four quick questions and answers', () => {
+    const q = ru.ai.quick;
+    expect(
+      Object.fromEntries(
+        [q.platform, q.start, q.language, q.registration].map((x) => [x.question, x.answer]),
+      ),
+    ).toEqual(config['ai.public_quick_answers']);
+  });
+
+  it('PH-19 ai.unavailable_public', () => {
+    expect(ru.ai.chat.unavailable).toBe(config['ai.unavailable_public']);
+    expect(ru.ai.chat.unavailable).toContain(ru.ai.chat.supportLink);
+  });
+
   it('PH-14 legal.draft_banner', () => {
     expect(ru.legal.draftBanner).toBe((config['legal.draft_banner'] as { value: string }).value);
   });

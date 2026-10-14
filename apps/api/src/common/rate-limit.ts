@@ -17,18 +17,32 @@ import {
 } from '@nestjs/throttler';
 import Redis from 'ioredis';
 import { type Env } from '../config/env';
+import { AppConfigService } from '../config/app-config.service';
 import { REDIS } from '../infra/tokens';
 import { ApiException } from './api-exception';
 
 /**
- * Лимиты API-GEN-06 (Redis): формы — 5 в минуту на IP; вход — 10 за 15 минут на IP+email.
- * Проверка кода класса и ИИ добавятся в итерациях 5 и 6.
+ * Лимиты API-GEN-06 (Redis): формы — 5 в минуту на IP; вход — 10 за 15 минут на IP+email;
+ * ИИ — PH-20 `ai.limits` (per_minute и per_day на IP). Проверка кода класса добавится в итерации 6.
  */
 export const RATE_LIMITS = {
   forms: { limit: 5, ttl: 60_000 },
   login: { limit: 10, ttl: 15 * 60_000 },
 } as const;
-export type RateLimitName = keyof typeof RATE_LIMITS;
+
+/** Группа лимитов маршрута → имена счётчиков (у ИИ — два окна). */
+export const RATE_LIMIT_GROUPS = {
+  forms: ['forms'],
+  login: ['login'],
+  ai: ['ai_minute', 'ai_day'],
+} as const;
+export type RateLimitName = keyof typeof RATE_LIMIT_GROUPS;
+const ALL_THROTTLERS = Object.values(RATE_LIMIT_GROUPS).flat();
+
+interface AiLimits {
+  per_minute: number;
+  per_day: number;
+}
 
 const ip = (req: Record<string, unknown>) => String(req.ip ?? 'unknown');
 /** Счётчик общий для всех маршрутов лимита (например, обе публичные формы — 5 в минуту на IP вместе). */
@@ -79,7 +93,12 @@ export class RedisThrottlerStorage implements ThrottlerStorage {
   }
 }
 
-export function throttlerOptions(env: Env, storage: ThrottlerStorage): ThrottlerModuleOptions {
+export function throttlerOptions(
+  env: Env,
+  storage: ThrottlerStorage,
+  config: AppConfigService,
+): ThrottlerModuleOptions {
+  const ai = () => config.get<AiLimits>('ai.limits');
   return {
     storage,
     skipIf: () => env.RATE_LIMITS_DISABLED,
@@ -94,6 +113,20 @@ export function throttlerOptions(env: Env, storage: ThrottlerStorage): Throttler
           const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
           return `${ip(req)}|${email}`;
         },
+      },
+      {
+        name: 'ai_minute',
+        ttl: 60_000,
+        limit: async () => (await ai()).per_minute,
+        getTracker: ip,
+        generateKey: sharedKey,
+      },
+      {
+        name: 'ai_day',
+        ttl: 24 * 60 * 60_000,
+        limit: async () => (await ai()).per_day,
+        getTracker: ip,
+        generateKey: sharedKey,
       },
     ],
   };
@@ -116,11 +149,10 @@ export class RateLimitGuard extends ThrottlerGuard {
   }
 }
 
-/** Применяет к маршруту только указанный лимит. */
+/** Применяет к маршруту только счётчики указанной группы. */
 export function RateLimit(name: RateLimitName) {
-  const others = Object.fromEntries(
-    (Object.keys(RATE_LIMITS) as RateLimitName[]).filter((n) => n !== name).map((n) => [n, true]),
-  );
+  const own: readonly string[] = RATE_LIMIT_GROUPS[name];
+  const others = Object.fromEntries(ALL_THROTTLERS.filter((n) => !own.includes(n)).map((n) => [n, true]));
   return applyDecorators(
     SkipThrottle(others),
     UseGuards(RateLimitGuard),

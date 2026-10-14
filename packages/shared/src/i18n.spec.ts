@@ -42,6 +42,43 @@ describe('i18n', () => {
     expect(ru.locale.soon).toBe('скоро');
   });
 
+  it('AG-03 SM-DEMO and REQ-PUB-AI-01..05 texts are verbatim from SPEC', () => {
+    const d = ru.home.demo;
+    expect([
+      d.loadError,
+      d.retryLoad,
+      d.check,
+      d.correct,
+      d.incorrect,
+      d.tryAgain,
+      d.another,
+      d.toSubject,
+    ]).toEqual([
+      'Не удалось загрузить вопрос',
+      'Повторить загрузку',
+      'Проверить ответ',
+      'Верно',
+      'Пока неверно',
+      'Попробовать ещё раз',
+      'Другой вопрос',
+      'Перейти к предмету',
+    ]);
+    const c = ru.ai.chat;
+    expect(c.greeting).toBe('Привет! Я Syntara. Помогу разобраться на платформе. С чего начнём?');
+    expect(c.placeholder).toBe('Напиши вопрос по платформе...');
+    expect(c.send).toBe('Отправить →');
+    expect([c.thinking, c.stop, c.interrupted, c.retry, c.clear]).toEqual([
+      'Готовлю ответ...',
+      'Остановить',
+      'Ответ прерван',
+      'Повторить',
+      'Очистить диалог',
+    ]);
+    expect(c.tooMany).toBe('Слишком много вопросов. Попробуйте через {seconds} сек.');
+    expect(c.noAnswer).toBe('Не могу точно ответить. Напишите в поддержку');
+    for (const lang of [kk, en]) expect(lang.ai.chat.unavailable).toContain(lang.ai.chat.supportLink);
+  });
+
   it('AG-03 SM-FORM, REQ-PUB-REQ-01..02, REQ-PUB-SUP-01..03 form texts are verbatim from SPEC', () => {
     expect(ru.forms.submitting).toBe('Отправляем...');
     expect(ru.forms.networkError).toBe('Нет соединения. Проверьте интернет и повторите отправку');

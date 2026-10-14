@@ -107,7 +107,19 @@
     "demo": {
       "label": "NO SIGN-UP",
       "title": "ANSWER A QUESTION FROM A REAL LESSON",
-      "text": "This is the same question a student sees in the quiz. Pick an answer and get an explanation right away."
+      "text": "This is the same question a student sees in the quiz. Pick an answer and get an explanation right away.",
+      "loading": "Loading the question...",
+      "loadError": "Could not load the question",
+      "retryLoad": "Try loading again",
+      "optionsLabel": "Answer options",
+      "check": "Check answer",
+      "correct": "Correct",
+      "incorrect": "Not quite",
+      "correctOption": "correct answer",
+      "yourChoice": "your choice",
+      "tryAgain": "Try again",
+      "another": "Another question",
+      "toSubject": "Go to the subject"
     },
     "how": {
       "label": "HOW IT WORKS",
@@ -307,7 +319,46 @@
   "ai": {
     "label": "PLATFORM ASSISTANT",
     "title": "Syntara AI",
-    "text": "Ask anything about the platform: where to click, how to study, where to find things. No sign-up needed."
+    "text": "Ask anything about the platform: where to click, how to study, where to find things. No sign-up needed.",
+    "chat": {
+      "label": "Chat with Syntara AI",
+      "greeting": "Hi! I'm Syntara. I'll help you find your way around the platform. Where shall we start?",
+      "quickLabel": "Quick questions",
+      "inputLabel": "Question for the assistant",
+      "placeholder": "Ask a question about the platform...",
+      "send": "Send →",
+      "counter": "{count} / {max}",
+      "you": "You",
+      "assistant": "Syntara",
+      "thinking": "Preparing an answer...",
+      "stop": "Stop",
+      "interrupted": "Answer interrupted",
+      "retry": "Retry",
+      "error": "Could not get an answer.",
+      "tooMany": "Too many questions. Try again in {seconds} s.",
+      "clear": "Clear chat",
+      "noAnswer": "I can't answer that for sure. Contact support",
+      "unavailable": "The assistant is not available yet. Contact support",
+      "supportLink": "Contact support"
+    },
+    "quick": {
+      "platform": {
+        "question": "What is this platform?",
+        "answer": "Syntara is a learning platform: lessons, quizzes and an AI tutor in Kazakh and Russian."
+      },
+      "start": {
+        "question": "Where do I start learning?",
+        "answer": "Open «Subjects» and choose a subject. To save your results, sign in or join a class."
+      },
+      "language": {
+        "question": "How do I change the language?",
+        "answer": "Click the language switcher in the top bar."
+      },
+      "registration": {
+        "question": "Do I need to register?",
+        "answer": "Not to browse the site and try a question. Signing in is needed to save progress."
+      }
+    }
   },
   "schools": {
     "hero": {

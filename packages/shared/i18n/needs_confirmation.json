@@ -195,6 +195,17 @@
     "staff.requestActions.in_progress": "Служебный интерфейс /staff (8.5) — тексты не заданы",
     "staff.requestActions.contacted": "Служебный интерфейс /staff (8.5) — тексты не заданы",
     "staff.requestActions.onboarded": "Служебный интерфейс /staff (8.5) — тексты не заданы",
-    "staff.requestActions.rejected": "Служебный интерфейс /staff (8.5) — тексты не заданы"
+    "staff.requestActions.rejected": "Служебный интерфейс /staff (8.5) — тексты не заданы",
+    "home.demo.loading": "Состояние loading SM-DEMO — текст не задан",
+    "home.demo.optionsLabel": "Доступное имя radio-группы вариантов — текст не задан",
+    "home.demo.correctOption": "Пометка правильного варианта после проверки (не только цвет) — текст не задан",
+    "home.demo.yourChoice": "Пометка выбранного варианта после проверки — текст не задан",
+    "ai.chat.label": "Доступное имя области чата — текст не задан",
+    "ai.chat.quickLabel": "Доступное имя группы быстрых вопросов — текст не задан",
+    "ai.chat.inputLabel": "Доступное имя поля ввода (виден placeholder из SPEC) — текст не задан",
+    "ai.chat.counter": "Формат счётчика символов (REQ-PUB-AI-02) — не задан",
+    "ai.chat.you": "Подпись сообщения пользователя — текст не задан",
+    "ai.chat.assistant": "Подпись сообщения помощника — текст не задан",
+    "ai.chat.error": "Текст общей ошибки перед «Повторить» (REQ-PUB-AI-04) — не задан"
   }
 }

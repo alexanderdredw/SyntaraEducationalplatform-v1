@@ -68,6 +68,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/assistant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssistantController_ask"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/school-requests": {
         parameters: {
             query?: never;
@@ -292,6 +308,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/public/demo-question": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicController_demoQuestion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/demo-answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PublicController_demoAnswer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/config": {
         parameters: {
             query?: never;
@@ -347,6 +395,15 @@ export interface components {
         };
         LoginResponse: {
             user: components["schemas"]["MeDto"];
+        };
+        ChatMessageBody: {
+            /** @enum {string} */
+            role: "user" | "assistant";
+            content: string;
+        };
+        PublicAssistantBody: {
+            message: string;
+            history?: components["schemas"]["ChatMessageBody"][];
         };
         SchoolRequestBody: {
             schoolName: string;
@@ -557,6 +614,37 @@ export interface components {
             /** @enum {string} */
             locale: "ru" | "kk" | "en";
         };
+        DemoOptionDto: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+        };
+        DemoQuestionDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description Версия содержимого вопроса */
+            version: string;
+            text: string;
+            options: components["schemas"]["DemoOptionDto"][];
+            hasAnother: boolean;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+        };
+        DemoAnswerBody: {
+            /** Format: uuid */
+            questionId: string;
+            version: string;
+            /** Format: uuid */
+            optionId: string;
+        };
+        DemoAnswerResponse: {
+            correct: boolean;
+            /** Format: uuid */
+            correctOptionId: string;
+            explanation: string | null;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+        };
         AtlasUrlsDto: {
             mendeleev: string | null;
             anatomy: string | null;
@@ -706,6 +794,47 @@ export interface operations {
             };
             /** @description Нет роли или неверный X-CSRF-Token */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AssistantController_ask: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Язык ответа */
+                "Accept-Language"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicAssistantBody"];
+            };
+        };
+        responses: {
+            /** @description Поток text/event-stream: delta {text} … done {} | error {code} */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description VALIDATION_FAILED: message ≤ 2000, history ≤ 20 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1273,6 +1402,77 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PublicSubjectDto"][];
                 };
+            };
+        };
+    };
+    PublicController_demoQuestion: {
+        parameters: {
+            query?: {
+                /** @description ID вопроса, который показать не нужно */
+                exclude?: unknown;
+            };
+            header?: {
+                /** @description ru, kk или en (API-GEN-03) */
+                "Accept-Language"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoQuestionDto"];
+                };
+            };
+            /** @description Пробных вопросов нет */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PublicController_demoAnswer: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description ru, kk или en (API-GEN-03) */
+                "Accept-Language"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DemoAnswerBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoAnswerResponse"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Вопрос изменился — загрузите его заново */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

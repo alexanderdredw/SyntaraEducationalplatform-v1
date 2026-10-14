@@ -11,6 +11,7 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/.next/**',
+      '**/.next-*/**',
       '**/coverage/**',
       '**/playwright-report/**',
       '**/test-results/**',

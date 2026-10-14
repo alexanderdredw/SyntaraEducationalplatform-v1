@@ -2,7 +2,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookOpen, LineChart, School } from 'lucide-react';
 import { type Locale } from '@syntara/shared';
 import { getPublicSubjects } from '@/lib/api/server';
-import { CardGrid, InfoCard, LinkButton, PendingBlock, Section } from '@/components/public/blocks';
+import { CardGrid, InfoCard, LinkButton, Section } from '@/components/public/blocks';
+import { DemoQuestionBlock } from '@/components/public/demo-question';
 import { SubjectCards } from '@/components/public/subject-cards';
 import { WhySyntara } from '@/components/public/why-syntara';
 
@@ -14,7 +15,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('home');
-  const common = await getTranslations('common');
   const subjects = await getPublicSubjects(locale);
 
   return (
@@ -60,7 +60,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
 
       {/* REQ-PUB-HOME-04 — логика пробного вопроса (SM-DEMO) — итерация 5 */}
       <Section testId="home-demo" label={t('demo.label')} title={t('demo.title')} text={t('demo.text')}>
-        <PendingBlock text={common('sectionInDevelopment')} />
+        <DemoQuestionBlock />
       </Section>
 
       {/* REQ-PUB-HOME-05 */}
