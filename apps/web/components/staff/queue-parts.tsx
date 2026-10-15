@@ -89,7 +89,7 @@ export function FilterSelect({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-11 rounded-xl border border-[var(--border)] bg-[var(--field)] px-3 text-base text-[var(--text)]"
+        className="min-h-11 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] px-3 text-base hover:border-[var(--border-strong)] text-[var(--text)]"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

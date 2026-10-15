@@ -1,5 +1,7 @@
 /*
  * Токены дизайна (REQ-GEN-DS-01, раздел 3.1 SPEC). Значения — стартовые; критерий — совпадение с эталонами.
+ * Единственный источник цветов, шрифтов, размеров текста, отступов, радиусов, теней и длительностей:
+ * компоненты packages/ui и страницы apps/web берут значения только отсюда.
  * Шрифт: Inter (решение Q-14), self-hosted через @fontsource, font-display: swap,
  * подмножества cyrillic и cyrillic-ext содержат казахские буквы Ә Ғ Қ Ң Ө Ұ Ү Һ І.
  */
@@ -7,6 +9,7 @@
 
 :root,
 [data-theme='dark'] {
+  /* ---- Цвета (3.1) ---- */
   --bg: #070707; /* фон страницы, диапазон #050505–#090909 */
   --surface: #141518; /* карточки, диапазон #101010–#1B1D22 */
   --surface-teacher: #0d0d0d;
@@ -18,16 +21,69 @@
   /* Заливка кнопок с белым текстом: контраст ≥ 4.5:1 (REQ-NFR-A11Y-01); в пределах диапазона --accent из 3.1. */
   --accent-strong: #1e63e4;
   --border: #292b30;
+  /* Рамка при наведении на поле, карточку-ссылку, контурную кнопку: на ступень светлее --border. */
+  --border-strong: #3b3e45;
   --success: #22a45d; /* правильный ответ */
   --danger: #e5484d; /* низкий результат, «требуют внимания» */
   /* Текст ошибок: --danger на --bg даёт 4.3:1 < 4.5:1 (REQ-NFR-A11Y-01); оттенок подтверждён владельцем 2026-10-14. */
   --danger-text: #f0686c;
+  --warning: #f5b301; /* значки роли, серии, «лампочки» и баннера email в эталонах */
   --ai-gradient: linear-gradient(90deg, #8b5cf6, #ec4899);
-  --radius-card: 20px; /* 16–24 */
-  --radius-pill: 999px;
-  --header-h: 64px;
+  /* Тонкие линии декоративного фона страниц входа, регистрации и /join (эталон student-auth.png). */
+  --backdrop-line: rgb(255 255 255 / 0.07);
   --sidebar: var(--surface-teacher);
+
+  /* ---- Радиусы (3.1: карточки 16–24) ---- */
+  --radius-card: 20px; /* карточки, модальные окна, всплывающие панели */
+  --radius-control: 16px; /* контейнер вкладок-сегментов, плитка значка */
+  --radius-field: 12px; /* поля ввода, выпадающие списки, значки боковой панели; = --radius-control − отступ 4 px */
+  --radius-item: 8px; /* пункты выпадающих меню, чекбокс */
+  --radius-pill: 999px; /* кнопки, капсульные вкладки, метки */
+
+  /* ---- Отступы: сетка 3.1 — 8, 12, 16, 24, 32, 48, 64 (в Tailwind: 2, 3, 4, 6, 8, 12, 16) ---- */
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+
+  /* ---- Размеры элементов ---- */
+  --header-h: 64px;
+  --control-h: 44px; /* кнопки, вкладки, переключатели: зона нажатия ≥ 44×44 (REQ-GEN-SHELL-07) */
+  --field-h: 48px; /* поля ввода (эталон student-auth.png) */
+  --sidebar-w: 70px; /* REQ-GEN-SHELL-03 */
+
+  /* ---- Шрифт и размеры текста (3.1) ---- */
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Публичные страницы: H1 главной 72–112; заголовки секций 28–64; текст 16–20; подписи 12–14. */
+  --text-hero: clamp(3rem, 1.5rem + 5vw, 6rem); /* 48 на 320 px → 96 на ≥ 1440 px */
+  --text-section: clamp(1.875rem, 1.25rem + 2vw, 3rem); /* 30 → 48 */
+  --text-page-title: clamp(1.875rem, 1.5rem + 1vw, 2.25rem); /* формы и правовые страницы: 30 → 36 */
+  --text-body: 1rem;
+  --text-lead: 1.125rem;
+  --text-caption: 0.75rem;
+  /* Кабинеты: заголовок 28; блок 18; текст 14; пояснение 12. */
+  --text-cabinet-title: 1.75rem;
+  --text-cabinet-block: 1.125rem;
+  --text-cabinet-body: 0.875rem;
+  --text-cabinet-note: 0.75rem;
+
+  /* ---- Тени ---- */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-popover: 0 12px 32px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
+  --shadow-fab: 0 6px 16px rgb(0 0 0 / 0.45);
+  --shadow-accent: 0 2px 8px color-mix(in srgb, var(--accent-strong) 25%, transparent);
+  /* Спецсостояние «фокус поля — синий контур со свечением» (3.1) */
+  --focus-ring: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+  --focus-ring-danger: 0 0 0 4px color-mix(in srgb, var(--danger) 30%, transparent);
+
+  /* ---- Плавность: 150–200 мс; отключается при prefers-reduced-motion и «Экономии трафика» ---- */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
   color-scheme: dark;
 }
 
@@ -41,19 +97,55 @@
   --field: #f2f2f4;
   --text-muted: #5f636b;
   --border: #e2e3e7;
+  --border-strong: #c9cbd1;
   /* Акцент на белом фоне: контраст ≥ 4.5:1; значение кабинета из 3.1 (#1765E8). */
   --accent: #1765e8;
   --accent-strong: #1765e8;
   /* Текст ошибок на светлом фоне: контраст ≥ 4.5:1. */
   --danger-text: #d13438;
+  --backdrop-line: rgb(24 24 24 / 0.08);
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-popover: 0 12px 32px rgb(16 24 40 / 0.12), 0 2px 6px rgb(16 24 40 / 0.08);
+  --shadow-fab: 0 6px 16px rgb(16 24 40 / 0.16);
   color-scheme: light;
+}
+
+@layer base {
+  /* Плавные состояния hover / focus / нажатия у интерактивных элементов (150 мс). В слое base —
+     утилиты Tailwind (например, transition-[width] у ProgressBar) переопределяют это правило. */
+  :where(
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [role='tab'],
+    [role='button'],
+    [role='option'],
+    [role='menuitem'],
+    [role='menuitemradio']
+  ) {
+    transition-property:
+      color, background-color, border-color, box-shadow, opacity, transform, filter, text-decoration-color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  :where(input, textarea, select, button):disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* Спецсостояние «фокус поля — синий контур со свечением» (3.1) */
 :where(input, textarea, select, button, a, [tabindex]):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+  box-shadow: var(--focus-ring);
+}
+/* Поле с ошибкой: контур и свечение цвета ошибки. */
+:where([aria-invalid='true']):focus-visible {
+  outline-color: var(--danger);
+  box-shadow: var(--focus-ring-danger);
 }
 
 /* REQ-NFR-A11Y-01, REQ-GEN-PREF-04: без анимаций при prefers-reduced-motion и в режиме экономии трафика */

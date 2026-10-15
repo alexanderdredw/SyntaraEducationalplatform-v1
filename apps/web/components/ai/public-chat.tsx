@@ -154,7 +154,10 @@ export default function PublicChat({ atlasUrls }: { atlasUrls: string[] }) {
     <Card data-testid="ai-chat" className="flex flex-col gap-4 p-4 md:p-6">
       <h2 className="sr-only">{t('chat.label')}</h2>
       <ol className="flex flex-col gap-3" data-testid="ai-messages">
-        <li className="max-w-[90%] rounded-2xl bg-[var(--field)] px-4 py-3 text-sm" data-role="assistant">
+        <li
+          className="max-w-[90%] rounded-[var(--radius-control)] bg-[var(--field)] px-4 py-3 text-sm"
+          data-role="assistant"
+        >
           {t('chat.greeting')}
         </li>
         {messages.map((m) => (
@@ -163,7 +166,7 @@ export default function PublicChat({ atlasUrls }: { atlasUrls: string[] }) {
             data-testid={m.role === 'user' ? 'ai-user-message' : 'ai-assistant-message'}
             data-status={m.status}
             className={cn(
-              'max-w-[90%] rounded-2xl px-4 py-3 text-sm',
+              'max-w-[90%] rounded-[var(--radius-control)] px-4 py-3 text-sm',
               m.role === 'user' ? 'self-end bg-[var(--accent-strong)] text-white' : 'bg-[var(--field)]',
             )}
           >

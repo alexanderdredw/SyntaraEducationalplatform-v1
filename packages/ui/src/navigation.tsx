@@ -38,7 +38,7 @@ export function Tabs({
           <TabsPrimitive.Trigger
             key={item.value}
             value={item.value}
-            className="min-h-11 rounded-[var(--radius-pill)] px-4 text-sm text-[var(--text-muted)] data-[state=active]:bg-[var(--text)] data-[state=active]:text-[var(--bg)]"
+            className="min-h-[var(--control-h)] rounded-[var(--radius-pill)] px-4 text-sm text-[var(--text-muted)] hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=active]:bg-[var(--text)] data-[state=active]:text-[var(--bg)]"
           >
             {item.label}
           </TabsPrimitive.Trigger>
@@ -95,7 +95,7 @@ export function SegmentedControl({
           key={o.value}
           value={o.value}
           disabled={o.disabled}
-          className="min-h-11 rounded-[var(--radius-pill)] px-3 text-sm text-[var(--text-muted)] disabled:opacity-50 data-[state=on]:bg-[var(--accent)] data-[state=on]:text-white"
+          className="min-h-[var(--control-h)] rounded-[var(--radius-pill)] px-3 text-sm text-[var(--text-muted)] not-disabled:hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=on]:bg-[var(--accent)] data-[state=on]:text-white"
         >
           {o.label}
           {o.hint ? <span className="ml-1 text-xs">{o.hint}</span> : null}
@@ -116,7 +116,7 @@ export function Accordion({ items, multiple = true }: { items: AccordionItem[]; 
   const list = items.map((item) => (
     <AccordionPrimitive.Item key={item.value} value={item.value} className="border-b border-[var(--border)]">
       <AccordionPrimitive.Header>
-        <AccordionPrimitive.Trigger className="flex min-h-11 w-full items-center justify-between py-3 text-left">
+        <AccordionPrimitive.Trigger className="flex min-h-11 w-full items-center justify-between py-3 text-left hover:text-[var(--accent)]">
           {item.title}
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>

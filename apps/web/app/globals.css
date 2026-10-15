@@ -15,11 +15,29 @@
   --color-accent: var(--accent);
   --color-accent-teacher: var(--accent-teacher);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-success: var(--success);
   --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-warning: var(--warning);
   --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+  --radius-field: var(--radius-field);
+  --radius-item: var(--radius-item);
   --radius-pill: var(--radius-pill);
   --font-sans: var(--font-sans);
+  --text-hero: var(--text-hero);
+  --text-section: var(--text-section);
+  --text-page-title: var(--text-page-title);
+  --text-cabinet-title: var(--text-cabinet-title);
+  --text-cabinet-block: var(--text-cabinet-block);
+  --text-cabinet-body: var(--text-cabinet-body);
+  --text-cabinet-note: var(--text-cabinet-note);
+  --shadow-card: var(--shadow-card);
+  --shadow-popover: var(--shadow-popover);
+  --shadow-fab: var(--shadow-fab);
+  --shadow-accent: var(--shadow-accent);
+  --ease-standard: var(--ease-standard);
 }
 
 html {
@@ -49,4 +67,43 @@ h2,
 h3 {
   overflow-wrap: break-word;
   hyphens: auto;
+}
+
+/*
+ * Фон страниц входа, регистрации и /join (эталон student-auth.png): тонкие линии, только CSS/SVG.
+ * Линии — маска SVG, цвет — токен --backdrop-line (меняется с темой). Декоративный: скрыт для
+ * вспомогательных технологий и в режиме экономии трафика ([data-decorative], REQ-GEN-PREF-04).
+ */
+.auth-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.auth-backdrop::before,
+.auth-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--backdrop-line);
+}
+/* Сетка 64 px, гаснущая к краям. */
+.auth-backdrop::before {
+  background:
+    repeating-linear-gradient(90deg, var(--backdrop-line) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, var(--backdrop-line) 0 1px, transparent 1px 64px);
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, #000 0%, transparent 75%);
+  opacity: 0.6;
+}
+/* Пучки диагональных линий из верхних углов (720×560, не растягиваются на узких экранах). */
+.auth-backdrop::after {
+  mask-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='560' fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M0 120 L360 0'/%3E%3Cpath d='M0 240 L560 0'/%3E%3Cpath d='M0 400 L300 170 L720 0'/%3E%3Cpath d='M0 540 L180 380'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='560' fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M720 90 L450 0'/%3E%3Cpath d='M720 260 L260 0'/%3E%3Cpath d='M720 460 L420 230 L60 0'/%3E%3C/svg%3E");
+  mask-position:
+    top left,
+    top right;
+  mask-size: min(720px, 100%) auto;
+  mask-repeat: no-repeat;
 }

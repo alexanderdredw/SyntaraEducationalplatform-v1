@@ -17,7 +17,7 @@ export default async function SupportPage({
   return (
     <section data-testid="support-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[640px]">
-        <h1 className="text-3xl font-bold md:text-4xl">{t('support.title')}</h1>
+        <h1 className="text-page-title font-bold">{t('support.title')}</h1>
         <p className="mt-3 text-lg text-[var(--text-muted)]">{t('support.subtitle')}</p>
         <div className="mt-8">
           <SupportForm initialCategory={parsed.success ? parsed.data : undefined} />

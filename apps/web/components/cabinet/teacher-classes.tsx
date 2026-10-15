@@ -76,7 +76,7 @@ export function TeacherClasses({ timeZone }: { timeZone: string }) {
 
   return (
     <section className="mx-auto flex max-w-[960px] flex-col gap-6 px-4 py-8" data-testid="teacher-classes">
-      <h1 className="text-3xl font-bold">{t('title')}</h1>
+      <h1 className="text-cabinet-title font-bold">{t('title')}</h1>
 
       <Card>
         <form
@@ -91,7 +91,7 @@ export function TeacherClasses({ timeZone }: { timeZone: string }) {
               <Input value={name} maxLength={60} onChange={(e) => setName(e.target.value)} />
             </Field>
           </div>
-          <Button type="submit" disabled={creating}>
+          <Button type="submit" disabled={creating} className="sm:min-h-[var(--field-h)]">
             {t('create')}
           </Button>
         </form>

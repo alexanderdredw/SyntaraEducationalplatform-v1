@@ -13,9 +13,13 @@ import { Checkbox as CheckboxPrimitive, RadioGroup, Select as SelectPrimitive } 
 import { Check, ChevronDown } from 'lucide-react';
 import { cn } from './cn';
 
-// Размер шрифта полей ≥ 16 px (REQ-GEN-SHELL-07) — text-base.
-const fieldClass =
-  'min-h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--field)] px-4 py-2 text-base text-[var(--text)] placeholder:text-[var(--text-muted)] aria-[invalid=true]:border-[var(--danger)]';
+/**
+ * Общий вид поля ввода (токены --field-h, --radius-field). Размер шрифта ≥ 16 px (REQ-GEN-SHELL-07) — text-base.
+ * Состояния: hover — рамка светлее; focus — синий контур со свечением (tokens.css); ошибка — рамка --danger;
+ * disabled — приглушено. Используется и полями вне Field (форма ученика, выбор школы, очереди staff).
+ */
+export const fieldClass =
+  'min-h-[var(--field-h)] w-full rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] px-4 py-2 text-base text-[var(--text)] placeholder:text-[var(--text-muted)] enabled:hover:not-aria-[invalid=true]:border-[var(--border-strong)] focus-visible:border-[var(--accent)] disabled:opacity-60 aria-[invalid=true]:border-[var(--danger)]';
 
 interface ControlA11yProps {
   id?: string;
@@ -120,14 +124,14 @@ export function Select({
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
           position="popper"
-          className="z-50 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)]"
+          className="z-50 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)] shadow-popover"
         >
           <SelectPrimitive.Viewport>
             {options.map((o) => (
               <SelectPrimitive.Item
                 key={o.value}
                 value={o.value}
-                className="flex min-h-11 cursor-pointer items-center rounded-lg px-3 outline-none data-[highlighted]:bg-[var(--field)]"
+                className="flex min-h-11 cursor-pointer items-center rounded-[var(--radius-item)] px-3 outline-none data-[highlighted]:bg-[var(--field)]"
               >
                 <SelectPrimitive.ItemText>{o.label}</SelectPrimitive.ItemText>
               </SelectPrimitive.Item>
@@ -159,7 +163,7 @@ export function Checkbox({
         checked={checked}
         onCheckedChange={(v) => onCheckedChange(v === true)}
         aria-describedby={description ? `${id}-desc` : undefined}
-        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--field)] data-[state=checked]:bg-[var(--accent)]"
+        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-[var(--radius-item)] border border-[var(--border)] bg-[var(--field)] hover:border-[var(--border-strong)] data-[state=checked]:border-[var(--accent)] data-[state=checked]:bg-[var(--accent)]"
       >
         <CheckboxPrimitive.Indicator>
           <Check aria-hidden="true" className="size-4 text-white" />
@@ -209,7 +213,7 @@ export function Radio({
           <RadioGroup.Item
             id={`${id}-${o.value}`}
             value={o.value}
-            className="flex size-6 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--field)]"
+            className="flex size-6 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--field)] hover:border-[var(--border-strong)] data-[state=checked]:border-[var(--accent)]"
           >
             <RadioGroup.Indicator className="size-3 rounded-full bg-[var(--accent)]" />
           </RadioGroup.Item>

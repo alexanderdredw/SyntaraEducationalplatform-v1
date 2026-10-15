@@ -7,6 +7,7 @@ import {
   Button,
   Checkbox,
   Field,
+  fieldClass,
   Input,
   Modal,
   ProgressBar,
@@ -150,5 +151,31 @@ describe('packages/ui (раздел 3.2)', () => {
     expect(screen.getByRole('radio', { name: 'Аорта' })).toBeChecked();
     expect(screen.getByRole('link', { name: 'Курсы' })).toHaveAttribute('aria-current', 'page');
     await expectNoSeriousA11yViolations(container);
+  });
+
+  it('REQ-GEN-DS-01 controls take radii, heights and states from tokens.css', () => {
+    render(
+      <>
+        <Button disabled>Отправить</Button>
+        <Field label="Имя" error="Ошибка">
+          <Input />
+        </Field>
+      </>,
+    );
+    const button = screen.getByRole('button', { name: 'Отправить' });
+    expect(button.className).toContain('min-h-[var(--control-h)]');
+    expect(button.className).toContain('disabled:opacity-50');
+    expect(button.className).toContain('not-disabled:hover:brightness-110');
+    expect(button).toBeDisabled();
+    const input = screen.getByLabelText('Имя');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    for (const token of [
+      'min-h-[var(--field-h)]',
+      'rounded-[var(--radius-field)]',
+      'aria-[invalid=true]:border-[var(--danger)]',
+    ]) {
+      expect(fieldClass).toContain(token);
+      expect(input.className).toContain(token);
+    }
   });
 });

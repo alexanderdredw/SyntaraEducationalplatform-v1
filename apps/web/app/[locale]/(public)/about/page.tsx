@@ -81,7 +81,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <Section testId="about-problem" title={t('problem.title')}>
         <ul className="grid gap-3 md:grid-cols-2">
           {(['inequality', 'pisa', 'urbanRural', 'kazakhContent', 'cost'] as const).map((key) => (
-            <li key={key} className="rounded-xl border border-[var(--border)] p-4 text-[var(--text-muted)]">
+            <li
+              key={key}
+              className="rounded-[var(--radius-field)] border border-[var(--border)] p-4 text-[var(--text-muted)]"
+            >
               {t(`problem.${key}`)}
             </li>
           ))}
@@ -225,7 +228,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <Section testId="about-sdg" title={t('sdg.title')}>
         <ul className="grid gap-4 md:grid-cols-3">
           {([4, 9, 10] as const).map((goal) => (
-            <li key={goal} className="flex items-center gap-4 rounded-xl border border-[var(--border)] p-4">
+            <li
+              key={goal}
+              className="flex items-center gap-4 rounded-[var(--radius-field)] border border-[var(--border)] p-4"
+            >
               <span className="text-3xl font-bold text-[var(--accent)]">{goal}</span>
               <span className="font-semibold">{t(`sdg.goal${goal}`)}</span>
             </li>

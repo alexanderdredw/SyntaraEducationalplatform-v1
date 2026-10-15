@@ -62,7 +62,7 @@ export function WhySyntara() {
             onClick={() => select(index)}
             onKeyDown={onKeyDown}
             className={cn(
-              'min-h-11 rounded-xl px-4 py-3 text-left text-base font-semibold transition',
+              'min-h-11 rounded-[var(--radius-field)] px-4 py-3 text-left text-base font-semibold',
               index === active ? 'bg-white text-[#0b3a91]' : 'text-white/85 hover:bg-white/10',
             )}
           >
@@ -85,7 +85,7 @@ export function WhySyntara() {
                 key={item}
                 data-active={index === active}
                 className={cn(
-                  'h-2 rounded-full transition-all',
+                  'h-2 rounded-full transition-all duration-200 ease-[var(--ease-standard)]',
                   index === active ? 'w-8 bg-white' : 'w-2 bg-white/40',
                 )}
               />

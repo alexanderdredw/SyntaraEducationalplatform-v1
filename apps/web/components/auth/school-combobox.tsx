@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { cn } from '@syntara/ui';
+import { cn, fieldClass } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 
@@ -14,8 +14,7 @@ export interface SchoolValue {
   manual: boolean;
 }
 
-const inputClass =
-  'min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--field)] px-4 text-base text-[var(--text)] placeholder:text-[var(--text-muted)] aria-[invalid=true]:border-[var(--danger)]';
+const inputClass = fieldClass;
 
 /**
  * Школа ученика (REQ-GEN-AUTH-02): поиск по справочнику с автодополнением (API-PUB-09, ARIA combobox) или ввод
@@ -140,7 +139,7 @@ export function SchoolCombobox({
         <ul
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 top-12 z-20 mt-1 max-h-64 overflow-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 shadow-xl"
+          className="absolute left-0 right-0 top-12 z-20 mt-1 max-h-64 overflow-auto rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--surface)] p-1 shadow-popover"
         >
           {options.map((school, i) => (
             <li
@@ -153,7 +152,7 @@ export function SchoolCombobox({
                 choose(school);
               }}
               className={cn(
-                'flex min-h-11 cursor-pointer flex-col justify-center rounded-lg px-3 py-1 text-sm',
+                'flex min-h-11 cursor-pointer flex-col justify-center rounded-[var(--radius-item)] px-3 py-1 text-sm hover:bg-[var(--field)]',
                 i === active && 'bg-[var(--field)]',
               )}
             >

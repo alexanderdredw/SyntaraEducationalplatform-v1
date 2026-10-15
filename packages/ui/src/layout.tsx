@@ -49,11 +49,11 @@ export function Sidebar({
   return (
     <nav
       aria-label={label}
-      className="flex w-[70px] shrink-0 flex-col items-center gap-2 bg-[var(--sidebar)] py-4"
+      className="flex w-[var(--sidebar-w)] shrink-0 flex-col items-center gap-2 bg-[var(--sidebar)] py-4"
     >
       {items.map((item) => {
         const className = cn(
-          'relative flex size-11 items-center justify-center rounded-xl text-[var(--accent)]',
+          'relative flex size-11 items-center justify-center rounded-[var(--radius-field)] text-[var(--accent)] hover:bg-[var(--field)]',
           item.active &&
             'bg-[var(--accent)]/20 before:absolute before:-left-3 before:h-6 before:w-1 before:rounded before:bg-[var(--accent)]',
         );

@@ -59,10 +59,10 @@ export function StartChoice({ initialRole }: { initialRole: 'teacher' | null }) 
       data-testid={`start-${value}`}
       onClick={() => (value === 'student' ? router.push('/auth/start?role=student') : setRole(value))}
       className={cn(
-        'flex min-h-11 flex-1 flex-col items-start gap-2 rounded-[var(--radius-card)] border p-5 text-left',
+        'flex min-h-11 flex-1 flex-col items-start gap-2 rounded-[var(--radius-card)] border p-5 text-left shadow-card',
         role === value
           ? 'border-[var(--accent)] bg-[var(--field)]'
-          : 'border-[var(--border)] bg-[var(--surface)]',
+          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-strong)]',
       )}
     >
       <Icon aria-hidden="true" className="size-6 text-[var(--accent)]" />

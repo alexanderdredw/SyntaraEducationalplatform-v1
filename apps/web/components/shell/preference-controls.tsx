@@ -26,7 +26,7 @@ function useCurrentTheme(): 'light' | 'dark' {
 }
 
 const controlClass =
-  'inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:bg-[var(--field)]';
+  'inline-flex min-h-[var(--control-h)] min-w-11 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]';
 
 /**
  * Переключатель языка (REQ-GEN-PREF-01/-02): клиентская навигация на тот же путь с другим префиксом,
@@ -61,7 +61,7 @@ export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly 
         <DropdownMenu.Content
           align="end"
           sideOffset={6}
-          className="z-50 min-w-44 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)]"
+          className="z-50 min-w-44 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)] shadow-popover"
         >
           {LOCALES.map((code) => {
             const enabled = enabledLocales.includes(code);
@@ -71,7 +71,7 @@ export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly 
                 disabled={!enabled}
                 onSelect={() => switchTo(code)}
                 lang={code}
-                className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 text-sm outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[highlighted]:bg-[var(--field)]"
+                className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-item)] px-3 text-sm outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[highlighted]:bg-[var(--field)]"
               >
                 <span className="w-6 font-semibold">{t(code)}</span>
                 <span className="flex-1">{t(`names.${code}`)}</span>

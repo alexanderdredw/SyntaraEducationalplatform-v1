@@ -18,7 +18,9 @@ type Me = components['schemas']['MeDto'];
 type Notification = components['schemas']['NotificationDto'];
 
 const pill =
-  'inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-3 text-sm';
+  'inline-flex min-h-[var(--control-h)] items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-3 text-sm';
+// Интерактивная капсула (роль, уведомления, профиль): hover — подложка и рамка светлее.
+const pillAction = `${pill} hover:border-[var(--border-strong)] hover:bg-[var(--field)]`;
 
 /**
  * Хедер кабинетов (REQ-GEN-SHELL-02): выбор роли, язык, трафик, тема, уведомления, профиль (буква аватара
@@ -72,7 +74,7 @@ export function CabinetHeader({
         <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           {stats ? (
             <span data-testid="cabinet-stats" className={pill}>
-              <Flame aria-hidden="true" className="size-4 text-[#f5b301]" />
+              <Flame aria-hidden="true" className="size-4 text-[var(--warning)]" />
               <span>{t('streak', { days: stats.streakDays })}</span>
               <Zap aria-hidden="true" className="size-4 text-[var(--accent)]" />
               <span>{t('xp', { xp: stats.xpTotal })}</span>
@@ -81,8 +83,11 @@ export function CabinetHeader({
 
           {me.roles.length > 1 ? (
             <DropdownMenu.Root>
-              <DropdownMenu.Trigger className={pill} aria-label={`${t('roleLabel')}: ${t(`roles.${role}`)}`}>
-                <span aria-hidden="true" className="text-[#f5b301]">
+              <DropdownMenu.Trigger
+                className={pillAction}
+                aria-label={`${t('roleLabel')}: ${t(`roles.${role}`)}`}
+              >
+                <span aria-hidden="true" className="text-[var(--warning)]">
                   ◆
                 </span>
                 {t(`roles.${role}`)}
@@ -92,13 +97,13 @@ export function CabinetHeader({
                 <DropdownMenu.Content
                   align="end"
                   sideOffset={6}
-                  className="z-50 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)]"
+                  className="z-50 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)] shadow-popover"
                 >
                   {me.roles.map((r) => (
                     <DropdownMenu.Item
                       key={r}
                       onSelect={() => void switchRole(r)}
-                      className="flex min-h-11 cursor-pointer items-center rounded-lg px-3 outline-none data-[highlighted]:bg-[var(--field)]"
+                      className="flex min-h-11 cursor-pointer items-center rounded-[var(--radius-item)] px-3 outline-none data-[highlighted]:bg-[var(--field)]"
                     >
                       {t(`roles.${r}`)}
                     </DropdownMenu.Item>
@@ -108,7 +113,7 @@ export function CabinetHeader({
             </DropdownMenu.Root>
           ) : (
             <span className={pill} data-testid="cabinet-role">
-              <span aria-hidden="true" className="text-[#f5b301]">
+              <span aria-hidden="true" className="text-[var(--warning)]">
                 ◆
               </span>
               {t(`roles.${role}`)}
@@ -122,7 +127,7 @@ export function CabinetHeader({
           <Popover.Root open={notificationsOpen} onOpenChange={setNotificationsOpen}>
             <Popover.Trigger
               aria-label={t('notifications')}
-              className={`${pill} justify-center px-0 min-w-11`}
+              className={`${pillAction} justify-center px-0 min-w-11`}
             >
               <Bell aria-hidden="true" className="size-4" />
             </Popover.Trigger>
@@ -130,7 +135,7 @@ export function CabinetHeader({
               <Popover.Content
                 align="end"
                 sideOffset={6}
-                className="z-50 w-[min(90vw,320px)] rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-xl"
+                className="z-50 w-[min(90vw,320px)] rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-popover"
               >
                 <h2 className="font-semibold">{t('notifications')}</h2>
                 {notifications.data && notifications.data.length > 0 ? (
@@ -148,7 +153,11 @@ export function CabinetHeader({
             </Popover.Portal>
           </Popover.Root>
 
-          <AppLink href="/account/privacy" className={pill} aria-label={`${t('profile')}: ${me.displayName}`}>
+          <AppLink
+            href="/account/privacy"
+            className={pillAction}
+            aria-label={`${t('profile')}: ${me.displayName}`}
+          >
             <span
               aria-hidden="true"
               className="inline-flex size-7 items-center justify-center rounded-full bg-[#f97316] text-xs font-bold text-white"

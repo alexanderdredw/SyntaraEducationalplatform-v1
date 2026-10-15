@@ -30,7 +30,7 @@ export function CabinetSidebar({ items }: { items: CabinetNavItem[] }) {
       title={label}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'relative inline-flex size-11 items-center justify-center rounded-xl text-[var(--text-muted)] hover:text-[var(--text)]',
+        'relative inline-flex size-11 items-center justify-center rounded-[var(--radius-field)] text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
         active &&
           'bg-[var(--accent-strong)]/20 text-[var(--text)] before:absolute before:left-0 before:top-2 before:h-7 before:w-1 before:rounded-full before:bg-[var(--accent)]',
       )}
@@ -43,7 +43,7 @@ export function CabinetSidebar({ items }: { items: CabinetNavItem[] }) {
     <nav
       aria-label={t('sidebarLabel')}
       data-testid="cabinet-sidebar"
-      className="border-b border-[var(--border)] bg-[var(--sidebar)] md:sticky md:top-[var(--header-h)] md:h-[calc(100vh-var(--header-h))] md:w-[70px] md:shrink-0 md:border-b-0 md:border-r"
+      className="border-b border-[var(--border)] bg-[var(--sidebar)] md:sticky md:top-[var(--header-h)] md:h-[calc(100vh-var(--header-h))] md:w-[var(--sidebar-w)] md:shrink-0 md:border-b-0 md:border-r"
     >
       <ul className="flex gap-2 overflow-x-auto px-3 py-2 md:h-full md:flex-col md:items-center md:overflow-visible md:py-4">
         {items.map((item) => (

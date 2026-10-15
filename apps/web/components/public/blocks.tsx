@@ -63,7 +63,7 @@ export function InfoCard({
   return (
     <li
       id={id}
-      className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6"
+      className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card"
     >
       {icon ? (
         <span aria-hidden="true" className="text-[var(--accent)]">
@@ -78,7 +78,7 @@ export function InfoCard({
 }
 
 const buttonBase =
-  'inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] px-6 text-sm font-semibold transition';
+  'inline-flex min-h-[var(--control-h)] items-center justify-center rounded-[var(--radius-pill)] px-6 text-sm font-semibold active:scale-[0.98]';
 
 /** Ссылка-кнопка: белая (primary-white) или вторичная (3.2). */
 export function LinkButton({
@@ -91,10 +91,11 @@ export function LinkButton({
   variant?: 'white' | 'blue' | 'secondary' | 'text';
 }) {
   const styles = {
-    white: 'bg-white text-[#070707] hover:bg-white/90',
-    blue: 'bg-[var(--accent-strong)] text-white hover:brightness-110',
-    secondary: 'border border-[var(--border)] text-[var(--text)] hover:bg-[var(--field)]',
-    text: 'px-0 text-[var(--accent)] hover:underline',
+    white: 'bg-white text-[#070707] shadow-card hover:bg-white/90',
+    blue: 'bg-[var(--accent-strong)] text-white shadow-accent hover:brightness-110',
+    secondary:
+      'border border-[var(--border)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]',
+    text: 'px-0 text-[var(--accent)] underline-offset-4 hover:underline',
   }[variant];
   return (
     <AppLink href={href} className={cn(buttonBase, styles)}>

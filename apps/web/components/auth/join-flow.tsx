@@ -96,7 +96,7 @@ export function JoinFlow({ viewer }: { viewer: Viewer }) {
               />
             </Field>
           </div>
-          <Button type="submit" disabled={pending || !code.trim()}>
+          <Button type="submit" disabled={pending || !code.trim()} className="sm:min-h-[var(--field-h)]">
             {t('check')}
           </Button>
         </form>

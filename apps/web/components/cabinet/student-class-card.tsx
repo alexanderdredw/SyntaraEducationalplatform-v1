@@ -129,7 +129,7 @@ export function StudentClassCard() {
             />
           </Field>
         </div>
-        <Button type="submit" disabled={!code.trim()}>
+        <Button type="submit" disabled={!code.trim()} className="sm:min-h-[var(--field-h)]">
           {t('joinSubmit')}
         </Button>
       </form>

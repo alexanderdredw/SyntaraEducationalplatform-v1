@@ -13,7 +13,7 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(f
     <div
       ref={ref}
       className={cn(
-        'rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6',
+        'rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card',
         className,
       )}
       {...props}
@@ -53,7 +53,7 @@ export function Badge({
     <span
       data-tone={tone}
       className={cn(
-        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
+        'inline-flex items-center rounded-[var(--radius-item)] px-2 py-0.5 text-xs font-medium',
         tones[tone],
         className,
       )}
@@ -83,7 +83,12 @@ export function EmptyState({
 
 /** Skeleton (3.2): плейсхолдер загрузки, скрыт от вспомогательных технологий. */
 export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden="true" className={cn('animate-pulse rounded-lg bg-[var(--field)]', className)} />;
+  return (
+    <div
+      aria-hidden="true"
+      className={cn('animate-pulse rounded-[var(--radius-item)] bg-[var(--field)]', className)}
+    />
+  );
 }
 
 /** ProgressBar (3.2): `value` 0–100; `label` — доступное имя из i18n. */
@@ -107,7 +112,7 @@ export function ProgressBar({
       )}
     >
       <Progress.Indicator
-        className="h-full bg-[var(--accent)] transition-[width]"
+        className="h-full bg-[var(--accent)] transition-[width] duration-200 ease-[var(--ease-standard)]"
         style={{ width: `${clamped}%` }}
       />
     </Progress.Root>

@@ -134,7 +134,7 @@ export function TicketCard({ id, meId, timeZone }: { id: string; meId: string; t
                 data-testid={m.isInternal ? 'ticket-note' : 'ticket-message'}
                 data-direction={m.direction}
                 className={cn(
-                  'rounded-xl border p-3 text-sm',
+                  'rounded-[var(--radius-field)] border p-3 text-sm',
                   m.isInternal
                     ? 'border-dashed border-[var(--accent-teacher)] bg-[var(--surface-teacher)]'
                     : 'border-[var(--border)]',
@@ -184,7 +184,7 @@ export function TicketCard({ id, meId, timeZone }: { id: string; meId: string; t
                 const tpl = ticket.templates.find((x) => x.code === e.target.value);
                 if (tpl) setReply(tpl.body);
               }}
-              className="min-h-11 rounded-xl border border-[var(--border)] bg-[var(--field)] px-3 text-base"
+              className="min-h-11 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] px-3 text-base hover:border-[var(--border-strong)]"
             >
               <option value="">{t('actions.noTemplate')}</option>
               {ticket.templates.map((tpl) => (
@@ -200,7 +200,7 @@ export function TicketCard({ id, meId, timeZone }: { id: string; meId: string; t
           <div
             data-testid="reply-preview"
             aria-live="polite"
-            className="rounded-xl border border-[var(--border)] p-3 text-sm"
+            className="rounded-[var(--radius-field)] border border-[var(--border)] p-3 text-sm"
           >
             <p className="text-xs text-[var(--text-muted)]">{t('actions.preview')}</p>
             <p className="mt-1 font-medium">{t('actions.recipient', { email: ticket.email })}</p>

@@ -13,7 +13,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   return (
     <section data-testid="privacy-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto flex max-w-[640px] flex-col gap-6">
-        <h1 className="text-3xl font-bold md:text-4xl">{t('title')}</h1>
+        <h1 className="text-page-title font-bold">{t('title')}</h1>
         <p className="text-[var(--text-muted)]">{t('intro')}</p>
         <ul className="list-disc space-y-2 pl-5">
           {ITEMS.map((item) => (

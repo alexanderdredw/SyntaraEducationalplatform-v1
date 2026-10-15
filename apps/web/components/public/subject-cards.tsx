@@ -40,7 +40,7 @@ export async function SubjectCards({
       </>
     );
     const className =
-      'flex h-full flex-col rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6';
+      'flex h-full flex-col rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card';
     // На главной ссылкой является только открытый предмет; на /subjects ещё и «Нужен вход» → вход с returnTo.
     const linked = s.href && (s.status === 'open' || (variant === 'page' && s.status === 'login_required'));
     return (

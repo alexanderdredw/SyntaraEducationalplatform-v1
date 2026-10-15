@@ -9,6 +9,16 @@ export {
   Accordion,
   type AccordionItem,
 } from './navigation';
-export { Field, Input, Textarea, Select, type SelectOption, Checkbox, Radio, type RadioOption } from './form';
+export {
+  Field,
+  fieldClass,
+  Input,
+  Textarea,
+  Select,
+  type SelectOption,
+  Checkbox,
+  Radio,
+  type RadioOption,
+} from './form';
 export { Modal, ToastProvider, Toast } from './overlay';
 export { Header, Footer, Sidebar, type SidebarItem, FloatingHelp } from './layout';

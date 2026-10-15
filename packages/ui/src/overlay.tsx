@@ -32,12 +32,12 @@ export function Modal({
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60" />
         <Dialog.Content
           {...(description ? {} : { 'aria-describedby': undefined })}
-          className="fixed left-1/2 top-1/2 z-50 w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text)]"
+          className="fixed left-1/2 top-1/2 z-50 w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text)] shadow-popover"
         >
           <div className="flex items-start justify-between gap-4">
             <Dialog.Title className="text-lg font-semibold">{title}</Dialog.Title>
             <Dialog.Close
-              className="flex size-11 items-center justify-center rounded-full"
+              className="flex size-11 items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]"
               aria-label={closeLabel}
             >
               <X aria-hidden="true" className="size-5" />
@@ -86,7 +86,7 @@ export function Toast({
     <ToastPrimitive.Root
       open={open}
       onOpenChange={onOpenChange}
-      className={`rounded-xl border ${border} bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)]`}
+      className={`rounded-[var(--radius-field)] border ${border} bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] shadow-popover`}
     >
       <ToastPrimitive.Title>{title}</ToastPrimitive.Title>
     </ToastPrimitive.Root>

@@ -58,7 +58,7 @@ export function TicketsQueue({ meId, timeZone }: { meId: string; timeZone: strin
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <section aria-labelledby="tickets-title" className={cn(selected && 'hidden xl:block')}>
-        <h1 id="tickets-title" className="text-2xl font-bold">
+        <h1 id="tickets-title" className="text-cabinet-title font-bold">
           {t('tickets')}
         </h1>
         <form

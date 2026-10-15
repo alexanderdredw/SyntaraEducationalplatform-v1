@@ -31,11 +31,11 @@ export function PublicHeader({ enabledLocales }: { enabledLocales: readonly Loca
               onClick={onNavigate}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'inline-flex min-h-11 items-center rounded-[var(--radius-pill)] px-4 text-sm transition',
+                'inline-flex min-h-[var(--control-h)] items-center rounded-[var(--radius-pill)] px-4 text-sm',
                 vertical && 'w-full text-base',
                 active
                   ? 'bg-[var(--text)] text-[var(--bg)]'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text)]',
+                  : 'text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
               )}
             >
               {t(`nav.${item.key}`)}
@@ -49,7 +49,7 @@ export function PublicHeader({ enabledLocales }: { enabledLocales: readonly Loca
   const loginButton = (
     <AppLink
       href="/auth/login"
-      className="inline-flex min-h-11 items-center rounded-[var(--radius-pill)] bg-[var(--accent-strong)] px-5 text-sm font-semibold text-white hover:brightness-110"
+      className="inline-flex min-h-[var(--control-h)] items-center rounded-[var(--radius-pill)] bg-[var(--accent-strong)] px-5 text-sm font-semibold text-white shadow-accent hover:brightness-110 active:scale-[0.98]"
     >
       {t('login')}
     </AppLink>
@@ -86,7 +86,7 @@ export function PublicHeader({ enabledLocales }: { enabledLocales: readonly Loca
           </div>
           {loginButton}
           <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
-            <Dialog.Trigger className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-4 text-sm lg:hidden">
+            <Dialog.Trigger className="inline-flex min-h-[var(--control-h)] items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-4 text-sm hover:border-[var(--border-strong)] hover:bg-[var(--field)] lg:hidden">
               <Menu aria-hidden="true" className="size-4 text-[var(--accent)]" />
               {t('menu')}
             </Dialog.Trigger>
@@ -100,7 +100,7 @@ export function PublicHeader({ enabledLocales }: { enabledLocales: readonly Loca
                   <Dialog.Title className="text-lg font-semibold">{t('menu')}</Dialog.Title>
                   <Dialog.Close
                     aria-label={t('closeMenu')}
-                    className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)]"
+                    className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]"
                   >
                     <X aria-hidden="true" className="size-5" />
                   </Dialog.Close>

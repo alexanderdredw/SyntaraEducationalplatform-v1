@@ -15,7 +15,11 @@ const cookies = (theme) => [
   { name: 'theme', value: theme, url: base },
 ];
 
-async function shot(name, path, { width = 1440, height = 900, theme = 'dark', auth, prepare, fullPage = true } = {}) {
+async function shot(
+  name,
+  path,
+  { width = 1440, height = 900, theme = 'dark', auth, prepare, fullPage = true } = {},
+) {
   const ctx = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
   await ctx.addCookies(cookies(theme));
   if (auth) await ctx.addCookies(auth);
@@ -31,12 +35,21 @@ async function shot(name, path, { width = 1440, height = 900, theme = 'dark', au
 // Учитель с классом и учеником в нём — для экранов кабинетов.
 const api = await request.newContext({ baseURL: base });
 await api.post('/api/auth/register', {
-  data: { role: 'teacher', email: `design.${uid}@example.kz`, displayName: 'Алия Учитель', password: 'teacher-pass-1' },
+  data: {
+    role: 'teacher',
+    email: `design.${uid}@example.kz`,
+    displayName: 'Алия Учитель',
+    password: 'teacher-pass-1',
+  },
 });
 const teacherState = await api.storageState();
 const csrf = teacherState.cookies.find((c) => c.name === 'csrf').value;
-const cls = await (await api.post('/api/teacher/classes', { data: { name: '7 «А»' }, headers: { 'X-CSRF-Token': csrf } })).json();
-const code = await (await api.post(`/api/teacher/classes/${cls.id}/invite-codes`, { headers: { 'X-CSRF-Token': csrf } })).json();
+const cls = await (
+  await api.post('/api/teacher/classes', { data: { name: '7 «А»' }, headers: { 'X-CSRF-Token': csrf } })
+).json();
+const code = await (
+  await api.post(`/api/teacher/classes/${cls.id}/invite-codes`, { headers: { 'X-CSRF-Token': csrf } })
+).json();
 const student = await request.newContext({ baseURL: base });
 await student.post('/api/auth/register-student', {
   data: { displayName: 'Асель', login: `design.${uid}`, password: 'student-pass-1', code: code.code },
@@ -47,6 +60,8 @@ const toCookies = (state) => state.cookies.map(({ name, value }) => ({ name, val
 await shot('home-1440', '/ru', { fullPage: false });
 await shot('student-auth-390', '/ru/auth/start?role=student', { width: 390, height: 844 });
 await shot('login-390', '/ru/auth/login', { width: 390, height: 844, fullPage: false });
+await shot('join-390', '/ru/join', { width: 390, height: 844, fullPage: false });
+await shot('login-1440', '/ru/auth/login', { fullPage: false });
 await shot('support-form-1440', '/ru/support', { fullPage: false });
 await shot('teacher-classes-1440', '/ru/teacher/classes', {
   auth: toCookies(teacherState),
@@ -56,9 +71,14 @@ await shot('teacher-classes-1440', '/ru/teacher/classes', {
   },
 });
 await shot('student-subjects-1440', '/ru/learn/subjects', { auth: toCookies(studentState), fullPage: false });
-await shot('student-auth-light-390', '/ru/auth/start?role=student', { width: 390, height: 844, theme: 'light', fullPage: false });
+await shot('student-auth-light-390', '/ru/auth/start?role=student', {
+  width: 390,
+  height: 844,
+  theme: 'light',
+  fullPage: false,
+});
 
 await api.dispose();
 await student.dispose();
 await browser.close();
-console.log(`screenshots → ${out}`);
+process.stdout.write(`screenshots → ${out}\n`);

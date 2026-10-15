@@ -60,8 +60,8 @@ export default async function LoginPage({
   return (
     <section data-testid="login-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[440px]">
-        <h1 className="text-3xl font-bold md:text-4xl">{title}</h1>
-        <div className="mt-8">
+        <h1 className="text-page-title font-bold">{title}</h1>
+        <div className="mt-8 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card sm:p-6">
           {mode === 'verify' ? (
             <div className="flex flex-col gap-6">
               <VerifyEmail token={verifyToken!} />

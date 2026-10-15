@@ -22,7 +22,7 @@ export function VerifyEmailBanner() {
       className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--field)] px-4 py-3 text-sm"
     >
       <span className="flex items-center gap-2">
-        <MailWarning aria-hidden="true" className="size-4 text-[#f5b301]" />
+        <MailWarning aria-hidden="true" className="size-4 text-[var(--warning)]" />
         {t('text')}
       </span>
       <span className="flex items-center gap-3">

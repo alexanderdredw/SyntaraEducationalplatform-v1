@@ -27,7 +27,7 @@ export default async function StartPage({
   return (
     <section data-testid="start-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[640px]">
-        <h1 className="text-3xl font-bold md:text-4xl">{t('title')}</h1>
+        <h1 className="text-page-title font-bold">{t('title')}</h1>
         <div className="mt-8">
           <StartChoice initialRole={role === 'teacher' ? 'teacher' : null} />
         </div>

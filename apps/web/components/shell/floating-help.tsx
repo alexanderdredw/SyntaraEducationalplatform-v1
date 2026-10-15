@@ -24,7 +24,7 @@ export function FloatingHelp({
   const tc = useTranslations();
   const pathname = usePathname();
   const round =
-    'inline-flex size-12 items-center justify-center rounded-full shadow-lg transition hover:brightness-110';
+    'inline-flex size-12 items-center justify-center rounded-full shadow-fab hover:brightness-110 active:scale-95';
 
   return (
     <FloatingHelpFrame>
@@ -41,13 +41,13 @@ export function FloatingHelp({
             align="end"
             sideOffset={8}
             collisionPadding={16}
-            className="z-50 w-[min(90vw,320px)] rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-xl"
+            className="z-50 w-[min(90vw,320px)] rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-popover"
           >
             <div className="flex items-start justify-between gap-2">
               <h2 className="font-semibold">{t('title')}</h2>
               <Popover.Close
                 aria-label={t('title')}
-                className="-m-2 inline-flex size-11 items-center justify-center"
+                className="-m-2 inline-flex size-11 items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]"
               >
                 <X aria-hidden="true" className="size-4" />
               </Popover.Close>
@@ -79,7 +79,7 @@ export function FloatingHelp({
           <Popover.Trigger
             aria-label={tc('cabinet.lamp')}
             data-testid="cabinet-lamp"
-            className={`${round} border border-[var(--border)] bg-[var(--surface)] text-[#f5b301]`}
+            className={`${round} border border-[var(--border)] bg-[var(--surface)] text-[var(--warning)]`}
           >
             <Lightbulb aria-hidden="true" className="size-5" />
           </Popover.Trigger>
@@ -88,7 +88,7 @@ export function FloatingHelp({
               side="left"
               sideOffset={8}
               collisionPadding={16}
-              className="z-50 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-xl"
+              className="z-50 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text)] shadow-popover"
             >
               {tc('common.sectionInDevelopment')}
             </Popover.Content>

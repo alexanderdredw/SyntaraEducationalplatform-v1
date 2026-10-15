@@ -19,12 +19,12 @@ export async function LegalPage({ doc }: { doc: LegalDoc }) {
   return (
     <article data-testid={`legal-${doc}`} className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[840px]">
-        <h1 className="text-3xl font-bold md:text-4xl">{t(`legal.${doc}`)}</h1>
+        <h1 className="text-page-title font-bold">{t(`legal.${doc}`)}</h1>
         <p className="mt-2 text-sm text-[var(--text-muted)]">{t('legal.updated', { date: UPDATED })}</p>
         <p
           role="note"
           data-testid="legal-draft-banner"
-          className="mt-6 rounded-xl border border-[var(--danger)] px-4 py-3 text-sm font-semibold"
+          className="mt-6 rounded-[var(--radius-field)] border border-[var(--danger)] px-4 py-3 text-sm font-semibold"
         >
           {t('legal.draftBanner')}
         </p>

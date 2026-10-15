@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Eye, EyeOff, GraduationCap } from 'lucide-react';
 import { LOGIN_PATTERN, type UserRole } from '@syntara/shared';
-import { cn } from '@syntara/ui';
+import { cn, fieldClass } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import { HOME_BY_ROLE } from '@/lib/auth';
@@ -17,8 +17,7 @@ type Me = components['schemas']['MeDto'];
 type Tab = 'register' | 'login';
 type RegisterField = 'displayName' | 'login' | 'password' | 'email' | 'school' | 'code';
 
-const inputClass =
-  'min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--field)] px-4 text-base text-[var(--text)] placeholder:text-[var(--text-muted)] aria-[invalid=true]:border-[var(--danger)]';
+const inputClass = fieldClass;
 
 /** Поле формы ученика: подпись над полем, подсказка и ошибка под ним (эталон student-auth.png). */
 function FieldRow({
@@ -223,9 +222,9 @@ export function StudentAuth({
       aria-controls={`student-panel-${value}`}
       onClick={() => setTab(value)}
       className={cn(
-        'min-h-11 flex-1 rounded-xl px-4 text-sm font-semibold',
+        'min-h-[var(--control-h)] flex-1 rounded-[var(--radius-field)] px-4 text-sm font-semibold',
         tab === value
-          ? 'bg-[var(--accent-strong)] text-white shadow'
+          ? 'bg-[var(--accent-strong)] text-white shadow-accent'
           : 'text-[var(--text-muted)] hover:text-[var(--text)]',
       )}
     >
@@ -243,9 +242,9 @@ export function StudentAuth({
       <p className="mt-3 text-center text-xs font-semibold tracking-[0.2em] text-[var(--text-muted)]">
         {t('label')}
       </p>
-      <div className="mt-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6">
+      <div className="mt-4 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card sm:p-6">
         <div className="flex justify-center">
-          <span className="inline-flex size-14 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--field)]">
+          <span className="inline-flex size-14 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--field)]">
             <GraduationCap aria-hidden="true" className="size-6 text-[var(--text)]" />
           </span>
         </div>
@@ -254,7 +253,7 @@ export function StudentAuth({
         <div
           role="tablist"
           aria-label={t('tabsLabel')}
-          className="mt-5 flex gap-1 rounded-2xl border border-[var(--border)] bg-[var(--field)] p-1"
+          className="mt-5 flex gap-1 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--field)] p-1"
         >
           {tabButton('register', t('tabRegister'))}
           {tabButton('login', t('tabLogin'))}

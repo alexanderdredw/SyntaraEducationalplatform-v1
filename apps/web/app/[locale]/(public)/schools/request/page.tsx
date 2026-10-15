@@ -8,7 +8,7 @@ export default async function SchoolRequestPage({ params }: { params: Promise<{ 
   return (
     <section data-testid="school-request-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[640px]">
-        <h1 className="text-3xl font-bold md:text-4xl">{t('schoolRequest.title')}</h1>
+        <h1 className="text-page-title font-bold">{t('schoolRequest.title')}</h1>
         <div className="mt-8">
           <SchoolRequestForm />
         </div>
