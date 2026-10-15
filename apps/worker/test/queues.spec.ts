@@ -38,12 +38,17 @@ describe('worker queues', () => {
     try {
       for (const name of ['file-scan', 'recalc'] as const) {
         const queue = new Queue(name, { connection });
-        const events = new QueueEvents(name, { connection });
+        // QueueEvents по умолчанию читает поток с «$» и не видит события, записанные до первого XREAD:
+        // если worker завершал задание раньше, «completed» терялся и тест падал по таймауту.
+        // Очередь в контейнере новая — читаем с начала потока; блокирующее чтение — на своём соединении.
+        const eventsConnection = connection.duplicate();
+        const events = new QueueEvents(name, { connection: eventsConnection, lastEventId: '0-0' });
         await events.waitUntilReady();
         const job = await queue.add('probe', { email: 'kid@example.kz' });
         const result = await job.waitUntilFinished(events, 10_000);
         expect(result).toEqual({ queue: name, handled: false });
         await Promise.all([queue.close(), events.close()]);
+        await eventsConnection.quit();
       }
       expect(lines.join('')).not.toContain('kid@example.kz');
     } finally {
