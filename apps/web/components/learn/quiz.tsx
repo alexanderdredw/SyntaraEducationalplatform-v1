@@ -99,7 +99,11 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
   if (state === 'finished' && finish) {
     return (
       <Card className="flex flex-col items-start gap-4 p-6" data-testid="quiz-result">
-        <h2 className="text-cabinet-title font-bold">{t('result', { score: finish.scorePercent })}</h2>
+        <h2 className="text-cabinet-title font-bold">
+          {t('result', {
+            score: new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(finish.scorePercent),
+          })}
+        </h2>
         {finish.xpAwarded > 0 ? (
           <p className="text-lg font-semibold text-[var(--accent)]" data-testid="quiz-xp">
             {t('xp', { xp: finish.xpAwarded })}
