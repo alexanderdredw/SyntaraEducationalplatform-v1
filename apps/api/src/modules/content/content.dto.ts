@@ -160,6 +160,14 @@ class LessonSectionDto {
   @ApiProperty() number: number;
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) body: string | null;
+  @ApiPropertyOptional({
+    type: String,
+    nullable: true,
+    description: 'Иллюстрация раздела базового урока — подписанная ссылка на 10 минут (BR-FILE-04)',
+  })
+  illustrationUrl?: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true, description: 'Подпись иллюстрации раздела' })
+  illustrationAlt?: string | null;
 }
 
 class LessonNextDto {
@@ -191,6 +199,12 @@ export class LessonDto {
   funFact: string | null;
   @ApiPropertyOptional({ type: String, nullable: true }) bodyMd?: string | null;
   @ApiPropertyOptional({ type: String, nullable: true }) illustrationUrl?: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true, description: 'Подпись иллюстрации темы' })
+  illustrationAlt?: string | null;
+  @ApiProperty({
+    description: 'Перевод подготовлен ИИ и ждёт вычитки — пометка «На проверке» (BR-CNT-05)',
+  })
+  needsReview: boolean;
   @ApiProperty({ type: LessonSectionDto, isArray: true }) sections: LessonSectionDto[];
   @ApiProperty({
     type: LessonMaterialDto,
@@ -199,7 +213,11 @@ export class LessonDto {
   })
   materials: LessonMaterialDto[];
   @ApiProperty({ type: LessonNextDto, nullable: true }) next: LessonNextDto | null;
-  @ApiProperty({ enum: ['ru', 'kk', 'en'] }) locale: string;
+  @ApiProperty({
+    enum: ['ru', 'kk', 'en'],
+    description: 'Фактический язык урока; нет перевода — RU с пометкой (REQ-ST-LES-07)',
+  })
+  locale: string;
 }
 
 class CatalogSectionDto {
@@ -213,7 +231,11 @@ class CatalogSubjectDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) description: string | null;
-  @ApiProperty({ enum: ['available'] }) status: 'available';
+  @ApiProperty({
+    enum: ['available', 'soon'],
+    description: '«Скоро» — у предмета нет опубликованных тем, карточка не кликабельна (BR-CNT-08)',
+  })
+  status: 'available' | 'soon';
 }
 
 /** API-S-05 */
@@ -242,6 +264,20 @@ export class StudentSubjectDto {
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) description: string | null;
   @ApiProperty({ type: StudentTopicItemDto, isArray: true }) topics: StudentTopicItemDto[];
+}
+
+class PublicTopicItemDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() number: number;
+  @ApiProperty() title: string;
+}
+
+/** API-PUB-12: базовый предмет для гостя — без статусов тем (BR-VIS-04). */
+export class PublicSubjectPageDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) description: string | null;
+  @ApiProperty({ type: PublicTopicItemDto, isArray: true }) topics: PublicTopicItemDto[];
 }
 
 /** API-S-17 */

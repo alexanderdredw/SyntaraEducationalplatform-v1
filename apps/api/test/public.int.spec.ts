@@ -22,7 +22,21 @@ describe('public API (integration)', () => {
 
   it('API-PUB-01 lists PH-01 subjects with title, description, icon, status and href', async () => {
     const res = await http().get('/api/public/subjects').expect(200);
-    expect(res.body.map((s: { code: string }) => s.code)).toEqual(['biology', 'chemistry', 'physics']);
+    // PH-01 — все базовые предметы каталога (решение владельца 2026-10-16): раздел «Биология» и базовые предметы.
+    expect(res.body.map((s: { code: string }) => s.code)).toEqual([
+      'biology',
+      'chemistry',
+      'physics',
+      'geography',
+      'mathematics',
+      'algebra',
+      'geometry',
+      'informatics',
+      'history-of-kazakhstan',
+      'kazakh-language',
+      'russian-language',
+      'english-language',
+    ]);
     const [biology] = res.body;
     expect(biology).toMatchObject({
       title: 'Биология',
@@ -32,21 +46,26 @@ describe('public API (integration)', () => {
     });
   });
 
-  it('API-PUB-01, REQ-PUB-SUBJ-02 guests get login_required for subjects with lessons, soon otherwise; soon go last', async () => {
+  it('API-PUB-01, REQ-PUB-SUBJ-02, BR-CNT-08 open for base lessons (a guest reads the overview), soon otherwise; soon go last', async () => {
     const res = await http().get('/api/public/subjects').expect(200);
     const byCode = Object.fromEntries(res.body.map((s: { code: string }) => [s.code, s]));
-    expect(byCode.biology.status).toBe('login_required');
-    expect(byCode.biology.href).toMatch(/^\/auth\/login\?returnTo=%2Flearn%2Fsections%2F/);
+    expect(byCode.biology.status).toBe('open');
+    expect(byCode.biology.href).toMatch(/^\/learn\/sections\/[0-9a-f-]{36}$/);
     expect(byCode.chemistry).toMatchObject({ status: 'soon', href: null });
+    expect(res.body.filter((s: { status: string }) => s.status === 'login_required')).toEqual([]);
     const statuses = res.body.map((s: { status: string }) => s.status);
-    expect(statuses.lastIndexOf('login_required')).toBeLessThan(statuses.indexOf('soon'));
+    expect(statuses.lastIndexOf('open')).toBeLessThan(statuses.indexOf('soon'));
   });
 
   it('API-GEN-03 returns translations for Accept-Language and reports the locale actually served', async () => {
     const kk = await http().get('/api/public/subjects').set('Accept-Language', 'kk').expect(200);
     expect(kk.body[0]).toMatchObject({ title: 'Биология', locale: 'kk' });
     const en = await http().get('/api/public/subjects').set('Accept-Language', 'en').expect(200);
-    expect(en.body.map((s: { title: string }) => s.title)).toEqual(['Biology', 'Chemistry', 'Physics']);
+    expect(en.body.map((s: { title: string }) => s.title).slice(0, 3)).toEqual([
+      'Biology',
+      'Chemistry',
+      'Physics',
+    ]);
   });
 
   it('API-PUB-07 returns only public values (positive case)', async () => {

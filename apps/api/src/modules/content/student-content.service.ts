@@ -1,12 +1,18 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, asc, eq, inArray, isNull, or, type SQL } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, or, type SQL, sql } from 'drizzle-orm';
 import { type LessonEventDto, type Locale, type TopicSnapshot } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { pickTranslation } from '../../common/locale';
 import { DB } from '../../infra/tokens';
 import { GamificationService } from '../gamification/gamification.service';
-import { type CatalogDto, type LessonDto, type SectionDto, type StudentSubjectDto } from './content.dto';
+import {
+  type CatalogDto,
+  type LessonDto,
+  type PublicSubjectPageDto,
+  type SectionDto,
+  type StudentSubjectDto,
+} from './content.dto';
 import { LessonService } from './lesson.service';
 import { VisibilityService } from './visibility.service';
 
@@ -16,6 +22,8 @@ const { topics, topicVersions, learningEvents, topicMastery, quizAttempts, quizz
 const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 
 type CatalogSubject = CatalogDto['subjects'][number];
+/** Кто смотрит каталог: ID ученика или null — гость (BR-VIS-04, API-PUB-10..13). */
+type Viewer = string | null;
 
 /**
  * Контент ученика (8.4.2–8.4.3): каталог (API-S-04), раздел (API-S-05), страница предмета, тема (API-S-06),
@@ -32,8 +40,11 @@ export class StudentContentService {
     private readonly gamification: GamificationService,
   ) {}
 
-  /** API-S-04: разделы и доступные предметы вне разделов. Пользовательские названия не переводятся (REQ-ST-CAT-02). */
-  async catalog(studentId: string, locale: Locale): Promise<CatalogDto> {
+  /**
+   * API-S-04 / API-PUB-10: разделы и предметы вне разделов. Пользовательские названия не переводятся
+   * (REQ-ST-CAT-02). Гость (viewer = null) видит только базовые предметы (BR-VIS-04).
+   */
+  async catalog(viewer: Viewer, locale: Locale): Promise<CatalogDto> {
     const sections = await this.db.select().from(catalogSections).orderBy(asc(catalogSections.position));
     const sectionTr = sections.length
       ? await this.db
@@ -54,12 +65,12 @@ export class StudentContentService {
         );
         return { id: s.id, title: tr?.title ?? '', description: tr?.description ?? null, status: 'section' };
       }),
-      subjects: await this.visibleSubjects(studentId, isNull(subjects.sectionId), locale),
+      subjects: await this.visibleSubjects(viewer, isNull(subjects.sectionId), locale),
     };
   }
 
-  /** API-S-05: предметы раздела (REQ-ST-CAT-03). */
-  async section(studentId: string, sectionId: string, locale: Locale): Promise<SectionDto> {
+  /** API-S-05 / API-PUB-11: предметы раздела (REQ-ST-CAT-03). */
+  async section(viewer: Viewer, sectionId: string, locale: Locale): Promise<SectionDto> {
     const [section] = await this.db.select().from(catalogSections).where(eq(catalogSections.id, sectionId));
     if (!section) throw notFound();
     const tr = pickTranslation(await this.db.select().from(cst).where(eq(cst.sectionId, sectionId)), locale);
@@ -67,7 +78,7 @@ export class StudentContentService {
       id: section.id,
       title: tr?.title ?? '',
       description: tr?.description ?? null,
-      subjects: await this.visibleSubjects(studentId, eq(subjects.sectionId, sectionId), locale),
+      subjects: await this.visibleSubjects(viewer, eq(subjects.sectionId, sectionId), locale),
     };
   }
 
@@ -77,6 +88,21 @@ export class StudentContentService {
    */
   async subject(studentId: string, subjectId: string, locale: Locale): Promise<StudentSubjectDto> {
     if (!(await this.visibility.canStudentSeeSubject(studentId, subjectId))) throw notFound();
+    const page = await this.subjectPage(subjectId, locale);
+    const status = await this.topicStatuses(
+      studentId,
+      page.topics.map((t) => t.id),
+    );
+    return { ...page, topics: page.topics.map((t) => ({ ...t, status: status.get(t.id) ?? 'not_started' })) };
+  }
+
+  /** API-PUB-12: базовый предмет для гостя — без статусов (BR-VIS-04). */
+  async guestSubject(subjectId: string, locale: Locale): Promise<PublicSubjectPageDto> {
+    if (!(await this.visibility.canGuestSeeSubject(subjectId))) throw notFound();
+    return this.subjectPage(subjectId, locale);
+  }
+
+  private async subjectPage(subjectId: string, locale: Locale): Promise<PublicSubjectPageDto> {
     const [translations, rows] = await Promise.all([
       this.db.select().from(st).where(eq(st.subjectId, subjectId)),
       this.db
@@ -89,10 +115,6 @@ export class StudentContentService {
         .orderBy(asc(topics.position)),
     ]);
     const tr = pickTranslation(translations, locale);
-    const status = await this.topicStatuses(
-      studentId,
-      rows.map((r) => r.id),
-    );
     return {
       id: subjectId,
       title: tr?.title ?? '',
@@ -100,12 +122,7 @@ export class StudentContentService {
       topics: rows.map((r) => {
         const snapshot = r.snapshot as TopicSnapshot;
         const t = [locale, 'ru', 'en', 'kk'].map((l) => snapshot.translations[l as Locale]).find(Boolean);
-        return {
-          id: r.id,
-          number: r.position,
-          title: t?.title ?? '',
-          status: status.get(r.id) ?? 'not_started',
-        };
+        return { id: r.id, number: r.position, title: t?.title ?? '' };
       }),
     };
   }
@@ -155,6 +172,14 @@ export class StudentContentService {
     return this.lessons.render(topicId, snapshot, locale);
   }
 
+  /** API-PUB-13: «Обзор» базового урока для гостя; квиз — только после входа (REQ-ST-LES-06). */
+  async guestTopic(topicId: string, locale: Locale): Promise<LessonDto> {
+    if (!(await this.visibility.canGuestSeeTopic(topicId))) throw notFound();
+    const snapshot = await this.lessons.publishedSnapshot(topicId);
+    if (!snapshot) throw notFound();
+    return { ...(await this.lessons.render(topicId, snapshot, locale)), quizId: null };
+  }
+
   /**
    * API-S-17 (REQ-ST-LES-04): событие lesson_opened с ключом `lesson:{topicId}:{date}` — повтор в тот же день
    * не создаёт второго события; первое открытие темы даёт XP (BR-XP-01), день активности — серию (BR-ST-02).
@@ -197,18 +222,25 @@ export class StudentContentService {
     });
   }
 
-  /** Видимые предметы (общий каталог или выданные классу ученика) — с фильтром по разделу. */
-  private async visibleSubjects(studentId: string, where: SQL, locale: Locale): Promise<CatalogSubject[]> {
+  /**
+   * Видимые предметы с фильтром по разделу: ученику — общий каталог или выданные его классу (BR-VIS-01), гостю —
+   * базовые (BR-VIS-04). Предмет без опубликованных тем — «Скоро» (BR-CNT-08).
+   */
+  private async visibleSubjects(viewer: Viewer, where: SQL, locale: Locale): Promise<CatalogSubject[]> {
+    const visible =
+      viewer === null
+        ? this.visibility.guestSubjectCondition()
+        : and(
+            isNull(subjects.archivedAt),
+            or(eq(subjects.inPublicCatalog, true), this.visibility.viaClass(viewer, subjects.id)),
+          );
+    // Имена с таблицей заданы явно: в подзапросе Drizzle выводит столбцы без префикса таблицы.
+    const hasTopics = sql<boolean>`EXISTS (SELECT 1 FROM topics t WHERE t.subject_id = "subjects"."id"
+      AND t.status = 'published' AND t.archived_at IS NULL)`;
     const rows = await this.db
-      .select({ id: subjects.id })
+      .select({ id: subjects.id, hasTopics })
       .from(subjects)
-      .where(
-        and(
-          isNull(subjects.archivedAt),
-          where,
-          or(eq(subjects.inPublicCatalog, true), this.visibility.viaClass(studentId, subjects.id)),
-        ),
-      )
+      .where(and(where, visible))
       .orderBy(asc(subjects.createdAt), asc(subjects.id));
     if (rows.length === 0) return [];
     const translations = await this.db
@@ -225,7 +257,12 @@ export class StudentContentService {
         translations.filter((t) => t.subjectId === s.id),
         locale,
       );
-      return { id: s.id, title: tr?.title ?? '', description: tr?.description ?? null, status: 'available' };
+      return {
+        id: s.id,
+        title: tr?.title ?? '',
+        description: tr?.description ?? null,
+        status: s.hasTopics ? 'available' : 'soon',
+      };
     });
   }
 }

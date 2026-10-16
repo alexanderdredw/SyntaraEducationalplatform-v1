@@ -6,6 +6,7 @@ import { GamificationModule } from '../gamification/gamification.module';
 import { AiDraftService } from './ai-draft.service';
 import {
   StudentContentController,
+  PublicContentController,
   TeacherSubjectsController,
   TeacherTopicsController,
 } from './content.controller';
@@ -22,7 +23,12 @@ import { VisibilityService } from './visibility.service';
  */
 @Module({
   imports: [AuditModule, FilesModule, AiModule, GamificationModule],
-  controllers: [TeacherSubjectsController, TeacherTopicsController, StudentContentController],
+  controllers: [
+    TeacherSubjectsController,
+    TeacherTopicsController,
+    StudentContentController,
+    PublicContentController,
+  ],
   providers: [
     VisibilityService,
     OwnershipGuard,

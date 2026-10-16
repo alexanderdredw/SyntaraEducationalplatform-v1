@@ -1361,6 +1361,126 @@
         ]
       }
     },
+    "/api/public/catalog": {
+      "get": {
+        "operationId": "PublicContentController_catalog",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/sections/{id}": {
+      "get": {
+        "operationId": "PublicContentController_section",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/subjects/{id}": {
+      "get": {
+        "operationId": "PublicContentController_subject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSubjectPageDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/topics/{id}": {
+      "get": {
+        "operationId": "PublicContentController_topic",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
     "/api/files/upload-url": {
       "post": {
         "operationId": "FilesController_uploadUrl",
@@ -4246,6 +4366,16 @@
           "body": {
             "type": "string",
             "nullable": true
+          },
+          "illustrationUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Иллюстрация раздела базового урока — подписанная ссылка на 10 минут (BR-FILE-04)"
+          },
+          "illustrationAlt": {
+            "type": "string",
+            "nullable": true,
+            "description": "Подпись иллюстрации раздела"
           }
         },
         "required": [
@@ -4334,6 +4464,15 @@
             "type": "string",
             "nullable": true
           },
+          "illustrationAlt": {
+            "type": "string",
+            "nullable": true,
+            "description": "Подпись иллюстрации темы"
+          },
+          "needsReview": {
+            "type": "boolean",
+            "description": "Перевод подготовлен ИИ и ждёт вычитки — пометка «На проверке» (BR-CNT-05)"
+          },
           "sections": {
             "type": "array",
             "items": {
@@ -4362,7 +4501,8 @@
               "ru",
               "kk",
               "en"
-            ]
+            ],
+            "description": "Фактический язык урока; нет перевода — RU с пометкой (REQ-ST-LES-07)"
           }
         },
         "required": [
@@ -4374,6 +4514,7 @@
           "questionsCount",
           "summary",
           "funFact",
+          "needsReview",
           "sections",
           "materials",
           "next",
@@ -4425,8 +4566,10 @@
           "status": {
             "type": "string",
             "enum": [
-              "available"
-            ]
+              "available",
+              "soon"
+            ],
+            "description": "«Скоро» — у предмета нет опубликованных тем, карточка не кликабельна (BR-CNT-08)"
           }
         },
         "required": [
@@ -4565,6 +4708,54 @@
           "type",
           "topicId",
           "idempotencyKey"
+        ]
+      },
+      "PublicTopicItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title"
+        ]
+      },
+      "PublicSubjectPageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTopicItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "topics"
         ]
       },
       "UploadUrlBody": {
@@ -6134,7 +6325,7 @@
           },
           "code": {
             "type": "string",
-            "description": "Код раздела каталога (PH-01)"
+            "description": "Код раздела каталога или базового предмета (PH-01)"
           },
           "title": {
             "type": "string"

@@ -60,4 +60,41 @@ export class VisibilityService {
       );
     return Boolean(row);
   }
+
+  /** BR-VIS-04: гостю видны только базовые предметы платформы (is_official + общий каталог, не в архиве). */
+  guestSubjectCondition() {
+    const { subjects } = schema;
+    return and(
+      eq(subjects.isOfficial, true),
+      eq(subjects.inPublicCatalog, true),
+      isNull(subjects.archivedAt),
+    );
+  }
+
+  async canGuestSeeSubject(subjectId: string): Promise<boolean> {
+    const { subjects } = schema;
+    const [row] = await this.db
+      .select({ id: subjects.id })
+      .from(subjects)
+      .where(and(eq(subjects.id, subjectId), this.guestSubjectCondition()));
+    return Boolean(row);
+  }
+
+  /** BR-VIS-04: опубликованная тема базового предмета; личные уроки учителей гостю не видны. */
+  async canGuestSeeTopic(topicId: string): Promise<boolean> {
+    const { topics, subjects } = schema;
+    const [row] = await this.db
+      .select({ id: topics.id })
+      .from(topics)
+      .innerJoin(subjects, eq(subjects.id, topics.subjectId))
+      .where(
+        and(
+          eq(topics.id, topicId),
+          eq(topics.status, 'published'),
+          isNull(topics.archivedAt),
+          this.guestSubjectCondition(),
+        ),
+      );
+    return Boolean(row);
+  }
 }

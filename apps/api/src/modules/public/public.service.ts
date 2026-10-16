@@ -10,6 +10,7 @@ import { type PublicConfigDto, type PublicSubjectDto, type SchoolDto } from './p
 
 /**
  * Иконки карточек публичных предметов (Lucide). В SPEC не заданы; набор подтверждён владельцем (2026-10-14).
+ * TODO(OWNER): иконки остальных базовых предметов PH-01 — пока общая «книга».
  */
 const SUBJECT_ICONS: Record<string, string> = {
   biology: 'dna',
@@ -26,68 +27,92 @@ export class PublicService {
   ) {}
 
   /**
-   * API-PUB-01. Список — разделы каталога из PH-01 `catalog.public_subjects`.
-   * Статус для гостя (решение по Q-22): есть опубликованные темы в предметах общего каталога → 'login_required'
-   * (уроки доступны после входа, матрица 1.2), иначе 'soon'. 'open' выдаётся ученику после входа (итерация 6).
-   * Сортировка: доступные — первыми, «Скоро» — отдельной группой после них (REQ-PUB-SUBJ-02).
+   * API-PUB-01. Список — коды PH-01 `catalog.public_subjects`: код раздела каталога или базового предмета
+   * (решение владельца 2026-10-16: все базовые предметы каталога). Гость читает каталог и «Обзор» базовых уроков
+   * (BR-VIS-04), поэтому есть опубликованные базовые темы → 'open' со ссылкой на раздел или предмет, иначе — 'soon'
+   * без ссылки (BR-CNT-08). Сортировка: доступные — первыми, «Скоро» — отдельной группой (REQ-PUB-SUBJ-02).
    */
   async subjects(locale: Locale): Promise<PublicSubjectDto[]> {
     const codes = await this.config.get<string[]>('catalog.public_subjects');
     if (codes.length === 0) return [];
-    const { catalogSections, catalogSectionTranslations, subjects, topics } = schema;
+    const { catalogSections, catalogSectionTranslations, subjects, subjectTranslations, topics } = schema;
+    const base = and(
+      eq(subjects.isOfficial, true),
+      eq(subjects.inPublicCatalog, true),
+      isNull(subjects.archivedAt),
+    );
 
-    const sections = await this.db
-      .select({ id: catalogSections.id, code: catalogSections.code })
-      .from(catalogSections)
-      .where(inArray(catalogSections.code, codes));
-    const ids = sections.map((s) => s.id);
-    if (ids.length === 0) return [];
+    const [sections, baseSubjects, withContent] = await Promise.all([
+      this.db
+        .select({ id: catalogSections.id, code: catalogSections.code })
+        .from(catalogSections)
+        .where(inArray(catalogSections.code, codes)),
+      this.db
+        .select({ id: subjects.id, code: subjects.code, sectionId: subjects.sectionId })
+        .from(subjects)
+        .where(and(base, inArray(subjects.code, codes))),
+      this.db
+        .selectDistinct({ subjectId: subjects.id, sectionId: subjects.sectionId })
+        .from(subjects)
+        .innerJoin(topics, eq(topics.subjectId, subjects.id))
+        .where(and(base, eq(topics.status, 'published'), isNull(topics.archivedAt))),
+    ]);
+    const [sectionTr, subjectTr] = await Promise.all([
+      sections.length
+        ? this.db
+            .select()
+            .from(catalogSectionTranslations)
+            .where(
+              inArray(
+                catalogSectionTranslations.sectionId,
+                sections.map((s) => s.id),
+              ),
+            )
+        : [],
+      baseSubjects.length
+        ? this.db
+            .select()
+            .from(subjectTranslations)
+            .where(
+              inArray(
+                subjectTranslations.subjectId,
+                baseSubjects.map((s) => s.id),
+              ),
+            )
+        : [],
+    ]);
+    const openSections = new Set(withContent.map((r) => r.sectionId));
+    const openSubjects = new Set(withContent.map((r) => r.subjectId));
 
-    const translations = await this.db
-      .select()
-      .from(catalogSectionTranslations)
-      .where(inArray(catalogSectionTranslations.sectionId, ids));
-
-    const withContent = await this.db
-      .selectDistinct({ sectionId: subjects.sectionId })
-      .from(subjects)
-      .innerJoin(topics, eq(topics.subjectId, subjects.id))
-      .where(
-        and(
-          inArray(subjects.sectionId, ids),
-          eq(subjects.inPublicCatalog, true),
-          isNull(subjects.archivedAt),
-          eq(topics.status, 'published'),
-          isNull(topics.archivedAt),
-        ),
-      );
-    const available = new Set(withContent.map((r) => r.sectionId));
-
-    const items = sections
-      .sort((a, b) => codes.indexOf(a.code) - codes.indexOf(b.code))
-      .flatMap((section): PublicSubjectDto[] => {
-        const tr = pickTranslation(
-          translations.filter((t) => t.sectionId === section.id),
-          locale,
-        );
-        if (!tr) return [];
-        const status = available.has(section.id) ? 'login_required' : 'soon';
-        return [
-          {
-            id: section.id,
-            code: section.code,
-            title: tr.title,
-            description: tr.description,
-            icon: SUBJECT_ICONS[section.code] ?? DEFAULT_ICON,
-            status,
-            href:
-              status === 'login_required'
-                ? `/auth/login?returnTo=${encodeURIComponent(`/learn/sections/${section.id}`)}`
-                : null,
-            locale: tr.locale,
-          },
-        ];
-      });
+    const items = codes.flatMap((code): PublicSubjectDto[] => {
+      const section = sections.find((s) => s.code === code);
+      const subject = section ? undefined : baseSubjects.find((s) => s.code === code);
+      const id = section?.id ?? subject?.id;
+      if (!id) return [];
+      const tr = section
+        ? pickTranslation(
+            sectionTr.filter((t) => t.sectionId === id),
+            locale,
+          )
+        : pickTranslation(
+            subjectTr.filter((t) => t.subjectId === id),
+            locale,
+          );
+      if (!tr) return [];
+      const open = section ? openSections.has(id) : openSubjects.has(id);
+      return [
+        {
+          id,
+          code,
+          title: tr.title,
+          description: tr.description,
+          icon: SUBJECT_ICONS[code] ?? DEFAULT_ICON,
+          status: open ? 'open' : 'soon',
+          href: open ? (section ? `/learn/sections/${id}` : `/learn/subjects/${id}`) : null,
+          locale: tr.locale,
+        },
+      ];
+    });
     return [...items.filter((i) => i.status !== 'soon'), ...items.filter((i) => i.status === 'soon')];
   }
 

@@ -128,12 +128,26 @@ export class LessonService {
       funFact: tr?.funFact ?? null,
       bodyMd: tr?.bodyMd ?? null,
       illustrationUrl: await this.coverUrl(snapshot),
-      sections: [...snapshot.sections]
-        .sort((a, b) => a.position - b.position)
-        .flatMap((s, i) => {
-          const st = pick(s.translations, actualLocale)?.[1];
-          return st ? [{ id: s.id, number: i + 1, title: st.title, body: st.body ?? null }] : [];
-        }),
+      illustrationAlt: tr?.illustrationAlt ?? null,
+      needsReview: tr?.needsReview ?? false,
+      // Разделы — на фактическом языке урока: раздел, которого нет в этом переводе, не показывается
+      // (эталоны U04/U09: в EN шесть разделов, в RU — пять).
+      sections: await Promise.all(
+        [...snapshot.sections]
+          .sort((a, b) => a.position - b.position)
+          .filter((s) => s.translations[actualLocale])
+          .map(async (s, i) => {
+            const st = s.translations[actualLocale]!;
+            return {
+              id: s.id,
+              number: i + 1,
+              title: st.title,
+              body: st.body ?? null,
+              illustrationUrl: await this.cleanMediaUrl(s.illustrationMediaId),
+              illustrationAlt: st.illustrationAlt ?? null,
+            };
+          }),
+      ),
       materials: await this.cleanMaterials(snapshot.materialIds ?? []),
       next,
       locale: actualLocale,
@@ -145,14 +159,17 @@ export class LessonService {
    * сохранении (BR-FILE-06); внешний адрес ученику не отдаётся.
    */
   async coverUrl(snapshot: Pick<TopicSnapshot, 'coverMediaId' | 'coverUrl'>): Promise<string | null> {
-    if (snapshot.coverMediaId) {
-      const [media] = await this.db
-        .select({ key: mediaFiles.storageKey, status: mediaFiles.scanStatus })
-        .from(mediaFiles)
-        .where(eq(mediaFiles.id, snapshot.coverMediaId));
-      return media?.status === 'clean' ? this.storage.downloadUrl(media.key) : null;
-    }
-    return null;
+    return this.cleanMediaUrl(snapshot.coverMediaId);
+  }
+
+  /** Файл нашего хранилища со scan_status = clean — подписанная ссылка на 10 минут (BR-FILE-04); иначе null. */
+  private async cleanMediaUrl(mediaId: string | null | undefined): Promise<string | null> {
+    if (!mediaId) return null;
+    const [media] = await this.db
+      .select({ key: mediaFiles.storageKey, status: mediaFiles.scanStatus })
+      .from(mediaFiles)
+      .where(eq(mediaFiles.id, mediaId));
+    return media?.status === 'clean' ? this.storage.downloadUrl(media.key) : null;
   }
 
   private async cleanMaterials(ids: string[]): Promise<LessonDto['materials']> {

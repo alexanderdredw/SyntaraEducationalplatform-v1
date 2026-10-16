@@ -7,7 +7,7 @@ export type PublicSubjectStatus = (typeof PUBLIC_SUBJECT_STATUSES)[number];
 /** Элемент API-PUB-01. `locale` — фактически отданный язык (API-GEN-03). */
 export class PublicSubjectDto {
   @ApiProperty({ format: 'uuid' }) id: string;
-  @ApiProperty({ description: 'Код раздела каталога (PH-01)' }) code: string;
+  @ApiProperty({ description: 'Код раздела каталога или базового предмета (PH-01)' }) code: string;
   @ApiProperty() title: string;
   @ApiProperty({ nullable: true, type: String }) description: string | null;
   @ApiProperty({ description: 'Имя иконки Lucide' }) icon: string;

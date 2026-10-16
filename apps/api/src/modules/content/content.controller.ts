@@ -34,6 +34,7 @@ import {
   CreatedIdDto,
   GrantAccessBody,
   LessonDto,
+  PublicSubjectPageDto,
   LessonEventBody,
   PublishBody,
   SectionDto,
@@ -285,5 +286,49 @@ export class StudentContentController {
   @ApiNotFoundResponse()
   topic(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<LessonDto> {
     return this.content.topic(req.user!.id, id, locale(req));
+  }
+}
+
+/**
+ * Гость: каталог и «Обзор» базовых уроков без входа (BR-VIS-04, API-PUB-10..13, решение владельца 2026-10-16).
+ * Личные уроки учителей сюда не попадают; квиз, ИИ и прогресс — только после входа.
+ */
+@ApiTags('public')
+@Controller('public')
+export class PublicContentController {
+  constructor(private readonly content: StudentContentService) {}
+
+  /** API-PUB-10 */
+  @Get('catalog')
+  @ApiOkResponse({ type: CatalogDto })
+  catalog(@Req() req: AuthRequest): Promise<CatalogDto> {
+    return this.content.catalog(null, locale(req));
+  }
+
+  /** API-PUB-11 */
+  @Get('sections/:id')
+  @ApiOkResponse({ type: SectionDto })
+  @ApiNotFoundResponse()
+  section(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<SectionDto> {
+    return this.content.section(null, id, locale(req));
+  }
+
+  /** API-PUB-12: не базовый предмет → 404. */
+  @Get('subjects/:id')
+  @ApiOkResponse({ type: PublicSubjectPageDto })
+  @ApiNotFoundResponse()
+  subject(
+    @Param('id', new UuidParamPipe()) id: string,
+    @Req() req: AuthRequest,
+  ): Promise<PublicSubjectPageDto> {
+    return this.content.guestSubject(id, locale(req));
+  }
+
+  /** API-PUB-13: «Обзор» базового урока; quizId = null. Не базовый или не опубликован → 404. */
+  @Get('topics/:id')
+  @ApiOkResponse({ type: LessonDto })
+  @ApiNotFoundResponse()
+  topic(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<LessonDto> {
+    return this.content.guestTopic(id, locale(req));
   }
 }
