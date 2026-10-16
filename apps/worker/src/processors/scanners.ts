@@ -13,23 +13,38 @@ const TIMEOUT_MS = 60_000;
 
 /**
  * Клиент clamd по протоколу INSTREAM: `zINSTREAM\0`, затем куски «длина (4 байта, big-endian) + данные»,
- * завершение — нулевая длина. Ответ: `stream: OK` или `stream: <сигнатура> FOUND`.
+ * завершение — нулевая длина. Ответ (до \0): `stream: OK` или `stream: <сигнатура> FOUND`.
  * Ошибка соединения или ответ `ERROR` — исключение: задание повторится, файл останется pending.
  */
 export function clamdScan(hostPort: string, data: Buffer): Promise<{ infected: boolean }> {
   const [host, port] = hostPort.split(':');
   return new Promise((resolve, reject) => {
     const socket = createConnection({ host: host!, port: Number(port ?? 3310) });
-    const chunks: Buffer[] = [];
+    let reply = Buffer.alloc(0);
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      socket.end();
+      const text = reply.toString('utf8').replace(/\0/g, '').trim();
+      if (text.endsWith('OK')) resolve({ infected: false });
+      else if (text.endsWith('FOUND')) resolve({ infected: true });
+      else reject(new Error('clamd: unexpected reply'));
+    };
     socket.setTimeout(TIMEOUT_MS, () => socket.destroy(new Error('clamd timeout')));
-    socket.on('error', reject);
-    socket.on('data', (c: Buffer) => chunks.push(c));
-    socket.on('end', () => {
-      const reply = Buffer.concat(chunks).toString('utf8').replace(/\0/g, '').trim();
-      if (reply.endsWith('OK')) resolve({ infected: false });
-      else if (reply.endsWith('FOUND')) resolve({ infected: true });
-      else reject(new Error(`clamd: unexpected reply`));
+    socket.on('error', (err) => {
+      if (!settled) {
+        settled = true;
+        reject(err);
+      }
     });
+    // Ответ с префиксом «z» завершается \0. Половинчатое закрытие (end) до ответа clamd воспринимает как
+    // обрыв и закрывает соединение без ответа, поэтому завершающий блок отправляется обычной записью.
+    socket.on('data', (c: Buffer) => {
+      reply = Buffer.concat([reply, c]);
+      if (reply.includes(0)) finish();
+    });
+    socket.on('end', finish);
     socket.on('connect', () => {
       socket.write('zINSTREAM\0');
       for (let i = 0; i < data.length; i += CHUNK) {
@@ -39,7 +54,7 @@ export function clamdScan(hostPort: string, data: Buffer): Promise<{ infected: b
         socket.write(size);
         socket.write(part);
       }
-      socket.end(Buffer.alloc(4));
+      socket.write(Buffer.alloc(4));
     });
   });
 }
