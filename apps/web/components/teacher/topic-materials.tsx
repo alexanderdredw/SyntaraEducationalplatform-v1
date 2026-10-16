@@ -113,7 +113,9 @@ export function MaterialsList({
                   <span className="min-w-0 flex-1 truncate">{m.name}</span>
                 )}
                 <span className="text-xs text-[var(--text-muted)]">
-                  {t('fileSize', { size: size.format(m.size / 1_048_576) })}
+                  {m.size < 1_048_576
+                    ? t('fileSizeKb', { size: size.format(Math.max(m.size / 1024, 0.1)) })
+                    : t('fileSize', { size: size.format(m.size / 1_048_576) })}
                 </span>
                 <StatusPill
                   tone={

@@ -7,8 +7,7 @@ import { type Locale, LOCALES } from '@syntara/shared';
 import { cn, SegmentedControl } from '@syntara/ui';
 import { AppLink } from '../app-link';
 
-/** Ширина форм кабинета (3.1: ~664 px). */
-export const CABINET_FORM_WIDTH = 'max-w-[664px]';
+export { CABINET_FORM_WIDTH } from './layout';
 
 /** Заголовок страницы кабинета с ссылкой «назад» справа (эталоны T05, T06). */
 export function PageHeader({

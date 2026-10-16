@@ -656,6 +656,7 @@
     "teacher.topic.previewTitle": "needs_review",
     "teacher.topic.unsaved": "needs_review",
     "teacher.topic.fileSize": "needs_review",
+    "teacher.topic.fileSizeKb": "needs_review",
     "teacher.lesson.number": "needs_review",
     "teacher.lesson.questions": "needs_review",
     "teacher.lesson.next": "needs_review",

@@ -2,7 +2,7 @@
 
 import { forwardRef, useState, type TextareaHTMLAttributes } from 'react';
 import { useTranslations } from 'next-intl';
-import { cn, fieldClass } from '@syntara/ui';
+import { cn, fieldBaseClass } from '@syntara/ui';
 import { SafeMarkdown } from '../markdown/safe-markdown';
 
 /**
@@ -55,7 +55,7 @@ export const MarkdownField = forwardRef<
         value={value}
         hidden={preview}
         aria-describedby={`${id}-hint`}
-        className={cn(fieldClass, 'min-h-56 font-mono text-sm leading-6', className)}
+        className={cn(fieldBaseClass, 'min-h-56 font-mono text-sm leading-6', className)}
         {...props}
       />
       {preview ? (

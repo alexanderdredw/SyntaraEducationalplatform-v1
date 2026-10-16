@@ -245,7 +245,7 @@ export function QuestionForm({
             {...form.register(`translations.${lang}.text`)}
             lang={lang}
             maxLength={1000}
-            className="min-h-20"
+           
           />
         </Field>
 
@@ -326,7 +326,7 @@ export function QuestionForm({
             {...form.register(`translations.${lang}.explanation`)}
             lang={lang}
             maxLength={2000}
-            className="min-h-20"
+           
           />
         </Field>
       </div>

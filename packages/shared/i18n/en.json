@@ -860,7 +860,8 @@
       "noVersions": "No versions yet — publish the topic",
       "previewTitle": "As a student: {title}",
       "unsaved": "There are unsaved changes",
-      "fileSize": "{size} MB"
+      "fileSize": "{size} MB",
+      "fileSizeKb": "{size} KB"
     },
     "lesson": {
       "number": "Topic {number}",

@@ -16,7 +16,7 @@ export type Lesson = components['schemas']['LessonDto'];
 export function LessonView({ lesson }: { lesson: Lesson }) {
   const t = useTranslations('teacher.lesson');
   return (
-    <article lang={lesson.locale} className="flex flex-col gap-5" data-testid="lesson-view">
+    <article lang={lesson.locale} className="@container flex flex-col gap-5" data-testid="lesson-view">
       <p className="text-sm text-[var(--text-muted)]">
         ← {lesson.subject.title} / {lesson.title}
       </p>
@@ -26,7 +26,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           {t('number', { number: lesson.number })} · {t('questions', { count: lesson.questionsCount })}
         </p>
       </header>
-      <div className="grid gap-5 md:grid-cols-[1fr_auto]">
+      {/* Ширина колонок — по ширине самого урока (окно предпросмотра, страница ученика). */}
+      <div className="grid gap-5 @2xl:grid-cols-[1fr_auto]">
         <div className="flex min-w-0 flex-col gap-4">
           {lesson.summary ? <p className="text-[var(--text-muted)]">{lesson.summary}</p> : null}
           {lesson.bodyMd ? <SafeMarkdown>{lesson.bodyMd}</SafeMarkdown> : null}
@@ -36,7 +37,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           <img
             src={lesson.illustrationUrl}
             alt=""
-            className="h-[190px] w-full rounded-[var(--radius-field)] object-cover md:w-[336px]"
+            className="h-[190px] w-full rounded-[var(--radius-field)] object-cover @2xl:w-[336px]"
           />
         ) : null}
       </div>

@@ -860,7 +860,8 @@
       "noVersions": "Версий пока нет — опубликуйте тему",
       "previewTitle": "Глазами ученика: {title}",
       "unsaved": "Есть несохранённые изменения",
-      "fileSize": "{size} МБ"
+      "fileSize": "{size} МБ",
+      "fileSizeKb": "{size} КБ"
     },
     "lesson": {
       "number": "Тема {number}",

@@ -16,6 +16,7 @@ export function Modal({
   closeLabel,
   trigger,
   children,
+  wide = false,
 }: {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -24,6 +25,8 @@ export function Modal({
   closeLabel: string;
   trigger?: ReactNode;
   children?: ReactNode;
+  /** Широкое окно — например, предпросмотр урока (ширина урока ~982 px, 3.1). */
+  wide?: boolean;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -32,7 +35,7 @@ export function Modal({
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/60" />
         <Dialog.Content
           {...(description ? {} : { 'aria-describedby': undefined })}
-          className="fixed left-1/2 top-1/2 z-50 w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text)] shadow-popover"
+          className={`fixed left-1/2 top-1/2 z-50 ${wide ? 'w-[min(94vw,1000px)]' : 'w-[min(92vw,560px)]'} -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 text-[var(--text)] shadow-popover`}
         >
           <div className="flex items-start justify-between gap-4">
             <Dialog.Title className="text-lg font-semibold">{title}</Dialog.Title>

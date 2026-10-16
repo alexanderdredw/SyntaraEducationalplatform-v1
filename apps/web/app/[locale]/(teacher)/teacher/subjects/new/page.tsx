@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { CABINET_FORM_WIDTH, PageHeader } from '@/components/teacher/parts';
+import { CABINET_FORM_WIDTH } from '@/components/teacher/layout';
+import { PageHeader } from '@/components/teacher/parts';
 import { SubjectForm } from '@/components/teacher/subject-form';
 
 /** /teacher/subjects/new: «Новый предмет» (8.3.1, T05). */

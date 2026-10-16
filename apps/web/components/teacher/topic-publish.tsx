@@ -158,6 +158,7 @@ export function PublishPanel({
         open={preview !== null}
         onOpenChange={(open) => !open && setPreview(null)}
         title={t('previewTitle', { title: preview?.title || title })}
+        wide
         closeLabel={tc('close')}
       >
         <div className="max-h-[70vh] overflow-y-auto pr-1">

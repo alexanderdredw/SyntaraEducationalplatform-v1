@@ -398,6 +398,7 @@
     "teacher.quiz.archive": "Кнопка архивирования вопроса — текст не задан",
     "teacher.quiz.archiveConfirm": "Подтверждение архивирования — текст не задан",
     "teacher.quiz.archived": "Объявление после архивирования — текст не задан",
-    "teacher.topic.fileSize": "Размер файла материала — формат не задан"
+    "teacher.topic.fileSize": "Размер файла материала — формат не задан",
+    "teacher.topic.fileSizeKb": "Размер файла меньше 1 МБ — формат не задан"
   }
 }

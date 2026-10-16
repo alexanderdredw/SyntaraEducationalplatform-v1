@@ -18,8 +18,10 @@ import { cn } from './cn';
  * Состояния: hover — рамка светлее; focus — синий контур со свечением (tokens.css); ошибка — рамка --danger;
  * disabled — приглушено. Используется и полями вне Field (форма ученика, выбор школы, очереди staff).
  */
-export const fieldClass =
-  'min-h-[var(--field-h)] w-full rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] px-4 py-2 text-base text-[var(--text)] placeholder:text-[var(--text-muted)] enabled:hover:not-aria-[invalid=true]:border-[var(--border-strong)] focus-visible:border-[var(--accent)] disabled:opacity-60 aria-[invalid=true]:border-[var(--danger)]';
+/** Вид поля без высоты — для многострочных полей со своей минимальной высотой. */
+export const fieldBaseClass =
+  'w-full rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] px-4 py-2 text-base text-[var(--text)] placeholder:text-[var(--text-muted)] enabled:hover:not-aria-[invalid=true]:border-[var(--border-strong)] focus-visible:border-[var(--accent)] disabled:opacity-60 aria-[invalid=true]:border-[var(--danger)]';
+export const fieldClass = `min-h-[var(--field-h)] ${fieldBaseClass}`;
 
 interface ControlA11yProps {
   id?: string;
@@ -91,7 +93,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
   function Textarea({ className, ...props }, ref) {
-    return <textarea ref={ref} className={cn(fieldClass, 'min-h-32', className)} {...props} />;
+    return <textarea ref={ref} className={cn(fieldBaseClass, 'min-h-32', className)} {...props} />;
   },
 );
 
@@ -163,7 +165,7 @@ export function Checkbox({
         checked={checked}
         onCheckedChange={(v) => onCheckedChange(v === true)}
         aria-describedby={description ? `${id}-desc` : undefined}
-        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-[var(--radius-item)] border border-[var(--border)] bg-[var(--field)] hover:border-[var(--border-strong)] data-[state=checked]:border-[var(--accent)] data-[state=checked]:bg-[var(--accent)]"
+        className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-[var(--radius-item)] border border-[var(--border-strong)] bg-[var(--field)] hover:border-[var(--text-muted)] data-[state=checked]:border-[var(--accent)] data-[state=checked]:bg-[var(--accent)]"
       >
         <CheckboxPrimitive.Indicator>
           <Check aria-hidden="true" className="size-4 text-white" />
@@ -213,7 +215,7 @@ export function Radio({
           <RadioGroup.Item
             id={`${id}-${o.value}`}
             value={o.value}
-            className="flex size-6 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--field)] hover:border-[var(--border-strong)] data-[state=checked]:border-[var(--accent)]"
+            className="flex size-6 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--field)] hover:border-[var(--text-muted)] data-[state=checked]:border-[var(--accent)]"
           >
             <RadioGroup.Indicator className="size-3 rounded-full bg-[var(--accent)]" />
           </RadioGroup.Item>

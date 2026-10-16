@@ -11,6 +11,7 @@ export {
 } from './navigation';
 export {
   Field,
+  fieldBaseClass,
   fieldClass,
   Input,
   Textarea,

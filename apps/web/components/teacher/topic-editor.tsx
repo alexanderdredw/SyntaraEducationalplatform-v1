@@ -235,7 +235,7 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
                 {...form.register(`translations.${lang}.funFact`)}
                 lang={lang}
                 maxLength={500}
-                className="min-h-20"
+               
               />
             </Field>
             <Controller
