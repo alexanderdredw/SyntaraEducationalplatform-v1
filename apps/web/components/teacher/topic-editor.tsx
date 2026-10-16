@@ -231,12 +231,7 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
               <Textarea {...form.register(`translations.${lang}.description`)} lang={lang} maxLength={1000} />
             </Field>
             <Field id={`topic-funFact-${lang}`} label={t('funFact')} error={errorText(tl?.funFact?.message)}>
-              <Textarea
-                {...form.register(`translations.${lang}.funFact`)}
-                lang={lang}
-                maxLength={500}
-               
-              />
+              <Textarea {...form.register(`translations.${lang}.funFact`)} lang={lang} maxLength={500} />
             </Field>
             <Controller
               control={form.control}

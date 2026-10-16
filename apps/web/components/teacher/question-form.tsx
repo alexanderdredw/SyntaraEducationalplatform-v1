@@ -241,12 +241,7 @@ export function QuestionForm({
           label={t('text')}
           error={errorText(errors.translations?.[lang]?.text?.message)}
         >
-          <Textarea
-            {...form.register(`translations.${lang}.text`)}
-            lang={lang}
-            maxLength={1000}
-           
-          />
+          <Textarea {...form.register(`translations.${lang}.text`)} lang={lang} maxLength={1000} />
         </Field>
 
         {values.type === 'single_choice' ? (
@@ -322,12 +317,7 @@ export function QuestionForm({
           label={t('explanation')}
           error={errorText(errors.translations?.[lang]?.explanation?.message)}
         >
-          <Textarea
-            {...form.register(`translations.${lang}.explanation`)}
-            lang={lang}
-            maxLength={2000}
-           
-          />
+          <Textarea {...form.register(`translations.${lang}.explanation`)} lang={lang} maxLength={2000} />
         </Field>
       </div>
 
