@@ -4,7 +4,20 @@
     {
       "key": "catalog.public_subjects",
       "note": "PH-01",
-      "value": ["biology", "chemistry", "physics"]
+      "value": [
+        "biology",
+        "chemistry",
+        "physics",
+        "geography",
+        "mathematics",
+        "algebra",
+        "geometry",
+        "informatics",
+        "history-of-kazakhstan",
+        "kazakh-language",
+        "russian-language",
+        "english-language"
+      ]
     },
     {
       "key": "home.subjects_subtitle",

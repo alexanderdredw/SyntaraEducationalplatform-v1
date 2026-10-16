@@ -1,12 +1,10 @@
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { type Locale } from '@syntara/shared';
 import { type Database } from '../index';
 import {
   answerOptions,
   answerOptionTranslations,
   assignments,
-  catalogSections,
-  catalogSectionTranslations,
   classes,
   classMemberships,
   classSubjectAccess,
@@ -24,8 +22,6 @@ import {
   submissions,
   topicMastery,
   topics,
-  topicSections,
-  topicSectionTranslations,
   topicTranslations,
   topicVersions,
   userPreferences,
@@ -33,7 +29,7 @@ import {
   users,
   xpLedger,
 } from '../schema';
-import { anatomyQuizId, anatomyTopicId, DEMO_IDS, generalBiologyTopicId } from './demo';
+import { baseIds } from './demo';
 import { assertNotProduction, hashPassword, rows } from './helpers';
 import { seedId } from './ids';
 
@@ -67,13 +63,7 @@ export const VISUAL_IDS = {
   class7: seedId('visual:class:7'),
   subjectHeart: seedId('visual:subject:heart'),
   subjectBotany: seedId('visual:subject:botany'),
-  subjectChemistry: seedId('visual:subject:chemistry'),
-  subjectMath: seedId('visual:subject:math'),
-  subjectEnglish: seedId('visual:subject:english'),
   topicHowHeartWorks: seedId('visual:topic:how-heart-works'),
-  topicRespiratory: anatomyTopicId('respiratory'),
-  topicDigestive: anatomyTopicId('digestive'),
-  topicGeneralBiology1: generalBiologyTopicId(1),
   topicPhotosynthesis: seedId('visual:topic:photosynthesis'),
   topicPercents: seedId('visual:topic:percents'),
   topicWordOrder: seedId('visual:topic:word-order'),
@@ -82,6 +72,8 @@ export const VISUAL_IDS = {
 export async function seedVisual(db: Database): Promise<void> {
   assertNotProduction('visual');
   const I = VISUAL_IDS;
+  // Базовая программа (каталог, «Анатомия человека», предметы U13) — из content/ через seed demo (BR-CNT-01).
+  const B = await baseIds(db);
   await db.transaction(async (tx) => {
     // Пользователь «Alexandr» (учитель и ученик), школа «Школа-гимназия №73».
     await tx.insert(schools).values({ id: I.school, name: 'Школа-гимназия №73' }).onConflictDoNothing();
@@ -119,86 +111,10 @@ export async function seedVisual(db: Database): Promise<void> {
       })
       .onConflictDoNothing();
 
-    // U13: разделы каталога (EN — дословно из REQ-ST-CAT-02).
-    const sections: Array<[string, number, Record<Locale, { title: string; description: string }>]> = [
-      [
-        'biology',
-        1,
-        {
-          ru: { title: 'Биология', description: 'Анатомия человека' },
-          kk: { title: 'Биология', description: 'Адам анатомиясы' },
-          en: { title: 'Biology', description: 'Human Anatomy' },
-        },
-      ],
-      [
-        'natural_sciences',
-        4,
-        {
-          ru: { title: 'Естественные науки', description: 'Физика · География' },
-          kk: { title: 'Жаратылыстану ғылымдары', description: 'Физика · География' },
-          en: { title: 'Natural sciences', description: 'Physics · Geography' },
-        },
-      ],
-      [
-        'exact_sciences',
-        5,
-        {
-          ru: { title: 'Точные науки', description: 'Математика · Алгебра · Геометрия · Информатика' },
-          kk: { title: 'Нақты ғылымдар', description: 'Математика · Алгебра · Геометрия · Информатика' },
-          en: { title: 'Exact sciences', description: 'Mathematics · Algebra · Geometry · Informatics' },
-        },
-      ],
-      [
-        'humanities',
-        6,
-        {
-          ru: { title: 'Гуманитарные науки', description: 'История Казахстана' },
-          kk: { title: 'Гуманитарлық ғылымдар', description: 'Қазақстан тарихы' },
-          en: { title: 'Humanities', description: 'History of Kazakhstan' },
-        },
-      ],
-      [
-        'languages',
-        7,
-        {
-          ru: { title: 'Языки', description: 'Казахский язык · Русский язык · Английский язык' },
-          kk: { title: 'Тілдер', description: 'Қазақ тілі · Орыс тілі · Ағылшын тілі' },
-          en: { title: 'Languages', description: 'Kazakh language · Russian language · English language' },
-        },
-      ],
-    ];
-    for (const [code, position, tr] of sections) {
-      const sectionId = seedId(`section:${code}`);
-      await tx.insert(catalogSections).values({ id: sectionId, code, position }).onConflictDoNothing();
-      for (const r of rows('sectionId', sectionId, tr)) {
-        await tx
-          .insert(catalogSectionTranslations)
-          .values(r)
-          .onConflictDoUpdate({
-            target: [catalogSectionTranslations.sectionId, catalogSectionTranslations.locale],
-            set: { title: r.title, description: r.description },
-          });
-      }
-    }
+    // U03 («11 систем организма») и U13 (описание «Биологии») — тексты базовой программы из content/ (BR-CNT-01):
+    // seed не переписывает базовые уроки, иначе повторный импорт возвращал бы их.
 
-    // U03: «Анатомия человека» — «11 систем организма».
-    for (const [locale, description] of [
-      ['ru', '11 систем организма'],
-      ['kk', 'Ағзаның 11 жүйесі'],
-      ['en', '11 body systems'],
-    ] as const) {
-      await tx
-        .update(subjectTranslations)
-        .set({ description })
-        .where(
-          and(
-            eq(subjectTranslations.subjectId, DEMO_IDS.subjectAnatomy),
-            eq(subjectTranslations.locale, locale),
-          ),
-        );
-    }
-
-    // Предметы: T05 (учитель, флаг каталога выключен), U13 «ботаника» и «Химия», темы T10.
+    // Предметы учителя: T05 (флаг каталога выключен) и U13 «ботаника». «Химия», «Математика», «Английский» — базовые.
     const subjectSeeds: Array<{
       id: string;
       ownerId?: string;
@@ -223,34 +139,6 @@ export async function seedVisual(db: Database): Promise<void> {
         ownerId: I.alexandr,
         tr: { ru: { title: 'ботаника', description: 'растение, животные' } },
       },
-      {
-        id: I.subjectChemistry,
-        isOfficial: true,
-        inPublicCatalog: true,
-        tr: {
-          ru: { title: 'Химия', description: 'Элементы, реакции, молекулярные структуры' },
-          kk: { title: 'Химия', description: 'Элементтер, реакциялар, молекулалық құрылымдар' },
-          en: { title: 'Chemistry', description: 'Elements, reactions, molecular structures' },
-        },
-      },
-      {
-        id: I.subjectMath,
-        sectionCode: 'exact_sciences',
-        isOfficial: true,
-        inPublicCatalog: true,
-        tr: { ru: { title: 'Математика' }, kk: { title: 'Математика' }, en: { title: 'Mathematics' } },
-      },
-      {
-        id: I.subjectEnglish,
-        sectionCode: 'languages',
-        isOfficial: true,
-        inPublicCatalog: true,
-        tr: {
-          ru: { title: 'Английский язык' },
-          kk: { title: 'Ағылшын тілі' },
-          en: { title: 'English language' },
-        },
-      },
     ];
     for (const s of subjectSeeds) {
       await tx
@@ -266,43 +154,6 @@ export async function seedVisual(db: Database): Promise<void> {
       await tx
         .insert(subjectTranslations)
         .values(rows('subjectId', s.id, s.tr))
-        .onConflictDoNothing();
-    }
-
-    // U04/U09/U11/U12: тема «Сердечно-сосудистая система» — описание и разделы 01–05 (+06 в EN).
-    const cardioSections: Array<{ ru?: string; en: string }> = [
-      { ru: 'Основные функции', en: 'Main Functions' },
-      { ru: 'Состав сердечно-сосудистой системы', en: 'Components of the Cardiovascular System' },
-      { ru: 'Строение сердца', en: 'Structure of the Heart' },
-      { ru: 'Круги кровообращения', en: 'Circulatory Pathways' },
-      { ru: 'Кровеносные сосуды и давление', en: 'Blood Vessels and Pressure Regulation' },
-      { en: 'Microcirculation' },
-    ];
-    for (const [locale, summary] of [
-      ['ru', 'Сердце и сосуды, обеспечивающие кровообращение.'],
-      ['en', 'The heart and vessels that keep blood circulating.'],
-    ] as const) {
-      await tx
-        .update(topicTranslations)
-        .set({ summary })
-        .where(
-          and(eq(topicTranslations.topicId, DEMO_IDS.topicCardio), eq(topicTranslations.locale, locale)),
-        );
-    }
-    for (const [i, section] of cardioSections.entries()) {
-      const sectionId = seedId(`visual:cardio-section:${i + 1}`);
-      await tx
-        .insert(topicSections)
-        .values({ id: sectionId, topicId: DEMO_IDS.topicCardio, position: i + 1 })
-        .onConflictDoNothing();
-      await tx
-        .insert(topicSectionTranslations)
-        .values(
-          rows('sectionId', sectionId, {
-            ...(section.ru ? { ru: { title: section.ru } } : {}),
-            en: { title: section.en },
-          }),
-        )
         .onConflictDoNothing();
     }
 
@@ -331,14 +182,14 @@ export async function seedVisual(db: Database): Promise<void> {
       },
       {
         key: 'percents',
-        subjectId: I.subjectMath,
+        subjectId: B.subjectMath,
         position: 1,
         status: 'published',
         tr: { ru: { title: 'Проценты' }, kk: { title: 'Пайыздар' }, en: { title: 'Percentages' } },
       },
       {
         key: 'word-order',
-        subjectId: I.subjectEnglish,
+        subjectId: B.subjectEnglish,
         position: 1,
         status: 'published',
         tr: { ru: { title: 'Порядок слов' }, kk: { title: 'Сөз тәртібі' }, en: { title: 'Word order' } },
@@ -434,11 +285,11 @@ export async function seedVisual(db: Database): Promise<void> {
 
     // Выдача предметов классу «7» (ученик Alexandr — в классе «7», решение владельца).
     for (const subjectId of [
-      DEMO_IDS.subjectAnatomy,
-      DEMO_IDS.subjectGeneralBiology,
+      B.subjectAnatomy,
+      B.subjectGeneralBiology,
       I.subjectBotany,
-      I.subjectMath,
-      I.subjectEnglish,
+      B.subjectMath,
+      B.subjectEnglish,
     ]) {
       await tx
         .insert(classSubjectAccess)
@@ -453,11 +304,11 @@ export async function seedVisual(db: Database): Promise<void> {
 
     // T10: результаты Alexandr — 33 %, 43 %, 43 %, 67 %, 100 %; последняя активность 05.09.2026 (U08).
     const results: Array<[string, string, string, string, number]> = [
-      ['cardio', DEMO_IDS.subjectAnatomy, DEMO_IDS.topicCardio, DEMO_IDS.quizCardio, 33.33],
-      ['respiratory', DEMO_IDS.subjectAnatomy, I.topicRespiratory, anatomyQuizId('respiratory'), 42.86],
-      ['digestive', DEMO_IDS.subjectAnatomy, I.topicDigestive, anatomyQuizId('digestive'), 42.86],
-      ['percents', I.subjectMath, I.topicPercents, seedId('visual:quiz:percents'), 66.67],
-      ['word-order', I.subjectEnglish, I.topicWordOrder, seedId('visual:quiz:word-order'), 100],
+      ['cardio', B.subjectAnatomy, B.topicCardio, B.quizCardio, 33.33],
+      ['respiratory', B.subjectAnatomy, B.topicRespiratory, B.quizRespiratory, 42.86],
+      ['digestive', B.subjectAnatomy, B.topicDigestive, B.quizDigestive, 42.86],
+      ['percents', B.subjectMath, I.topicPercents, seedId('visual:quiz:percents'), 66.67],
+      ['word-order', B.subjectEnglish, I.topicWordOrder, seedId('visual:quiz:word-order'), 100],
     ];
     for (const [day, [key, subjectId, topicId, quizId, percent]] of results.entries()) {
       const finishedAt = at(`2026-09-0${day + 1}T18:00:00`);
@@ -498,20 +349,6 @@ export async function seedVisual(db: Database): Promise<void> {
         })
         .onConflictDoNothing();
     }
-
-    // U08: «из 41 темы» — у ученика есть событие и в «Общей биологии» (11 + 28 + 1 + 1 опубликованных тем).
-    await tx
-      .insert(learningEvents)
-      .values({
-        id: seedId('visual:event:general-biology-1'),
-        studentId: I.alexandr,
-        type: 'lesson_opened',
-        subjectId: DEMO_IDS.subjectGeneralBiology,
-        topicId: I.topicGeneralBiology1,
-        occurredAt: at('2026-09-04T12:00:00'),
-        idempotencyKey: `lesson:${I.topicGeneralBiology1}:2026-09-04`,
-      })
-      .onConflictDoNothing();
 
     // U01/U10: 20 XP, уровень 1 «Новичок», серия 1; бейджи «Первый шаг» и «Тема освоена».
     const wordOrderEvent = seedId('visual:event:word-order');

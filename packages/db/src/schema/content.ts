@@ -47,9 +47,14 @@ export const subjects = pgTable(
     isOfficial: boolean('is_official').notNull().default(false),
     inPublicCatalog: boolean('in_public_catalog').notNull().default(false),
     archivedAt: tstz('archived_at'),
+    /** Постоянный код базового предмета из content/ (BR-CNT-04); у предметов учителей — NULL. */
+    code: text('code').unique(),
     ...timestamps,
   },
-  (t) => [check('subjects_official_or_owner', sql`${t.isOfficial} OR ${t.ownerId} IS NOT NULL`)],
+  (t) => [
+    check('subjects_official_or_owner', sql`${t.isOfficial} OR ${t.ownerId} IS NOT NULL`),
+    check('subjects_code_official', sql`${t.code} IS NULL OR ${t.isOfficial}`),
+  ],
 );
 
 export const subjectTranslations = pgTable(
@@ -122,6 +127,8 @@ export const topics = pgTable(
     publishedAt: tstz('published_at'),
     publishedVersionId: uuid('published_version_id').references((): AnyPgColumn => topicVersions.id),
     archivedAt: tstz('archived_at'),
+    /** Постоянный код базовой темы (BR-CNT-04); у тем учителей — NULL. */
+    code: text('code').unique(),
     ...timestamps,
   },
   (t) => [index('ix_topics_subject').on(t.subjectId, t.position)],
@@ -137,6 +144,8 @@ export const topicTranslations = pgTable(
     funFact: text('fun_fact'),
     bodyMd: text('body_md'),
     summary: text('summary'),
+    /** Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05). */
+    needsReview: boolean('needs_review').notNull().default(false),
   },
   (t) => [
     primaryKey({ columns: [t.topicId, t.locale] }),
@@ -154,6 +163,8 @@ export const topicSections = pgTable('topic_sections', {
     .references(() => topics.id),
   position: integer('position').notNull(),
   illustrationMediaId: uuid('illustration_media_id').references(() => mediaFiles.id),
+  /** Постоянный код раздела базовой темы (BR-CNT-04). */
+  code: text('code').unique(),
   ...timestamps,
 });
 

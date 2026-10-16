@@ -1,0 +1,83 @@
+# Квиз темы (BR-QZ-*). Формат — docs/CONTENT_GUIDE.md.
+questions:
+  - code: aorta
+    type: single_choice
+    difficulty: medium
+    # Пробный вопрос на главной (PH-02, BR-QZ-09).
+    demo: true
+    text:
+      ru: Какой сосуд несёт кровь от сердца к телу?
+      kk: Қай қан тамыры қанды жүректен денеге тасымалдайды?
+      en: Which vessel carries blood from the heart to the body?
+    explanation:
+      ru: 'Аорта — главная артерия: по ней кровь из левого желудочка идёт ко всем органам тела.'
+      kk: 'Қолқа — басты артерия: ол арқылы қан сол жақ қарыншадан дененің барлық мүшелеріне барады.'
+      en: 'The aorta is the main artery: blood flows through it from the left ventricle to all organs of the body.'
+    options:
+      - text: { ru: Аорта, kk: Қолқа, en: Aorta }
+        correct: true
+      - text: { ru: Полая вена, kk: Қуыс вена, en: Vena cava }
+      - text: { ru: Капилляр, kk: Капилляр, en: Capillary }
+      - text: { ru: Лимфатический сосуд, kk: Лимфа тамыры, en: Lymphatic vessel }
+
+  - code: chambers
+    type: text_input
+    difficulty: easy
+    text:
+      ru: Сколько камер в сердце человека? Впиши число.
+      kk: Адам жүрегінде неше камера бар? Санды жаз.
+      en: How many chambers does the human heart have? Type a number.
+    explanation:
+      ru: Два предсердия и два желудочка — всего четыре камеры.
+      kk: Екі жүрекше және екі қарынша — барлығы төрт камера.
+      en: Two atria and two ventricles — four chambers in total.
+    answer: '4'
+
+  - code: left-ventricle
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая камера сердца выталкивает кровь в большой круг кровообращения?
+      kk: Жүректің қай камерасы қанды үлкен қан айналым шеңберіне айдайды?
+      en: Which heart chamber pumps blood into the systemic circulation?
+    explanation:
+      ru: 'Левый желудочек — самая сильная камера: через аорту он гонит кровь по всему телу.'
+      kk: 'Сол жақ қарынша — ең күшті камера: ол қолқа арқылы қанды бүкіл денеге айдайды.'
+      en: 'The left ventricle is the strongest chamber: through the aorta it pumps blood around the whole body.'
+    options:
+      - text: { ru: Левый желудочек, kk: Сол жақ қарынша, en: Left ventricle }
+        correct: true
+      - text: { ru: Правый желудочек, kk: Оң жақ қарынша, en: Right ventricle }
+      - text: { ru: Левое предсердие, kk: Сол жақ жүрекше, en: Left atrium }
+      - text: { ru: Правое предсердие, kk: Оң жақ жүрекше, en: Right atrium }
+
+  - code: veins-direction
+    type: true_false
+    difficulty: easy
+    text:
+      ru: Вены несут кровь от сердца к органам.
+      kk: Веналар қанды жүректен мүшелерге тасымалдайды.
+      en: Veins carry blood from the heart to the organs.
+    explanation:
+      ru: Неверно. От сердца кровь несут артерии, а вены возвращают её к сердцу.
+      kk: Дұрыс емес. Қанды жүректен артериялар алып кетеді, ал веналар оны жүрекке қайтарады.
+      en: False. Arteries carry blood away from the heart, and veins bring it back.
+    correct: false
+
+  - code: pulmonary
+    type: single_choice
+    difficulty: hard
+    text:
+      ru: В каком круге кровообращения кровь насыщается кислородом?
+      kk: Қан қай қан айналым шеңберінде оттегімен қанығады?
+      en: In which circulation does blood become rich in oxygen?
+    explanation:
+      ru: В малом (лёгочном) круге кровь проходит через капилляры лёгких и получает кислород.
+      kk: Кіші (өкпе) шеңберде қан өкпе капиллярлары арқылы өтіп, оттегі алады.
+      en: In the pulmonary circulation blood passes through the lung capillaries and picks up oxygen.
+    options:
+      - text: { ru: В малом (лёгочном), kk: Кіші (өкпе) шеңберде, en: Pulmonary circulation }
+        correct: true
+      - text: { ru: В большом, kk: Үлкен шеңберде, en: Systemic circulation }
+      - text: { ru: В обоих одинаково, kk: Екеуінде бірдей, en: Equally in both }
+      - text: { ru: Ни в одном, kk: Ешқайсысында, en: In neither }

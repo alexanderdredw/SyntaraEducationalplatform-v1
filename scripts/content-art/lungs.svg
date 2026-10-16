@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 672 380" width="672" height="380">
+  <!-- Syntara: собственная схема «Дыхательная система» (лицензия: own). Слева на схеме — правое лёгкое. -->
+  <!-- правое лёгкое: три доли -->
+  <path d="M296 70c-60 0-120 70-128 170-4 50 10 80 50 80 30 0 78-12 92-30V96c0-16-4-26-14-26z" fill="#f9a8b4" fill-opacity=".55" stroke="#f472b6" stroke-width="4"/>
+  <path d="M190 176c40-6 72-24 104-56M182 250c50 2 90-12 116-40" fill="none" stroke="#f472b6" stroke-width="3"/>
+  <!-- левое лёгкое: две доли и вырезка для сердца -->
+  <path d="M376 70c60 0 120 70 128 170 4 50-10 80-50 80-24 0-44-4-60-12 10-30-4-56-26-62V96c0-16 4-26 8-26z" fill="#f9a8b4" fill-opacity=".55" stroke="#f472b6" stroke-width="4"/>
+  <path d="M378 140c40 20 82 60 116 104" fill="none" stroke="#f472b6" stroke-width="3"/>
+  <!-- трахея с хрящевыми полукольцами -->
+  <rect x="320" y="10" width="32" height="104" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
+  <path d="M322 26h28M322 42h28M322 58h28M322 74h28M322 90h28" stroke="#94a3b8" stroke-width="4"/>
+  <!-- бронхи и бронхиолы -->
+  <g fill="none" stroke="#64748b" stroke-width="8" stroke-linecap="round">
+    <path d="M336 112l-46 40M336 112l46 40"/>
+  </g>
+  <g fill="none" stroke="#64748b" stroke-width="4" stroke-linecap="round">
+    <path d="M290 152l-40 30M290 152l-14 56M250 182l-40 6M250 182l-18 40M276 208l-30 44M276 208l6 52"/>
+    <path d="M382 152l40 30M382 152l14 56M422 182l40 6M422 182l18 40M396 208l30 44"/>
+  </g>
+  <!-- диафрагма -->
+  <path d="M130 352c60-58 140-74 206-74s146 16 206 74" fill="none" stroke="#c084fc" stroke-width="10" stroke-linecap="round"/>
+</svg>

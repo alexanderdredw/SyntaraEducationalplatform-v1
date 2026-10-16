@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+  <!-- Syntara: собственная схема «Артерия, вена, капилляр» (лицензия: own). -->
+  <!-- артерия: толстая упругая стенка -->
+  <rect x="40" y="30" width="560" height="84" rx="42" fill="#b91c1c"/>
+  <rect x="40" y="52" width="560" height="40" rx="20" fill="#fca5a5"/>
+  <path d="M90 72h120M260 72h120M430 72h120" stroke="#e5484d" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+  <!-- вена: тонкая стенка, широкий просвет, клапаны -->
+  <rect x="40" y="146" width="560" height="84" rx="42" fill="#2563eb"/>
+  <rect x="40" y="154" width="560" height="68" rx="34" fill="#bfdbfe"/>
+  <path d="M220 154c18 14 30 26 40 34M220 222c18-14 30-26 40-34M420 154c18 14 30 26 40 34M420 222c18-14 30-26 40-34" fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round"/>
+  <path d="M90 188h80M290 188h80M490 188h70" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+  <!-- капилляр: стенка в один слой клеток, эритроциты по одному -->
+  <rect x="40" y="276" width="560" height="40" rx="20" fill="none" stroke="#a78bfa" stroke-width="4"/>
+  <g fill="#e5484d">
+    <ellipse cx="110" cy="296" rx="13" ry="11"/><ellipse cx="190" cy="296" rx="13" ry="11"/><ellipse cx="270" cy="296" rx="13" ry="11"/>
+    <ellipse cx="350" cy="296" rx="13" ry="11"/><ellipse cx="430" cy="296" rx="13" ry="11"/><ellipse cx="510" cy="296" rx="13" ry="11"/>
+  </g>
+  <g fill="#fecaca">
+    <ellipse cx="110" cy="296" rx="5" ry="4"/><ellipse cx="190" cy="296" rx="5" ry="4"/><ellipse cx="270" cy="296" rx="5" ry="4"/>
+    <ellipse cx="350" cy="296" rx="5" ry="4"/><ellipse cx="430" cy="296" rx="5" ry="4"/><ellipse cx="510" cy="296" rx="5" ry="4"/>
+  </g>
+</svg>

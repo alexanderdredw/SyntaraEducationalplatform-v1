@@ -1,0 +1,10 @@
+# Базовый предмет (BR-CNT-02). Без папок тем — статус «Скоро» (BR-CNT-08).
+code: informatics
+title:
+  ru: 'Информатика'
+  kk: 'Информатика'
+  en: 'Informatics'
+description:
+  ru: 'Алгоритмы, программирование и данные'
+  kk: 'Алгоритмдер, бағдарламалау және деректер'
+  en: 'Algorithms, programming and data'

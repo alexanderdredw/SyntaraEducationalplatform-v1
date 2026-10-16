@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+  <!-- Syntara: собственная схема «Сердце в разрезе» (лицензия: own). Слева на схеме — правая половина сердца. -->
+  <!-- полые вены -->
+  <path d="M232 24v86" stroke="#3b82f6" stroke-width="30" stroke-linecap="round"/>
+  <path d="M214 330v-70" stroke="#3b82f6" stroke-width="30" stroke-linecap="round"/>
+  <!-- лёгочный ствол -->
+  <path d="M296 150V86q0-40-44-52" fill="none" stroke="#60a5fa" stroke-width="26" stroke-linecap="round"/>
+  <!-- аорта -->
+  <path d="M352 150V70q0-44 60-44t60 44v40" fill="none" stroke="#e5484d" stroke-width="32" stroke-linecap="round"/>
+  <!-- лёгочные вены -->
+  <path d="M470 150h70M470 182h70" stroke="#f87171" stroke-width="16" stroke-linecap="round"/>
+  <!-- контур сердца -->
+  <path d="M190 120c0-24 30-36 60-30l70 14 70-14c40-8 90 6 90 44 0 70-60 140-160 212C220 274 190 196 190 120z" fill="#fde2e4" stroke="#cbd5e1" stroke-width="5"/>
+  <!-- правое предсердие и правый желудочек -->
+  <path d="M206 128c0-14 18-22 40-20l62 10v62h-104z" fill="#3b82f6"/>
+  <path d="M206 192h102v118c-50-34-90-72-102-118z" fill="#60a5fa"/>
+  <!-- левое предсердие и левый желудочек (толстая стенка) -->
+  <path d="M332 118l58-10c34-4 70 6 70 30v42H332z" fill="#e5484d"/>
+  <path d="M332 192h128c-6 52-58 104-128 152z" fill="#b91c1c"/>
+  <path d="M346 206h96c-10 40-46 78-96 112z" fill="#f87171"/>
+  <!-- перегородка -->
+  <path d="M320 112v240" stroke="#f8fafc" stroke-width="10" stroke-linecap="round"/>
+  <!-- клапаны между предсердиями и желудочками -->
+  <path d="M232 186l18 18 18-18M380 186l18 18 18-18" fill="none" stroke="#f8fafc" stroke-width="6" stroke-linejoin="round"/>
+  <!-- клапаны на выходе из желудочков -->
+  <path d="M284 158l12 10 12-10M340 158l12 10 12-10" fill="none" stroke="#f8fafc" stroke-width="5" stroke-linejoin="round"/>
+</svg>

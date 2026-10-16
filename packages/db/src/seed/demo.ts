@@ -1,40 +1,28 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, isNotNull } from 'drizzle-orm';
 import { type Database } from '../index';
+import { formatError, importContent, type MediaStore } from '../content';
 import {
-  answerOptions,
-  answerOptionTranslations,
   badges,
   badgeTranslations,
   catalogSections,
-  catalogSectionTranslations,
   levels,
   levelTranslations,
   questions,
-  questionTranslations,
   quizzes,
   responseTemplates,
   subjects,
-  subjectTranslations,
   topics,
-  topicTranslations,
-  topicVersions,
   userPreferences,
   userRoles,
   schools,
   users,
 } from '../schema';
-import {
-  ANATOMY_TOPICS,
-  CARDIO_EXTRA_QUESTIONS,
-  type DemoQuestion,
-  GENERAL_BIOLOGY_TOPICS,
-  type Tri,
-} from './demo-content';
 import { seedId } from './ids';
 import { assertNotProduction, hashPassword, rows, type Tr } from './helpers';
 
 /**
- * Seed `demo`: справочники и минимальный набор для разработки.
+ * Seed `demo`: справочники, учётные записи для разработки и базовая программа платформы — импортом файлов
+ * content/ (решение владельца 2026-10-16, BR-CNT-01): каталог, «Анатомия человека», пробный вопрос PH-02.
  * Тексты RU — дословно из SPEC; KK и EN — подготовленные переводы (KK — needs_review, см. seed/content_review.json).
  */
 
@@ -177,82 +165,68 @@ const RESPONSE_TEMPLATES: Record<string, Tr<string>> = {
   },
 };
 
-/** PH-01: публичные предметы; описания — REQ-PUB-HOME-06. */
-const PUBLIC_SECTIONS: Array<{
-  code: string;
-  position: number;
-  tr: Tr<{ title: string; description: string }>;
-}> = [
-  {
-    code: 'biology',
-    position: 1,
-    tr: {
-      ru: { title: 'Биология', description: 'Раздел: анатомия человека — и скоро больше' },
-      kk: { title: 'Биология', description: 'Бөлім: адам анатомиясы — жақында тағы да көбірек' },
-      en: { title: 'Biology', description: 'Section: human anatomy — and more soon' },
-    },
-  },
-  {
-    code: 'chemistry',
-    position: 2,
-    tr: {
-      ru: { title: 'Химия', description: 'Элементы, реакции, молекулярные структуры' },
-      kk: { title: 'Химия', description: 'Элементтер, реакциялар, молекулалық құрылымдар' },
-      en: { title: 'Chemistry', description: 'Elements, reactions, molecular structures' },
-    },
-  },
-  {
-    code: 'physics',
-    position: 3,
-    tr: {
-      ru: { title: 'Физика', description: 'Механика, волны, термодинамика' },
-      kk: { title: 'Физика', description: 'Механика, толқындар, термодинамика' },
-      en: { title: 'Physics', description: 'Mechanics, waves, thermodynamics' },
-    },
-  },
-];
-
-/** PH-02: пробный вопрос из настоящего урока (is_demo = true, BR-QZ-09). */
-const DEMO_QUESTION = {
-  tr: {
-    ru: {
-      text: 'Какой сосуд несёт кровь от сердца к телу?',
-      explanation: 'Аорта — главная артерия: по ней кровь из левого желудочка идёт ко всем органам тела.',
-    },
-    kk: {
-      text: 'Қай қан тамыры қанды жүректен денеге тасымалдайды?',
-      explanation:
-        'Қолқа — басты артерия: ол арқылы қан сол жақ қарыншадан дененің барлық мүшелеріне барады.',
-    },
-    en: {
-      text: 'Which vessel carries blood from the heart to the body?',
-      explanation:
-        'The aorta is the main artery: blood flows through it from the left ventricle to all organs of the body.',
-    },
-  } satisfies Tr<{ text: string; explanation: string }>,
-  options: [
-    { ru: 'Аорта', kk: 'Қолқа', en: 'Aorta' },
-    { ru: 'Полая вена', kk: 'Қуыс вена', en: 'Vena cava' },
-    { ru: 'Капилляр', kk: 'Капилляр', en: 'Capillary' },
-    { ru: 'Лимфатический сосуд', kk: 'Лимфа тамыры', en: 'Lymphatic vessel' },
-  ] satisfies Tr<string>[],
-  correct: 0,
-};
-
-/** Официальный предмет и тема, в которых живёт пробный вопрос (REQ-PUB-HOME-04: «вопрос из настоящего урока»). */
+/** Учётные записи для разработки. */
 export const DEMO_IDS = {
-  sectionBiology: seedId('section:biology'),
-  subjectAnatomy: seedId('subject:anatomy'),
-  topicCardio: seedId('topic:anatomy:cardiovascular'),
-  topicCardioVersion: seedId('topic-version:anatomy:cardiovascular:1'),
-  quizCardio: seedId('quiz:anatomy:cardiovascular'),
-  demoQuestion: seedId('question:demo:aorta'),
   teacher: seedId('user:dev:teacher'),
   student: seedId('user:dev:student'),
   support: seedId('user:dev:support'),
   onboarding: seedId('user:dev:onboarding'),
-  subjectGeneralBiology: seedId('subject:general-biology'),
 };
+
+/**
+ * Коды базовой программы из content/, на которые опираются тесты и seed `visual` (BR-CNT-04). Пробный вопрос
+ * (PH-02) — в квизе «Сердечно-сосудистой системы» (REQ-PUB-HOME-04: «вопрос из настоящего урока»).
+ */
+export const BASE_CODES = {
+  sectionBiology: 'biology',
+  subjectAnatomy: 'human-anatomy',
+  subjectGeneralBiology: 'general-biology',
+  subjectChemistry: 'chemistry',
+  subjectMath: 'mathematics',
+  subjectEnglish: 'english-language',
+  topicCardio: 'human-anatomy/cardiovascular-system',
+  topicRespiratory: 'human-anatomy/respiratory-system',
+  topicDigestive: 'human-anatomy/digestive-system',
+  demoQuestion: 'human-anatomy/cardiovascular-system/q/aorta',
+} as const;
+
+/** ID строк базовой программы по кодам (после импорта). */
+export async function baseIds(db: Database) {
+  const C = BASE_CODES;
+  const subject = async (code: string) =>
+    (await db.select({ id: subjects.id }).from(subjects).where(eq(subjects.code, code)))[0]!.id;
+  const topic = async (code: string) =>
+    (await db.select({ id: topics.id }).from(topics).where(eq(topics.code, code)))[0]!.id;
+  const quiz = async (topicId: string) =>
+    (await db.select({ id: quizzes.id }).from(quizzes).where(eq(quizzes.topicId, topicId)))[0]!.id;
+  const [section] = await db
+    .select({ id: catalogSections.id })
+    .from(catalogSections)
+    .where(eq(catalogSections.code, C.sectionBiology));
+  const topicCardio = await topic(C.topicCardio);
+  const topicRespiratory = await topic(C.topicRespiratory);
+  const topicDigestive = await topic(C.topicDigestive);
+  const [demo] = await db
+    .select({ id: questions.id })
+    .from(questions)
+    .where(and(eq(questions.code, C.demoQuestion), isNotNull(questions.code)));
+  return {
+    sectionBiology: section!.id,
+    subjectAnatomy: await subject(C.subjectAnatomy),
+    subjectGeneralBiology: await subject(C.subjectGeneralBiology),
+    subjectChemistry: await subject(C.subjectChemistry),
+    subjectMath: await subject(C.subjectMath),
+    subjectEnglish: await subject(C.subjectEnglish),
+    topicCardio,
+    topicRespiratory,
+    topicDigestive,
+    quizCardio: await quiz(topicCardio),
+    quizRespiratory: await quiz(topicRespiratory),
+    quizDigestive: await quiz(topicDigestive),
+    demoQuestion: demo!.id,
+  };
+}
+export type BaseIds = Awaited<ReturnType<typeof baseIds>>;
 
 /**
  * Справочник школ для автодополнения на регистрации ученика (API-PUB-09).
@@ -273,97 +247,7 @@ export const DEMO_SCHOOLS: Array<{ key: string; name: string; region: string; ci
 ];
 export const demoSchoolId = (key: string) => seedId(`school:demo:${key}`);
 
-export const anatomyTopicId = (key: string) => seedId(`topic:anatomy:${key}`);
-export const anatomyQuizId = (key: string) => seedId(`quiz:anatomy:${key}`);
-export const generalBiologyTopicId = (n: number) => seedId(`topic:general-biology:${n}`);
-
-type Tx = Parameters<Parameters<Database['transaction']>[0]>[0];
-const tri = <T extends string>(t: Tri, wrap: (v: string) => Record<T, string>) => ({
-  ru: wrap(t[0]),
-  kk: wrap(t[1]),
-  en: wrap(t[2]),
-});
-
-/** Опубликованная тема с версией 1 и пустым квизом (идемпотентно). */
-async function publishedTopic(
-  tx: Tx,
-  t: { id: string; subjectId: string; position: number; title: Tri; quizId?: string },
-): Promise<void> {
-  const tr = tri(t.title, (title) => ({ title }));
-  const versionId = seedId(`topic-version:${t.id}:1`);
-  await tx
-    .insert(topics)
-    .values({ id: t.id, subjectId: t.subjectId, position: t.position })
-    .onConflictDoNothing({ target: topics.id });
-  await tx
-    .insert(topicTranslations)
-    .values(rows('topicId', t.id, tr))
-    .onConflictDoNothing();
-  await tx
-    .insert(topicVersions)
-    .values({
-      id: versionId,
-      topicId: t.id,
-      versionNo: 1,
-      snapshot: { translations: tr, sections: [] },
-      createdBy: DEMO_IDS.teacher,
-    })
-    .onConflictDoNothing();
-  await tx
-    .update(topics)
-    .set({
-      status: 'published',
-      publishedVersionId: versionId,
-      publishedAt: new Date('2026-09-01T00:00:00Z'),
-    })
-    .where(eq(topics.id, t.id));
-  if (t.quizId) await tx.insert(quizzes).values({ id: t.quizId, topicId: t.id }).onConflictDoNothing();
-}
-
-/** Вопрос «Выбор варианта» с переводами и вариантами (идемпотентно). */
-async function demoQuestion(
-  tx: Tx,
-  quizId: string,
-  key: string,
-  position: number,
-  dq: DemoQuestion,
-): Promise<void> {
-  const questionId = seedId(`question:${key}`);
-  await tx
-    .insert(questions)
-    .values({ id: questionId, quizId, type: 'single_choice', difficulty: dq.difficulty, position })
-    .onConflictDoNothing();
-  await tx
-    .insert(questionTranslations)
-    .values(
-      (['ru', 'kk', 'en'] as const).map((locale, i) => ({
-        questionId,
-        locale,
-        text: dq.text[i]!,
-        explanation: dq.explanation[i]!,
-      })),
-    )
-    .onConflictDoNothing();
-  for (const [o, option] of dq.options.entries()) {
-    const optionId = seedId(`option:${key}:${o}`);
-    await tx
-      .insert(answerOptions)
-      .values({ id: optionId, questionId, position: o + 1, isCorrect: o === dq.correct })
-      .onConflictDoNothing();
-    await tx
-      .insert(answerOptionTranslations)
-      .values((['ru', 'kk', 'en'] as const).map((locale, i) => ({ optionId, locale, text: option[i]! })))
-      .onConflictDoNothing();
-  }
-}
-
-const CARDIO_TOPIC_TR: Tr<{ title: string }> = {
-  ru: { title: 'Сердечно-сосудистая система' },
-  kk: { title: 'Жүрек-қантамыр жүйесі' },
-  en: { title: 'Cardiovascular system' },
-};
-
-export async function seedDemo(db: Database): Promise<void> {
+export async function seedDemo(db: Database, media: MediaStore | null = null): Promise<void> {
   assertNotProduction('demo');
   await db.transaction(async (tx) => {
     // Уровни и ранги (BR-XP-03).
@@ -406,158 +290,6 @@ export async function seedDemo(db: Database): Promise<void> {
         ),
       )
       .onConflictDoNothing();
-
-    // Публичные разделы каталога (PH-01).
-    for (const section of PUBLIC_SECTIONS) {
-      const sectionId = seedId(`section:${section.code}`);
-      await tx
-        .insert(catalogSections)
-        .values({ id: sectionId, code: section.code, position: section.position })
-        .onConflictDoNothing();
-      await tx
-        .insert(catalogSectionTranslations)
-        .values(rows('sectionId', sectionId, section.tr))
-        .onConflictDoNothing();
-    }
-
-    // Официальный предмет, тема и квиз с пробным вопросом (PH-02).
-    await tx
-      .insert(subjects)
-      .values({
-        id: DEMO_IDS.subjectAnatomy,
-        sectionId: DEMO_IDS.sectionBiology,
-        isOfficial: true,
-        inPublicCatalog: true,
-      })
-      .onConflictDoNothing();
-    await tx
-      .insert(subjectTranslations)
-      .values(
-        rows('subjectId', DEMO_IDS.subjectAnatomy, {
-          ru: { title: 'Анатомия человека' },
-          kk: { title: 'Адам анатомиясы' },
-          en: { title: 'Human Anatomy' },
-        }),
-      )
-      .onConflictDoNothing();
-
-    await tx
-      .insert(users)
-      .values({ id: DEMO_IDS.teacher, email: 'teacher@syntara.local', displayName: 'Demo Teacher' })
-      .onConflictDoNothing();
-    await tx
-      .insert(topics)
-      .values({ id: DEMO_IDS.topicCardio, subjectId: DEMO_IDS.subjectAnatomy, position: 1 })
-      .onConflictDoNothing({ target: topics.id });
-    await tx
-      .insert(topicTranslations)
-      .values(rows('topicId', DEMO_IDS.topicCardio, CARDIO_TOPIC_TR))
-      .onConflictDoNothing();
-    await tx
-      .insert(topicVersions)
-      .values({
-        id: DEMO_IDS.topicCardioVersion,
-        topicId: DEMO_IDS.topicCardio,
-        versionNo: 1,
-        snapshot: { translations: CARDIO_TOPIC_TR, sections: [] },
-        createdBy: DEMO_IDS.teacher,
-      })
-      .onConflictDoNothing();
-    await tx
-      .update(topics)
-      .set({
-        status: 'published',
-        publishedVersionId: DEMO_IDS.topicCardioVersion,
-        publishedAt: new Date('2026-09-01T00:00:00Z'),
-      })
-      .where(eq(topics.id, DEMO_IDS.topicCardio));
-    await tx
-      .insert(quizzes)
-      .values({ id: DEMO_IDS.quizCardio, topicId: DEMO_IDS.topicCardio })
-      .onConflictDoNothing();
-    await tx
-      .insert(questions)
-      .values({
-        id: DEMO_IDS.demoQuestion,
-        quizId: DEMO_IDS.quizCardio,
-        type: 'single_choice',
-        difficulty: 'medium',
-        position: 1,
-        isDemo: true,
-      })
-      .onConflictDoNothing();
-    await tx
-      .insert(questionTranslations)
-      .values(rows('questionId', DEMO_IDS.demoQuestion, DEMO_QUESTION.tr))
-      .onConflictDoNothing();
-    for (const [i, option] of DEMO_QUESTION.options.entries()) {
-      const optionId = seedId(`option:demo:aorta:${i}`);
-      await tx
-        .insert(answerOptions)
-        .values({
-          id: optionId,
-          questionId: DEMO_IDS.demoQuestion,
-          position: i + 1,
-          isCorrect: i === DEMO_QUESTION.correct,
-        })
-        .onConflictDoNothing();
-      await tx
-        .insert(answerOptionTranslations)
-        .values(
-          (Object.entries(option) as Array<['ru' | 'kk' | 'en', string]>).map(([locale, text]) => ({
-            optionId,
-            locale,
-            text,
-          })),
-        )
-        .onConflictDoNothing();
-    }
-
-    // Демо-контент (решение владельца): ещё 8 вопросов темы «Сердечно-сосудистая система» (всего 9),
-    // остальные 10 систем «Анатомии человека» (по 3 вопроса) и предмет «Общая биология» (28 тем).
-    for (const [i, dq] of CARDIO_EXTRA_QUESTIONS.entries()) {
-      await demoQuestion(tx, DEMO_IDS.quizCardio, `anatomy:cardiovascular:${i + 2}`, i + 2, dq);
-    }
-    for (const [i, topic] of ANATOMY_TOPICS.entries()) {
-      const quizId = anatomyQuizId(topic.key);
-      await publishedTopic(tx, {
-        id: anatomyTopicId(topic.key),
-        subjectId: DEMO_IDS.subjectAnatomy,
-        position: i + 2,
-        title: topic.title,
-        quizId,
-      });
-      for (const [n, dq] of topic.questions.entries()) {
-        await demoQuestion(tx, quizId, `anatomy:${topic.key}:${n + 1}`, n + 1, dq);
-      }
-    }
-    await tx
-      .insert(subjects)
-      .values({
-        id: DEMO_IDS.subjectGeneralBiology,
-        sectionId: DEMO_IDS.sectionBiology,
-        isOfficial: true,
-        inPublicCatalog: true,
-      })
-      .onConflictDoNothing();
-    await tx
-      .insert(subjectTranslations)
-      .values(
-        rows(
-          'subjectId',
-          DEMO_IDS.subjectGeneralBiology,
-          tri(['Общая биология', 'Жалпы биология', 'General biology'], (title) => ({ title })),
-        ),
-      )
-      .onConflictDoNothing();
-    for (const [i, title] of GENERAL_BIOLOGY_TOPICS.entries()) {
-      await publishedTopic(tx, {
-        id: generalBiologyTopicId(i + 1),
-        subjectId: DEMO_IDS.subjectGeneralBiology,
-        position: i + 1,
-        title,
-      });
-    }
 
     // Справочник школ (API-PUB-09).
     await tx
@@ -614,4 +346,8 @@ export async function seedDemo(db: Database): Promise<void> {
       await tx.insert(userPreferences).values({ userId: user.id }).onConflictDoNothing();
     }
   });
+
+  // Базовая программа платформы — импорт content/ (BR-CNT-01); без хранилища картинки пропускаются.
+  const { errors } = await importContent(db, { media });
+  if (errors.length) throw new Error(`content/: ${errors.map(formatError).join('; ')}`);
 }

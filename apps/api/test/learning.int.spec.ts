@@ -2,7 +2,7 @@ import request from 'supertest';
 import { and, eq } from 'drizzle-orm';
 import { localDate } from '@syntara/shared';
 import { schema } from '@syntara/db';
-import { DEMO_IDS } from '@syntara/db/seed';
+import { baseIds, type BaseIds } from '@syntara/db/seed';
 import { GamificationService } from '../src/modules/gamification/gamification.service';
 import { ACCOUNTS, freshIp, login, type Session } from './support/session';
 import { startStack, type TestStack } from './support/stack';
@@ -12,6 +12,7 @@ const TZ = 'Asia/Almaty';
 /** Итерация 8: обучение ученика — каталог, урок, квиз, XP, серия, бейджи (AC-ST-02..05, BR-VIS-01). */
 describe('student learning (integration)', () => {
   let stack: TestStack;
+  let B: BaseIds;
   let teacher: Session;
   let student: Session;
   let outsider: Session;
@@ -103,6 +104,7 @@ describe('student learning (integration)', () => {
 
   beforeAll(async () => {
     stack = await startStack('demo');
+    B = await baseIds(stack.db);
     teacher = await login(http, ACCOUNTS.teacher);
     const cls = await as(teacher).post('/api/teacher/classes', { name: '9 «А»' }).expect(201);
     classId = cls.body.id;
@@ -127,8 +129,8 @@ describe('student learning (integration)', () => {
   it('API-S-04, API-S-05, REQ-ST-CAT-02/03 catalog, section and the subject page show only visible content', async () => {
     const catalog = await as(student).get('/api/student/catalog').expect(200);
     expect(catalog.body.subjects.map((s: { id: string }) => s.id)).toContain(subjectId);
-    const section = await as(student).get(`/api/student/sections/${DEMO_IDS.sectionBiology}`).expect(200);
-    expect(section.body.subjects.map((s: { id: string }) => s.id)).toContain(DEMO_IDS.subjectAnatomy);
+    const section = await as(student).get(`/api/student/sections/${B.sectionBiology}`).expect(200);
+    expect(section.body.subjects.map((s: { id: string }) => s.id)).toContain(B.subjectAnatomy);
     await as(student).get('/api/student/sections/0190a1b2-0000-7000-8000-000000000000').expect(404);
 
     // Черновик в предмете не показывается.

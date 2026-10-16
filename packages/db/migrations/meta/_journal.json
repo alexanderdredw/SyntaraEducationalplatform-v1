@@ -36,6 +36,13 @@
       "when": 1791995707247,
       "tag": "0004_self_registration",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792164703753,
+      "tag": "0005_base_content",
+      "breakpoints": true
     }
   ]
 }

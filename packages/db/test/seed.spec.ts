@@ -14,7 +14,7 @@ import {
   topics,
   users,
 } from '../src/schema';
-import { DEMO_IDS, loadConfigSeed, runSeed } from '../src/seed';
+import { baseIds, loadConfigSeed, runSeed } from '../src/seed';
 import { startPostgres } from './pg';
 
 const ALL_TABLES = sql`select table_name as t from information_schema.tables where table_schema = 'public'`;
@@ -101,24 +101,25 @@ describe('seed (integration)', () => {
   it('BR-QZ-09, PH-02 seed demo: one demo question; every question has exactly one correct option', async () => {
     const demo = await db.select().from(questions).where(eq(questions.isDemo, true));
     expect(demo).toHaveLength(1);
-    const all = await db.select({ id: questions.id }).from(questions);
+    const all = await db.select({ id: questions.id, type: questions.type }).from(questions);
     const options = await db.select().from(answerOptions);
-    for (const { id } of all) {
-      expect(options.filter((o) => o.questionId === id && o.isCorrect)).toHaveLength(1);
+    for (const { id, type } of all) {
+      // «Вписать ответ» — без вариантов (BR-QZ-03).
+      expect(options.filter((o) => o.questionId === id && o.isCorrect)).toHaveLength(
+        type === 'text_input' ? 0 : 1,
+      );
     }
   });
 
-  it('demo content: «Анатомия человека» has 11 topics, the cardiovascular quiz has 9 questions', async () => {
-    const anatomy = await db.select().from(topics).where(eq(topics.subjectId, DEMO_IDS.subjectAnatomy));
-    expect(anatomy).toHaveLength(11);
-    expect(anatomy.every((t) => t.status === 'published' && t.publishedVersionId)).toBe(true);
-    const cardio = await db.select().from(questions).where(eq(questions.quizId, DEMO_IDS.quizCardio));
-    expect(cardio).toHaveLength(9);
-    const general = await db
-      .select()
-      .from(topics)
-      .where(eq(topics.subjectId, DEMO_IDS.subjectGeneralBiology));
-    expect(general).toHaveLength(28);
+  it('BR-CNT-01 seed demo imports content/: «Анатомия человека» — 3 published topics, cardio quiz 5 questions; «Общая биология» — no topics', async () => {
+    const B = await baseIds(db);
+    const anatomy = await db.select().from(topics).where(eq(topics.subjectId, B.subjectAnatomy));
+    expect(anatomy).toHaveLength(3);
+    expect(anatomy.every((t) => t.status === 'published' && t.publishedVersionId && t.code)).toBe(true);
+    const cardio = await db.select().from(questions).where(eq(questions.quizId, B.quizCardio));
+    expect(cardio).toHaveLength(5);
+    const general = await db.select().from(topics).where(eq(topics.subjectId, B.subjectGeneralBiology));
+    expect(general).toHaveLength(0);
   });
 
   it('REQ-NFR-SEC-02 dev accounts store Argon2id hashes, not passwords', async () => {

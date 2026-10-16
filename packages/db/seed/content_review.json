@@ -4,11 +4,7 @@
     "src/seed/demo.ts": [
       "level_translations (kk): «Жаңадан бастаушы», «N-деңгей»",
       "badge_translations (kk): 12 бейджей BR-BDG-01",
-      "response_templates (kk): confirmation, clarification, resolution, delay",
-      "catalog_section_translations (kk): biology, chemistry, physics",
-      "subject_translations (kk): «Адам анатомиясы»",
-      "topic_translations (kk): «Жүрек-қантамыр жүйесі»",
-      "question/answer_option_translations (kk): пробный вопрос PH-02"
+      "response_templates (kk): confirmation, clarification, resolution, delay"
     ],
     "src/seed/visual.ts": [
       "catalog_section_translations (kk): разделы U13",
@@ -20,12 +16,13 @@
     "badges.rule": "Формат JSON-правил бейджей — придуман по BR-BDG-01; движок правил — итерация 8",
     "levels": "Количество уровней в справочнике — 10 (до бейджа legend); формула BR-XP-03 работает для любого уровня"
   },
-  "demo_content": {
-    "_comment": "Демо-контент, придуманный агентом по решению владельца (итерация 3): не утверждён методистом, только для демонстрации и визуальных эталонов. KK-переводы — needs_review.",
-    "src/seed/demo-content.ts": [
-      "Анатомия человека: 10 тем-систем органов (кроме «Сердечно-сосудистой системы») по 3 вопроса",
-      "Сердечно-сосудистая система: 8 дополнительных вопросов (всего 9 вместе с PH-02)",
-      "Общая биология: 28 тем без вопросов (для U08 «из 41 темы»)"
+  "base_content": {
+    "_comment": "Базовая программа content/ (этап 8.6): тексты подготовлены ИИ-агентом по решению владельца 2026-10-16. KK и EN — review: needs_review (ученик видит «На проверке») до вычитки человеком; факты RU проверяет человек. Иллюстрации — собственные схемы (scripts/content-art/*.svg, лицензия own).",
+    "content/biology/01-human-anatomy": [
+      "Сердечно-сосудистая система, Дыхательная система, Пищеварительная система: тексты RU/KK/EN и квизы"
+    ],
+    "content/*/section.yaml, */subject.yaml": [
+      "Названия и описания разделов и предметов (KK — needs_review); описания предметов, кроме REQ-PUB-HOME-06, в SPEC не заданы — needs_confirmation"
     ]
   }
 }

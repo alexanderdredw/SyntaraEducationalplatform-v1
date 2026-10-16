@@ -17,18 +17,20 @@ import {
   users,
   xpLedger,
 } from '../src/schema';
-import { DEMO_IDS, runSeed, VISUAL_IDS } from '../src/seed';
+import { baseIds, type BaseIds, runSeed, VISUAL_IDS } from '../src/seed';
 import { pgErrorCode, startPostgres } from './pg';
 
 /** Ограничения целостности раздела 5 (AG-09: не удалять). */
 describe('constraints, triggers, roles, RLS (integration)', () => {
   let container: StartedPostgreSqlContainer;
   let db: Database;
+  let B: BaseIds;
 
   beforeAll(async () => {
     ({ container, db } = await startPostgres());
     await migrateUp(db);
     await runSeed(db, 'visual');
+    B = await baseIds(db);
   });
 
   afterAll(async () => {
@@ -38,7 +40,7 @@ describe('constraints, triggers, roles, RLS (integration)', () => {
 
   it('BR-QZ-02 ux_one_correct: a question cannot have two correct options', async () => {
     const code = await pgErrorCode(
-      db.insert(answerOptions).values({ questionId: DEMO_IDS.demoQuestion, position: 9, isCorrect: true }),
+      db.insert(answerOptions).values({ questionId: B.demoQuestion, position: 9, isCorrect: true }),
     );
     expect(code).toBe('23505');
   });
@@ -62,7 +64,7 @@ describe('constraints, triggers, roles, RLS (integration)', () => {
       db.insert(assignments).values({
         classId: VISUAL_IDS.class9,
         subjectId: VISUAL_IDS.subjectBotany,
-        topicId: DEMO_IDS.topicCardio,
+        topicId: B.topicCardio,
         dueAt: new Date(),
         createdBy: VISUAL_IDS.alexandr,
       }),
@@ -91,11 +93,11 @@ describe('constraints, triggers, roles, RLS (integration)', () => {
   it('5.4 topics UNIQUE (subject_id, position) is deferred until commit', async () => {
     // Перестановка двух тем в одной транзакции проходит благодаря DEFERRABLE INITIALLY DEFERRED.
     await db.transaction(async (tx) => {
-      await tx.update(topics).set({ position: 2 }).where(eq(topics.id, DEMO_IDS.topicCardio));
-      await tx.update(topics).set({ position: 1 }).where(eq(topics.id, VISUAL_IDS.topicRespiratory));
+      await tx.update(topics).set({ position: 2 }).where(eq(topics.id, B.topicCardio));
+      await tx.update(topics).set({ position: 1 }).where(eq(topics.id, B.topicRespiratory));
     });
     const code = await pgErrorCode(
-      db.update(topics).set({ position: 1 }).where(eq(topics.id, DEMO_IDS.topicCardio)),
+      db.update(topics).set({ position: 1 }).where(eq(topics.id, B.topicCardio)),
     );
     expect(code).toBe('23505');
   });
@@ -139,10 +141,10 @@ describe('constraints, triggers, roles, RLS (integration)', () => {
   });
 
   it('5.1 updated_at is refreshed by trigger on UPDATE', async () => {
-    const [before] = await db.select().from(questions).where(eq(questions.id, DEMO_IDS.demoQuestion));
+    const [before] = await db.select().from(questions).where(eq(questions.id, B.demoQuestion));
     await new Promise((r) => setTimeout(r, 20));
-    await db.update(questions).set({ position: 1 }).where(eq(questions.id, DEMO_IDS.demoQuestion));
-    const [after] = await db.select().from(questions).where(eq(questions.id, DEMO_IDS.demoQuestion));
+    await db.update(questions).set({ position: 1 }).where(eq(questions.id, B.demoQuestion));
+    const [after] = await db.select().from(questions).where(eq(questions.id, B.demoQuestion));
     expect(after!.updatedAt.getTime()).toBeGreaterThan(before!.updatedAt.getTime());
   });
 

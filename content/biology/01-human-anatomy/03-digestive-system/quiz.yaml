@@ -1,0 +1,68 @@
+# Квиз темы (BR-QZ-*). Формат — docs/CONTENT_GUIDE.md.
+questions:
+  - code: starch
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Где начинается расщепление крахмала?
+      kk: Крахмалдың ыдырауы қай жерде басталады?
+      en: Where does the breakdown of starch begin?
+    explanation:
+      ru: Ферменты слюны начинают расщеплять крахмал уже в ротовой полости.
+      kk: Сілекейдің ферменттері крахмалды ауыз қуысында-ақ ыдырата бастайды.
+      en: Enzymes in saliva start breaking down starch already in the mouth.
+    options:
+      - text: { ru: В ротовой полости, kk: Ауыз қуысында, en: In the mouth }
+        correct: true
+      - text: { ru: В желудке, kk: Асқазанда, en: In the stomach }
+      - text: { ru: В пищеводе, kk: Өңеште, en: In the oesophagus }
+      - text: { ru: В толстом кишечнике, kk: Тоқ ішекте, en: In the large intestine }
+
+  - code: bile
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой орган вырабатывает желчь?
+      kk: Қай мүше өт бөледі?
+      en: Which organ produces bile?
+    explanation:
+      ru: Желчь вырабатывает печень; в кишечнике желчь дробит жиры на мелкие капли.
+      kk: Өтті бауыр бөледі; ішекте өт майларды ұсақ тамшыларға бөледі.
+      en: Bile is produced by the liver; in the intestine it breaks fats into tiny droplets.
+    options:
+      - text: { ru: Печень, kk: Бауыр, en: The liver }
+        correct: true
+      - text: { ru: Поджелудочная железа, kk: Ұйқы безі, en: The pancreas }
+      - text: { ru: Желудок, kk: Асқазан, en: The stomach }
+      - text: { ru: Селезёнка, kk: Көкбауыр, en: The spleen }
+
+  - code: absorption
+    type: true_false
+    difficulty: medium
+    text:
+      ru: Большая часть питательных веществ всасывается в тонком кишечнике.
+      kk: Қоректік заттардың көп бөлігі ащы ішекте сіңеді.
+      en: Most nutrients are absorbed in the small intestine.
+    explanation:
+      ru: Верно. Ворсинки тонкого кишечника всасывают питательные вещества в кровь и лимфу.
+      kk: Дұрыс. Ащы ішектің бүрлері қоректік заттарды қан мен лимфаға сіңіреді.
+      en: True. The villi of the small intestine absorb nutrients into the blood and lymph.
+    correct: true
+
+  - code: hydrochloric-acid
+    type: single_choice
+    difficulty: hard
+    text:
+      ru: Какое вещество желудочного сока убивает многие бактерии, попавшие с пищей?
+      kk: Асқазан сөлінің қай заты тамақпен түскен көптеген бактерияларды жояды?
+      en: Which substance in gastric juice kills many of the bacteria that come with food?
+    explanation:
+      ru: Соляная кислота создаёт в желудке кислую среду, в которой большинство бактерий погибает.
+      kk: Тұз қышқылы асқазанда қышқыл орта түзеді, онда бактериялардың көбі жойылады.
+      en: Hydrochloric acid makes the stomach acidic, and most bacteria die there.
+    options:
+      - text: { ru: Соляная кислота, kk: Тұз қышқылы, en: Hydrochloric acid }
+        correct: true
+      - text: { ru: Желчь, kk: Өт, en: Bile }
+      - text: { ru: Слюна, kk: Сілекей, en: Saliva }
+      - text: { ru: Инсулин, kk: Инсулин, en: Insulin }

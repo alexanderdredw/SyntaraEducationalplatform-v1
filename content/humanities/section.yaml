@@ -1,0 +1,11 @@
+# Раздел каталога (BR-CNT-02). Формат — docs/CONTENT_GUIDE.md.
+code: humanities
+position: 4
+title:
+  ru: 'Гуманитарные науки'
+  kk: 'Гуманитарлық ғылымдар'
+  en: 'Humanities'
+description:
+  ru: 'История Казахстана'
+  kk: 'Қазақстан тарихы'
+  en: 'History of Kazakhstan'

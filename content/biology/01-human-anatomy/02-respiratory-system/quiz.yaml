@@ -1,0 +1,68 @@
+# Квиз темы (BR-QZ-*). Формат — docs/CONTENT_GUIDE.md.
+questions:
+  - code: gas-exchange
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Где происходит газообмен между воздухом и кровью?
+      kk: Ауа мен қан арасындағы газ алмасу қай жерде жүреді?
+      en: Where does gas exchange between air and blood take place?
+    explanation:
+      ru: Стенки альвеол тонкие и оплетены капиллярами — через них кислород переходит в кровь, а углекислый газ — в воздух.
+      kk: Альвеолалардың қабырғасы жұқа және капиллярлармен оралған — олар арқылы оттегі қанға, көмірқышқыл газы ауаға өтеді.
+      en: The alveoli have thin walls wrapped in capillaries — oxygen passes through them into the blood and carbon dioxide into the air.
+    options:
+      - text: { ru: В альвеолах, kk: Альвеолаларда, en: In the alveoli }
+        correct: true
+      - text: { ru: В трахее, kk: Кеңірдекте, en: In the trachea }
+      - text: { ru: В гортани, kk: Көмейде, en: In the larynx }
+      - text: { ru: В носовой полости, kk: Мұрын қуысында, en: In the nasal cavity }
+
+  - code: diaphragm
+    type: true_false
+    difficulty: medium
+    text:
+      ru: При вдохе диафрагма сокращается и опускается.
+      kk: Дем алғанда диафрагма жиырылып, төмен түседі.
+      en: When we breathe in, the diaphragm contracts and moves down.
+    explanation:
+      ru: Верно. Диафрагма опускается, объём грудной полости растёт, и воздух входит в лёгкие.
+      kk: Дұрыс. Диафрагма төмен түседі, кеуде қуысының көлемі ұлғаяды және ауа өкпеге кіреді.
+      en: True. The diaphragm moves down, the chest gets bigger and air flows into the lungs.
+    correct: true
+
+  - code: exhaled-gas
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какого газа в выдыхаемом воздухе гораздо больше, чем во вдыхаемом?
+      kk: Шығарылған ауада қай газ жұтылған ауадағыдан әлдеқайда көп?
+      en: Which gas is there much more of in exhaled air than in inhaled air?
+    explanation:
+      ru: Клетки выделяют углекислый газ, кровь приносит его в лёгкие, и он уходит с выдохом.
+      kk: Жасушалар көмірқышқыл газын бөледі, қан оны өкпеге әкеледі және ол дем шығарғанда сыртқа шығады.
+      en: Cells release carbon dioxide, the blood carries it to the lungs, and it leaves when we breathe out.
+    options:
+      - text: { ru: Углекислого газа, kk: Көмірқышқыл газы, en: Carbon dioxide }
+        correct: true
+      - text: { ru: Кислорода, kk: Оттегі, en: Oxygen }
+      - text: { ru: Азота, kk: Азот, en: Nitrogen }
+      - text: { ru: Водорода, kk: Сутегі, en: Hydrogen }
+
+  - code: epiglottis
+    type: single_choice
+    difficulty: hard
+    text:
+      ru: Что закрывает вход в гортань при глотании?
+      kk: Жұтынған кезде көмейдің кіреберісін не жабады?
+      en: What closes the entrance to the larynx when we swallow?
+    explanation:
+      ru: Надгортанник опускается и закрывает гортань, поэтому пища уходит в пищевод.
+      kk: Көмей қақпағы түсіп, көмейді жабады, сондықтан тамақ өңешке өтеді.
+      en: The epiglottis folds down over the larynx, so food goes into the oesophagus.
+    options:
+      - text: { ru: Надгортанник, kk: Көмей қақпағы, en: The epiglottis }
+        correct: true
+      - text: { ru: Диафрагма, kk: Диафрагма, en: The diaphragm }
+      - text: { ru: Трахея, kk: Кеңірдек, en: The trachea }
+      - text: { ru: Плевра, kk: Плевра, en: The pleura }

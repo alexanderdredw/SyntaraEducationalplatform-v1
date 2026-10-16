@@ -1,0 +1,10 @@
+# Базовый предмет (BR-CNT-02). Без папок тем — статус «Скоро» (BR-CNT-08).
+code: physics
+title:
+  ru: 'Физика'
+  kk: 'Физика'
+  en: 'Physics'
+description:
+  ru: 'Механика, волны, термодинамика'
+  kk: 'Механика, толқындар, термодинамика'
+  en: 'Mechanics, waves, thermodynamics'

@@ -1,0 +1,11 @@
+# Раздел каталога (BR-CNT-02). Формат — docs/CONTENT_GUIDE.md.
+code: languages
+position: 5
+title:
+  ru: 'Языки'
+  kk: 'Тілдер'
+  en: 'Languages'
+description:
+  ru: 'Казахский язык · Русский язык · Английский язык'
+  kk: 'Қазақ тілі · Орыс тілі · Ағылшын тілі'
+  en: 'Kazakh language · Russian language · English language'

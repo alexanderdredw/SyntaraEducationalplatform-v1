@@ -40,6 +40,8 @@ export const questions = pgTable('questions', {
   /** Только для type = text_input. */
   textAnswer: text('text_answer'),
   archivedAt: tstz('archived_at'),
+  /** Постоянный код вопроса базовой темы (BR-CNT-04). */
+  code: text('code').unique(),
   ...timestamps,
 });
 

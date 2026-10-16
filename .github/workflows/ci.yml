@@ -61,6 +61,10 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # BR-CNT-03, BR-CNT-06: файлы базовой программы content/ (формат, картинки WEBP/PNG/JPG ≤ 300 КБ, лицензии).
+      - name: Content check
+        run: pnpm content:check
+
       # Unit + integration: Testcontainers поднимает Postgres 16 и Redis 7 через Docker раннера.
       - name: Test
         run: pnpm test

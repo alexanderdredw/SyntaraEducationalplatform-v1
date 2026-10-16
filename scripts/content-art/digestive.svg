@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 672 380" width="672" height="380">
+  <!-- Syntara: собственная схема «Пищеварительная система» (лицензия: own). Слева на схеме — правая сторона тела. -->
+  <!-- пищевод -->
+  <path d="M336 0v96q0 14 14 20" fill="none" stroke="#f9a8b4" stroke-width="18" stroke-linecap="round"/>
+  <!-- печень -->
+  <path d="M168 98c40-24 130-28 176-6 10 6 6 22-6 30-40 26-110 44-160 40-30-2-36-50-10-64z" fill="#b45309" fill-opacity=".85"/>
+  <!-- желудок -->
+  <path d="M350 110c30-10 90-6 116 30 22 32 6 78-34 96-34 16-80 8-96-14 18 0 46-2 62-16 22-20 12-52-14-62-16-6-32-4-44 2z" fill="#fb7185" fill-opacity=".85"/>
+  <!-- поджелудочная железа -->
+  <path d="M276 214c40-10 100-12 150-2 12 2 10 14-2 16-50 8-100 8-148 4-12-2-12-16 0-18z" fill="#fbbf24" fill-opacity=".9"/>
+  <!-- толстый кишечник -->
+  <path d="M200 360V214q0-20 20-20h236q20 0 20 20v146" fill="none" stroke="#a78bfa" stroke-width="26" stroke-linejoin="round"/>
+  <!-- тонкий кишечник: петли -->
+  <path d="M250 248h170q14 0 14 14t-14 14H250q-14 0-14 14t14 14h170q14 0 14 14t-14 14H250q-14 0-14 14t14 14h120" fill="none" stroke="#f9a8b4" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

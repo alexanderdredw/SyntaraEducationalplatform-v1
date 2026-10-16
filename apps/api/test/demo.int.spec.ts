@@ -1,11 +1,12 @@
 import request from 'supertest';
 import { and, eq, ne, sql } from 'drizzle-orm';
 import { schema } from '@syntara/db';
-import { DEMO_IDS } from '@syntara/db/seed';
+import { baseIds, type BaseIds } from '@syntara/db/seed';
 import { startStack, type TestStack } from './support/stack';
 
 describe('demo question (integration)', () => {
   let stack: TestStack;
+  let B: BaseIds;
   const http = () => request(stack.app.getHttpServer());
 
   /** Число строк во всех таблицах — проверка, что пробный ответ ничего не записал (BR-QZ-09). */
@@ -23,6 +24,7 @@ describe('demo question (integration)', () => {
 
   beforeAll(async () => {
     stack = await startStack('demo');
+    B = await baseIds(stack.db);
   });
 
   afterAll(() => stack?.stop());
@@ -30,8 +32,8 @@ describe('demo question (integration)', () => {
   it('AC-PUB-04, API-PUB-02, BR-QZ-01 returns the demo question without the correct answer', async () => {
     const res = await http().get('/api/public/demo-question').expect(200);
     expect(res.body).toEqual({
-      id: DEMO_IDS.demoQuestion,
-      subjectId: DEMO_IDS.subjectAnatomy,
+      id: B.demoQuestion,
+      subjectId: B.subjectAnatomy,
       version: expect.stringMatching(/^[0-9a-f]{16}$/),
       text: 'Какой сосуд несёт кровь от сердца к телу?',
       options: [
@@ -107,7 +109,7 @@ describe('demo question (integration)', () => {
     const [other] = await stack.db
       .select({ id: schema.questions.id })
       .from(schema.questions)
-      .where(eq(schema.questions.isDemo, false))
+      .where(and(eq(schema.questions.isDemo, false), eq(schema.questions.type, 'single_choice')))
       .limit(1);
     const [option] = await stack.db
       .select({ id: schema.answerOptions.id })
@@ -123,14 +125,12 @@ describe('demo question (integration)', () => {
     const [second] = await stack.db
       .select({ id: schema.questions.id })
       .from(schema.questions)
-      .where(and(eq(schema.questions.quizId, DEMO_IDS.quizCardio), eq(schema.questions.isDemo, false)))
+      .where(and(eq(schema.questions.quizId, B.quizCardio), eq(schema.questions.isDemo, false)))
       .limit(1);
     await stack.db.update(schema.questions).set({ isDemo: true }).where(eq(schema.questions.id, second!.id));
     try {
       for (let i = 0; i < 5; i++) {
-        const res = await http()
-          .get(`/api/public/demo-question?exclude=${DEMO_IDS.demoQuestion}`)
-          .expect(200);
+        const res = await http().get(`/api/public/demo-question?exclude=${B.demoQuestion}`).expect(200);
         expect(res.body).toMatchObject({ id: second!.id, hasAnother: true });
       }
     } finally {
@@ -140,22 +140,19 @@ describe('demo question (integration)', () => {
         .where(eq(schema.questions.id, second!.id));
     }
     // Единственный вопрос отдаётся и при exclude — кнопка «Другой вопрос» при этом скрыта (hasAnother = false).
-    const only = await http().get(`/api/public/demo-question?exclude=${DEMO_IDS.demoQuestion}`).expect(200);
-    expect(only.body).toMatchObject({ id: DEMO_IDS.demoQuestion, hasAnother: false });
+    const only = await http().get(`/api/public/demo-question?exclude=${B.demoQuestion}`).expect(200);
+    expect(only.body).toMatchObject({ id: B.demoQuestion, hasAnother: false });
   });
 
   it('BR-VIS-02 a demo question of an unpublished topic is not shown', async () => {
-    await stack.db
-      .update(schema.topics)
-      .set({ status: 'draft' })
-      .where(eq(schema.topics.id, DEMO_IDS.topicCardio));
+    await stack.db.update(schema.topics).set({ status: 'draft' }).where(eq(schema.topics.id, B.topicCardio));
     try {
       await http().get('/api/public/demo-question').expect(404);
     } finally {
       await stack.db
         .update(schema.topics)
         .set({ status: 'published' })
-        .where(eq(schema.topics.id, DEMO_IDS.topicCardio));
+        .where(eq(schema.topics.id, B.topicCardio));
     }
   });
 

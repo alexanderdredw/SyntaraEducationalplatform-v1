@@ -1,0 +1,10 @@
+# Базовый предмет (BR-CNT-02). Без папок тем — статус «Скоро» (BR-CNT-08).
+code: geometry
+title:
+  ru: 'Геометрия'
+  kk: 'Геометрия'
+  en: 'Geometry'
+description:
+  ru: 'Фигуры, углы, площади и объёмы'
+  kk: 'Фигуралар, бұрыштар, аудандар және көлемдер'
+  en: 'Shapes, angles, areas and volumes'

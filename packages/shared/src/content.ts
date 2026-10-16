@@ -187,17 +187,31 @@ export type UploadUrlDto = z.infer<typeof UploadUrlDto>;
  * Поля обложки и материалов появились в итерации 7 — в снимках seed их нет.
  */
 export interface TopicSnapshot {
+  /** Базовый урок из content/: постоянный код и хеш содержимого (BR-CNT-04). */
+  code?: string;
+  contentHash?: string;
   translations: Partial<
     Record<
       LocaleType,
-      { title: string; description?: string; funFact?: string; bodyMd?: string; summary?: string }
+      {
+        title: string;
+        description?: string;
+        funFact?: string;
+        bodyMd?: string;
+        summary?: string;
+        /** Подпись иллюстрации темы (базовые уроки). */
+        illustrationAlt?: string;
+        /** Перевод ждёт вычитки человеком (BR-CNT-05). */
+        needsReview?: boolean;
+      }
     >
   >;
   sections: Array<{
     id: string;
+    code?: string;
     position: number;
     illustrationMediaId?: string | null;
-    translations: Partial<Record<LocaleType, { title: string; body?: string }>>;
+    translations: Partial<Record<LocaleType, { title: string; body?: string; illustrationAlt?: string }>>;
   }>;
   coverMediaId?: string | null;
   coverUrl?: string | null;
