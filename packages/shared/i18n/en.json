@@ -933,7 +933,8 @@
       "title": "Platform subjects",
       "section": "Section",
       "available": "Available",
-      "empty": "No subjects available yet"
+      "empty": "No subjects available yet",
+      "soon": "Soon"
     },
     "section": {
       "back": "← Subjects",
@@ -956,7 +957,11 @@
       "overview": "Overview",
       "quiz": "Quiz",
       "ai": "Syntara AI",
-      "aiSoon": "The learning AI will be available soon"
+      "aiSoon": "The learning AI will be available soon",
+      "guestInvite": "Log in or sign up to take the quiz",
+      "guestLogin": "Log in",
+      "needsReview": "Under review",
+      "onlyRussian": "This lesson is only available in Russian for now"
     },
     "quiz": {
       "difficulty": {

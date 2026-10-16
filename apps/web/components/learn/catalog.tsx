@@ -7,52 +7,80 @@ import { EmptyState, Pill, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
+import { useLearnViewer } from './viewer';
 
 type Catalog = components['schemas']['CatalogDto'];
 type Section = components['schemas']['SectionDto'];
-type Subject = components['schemas']['StudentSubjectDto'];
+/** Страница предмета: у ученика темы со статусами (API-S-18), у гостя — без (API-PUB-12). */
+type Subject = Omit<components['schemas']['StudentSubjectDto'], 'topics'> & {
+  topics: Array<
+    | components['schemas']['StudentSubjectDto']['topics'][number]
+    | (components['schemas']['PublicSubjectPageDto']['topics'][number] & { status?: undefined })
+  >;
+};
 
-/** Карточка каталога: вся карточка — ссылка, без отдельной кнопки (REQ-ST-CAT-02). */
+/**
+ * Карточка каталога: вся карточка — ссылка, без отдельной кнопки (REQ-ST-CAT-02). Предмет без опубликованных
+ * тем — «Скоро», карточка не кликабельна (BR-CNT-08).
+ */
 function CatalogCard({
   href,
   title,
   description,
   status,
   testId,
+  soon = false,
 }: {
   href: string;
   title: string;
   description: string | null;
   status: string;
   testId: string;
+  soon?: boolean;
 }) {
+  const className =
+    'flex h-full flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card';
+  const body = (
+    <>
+      <span className="flex items-start justify-between gap-3">
+        {/* Пользовательские названия не переводятся (REQ-ST-CAT-02). */}
+        <span className="text-cabinet-block font-semibold">{title}</span>
+        <Pill className={soon ? 'shrink-0 text-[var(--text-muted)]' : 'shrink-0'}>{status}</Pill>
+      </span>
+      {description ? <span className="text-sm text-[var(--text-muted)]">{description}</span> : null}
+    </>
+  );
   return (
     <li>
-      <AppLink
-        href={href}
-        data-testid={testId}
-        className="flex h-full flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card hover:border-[var(--border-strong)]"
-      >
-        <span className="flex items-start justify-between gap-3">
-          {/* Пользовательские названия не переводятся (REQ-ST-CAT-02). */}
-          <span className="text-cabinet-block font-semibold">{title}</span>
-          <Pill className="shrink-0">{status}</Pill>
-        </span>
-        {description ? <span className="text-sm text-[var(--text-muted)]">{description}</span> : null}
-      </AppLink>
+      {soon ? (
+        <div data-testid={testId} data-status="soon" className={className}>
+          {body}
+        </div>
+      ) : (
+        <AppLink
+          href={href}
+          data-testid={testId}
+          className={`${className} hover:border-[var(--border-strong)]`}
+        >
+          {body}
+        </AppLink>
+      )}
     </li>
   );
 }
 
 const grid = 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3';
 
+/** Запрос к API от имени зрителя: ученик — API-S-*, гость — API-PUB-10..13 (BR-VIS-04). */
 function useApi<T>(key: unknown[], path: string) {
   const locale = useLocale();
+  const { guest } = useLearnViewer();
+  const url = guest ? path.replace('/api/student/', '/api/public/') : path;
   return useQuery({
-    queryKey: [...key, locale],
+    queryKey: [...key, guest, locale],
     queryFn: async () => {
-      const res = await apiRequest<T>(path, { locale });
-      if (res.kind !== 'ok') throw new Error(path);
+      const res = await apiRequest<T>(url, { locale });
+      if (res.kind !== 'ok') throw new Error(url);
       return res.data;
     },
   });
@@ -88,7 +116,8 @@ export function StudentCatalog() {
             href={`/learn/subjects/${s.id}`}
             title={s.title}
             description={s.description}
-            status={t('available')}
+            status={s.status === 'soon' ? t('soon') : t('available')}
+            soon={s.status === 'soon'}
             testId="catalog-subject"
           />
         ))}
@@ -133,7 +162,8 @@ export function StudentSection({ id }: { id: string }) {
             href={`/learn/subjects/${s.id}`}
             title={s.title}
             description={s.description}
-            status={t('catalog.available')}
+            status={s.status === 'soon' ? t('catalog.soon') : t('catalog.available')}
+            soon={s.status === 'soon'}
             testId="catalog-subject"
           />
         ))}
@@ -174,18 +204,20 @@ export function StudentSubject({ id }: { id: string }) {
                   </span>
                   <span className="font-medium">{topic.title}</span>
                 </span>
-                {/* Статус темы для ученика (решение владельца 2026-10-16). */}
-                <Pill
-                  className={
-                    topic.status === 'mastered'
-                      ? 'border-[var(--success)] text-[var(--text)]'
-                      : topic.status === 'started'
-                        ? 'border-[var(--accent)] text-[var(--text)]'
-                        : 'text-[var(--text-muted)]'
-                  }
-                >
-                  {t(`status.${topic.status}`)}
-                </Pill>
+                {/* Статус темы для ученика (решение владельца 2026-10-16); гостю статусы не показываются. */}
+                {topic.status ? (
+                  <Pill
+                    className={
+                      topic.status === 'mastered'
+                        ? 'border-[var(--success)] text-[var(--text)]'
+                        : topic.status === 'started'
+                          ? 'border-[var(--accent)] text-[var(--text)]'
+                          : 'text-[var(--text-muted)]'
+                    }
+                  >
+                    {t(`status.${topic.status}`)}
+                  </Pill>
+                ) : null}
               </AppLink>
             </li>
           ))}

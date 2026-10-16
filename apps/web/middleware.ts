@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
+import { isGuestLearnPath } from './lib/auth';
 import { buildCsp, storageOrigin } from './lib/csp';
 
 const handleI18n = createMiddleware(routing);
@@ -27,6 +28,8 @@ export default function middleware(request: NextRequest) {
   if (
     locale &&
     PROTECTED.some((p) => path === p || path.startsWith(`${p}/`)) &&
+    // BR-VIS-04: каталог и уроки базовой программы гость открывает без входа.
+    !isGuestLearnPath(path) &&
     !request.cookies.has('sid')
   ) {
     const url = new URL(`/${locale}/auth/login`, request.url);

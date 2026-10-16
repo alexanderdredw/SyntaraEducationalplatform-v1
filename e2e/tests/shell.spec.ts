@@ -161,7 +161,8 @@ test.describe('Оболочка и навигация', () => {
 
   test('раздел 4: closed cabinet pages send a guest to the login page with returnTo', async ({ page }) => {
     // Страницы PH-24 кабинетов проверяются в accounts.spec.ts после входа.
-    for (const path of ['/teacher/courses', '/learn/subjects', '/account/privacy']) {
+    // Каталог и уроки базовой программы гость открывает без входа (BR-VIS-04) — здесь «Мои показатели».
+    for (const path of ['/teacher/courses', '/learn/progress', '/account/privacy']) {
       await page.goto(`/ru${path}`);
       await expect(page).toHaveURL(new RegExp(`/ru/auth/login\\?returnTo=${encodeURIComponent(path)}$`));
     }

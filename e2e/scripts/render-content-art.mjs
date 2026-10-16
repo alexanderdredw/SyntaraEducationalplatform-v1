@@ -26,6 +26,6 @@ for (const [svg, out] of Object.entries(ART)) {
   const { mkdirSync } = await import('node:fs');
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, png);
-  console.log(`${out} — ${Math.ceil(statSync(target).size / 1024)} КБ`);
+  console.warn(`${out} — ${Math.ceil(statSync(target).size / 1024)} КБ`);
 }
 await browser.close();

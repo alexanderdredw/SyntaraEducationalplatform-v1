@@ -208,9 +208,9 @@ test.describe('Интерфейс ученика: обучение (итерац
     await expect(o.getByTestId('student-catalog')).not.toContainText(subjectTitle);
     const guest = await request.newContext({ baseURL });
     expect((await guest.get(`/api/student/topics/${topicId}`)).status()).toBe(401);
+    // BR-VIS-04: личный урок учителя гостю не виден (гость читает только базовые уроки).
     const guestPage = await (await browser.newContext({ baseURL })).newPage();
-    await guestPage.goto(`/ru/learn/topics/${topicId}`);
-    await expect(guestPage).toHaveURL(/\/auth\/login/);
+    expect((await guestPage.goto(`/ru/learn/topics/${topicId}`))?.status()).toBe(404);
     await expect(guestPage.getByText('Листья')).toHaveCount(0);
 
     // Снятие с публикации и отзыв доступа скрывают тему у ученика.
@@ -385,7 +385,13 @@ test.describe('Интерфейс ученика: обучение (итерац
     await page.goto('/ru/learn/subjects');
     await expect(page.getByRole('heading', { name: st.catalog.title })).toBeVisible();
     await expect(page.getByTestId('catalog-section').first()).toContainText(st.catalog.section);
-    await expect(page.getByTestId('catalog-subject').first()).toContainText(st.catalog.available);
+    await expect(
+      page.getByTestId('catalog-subject').filter({ hasText: st.catalog.available }).first(),
+    ).toBeVisible();
+    // BR-CNT-08: предмет без опубликованных тем — «Скоро», не ссылка.
+    await expect(page.locator('[data-testid="catalog-subject"][data-status="soon"]').first()).toContainText(
+      st.catalog.soon,
+    );
     // Статусы тем на странице предмета: «Не начата» → после открытия «Начата».
     await page.goto(`/ru/learn/subjects/${subjectId}`);
     await expect(page.getByTestId('student-topic').first()).toHaveAttribute('data-status', 'not_started');

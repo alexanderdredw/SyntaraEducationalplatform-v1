@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HOME_BY_ROLE, safeReturnTo } from './auth';
+import { HOME_BY_ROLE, safeReturnTo, isGuestLearnPath } from './auth';
 import { endOfDayIso, formatDateTime } from './datetime';
 
 describe('returnTo (раздел 4)', () => {
@@ -45,5 +45,20 @@ describe('PH-31 date format', () => {
   it('REQ-SUP-01 «срок» filter boundary is the end of the day in PLATFORM_TZ', () => {
     expect(endOfDayIso('2026-10-14', 'Asia/Almaty')).toBe('2026-10-14T23:59:59.999+05:00');
     expect(endOfDayIso('2026-10-14', 'UTC')).toBe('2026-10-14T23:59:59.999+00:00');
+  });
+});
+
+describe('isGuestLearnPath', () => {
+  it('BR-VIS-04 a guest opens only the catalog, sections, subjects and lessons of /learn', () => {
+    for (const p of ['/learn/subjects', '/learn/sections/x', '/learn/subjects/x', '/learn/topics/x?tab=quiz'])
+      expect(isGuestLearnPath(p)).toBe(true);
+    for (const p of [
+      '/learn/progress',
+      '/learn/achievements',
+      '/learn/assistant',
+      '/learn/assignments',
+      '/learn',
+    ])
+      expect(isGuestLearnPath(p)).toBe(false);
   });
 });

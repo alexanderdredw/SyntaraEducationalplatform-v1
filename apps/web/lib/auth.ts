@@ -31,3 +31,15 @@ export const HOME_BY_ROLE: Record<UserRole, string> = {
 };
 
 export const STAFF_ROLES: readonly UserRole[] = ['support_agent', 'onboarding_agent'];
+
+/**
+ * BR-VIS-04: страницы `/learn/...`, которые гость открывает без входа — каталог, раздел, предмет и урок базовой
+ * программы («Обзор»). Остальные страницы ученика — только после входа.
+ */
+export function isGuestLearnPath(path: string): boolean {
+  const pathname = path.split('?')[0]!;
+  return (
+    pathname === '/learn/subjects' ||
+    ['/learn/sections/', '/learn/subjects/', '/learn/topics/'].some((p) => pathname.startsWith(p))
+  );
+}

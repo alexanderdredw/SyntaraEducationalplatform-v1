@@ -86,28 +86,28 @@ test.describe('Публичные страницы', () => {
   }) => {
     await page.goto('/ru');
     const cards = page.getByTestId('home-subjects').getByTestId('subject-card');
-    await expect(cards).toHaveCount(3);
+    // PH-01 — все базовые предметы каталога (решение владельца 2026-10-16); статус и «Открыть →» — только у open.
+    await expect(cards).toHaveCount(12);
     await expect(cards.first()).toContainText('Биология');
-    await expect(page.getByTestId('home-subjects').getByTestId('subject-status')).toHaveCount(0);
+    await expect(page.getByTestId('home-subjects').getByTestId('subject-status')).toHaveCount(1);
+    await expect(cards.first()).toContainText(ru.subjects.open);
     await expect(page.getByTestId('home-subjects').getByText(ru.home.subjects.subtitle)).toBeVisible();
   });
 
-  test('REQ-PUB-SUBJ-01..03 /subjects: statuses, «Нужен вход» → login with returnTo, «Скоро» group last, no search', async ({
+  test('REQ-PUB-SUBJ-01..03, BR-VIS-04 /subjects: «Открыт для знакомства» → catalog for a guest, «Скоро» group last, no search', async ({
     page,
   }) => {
     await page.goto('/ru/subjects');
     const available = page.getByTestId('subject-card');
-    await expect(available.first()).toHaveAttribute('data-status', 'login_required');
-    await expect(available.first().getByTestId('subject-status')).toHaveText(
-      ru.subjects.status.login_required,
-    );
+    await expect(available.first()).toHaveAttribute('data-status', 'open');
+    await expect(available.first().getByTestId('subject-status')).toHaveText(ru.subjects.status.open);
     await expect(available.first().getByRole('link')).toHaveAttribute(
       'href',
-      /^\/ru\/auth\/login\?returnTo=%2Flearn%2Fsections%2F/,
+      /^\/ru\/learn\/sections\/[0-9a-f-]{36}$/,
     );
     const soon = page.getByTestId('subjects-soon');
     await expect(soon.getByRole('heading', { name: ru.subjects.soonGroup })).toBeVisible();
-    await expect(soon.getByTestId('subject-card')).toHaveCount(2);
+    await expect(soon.getByTestId('subject-card')).toHaveCount(11);
     await expect(soon.getByRole('link')).toHaveCount(0);
     await expect(page.locator('main input, main [role="search"]')).toHaveCount(0);
   });

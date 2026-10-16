@@ -85,7 +85,7 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
           // Обложка темы — только из нашего хранилища (BR-FILE-04, BR-FILE-06).
           <img
             src={lesson.illustrationUrl}
-            alt=""
+            alt={lesson.illustrationAlt ?? ''}
             className="h-[190px] w-full rounded-[var(--radius-field)] object-cover @2xl:w-[336px]"
           />
         ) : null}
@@ -99,7 +99,22 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
                 <span className="text-[var(--accent)]">{String(s.number).padStart(2, '0')}</span> {s.title}
               </span>
             ),
-            content: s.body ? <SafeMarkdown>{s.body}</SafeMarkdown> : null,
+            // Иллюстрация раздела базового урока — из нашего хранилища, с подписью из файла (REQ-ST-LES-07).
+            content:
+              s.body || s.illustrationUrl ? (
+                <div className="flex flex-col gap-3">
+                  {s.illustrationUrl ? (
+                    <img
+                      src={s.illustrationUrl}
+                      alt={s.illustrationAlt ?? ''}
+                      loading="lazy"
+                      className="w-full max-w-[480px] rounded-[var(--radius-field)]"
+                      data-testid="section-illustration"
+                    />
+                  ) : null}
+                  {s.body ? <SafeMarkdown>{s.body}</SafeMarkdown> : null}
+                </div>
+              ) : null,
           }))}
         />
       ) : null}
