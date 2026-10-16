@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { TopicEditor } from '@/components/teacher/topic-editor';
-import { requireOwned } from '@/lib/teacher-page';
+import { requireOwned } from '@/lib/require-owned';
 
 /** /teacher/topics/:id: редактор и публикация темы (8.3.3–8.3.4, T06–T07); только владелец. */
 export default async function Page({ params }: { params: Promise<{ locale: string; id: string }> }) {

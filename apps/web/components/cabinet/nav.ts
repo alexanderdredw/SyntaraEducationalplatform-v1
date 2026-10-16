@@ -26,7 +26,7 @@ export const CABINET_NAV: Partial<Record<UserRole, CabinetNavItem[]>> = {
     { href: '/teacher/assignments', key: 'assignments', icon: 'assignments' },
   ],
   student: [
-    { href: '/learn/subjects', key: 'subjects', icon: 'courses' },
+    { href: '/learn/subjects', key: 'subjects', icon: 'courses', also: ['/learn/sections', '/learn/topics'] },
     { href: '/learn/assignments', key: 'myAssignments', icon: 'assignments' },
     { href: '/learn/assistant', key: 'assistant', icon: 'assistant' },
     { href: '/learn/progress', key: 'progress', icon: 'progress' },

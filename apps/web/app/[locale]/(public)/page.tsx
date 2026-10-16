@@ -1,7 +1,8 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookOpen, LineChart, School } from 'lucide-react';
 import { type Locale } from '@syntara/shared';
-import { getPublicSubjects } from '@/lib/api/server';
+import { cookies } from 'next/headers';
+import { getMe, getMeStats, getPublicSubjects } from '@/lib/api/server';
 import { CardGrid, InfoCard, LinkButton, Section } from '@/components/public/blocks';
 import { DemoQuestionBlock } from '@/components/public/demo-question';
 import { SubjectCards } from '@/components/public/subject-cards';
@@ -16,6 +17,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
   setRequestLocale(locale);
   const t = await getTranslations('home');
   const subjects = await getPublicSubjects(locale);
+  // REQ-ST-HOME-01: вошедший ученик видит «Продолжить учёбу →» — последняя открытая тема, иначе каталог (PH-34).
+  const cookieHeader = (await cookies()).toString();
+  const me = await getMe(cookieHeader);
+  const student = me?.activeRole === 'student';
+  const stats = student ? await getMeStats(cookieHeader) : null;
+  const continueHref = stats?.continueTopicId ? `/learn/topics/${stats.continueTopicId}` : '/learn/subjects';
 
   return (
     <>
@@ -47,10 +54,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-[var(--text-muted)] md:text-xl">{t('hero.text')}</p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <LinkButton href="/subjects">{t('hero.cta')}</LinkButton>
-            <LinkButton href="/auth/start?role=teacher" variant="text">
-              {t('hero.teacher')}
-            </LinkButton>
+            {student ? (
+              <LinkButton href={continueHref} testId="hero-continue">
+                {t('hero.continue')}
+              </LinkButton>
+            ) : (
+              <>
+                <LinkButton href="/subjects">{t('hero.cta')}</LinkButton>
+                <LinkButton href="/auth/start?role=teacher" variant="text">
+                  {t('hero.teacher')}
+                </LinkButton>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -60,7 +75,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
 
       {/* REQ-PUB-HOME-04 — логика пробного вопроса (SM-DEMO) — итерация 5 */}
       <Section testId="home-demo" label={t('demo.label')} title={t('demo.title')} text={t('demo.text')}>
-        <DemoQuestionBlock />
+        <DemoQuestionBlock student={student} />
       </Section>
 
       {/* REQ-PUB-HOME-05 */}

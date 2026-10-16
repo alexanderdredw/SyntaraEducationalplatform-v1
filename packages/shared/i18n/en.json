@@ -120,7 +120,8 @@
       "line3": "In your own language.",
       "text": "Lessons, quizzes and an AI tutor in Kazakh and Russian. Teachers create their own courses and track progress. Works even on a slow connection.",
       "cta": "To subjects →",
-      "teacher": "I'm a teacher →"
+      "teacher": "I'm a teacher →",
+      "continue": "Continue learning →"
     },
     "short": {
       "label": "IN SHORT",
@@ -927,6 +928,52 @@
     },
     "subjects": {
       "title": "Subjects"
+    },
+    "catalog": {
+      "title": "Platform subjects",
+      "section": "Section",
+      "available": "Available",
+      "empty": "No subjects available yet"
+    },
+    "section": {
+      "back": "← Subjects",
+      "empty": "No subjects in this section yet"
+    },
+    "subject": {
+      "back": "← Subjects",
+      "topics": "Topics",
+      "empty": "No published topics yet",
+      "number": "Topic {number}"
+    },
+    "lesson": {
+      "breadcrumbs": "Lesson navigation",
+      "tabs": "Lesson sections",
+      "overview": "Overview",
+      "quiz": "Quiz",
+      "ai": "Syntara AI",
+      "aiSoon": "The learning AI will be available soon"
+    },
+    "quiz": {
+      "difficulty": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "progress": "Question {index} of {count}",
+      "progressLabel": "Quiz progress",
+      "optionsLabel": "Answer options",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "correctAnswer": "Correct answer: {answer}",
+      "answerLabel": "Your answer",
+      "answer": "Answer",
+      "next": "Next",
+      "result": "Result: {score}%",
+      "xp": "+{xp} XP",
+      "badges": "New badges",
+      "retry": "Try again",
+      "empty": "This topic has no questions yet",
+      "loading": "Loading questions..."
     }
   },
   "privacy": {

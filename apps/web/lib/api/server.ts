@@ -62,7 +62,7 @@ export type MeStats = components['schemas']['MeStatsDto'];
 
 /** API-S-16 для хедера ученика; при ошибке — нули. */
 export async function getMeStats(cookieHeader: string): Promise<MeStats> {
-  return safely<MeStats>('GET /api/me/stats', { streakDays: 0, xpTotal: 0 }, () =>
+  return safely<MeStats>('GET /api/me/stats', { streakDays: 0, xpTotal: 0, continueTopicId: null }, () =>
     api().GET('/api/me/stats', { headers: { cookie: cookieHeader }, signal: signal(), cache: 'no-store' }),
   );
 }

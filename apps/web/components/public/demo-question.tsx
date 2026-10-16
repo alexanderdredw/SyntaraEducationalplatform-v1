@@ -26,7 +26,11 @@ async function loadQuestion(locale: string, exclude: string | null): Promise<Dem
  * Пробный вопрос (REQ-PUB-HOME-04, SM-DEMO): loading → question → answered; правильный ответ приходит
  * только после проверки (BR-QZ-01), баллы не начисляются (BR-QZ-09). Результат — текстом и иконкой, не только цветом.
  */
-export function DemoQuestionBlock() {
+/**
+ * `student` — вошедший ученик: «Перейти к предмету» ведёт на страницу его предмета (решение владельца
+ * 2026-10-14); гостю — /subjects.
+ */
+export function DemoQuestionBlock({ student = false }: { student?: boolean }) {
   const t = useTranslations('home.demo');
   const locale = useLocale();
   const [exclude, setExclude] = useState<string | null>(null);
@@ -189,7 +193,8 @@ export function DemoQuestionBlock() {
               </Button>
             ) : null}
             <AppLink
-              href="/subjects"
+              href={student ? `/learn/subjects/${question.subjectId}` : '/subjects'}
+              data-testid="demo-to-subject"
               className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--accent)] hover:underline"
             >
               {t('toSubject')}

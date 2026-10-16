@@ -400,6 +400,21 @@
     "teacher.quiz.archived": "Объявление после архивирования — текст не задан",
     "teacher.topic.fileSize": "Размер файла материала — формат не задан",
     "teacher.topic.fileSizeKb": "Размер файла меньше 1 МБ — формат не задан",
-    "validation.coverDownload": "BR-FILE-06: ошибка скачивания обложки по ссылке — текст не задан"
+    "validation.coverDownload": "BR-FILE-06: ошибка скачивания обложки по ссылке — текст не задан",
+    "student.catalog.empty": "Пустой каталог — текст не задан",
+    "student.section.empty": "Пустой раздел — текст не задан",
+    "student.subject.topics": "Заголовок списка тем на странице предмета ученика (страница не описана в SPEC)",
+    "student.subject.empty": "Пустой предмет — текст не задан",
+    "student.lesson.breadcrumbs": "Доступное имя хлебных крошек — текст не задан",
+    "student.lesson.tabs": "Доступное имя вкладок урока — текст не задан",
+    "student.quiz.progressLabel": "Доступное имя маркеров прогресса — текст не задан",
+    "student.quiz.optionsLabel": "Доступное имя группы вариантов — текст не задан",
+    "student.quiz.correctAnswer": "Правильный ответ для «Вписать ответ» — текст не задан",
+    "student.quiz.answerLabel": "Поле «Вписать ответ» у ученика — текст не задан",
+    "student.quiz.answer": "Кнопка отправки вписанного ответа — текст не задан",
+    "student.quiz.xp": "Начисленные XP после квиза — формат не задан",
+    "student.quiz.badges": "Заголовок новых бейджей после квиза — текст не задан",
+    "student.quiz.empty": "Квиз без вопросов — текст не задан",
+    "student.quiz.loading": "Загрузка квиза — текст не задан"
   }
 }

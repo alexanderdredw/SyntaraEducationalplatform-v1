@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { SubjectPage } from '@/components/teacher/subject-page';
-import { requireOwned } from '@/lib/teacher-page';
+import { requireOwned } from '@/lib/require-owned';
 
 /** /teacher/subjects/:id: доступ классу и темы (8.3.2, T04); только владелец. */
 export default async function Page({ params }: { params: Promise<{ locale: string; id: string }> }) {

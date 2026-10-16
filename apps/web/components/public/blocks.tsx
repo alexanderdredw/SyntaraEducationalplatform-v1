@@ -85,10 +85,12 @@ export function LinkButton({
   href,
   children,
   variant = 'white',
+  testId,
 }: {
   href: string;
   children: ReactNode;
   variant?: 'white' | 'blue' | 'secondary' | 'text';
+  testId?: string;
 }) {
   const styles = {
     white: 'bg-white text-[#070707] shadow-card hover:bg-white/90',
@@ -98,7 +100,7 @@ export function LinkButton({
     text: 'px-0 text-[var(--accent)] underline-offset-4 hover:underline',
   }[variant];
   return (
-    <AppLink href={href} className={cn(buttonBase, styles)}>
+    <AppLink href={href} className={cn(buttonBase, styles)} data-testid={testId}>
       {children}
     </AppLink>
   );

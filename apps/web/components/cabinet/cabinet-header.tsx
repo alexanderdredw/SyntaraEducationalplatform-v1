@@ -29,7 +29,7 @@ const pillAction = `${pill} hover:border-[var(--border-strong)] hover:bg-[var(--
 export function CabinetHeader({
   me,
   role,
-  stats,
+  stats: initialStats,
   enabledLocales,
 }: {
   me: Me;
@@ -41,6 +41,18 @@ export function CabinetHeader({
   const locale = useLocale();
   const router = useRouter();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  // Серия и XP «живые»: после урока и квиза запрос ['me', 'stats'] обновляется (API-S-16).
+  const statsQuery = useQuery({
+    queryKey: ['me', 'stats'],
+    enabled: initialStats !== null,
+    initialData: initialStats ?? undefined,
+    queryFn: async () => {
+      const res = await apiRequest<{ streakDays: number; xpTotal: number }>('/api/me/stats', { locale });
+      if (res.kind !== 'ok') throw new Error('stats');
+      return res.data;
+    },
+  });
+  const stats = initialStats ? (statsQuery.data ?? initialStats) : null;
   const notifications = useQuery({
     queryKey: ['me', 'notifications'],
     enabled: notificationsOpen,
