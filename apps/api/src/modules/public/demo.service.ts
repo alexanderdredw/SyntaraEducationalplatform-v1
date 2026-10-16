@@ -9,6 +9,7 @@ import { DB } from '../../infra/tokens';
 import { type DemoAnswerResponse, type DemoQuestionDto } from './public.dto';
 
 const { questions: q, questionTranslations: qt, answerOptions: o, answerOptionTranslations: ot } = schema;
+const { quizzes, topics } = schema;
 
 interface DemoQuestion {
   id: string;
@@ -37,8 +38,16 @@ export class DemoService {
     const pool = ids.length > 1 && exclude ? ids.filter((id) => id !== exclude) : ids;
     const question = await this.load(pool[randomInt(0, pool.length)]!);
     const tr = pickTranslation(question.translations, locale);
+    // «Перейти к предмету» для вошедшего ученика ведёт на страницу предмета вопроса (решение владельца 2026-10-14).
+    const [subject] = await this.db
+      .select({ id: topics.subjectId })
+      .from(q)
+      .innerJoin(quizzes, eq(quizzes.id, q.quizId))
+      .innerJoin(topics, eq(topics.id, quizzes.topicId))
+      .where(eq(q.id, question.id));
     return {
       id: question.id,
+      subjectId: subject!.id,
       version: versionOf(question),
       text: tr?.text ?? '',
       options: question.options.map((opt) => ({
@@ -71,7 +80,7 @@ export class DemoService {
   }
 
   private async visibleIds(): Promise<string[]> {
-    const { quizzes, topics, subjects } = schema;
+    const { subjects } = schema;
     const rows = await this.db
       .select({ id: q.id })
       .from(q)

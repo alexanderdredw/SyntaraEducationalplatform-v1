@@ -503,415 +503,6 @@
         ]
       }
     },
-    "/api/teacher/classes": {
-      "get": {
-        "operationId": "TeacherClassesController_list",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TeacherClassDto"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "teacher"
-        ]
-      },
-      "post": {
-        "operationId": "TeacherClassesController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateClassBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TeacherClassDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "teacher"
-        ]
-      }
-    },
-    "/api/teacher/classes/{id}/roster": {
-      "get": {
-        "operationId": "TeacherClassesController_roster",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RosterStudentDto"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          },
-          "404": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "teacher"
-        ]
-      }
-    },
-    "/api/teacher/classes/{id}/students/{studentId}/temporary-password": {
-      "post": {
-        "operationId": "TeacherClassesController_temporaryPassword",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "studentId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemporaryPasswordDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          },
-          "404": {
-            "description": ""
-          },
-          "409": {
-            "description": "У ученика есть email — сброс по почте"
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "teacher"
-        ]
-      }
-    },
-    "/api/teacher/classes/{id}/invite-codes": {
-      "post": {
-        "operationId": "TeacherClassesController_issue",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IssuedCodeDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          },
-          "404": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "teacher"
-        ]
-      }
-    },
-    "/api/student/join": {
-      "post": {
-        "operationId": "StudentClassController_join",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClassCodeBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StudentClassDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          },
-          "404": {
-            "description": "Код не найден или истёк"
-          },
-          "429": {
-            "description": "Превышен лимит; retryAfterSeconds в теле"
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "student"
-        ]
-      }
-    },
-    "/api/student/class": {
-      "get": {
-        "operationId": "StudentClassController_studentClass",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "nullable": true,
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/StudentClassDto"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "student"
-        ]
-      }
-    },
-    "/api/student/class/leave": {
-      "post": {
-        "operationId": "StudentClassController_leave",
-        "parameters": [],
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          },
-          "404": {
-            "description": "Ученик не состоит в классе"
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "student"
-        ]
-      }
-    },
-    "/api/public/join/check": {
-      "post": {
-        "operationId": "JoinController_check",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClassCodeBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CodeCheckDto"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Превышен лимит; retryAfterSeconds в теле"
-          }
-        },
-        "tags": [
-          "public"
-        ]
-      }
-    },
-    "/api/auth/register-student": {
-      "post": {
-        "operationId": "JoinController_registerStudent",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterStudentBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Ошибки полей; неверный код — fieldErrors.code = invalidCode"
-          },
-          "409": {
-            "description": "Логин или email заняты"
-          },
-          "429": {
-            "description": "Превышен лимит; retryAfterSeconds в теле"
-          }
-        },
-        "tags": [
-          "public",
-          "auth"
-        ]
-      }
-    },
     "/api/teacher/subjects": {
       "get": {
         "operationId": "TeacherSubjectsController_list",
@@ -1600,6 +1191,132 @@
         ]
       }
     },
+    "/api/student/sections/{id}": {
+      "get": {
+        "operationId": "StudentContentController_section",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/subjects/{id}": {
+      "get": {
+        "operationId": "StudentContentController_subject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentSubjectDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/events": {
+      "post": {
+        "operationId": "StudentContentController_events",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Тема недоступна"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/api/student/topics/{id}": {
       "get": {
         "operationId": "StudentContentController_topic",
@@ -1824,6 +1541,415 @@
         ]
       }
     },
+    "/api/teacher/classes": {
+      "get": {
+        "operationId": "TeacherClassesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TeacherClassDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "post": {
+        "operationId": "TeacherClassesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClassBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherClassDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/roster": {
+      "get": {
+        "operationId": "TeacherClassesController_roster",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RosterStudentDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/students/{studentId}/temporary-password": {
+      "post": {
+        "operationId": "TeacherClassesController_temporaryPassword",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemporaryPasswordDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "У ученика есть email — сброс по почте"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/invite-codes": {
+      "post": {
+        "operationId": "TeacherClassesController_issue",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuedCodeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/student/join": {
+      "post": {
+        "operationId": "StudentClassController_join",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassCodeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentClassDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Код не найден или истёк"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/class": {
+      "get": {
+        "operationId": "StudentClassController_studentClass",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "nullable": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StudentClassDto"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/class/leave": {
+      "post": {
+        "operationId": "StudentClassController_leave",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Ученик не состоит в классе"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/public/join/check": {
+      "post": {
+        "operationId": "JoinController_check",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassCodeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeCheckDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/auth/register-student": {
+      "post": {
+        "operationId": "JoinController_registerStudent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterStudentBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибки полей; неверный код — fieldErrors.code = invalidCode"
+          },
+          "409": {
+            "description": "Логин или email заняты"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "tags": [
+          "public",
+          "auth"
+        ]
+      }
+    },
     "/api/teacher/topics/{id}/quiz": {
       "get": {
         "operationId": "TeacherQuizController_get",
@@ -2014,6 +2140,157 @@
         ],
         "tags": [
           "teacher"
+        ]
+      }
+    },
+    "/api/student/quizzes/{quizId}/attempts": {
+      "post": {
+        "operationId": "StudentQuizController_start",
+        "parameters": [
+          {
+            "name": "quizId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttemptDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "В квизе нет вопросов"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/attempts/{id}/answers": {
+      "post": {
+        "operationId": "StudentQuizController_answer",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "409": {
+            "description": "INVALID_TRANSITION: попытка завершена"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/attempts/{id}/finish": {
+      "post": {
+        "operationId": "StudentQuizController_finish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinishResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "409": {
+            "description": "INVALID_TRANSITION: попытка уже завершена"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
         ]
       }
     },
@@ -3299,189 +3576,23 @@
         "type": "object",
         "properties": {
           "streakDays": {
-            "type": "number"
+            "type": "number",
+            "description": "Серия на сегодня (BR-ST-03): без активности вчера и сегодня — 0"
           },
           "xpTotal": {
             "type": "number"
+          },
+          "continueTopicId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Последняя открытая и всё ещё доступная тема — «Продолжить учёбу» (REQ-ST-HOME-01, PH-34)"
           }
         },
         "required": [
           "streakDays",
-          "xpTotal"
-        ]
-      },
-      "TeacherClassDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "studentsCount": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "studentsCount"
-        ]
-      },
-      "CreateClassBody": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 50
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "RosterStudentDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "login": {
-            "type": "string",
-            "nullable": true
-          },
-          "hasEmail": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "displayName",
-          "login",
-          "hasEmail"
-        ]
-      },
-      "TemporaryPasswordDto": {
-        "type": "object",
-        "properties": {
-          "temporaryPassword": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "temporaryPassword"
-        ]
-      },
-      "IssuedCodeDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "K7M2QX"
-          },
-          "expiresAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "code",
-          "expiresAt"
-        ]
-      },
-      "StudentClassDto": {
-        "type": "object",
-        "properties": {
-          "classId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "className": {
-            "type": "string"
-          },
-          "teacherName": {
-            "type": "string"
-          },
-          "schoolName": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "classId",
-          "className",
-          "teacherName",
-          "schoolName"
-        ]
-      },
-      "ClassCodeBody": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "Код класса; нормализуется (BR-CLS-01)"
-          }
-        },
-        "required": [
-          "code"
-        ]
-      },
-      "CodeCheckDto": {
-        "type": "object",
-        "properties": {
-          "valid": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "valid"
-        ]
-      },
-      "RegisterStudentBody": {
-        "type": "object",
-        "properties": {
-          "displayName": {
-            "type": "string",
-            "maxLength": 100
-          },
-          "login": {
-            "type": "string",
-            "description": "PH-44: 3–32 символа a-z 0-9 . _ -"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 8,
-            "maxLength": 200
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "schoolId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Школа из справочника (API-PUB-09)"
-          },
-          "schoolName": {
-            "type": "string",
-            "maxLength": 200,
-            "description": "Школа вручную — «не проверена»"
-          },
-          "code": {
-            "type": "string",
-            "description": "Код класса (необязательно, BR-CLS-01)"
-          }
-        },
-        "required": [
-          "displayName",
-          "login",
-          "password"
+          "xpTotal",
+          "continueTopicId"
         ]
       },
       "SubjectSummaryDto": {
@@ -4188,6 +4299,12 @@
             "type": "string",
             "format": "uuid"
           },
+          "quizId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Квиз темы — для API-S-07"
+          },
           "subject": {
             "$ref": "#/components/schemas/LessonSubjectDto"
           },
@@ -4250,6 +4367,7 @@
         },
         "required": [
           "id",
+          "quizId",
           "subject",
           "title",
           "number",
@@ -4337,6 +4455,106 @@
         "required": [
           "sections",
           "subjects"
+        ]
+      },
+      "SectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSubjectDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "subjects"
+        ]
+      },
+      "StudentTopicItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title"
+        ]
+      },
+      "StudentSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentTopicItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "topics"
+        ]
+      },
+      "LessonEventBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "lesson_opened"
+            ]
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "example": "lesson:{topicId}:2026-10-16"
+          }
+        },
+        "required": [
+          "type",
+          "topicId",
+          "idempotencyKey"
         ]
       },
       "UploadUrlBody": {
@@ -4490,6 +4708,180 @@
         },
         "required": [
           "message"
+        ]
+      },
+      "TeacherClassDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "studentsCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "studentsCount"
+        ]
+      },
+      "CreateClassBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "RosterStudentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasEmail": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "login",
+          "hasEmail"
+        ]
+      },
+      "TemporaryPasswordDto": {
+        "type": "object",
+        "properties": {
+          "temporaryPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "temporaryPassword"
+        ]
+      },
+      "IssuedCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "K7M2QX"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "code",
+          "expiresAt"
+        ]
+      },
+      "StudentClassDto": {
+        "type": "object",
+        "properties": {
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "className": {
+            "type": "string"
+          },
+          "teacherName": {
+            "type": "string"
+          },
+          "schoolName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "classId",
+          "className",
+          "teacherName",
+          "schoolName"
+        ]
+      },
+      "ClassCodeBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Код класса; нормализуется (BR-CLS-01)"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "CodeCheckDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "valid"
+        ]
+      },
+      "RegisterStudentBody": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "login": {
+            "type": "string",
+            "description": "PH-44: 3–32 символа a-z 0-9 . _ -"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "schoolId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Школа из справочника (API-PUB-09)"
+          },
+          "schoolName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Школа вручную — «не проверена»"
+          },
+          "code": {
+            "type": "string",
+            "description": "Код класса (необязательно, BR-CLS-01)"
+          }
+        },
+        "required": [
+          "displayName",
+          "login",
+          "password"
         ]
       },
       "OptionItemDto": {
@@ -4739,6 +5131,215 @@
         },
         "required": [
           "id"
+        ]
+      },
+      "AnsweredDto": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "correctOptionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "correctAnswer": {
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный ответ для «Вписать ответ»"
+          },
+          "explanation": {
+            "type": "string",
+            "nullable": true
+          },
+          "optionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "textAnswer": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "correct",
+          "correctOptionId",
+          "correctAnswer",
+          "explanation",
+          "optionId",
+          "textAnswer"
+        ]
+      },
+      "AttemptOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ]
+      },
+      "AttemptQuestionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false",
+              "text_input"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "options": {
+            "description": "Без признака правильности (BR-QZ-01)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptOptionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "difficulty",
+          "text",
+          "options"
+        ]
+      },
+      "AttemptDto": {
+        "type": "object",
+        "properties": {
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptQuestionDto"
+            }
+          },
+          "answered": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AnsweredDto"
+            },
+            "description": "Уже данные ответы незавершённой попытки (BR-QZ-06) по id вопроса"
+          }
+        },
+        "required": [
+          "attemptId",
+          "questions",
+          "answered"
+        ]
+      },
+      "AnswerBody": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "textAnswer": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "questionId"
+        ]
+      },
+      "AnswerResultDto": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "correctOptionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "correctAnswer": {
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный ответ для «Вписать ответ»"
+          },
+          "explanation": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "correct",
+          "correctOptionId",
+          "correctAnswer",
+          "explanation"
+        ]
+      },
+      "AwardedBadgeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "title"
+        ]
+      },
+      "FinishResultDto": {
+        "type": "object",
+        "properties": {
+          "scorePercent": {
+            "type": "number"
+          },
+          "xpAwarded": {
+            "type": "number"
+          },
+          "badgesAwarded": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AwardedBadgeDto"
+            }
+          }
+        },
+        "required": [
+          "scorePercent",
+          "xpAwarded",
+          "badgesAwarded"
         ]
       },
       "SchoolRequestBody": {
@@ -5592,6 +6193,11 @@
             "type": "string",
             "format": "uuid"
           },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Предмет вопроса — «Перейти к предмету» для ученика"
+          },
           "version": {
             "type": "string",
             "description": "Версия содержимого вопроса"
@@ -5619,6 +6225,7 @@
         },
         "required": [
           "id",
+          "subjectId",
           "version",
           "text",
           "options",

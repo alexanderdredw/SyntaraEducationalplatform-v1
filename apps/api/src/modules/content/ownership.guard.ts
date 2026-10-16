@@ -17,12 +17,13 @@ import { ApiException } from '../../common/api-exception';
 import { DB } from '../../infra/tokens';
 import { type AuthRequest } from '../auth/auth.types';
 
-export type OwnedEntity = 'subject' | 'topic' | 'question' | 'media';
+export type OwnedEntity = 'subject' | 'topic' | 'question' | 'media' | 'attempt';
 
 const OWNS_KEY = 'content:owns';
 
 /**
- * BR-ACL-01, API-GEN-08: учитель работает только со своими предметами и всем, что к ним относится.
+ * BR-ACL-01, BR-ACL-03, API-GEN-08: учитель работает только со своими предметами и всем, что к ним относится;
+ * ученик — только со своими попытками.
  * Проверка выполняется guard'ом — до разбора тела запроса, поэтому чужой или несуществующий ID всегда даёт
  * 404 (не 400 и не 403), и существование чужого объекта не раскрывается (REQ-NFR-SEC-04).
  */
@@ -58,7 +59,7 @@ export class OwnershipGuard implements CanActivate {
   }
 
   private async owns(entity: OwnedEntity, id: string, userId: string): Promise<boolean> {
-    const { subjects, topics, quizzes, questions, mediaFiles } = schema;
+    const { subjects, topics, quizzes, questions, mediaFiles, quizAttempts } = schema;
     const ownSubject = and(eq(subjects.ownerId, userId), isNull(subjects.archivedAt));
     let rows: unknown[];
     switch (entity) {
@@ -85,6 +86,13 @@ export class OwnershipGuard implements CanActivate {
           .where(
             and(eq(questions.id, id), isNull(questions.archivedAt), isNull(topics.archivedAt), ownSubject),
           );
+        break;
+      // Попытка квиза — только своя (BR-ACL-03).
+      case 'attempt':
+        rows = await this.db
+          .select({ id: quizAttempts.id })
+          .from(quizAttempts)
+          .where(and(eq(quizAttempts.id, id), eq(quizAttempts.studentId, userId)));
         break;
       case 'media':
         rows = await this.db

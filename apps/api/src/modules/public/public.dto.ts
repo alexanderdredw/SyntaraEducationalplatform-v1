@@ -44,6 +44,8 @@ class DemoOptionDto {
 /** API-PUB-02: без isCorrect (BR-QZ-01). `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02). */
 export class DemoQuestionDto {
   @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ format: 'uuid', description: 'Предмет вопроса — «Перейти к предмету» для ученика' })
+  subjectId: string;
   @ApiProperty({ description: 'Версия содержимого вопроса' }) version: string;
   @ApiProperty() text: string;
   @ApiProperty({ type: DemoOptionDto, isArray: true }) options: DemoOptionDto[];

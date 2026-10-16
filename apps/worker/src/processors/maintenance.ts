@@ -92,3 +92,27 @@ export async function cleanupStaleUploads(
   for (const key of keys) await storage.remove(key).catch(() => undefined);
   return keys.length;
 }
+
+/** SM-ATTEMPT: срок бездействия незавершённой попытки. */
+export const ABANDON_AFTER_DAYS = 30;
+
+/**
+ * SM-ATTEMPT: in_progress --(30 дней без активности)--> abandoned. Активность — старт попытки или последний ответ.
+ * Брошенная попытка не продолжается: следующий старт квиза создаёт новую (BR-QZ-06).
+ */
+export async function abandonStaleAttempts(db: Database, now = new Date()): Promise<number> {
+  const { quizAttempts: a, attemptAnswers: ans } = schema;
+  const threshold = new Date(now.getTime() - ABANDON_AFTER_DAYS * 24 * 60 * 60 * 1000);
+  const updated = await db
+    .update(a)
+    .set({ status: 'abandoned' })
+    .where(
+      and(
+        eq(a.status, 'in_progress'),
+        lt(a.startedAt, threshold),
+        sql`NOT EXISTS (SELECT 1 FROM ${ans} WHERE ${ans.attemptId} = ${a.id} AND ${ans.answeredAt} >= ${threshold.toISOString()}::timestamptz)`,
+      ),
+    )
+    .returning({ id: a.id });
+  return updated.length;
+}

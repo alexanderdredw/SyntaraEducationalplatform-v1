@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import {
   type DataRequestDto,
   getMessage,
@@ -7,6 +7,7 @@ import {
   type Messages,
   type PreferencesPatchDto,
   type UserRole,
+  localDate,
 } from '@syntara/shared';
 import ru from '@syntara/shared/i18n/ru.json';
 import kk from '@syntara/shared/i18n/kk.json';
@@ -17,6 +18,7 @@ import { AppConfigService } from '../../config/app-config.service';
 import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 import { type AuthUser } from '../auth/auth.types';
+import { VisibilityService } from '../content/visibility.service';
 import { generatePublicNumber } from '../support/public-number';
 import { type DataRequestResponse, type MeDto, type MeStatsDto, type NotificationDto } from './me.dto';
 
@@ -43,6 +45,7 @@ export class MeService {
     @Inject(DB) private readonly db: Database,
     private readonly config: AppConfigService,
     @Inject(ENV) private readonly env: Env,
+    private readonly visibility: VisibilityService,
   ) {}
 
   /** API-ME-01 */
@@ -142,14 +145,42 @@ export class MeService {
     });
   }
 
-  /** API-S-16: серия и XP ученика для хедера. */
+  /**
+   * API-S-16: серия и XP для хедера. Серия «живая» (BR-ST-03): если последний день активности раньше вчерашнего
+   * (PLATFORM_TZ), серия 0. continueTopicId — последняя открытая тема, которую ученик всё ещё видит (PH-34).
+   */
   async stats(user: AuthUser): Promise<MeStatsDto> {
     if (!user.roles.includes('student'))
       throw new ApiException(HttpStatus.FORBIDDEN, 'FORBIDDEN', 'Forbidden');
     const [row] = await this.db
-      .select({ streakDays: schema.studentStats.streakCurrent, xpTotal: schema.studentStats.xpTotal })
+      .select({
+        streak: schema.studentStats.streakCurrent,
+        xpTotal: schema.studentStats.xpTotal,
+        last: schema.studentStats.lastActivityDate,
+      })
       .from(schema.studentStats)
       .where(eq(schema.studentStats.studentId, user.id));
-    return { streakDays: row?.streakDays ?? 0, xpTotal: row?.xpTotal ?? 0 };
+    const today = localDate(new Date(), this.env.PLATFORM_TZ);
+    const yesterday = localDate(new Date(Date.now() - 86_400_000), this.env.PLATFORM_TZ);
+    const alive = row?.last === today || row?.last === yesterday;
+
+    const opened = await this.db
+      .selectDistinctOn([schema.learningEvents.topicId], {
+        topicId: schema.learningEvents.topicId,
+        at: schema.learningEvents.occurredAt,
+      })
+      .from(schema.learningEvents)
+      .where(
+        and(eq(schema.learningEvents.studentId, user.id), eq(schema.learningEvents.type, 'lesson_opened')),
+      )
+      .orderBy(schema.learningEvents.topicId, desc(schema.learningEvents.occurredAt));
+    let continueTopicId: string | null = null;
+    for (const o of opened.sort((a, b) => b.at.getTime() - a.at.getTime()).slice(0, 10)) {
+      if (o.topicId && (await this.visibility.canStudentSeeTopic(user.id, o.topicId))) {
+        continueTopicId = o.topicId;
+        break;
+      }
+    }
+    return { streakDays: alive ? (row?.streak ?? 0) : 0, xpTotal: row?.xpTotal ?? 0, continueTopicId };
   }
 }

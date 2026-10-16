@@ -12,7 +12,14 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { type Response } from 'express';
-import { AiDraftDto, GrantAccessDto, PublishDto, SubjectDto, TopicContentDto } from '@syntara/shared';
+import {
+  AiDraftDto,
+  GrantAccessDto,
+  LessonEventDto,
+  PublishDto,
+  SubjectDto,
+  TopicContentDto,
+} from '@syntara/shared';
 import { type Dto } from '../../common/dto';
 import { resolveLocale } from '../../common/locale';
 import { UuidParamPipe } from '../../common/uuid-param.pipe';
@@ -27,7 +34,10 @@ import {
   CreatedIdDto,
   GrantAccessBody,
   LessonDto,
+  LessonEventBody,
   PublishBody,
+  SectionDto,
+  StudentSubjectDto,
   PublishResultDto,
   SubjectBody,
   SubjectDetailDto,
@@ -238,6 +248,35 @@ export class StudentContentController {
   @ApiOkResponse({ type: CatalogDto })
   catalog(@Req() req: AuthRequest): Promise<CatalogDto> {
     return this.content.catalog(req.user!.id, locale(req));
+  }
+
+  /** API-S-05 (REQ-ST-CAT-03) */
+  @Get('sections/:id')
+  @ApiOkResponse({ type: SectionDto })
+  @ApiNotFoundResponse()
+  section(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<SectionDto> {
+    return this.content.section(req.user!.id, id, locale(req));
+  }
+
+  /** Страница предмета ученика (решение владельца 2026-10-14): невидимый предмет → 404 (BR-VIS-01). */
+  @Get('subjects/:id')
+  @ApiOkResponse({ type: StudentSubjectDto })
+  @ApiNotFoundResponse()
+  subject(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<StudentSubjectDto> {
+    return this.content.subject(req.user!.id, id, locale(req));
+  }
+
+  /** API-S-17 (REQ-ST-LES-04): повтор с тем же ключом не создаёт события. */
+  @Post('events')
+  @HttpCode(204)
+  @ApiBody({ type: LessonEventBody })
+  @ApiNoContentResponse()
+  @ApiNotFoundResponse({ description: 'Тема недоступна' })
+  events(
+    @Body(new ZodValidationPipe(LessonEventDto)) dto: Dto<typeof LessonEventDto>,
+    @Req() req: AuthRequest,
+  ): Promise<void> {
+    return this.content.lessonOpened(req.user!.id, dto, locale(req));
   }
 
   /** API-S-06: черновик, архив и недоступный предмет → 404 (BR-VIS-01/02). */

@@ -4,7 +4,12 @@ import { type OutboxFileScanPayload } from '@syntara/shared';
 import { type Database } from '@syntara/db';
 import { type EmailJobData, type MailTransport, sendEmail, type TokenStore } from './processors/email';
 import { type ObjectStorage, scanFile } from './processors/file-scan';
-import { autoCloseResolved, cleanupIdempotencyKeys, cleanupStaleUploads } from './processors/maintenance';
+import {
+  abandonStaleAttempts,
+  autoCloseResolved,
+  cleanupIdempotencyKeys,
+  cleanupStaleUploads,
+} from './processors/maintenance';
 import { processOutbox } from './processors/outbox';
 import { type Scanners } from './processors/scanners';
 
@@ -30,6 +35,8 @@ export const SCHEDULES = [
   { queue: 'cleanup', id: 'idempotency-keys', name: 'idempotency-keys', every: 60 * 60_000 },
   // BR-FILE-07: незавершённые загрузки — раз в сутки.
   { queue: 'cleanup', id: 'stale-uploads', name: 'stale-uploads', every: 24 * 60 * 60_000 },
+  // SM-ATTEMPT: брошенные попытки — раз в сутки.
+  { queue: 'cleanup', id: 'abandon-attempts', name: 'abandon-attempts', every: 24 * 60 * 60_000 },
 ] as const satisfies ReadonlyArray<{ queue: QueueName; id: string; name: string; every: number }>;
 
 /**
@@ -64,6 +71,7 @@ export function createProcessors(
     cleanup: async (job: Job) => {
       if (job.name === 'auto-close') return { closed: await autoCloseResolved(deps.db) };
       if (job.name === 'idempotency-keys') return { deleted: await cleanupIdempotencyKeys(deps.db) };
+      if (job.name === 'abandon-attempts') return { abandoned: await abandonStaleAttempts(deps.db) };
       if (job.name === 'stale-uploads') return { deleted: await cleanupStaleUploads(deps.db, deps.storage) };
       return { handled: false };
     },

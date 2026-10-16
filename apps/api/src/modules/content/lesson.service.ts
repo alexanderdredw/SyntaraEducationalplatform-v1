@@ -116,8 +116,10 @@ export class LessonService {
       this.nextTopic(subjectId, position, locale),
     ]);
     const [actualLocale, tr] = pick(snapshot.translations, locale) ?? [locale, undefined];
+    const [quiz] = await this.db.select({ id: quizzes.id }).from(quizzes).where(eq(quizzes.topicId, topicId));
     return {
       id: topicId,
+      quizId: quiz?.id ?? null,
       subject: { id: subjectId, title: pickTranslation(subjectTr, locale)?.title ?? '' },
       title: tr?.title ?? '',
       number: position,

@@ -9,3 +9,4 @@ export * from './ai';
 export * from './accounts';
 export * from './content';
 export * from './file-signature';
+export * from './gamification';

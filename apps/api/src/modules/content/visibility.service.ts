@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, eq, isNull, or, sql } from 'drizzle-orm';
+import { type AnyColumn, and, eq, isNull, or, sql } from 'drizzle-orm';
 import { type Database, schema } from '@syntara/db';
 import { DB } from '../../infra/tokens';
 
@@ -11,6 +11,34 @@ import { DB } from '../../infra/tokens';
 @Injectable()
 export class VisibilityService {
   constructor(@Inject(DB) private readonly db: Database) {}
+
+  /**
+   * Предмет виден ученику, если он не в архиве и либо в общем каталоге, либо выдан (без отзыва) классу, где ученик
+   * состоит активно (BR-VIS-01 для предмета: каталог, раздел, страница предмета).
+   */
+  async canStudentSeeSubject(studentId: string, subjectId: string): Promise<boolean> {
+    const { subjects } = schema;
+    const [row] = await this.db
+      .select({ id: subjects.id })
+      .from(subjects)
+      .where(
+        and(
+          eq(subjects.id, subjectId),
+          isNull(subjects.archivedAt),
+          or(eq(subjects.inPublicCatalog, true), this.viaClass(studentId, subjects.id)),
+        ),
+      );
+    return Boolean(row);
+  }
+
+  /** SQL: предмет выдан действующему классу ученика. */
+  viaClass(studentId: string, subjectColumn: AnyColumn) {
+    const { classSubjectAccess: csa, classMemberships: m } = schema;
+    return sql`EXISTS (
+      SELECT 1 FROM ${csa} JOIN ${m} ON ${m.classId} = ${csa.classId}
+      WHERE ${csa.subjectId} = ${subjectColumn} AND ${csa.revokedAt} IS NULL
+        AND ${m.studentId} = ${studentId} AND ${m.status} = 'active')`;
+  }
 
   async canStudentSeeTopic(studentId: string, topicId: string): Promise<boolean> {
     const { topics, subjects, classSubjectAccess: csa, classMemberships: m } = schema;

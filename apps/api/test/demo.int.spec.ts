@@ -31,6 +31,7 @@ describe('demo question (integration)', () => {
     const res = await http().get('/api/public/demo-question').expect(200);
     expect(res.body).toEqual({
       id: DEMO_IDS.demoQuestion,
+      subjectId: DEMO_IDS.subjectAnatomy,
       version: expect.stringMatching(/^[0-9a-f]{16}$/),
       text: 'Какой сосуд несёт кровь от сердца к телу?',
       options: [

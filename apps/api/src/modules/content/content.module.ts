@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AiModule } from '../ai/ai.module';
 import { AuditModule } from '../audit/audit.module';
 import { FilesModule } from '../files/files.module';
+import { GamificationModule } from '../gamification/gamification.module';
 import { AiDraftService } from './ai-draft.service';
 import {
   StudentContentController,
@@ -20,7 +21,7 @@ import { VisibilityService } from './visibility.service';
  * видимость для ученика — единая точка VisibilityService (BR-VIS-01).
  */
 @Module({
-  imports: [AuditModule, FilesModule, AiModule],
+  imports: [AuditModule, FilesModule, AiModule, GamificationModule],
   controllers: [TeacherSubjectsController, TeacherTopicsController, StudentContentController],
   providers: [
     VisibilityService,

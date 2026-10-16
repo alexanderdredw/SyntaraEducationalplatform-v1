@@ -10,7 +10,7 @@ import { migrateUp } from '@syntara/db/migrator';
 import { runSeed } from '@syntara/db/seed';
 import { DEMO_IDS } from '@syntara/db/seed';
 import { FILE_SCAN_JOB_OPTIONS, hasMacroParts, scanFile, zipEntryNames } from '../src/processors/file-scan';
-import { cleanupStaleUploads } from '../src/processors/maintenance';
+import { abandonStaleAttempts, cleanupStaleUploads } from '../src/processors/maintenance';
 import { processOutbox } from '../src/processors/outbox';
 import { clamdScan, type Scanners } from '../src/processors/scanners';
 
@@ -290,5 +290,36 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
     expect(links).toEqual([]);
     // Повторный запуск ничего не удаляет.
     expect(await cleanupStaleUploads(db, storage, now)).toBe(0);
+  });
+
+  it('SM-ATTEMPT in_progress attempts without activity for 30 days become abandoned', async () => {
+    const now = new Date();
+    const days = (n: number) => new Date(now.getTime() - n * 24 * 60 * 60 * 1000);
+    const [quiz] = await db.select({ id: schema.quizzes.id }).from(schema.quizzes).limit(1);
+    const [question] = await db
+      .select({ id: schema.questions.id })
+      .from(schema.questions)
+      .where(eq(schema.questions.quizId, quiz!.id))
+      .limit(1);
+    const attempt = async (startedAt: Date, answeredAt?: Date) => {
+      const [row] = await db
+        .insert(schema.quizAttempts)
+        .values({ studentId: DEMO_IDS.teacher, quizId: quiz!.id, startedAt })
+        .returning();
+      if (answeredAt)
+        await db
+          .insert(schema.attemptAnswers)
+          .values({ attemptId: row!.id, questionId: question!.id, isCorrect: true, answeredAt });
+      return row!.id;
+    };
+    const stale = await attempt(days(40));
+    const activeLately = await attempt(days(40), days(5));
+    const recent = await attempt(days(3));
+    expect(await abandonStaleAttempts(db, now)).toBe(1);
+    const status = async (id: string) =>
+      (await db.select().from(schema.quizAttempts).where(eq(schema.quizAttempts.id, id)))[0]!.status;
+    expect(await status(stale)).toBe('abandoned');
+    expect(await status(activeLately)).toBe('in_progress');
+    expect(await status(recent)).toBe('in_progress');
   });
 });

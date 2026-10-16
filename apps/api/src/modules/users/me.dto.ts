@@ -56,6 +56,14 @@ export class DataRequestResponse {
 
 /** API-S-16 */
 export class MeStatsDto {
-  @ApiProperty() streakDays: number;
+  @ApiProperty({ description: 'Серия на сегодня (BR-ST-03): без активности вчера и сегодня — 0' })
+  streakDays: number;
   @ApiProperty() xpTotal: number;
+  @ApiProperty({
+    type: String,
+    format: 'uuid',
+    nullable: true,
+    description: 'Последняя открытая и всё ещё доступная тема — «Продолжить учёбу» (REQ-ST-HOME-01, PH-34)',
+  })
+  continueTopicId: string | null;
 }

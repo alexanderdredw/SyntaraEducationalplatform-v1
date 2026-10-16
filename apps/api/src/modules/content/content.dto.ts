@@ -176,6 +176,8 @@ class LessonMaterialDto {
 /** API-S-06 и API-T-15 (предпросмотр глазами ученика). */
 export class LessonDto {
   @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ type: String, format: 'uuid', nullable: true, description: 'Квиз темы — для API-S-07' })
+  quizId: string | null;
   @ApiProperty({ type: LessonSubjectDto }) subject: LessonSubjectDto;
   @ApiProperty() title: string;
   @ApiProperty() number: number;
@@ -212,6 +214,35 @@ class CatalogSubjectDto {
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) description: string | null;
   @ApiProperty({ enum: ['available'] }) status: 'available';
+}
+
+/** API-S-05 */
+export class SectionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) description: string | null;
+  @ApiProperty({ type: CatalogSubjectDto, isArray: true }) subjects: CatalogSubjectDto[];
+}
+
+class StudentTopicItemDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() number: number;
+  @ApiProperty() title: string;
+}
+
+/** Страница предмета ученика (решение владельца 2026-10-14): опубликованные темы по position. */
+export class StudentSubjectDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) description: string | null;
+  @ApiProperty({ type: StudentTopicItemDto, isArray: true }) topics: StudentTopicItemDto[];
+}
+
+/** API-S-17 */
+export class LessonEventBody {
+  @ApiProperty({ enum: ['lesson_opened'] }) type: 'lesson_opened';
+  @ApiProperty({ format: 'uuid' }) topicId: string;
+  @ApiProperty({ example: 'lesson:{topicId}:2026-10-16' }) idempotencyKey: string;
 }
 
 /** API-S-04 */
