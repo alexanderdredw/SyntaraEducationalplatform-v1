@@ -7,3 +7,5 @@ export * from './support';
 export * from './email';
 export * from './ai';
 export * from './accounts';
+export * from './content';
+export * from './file-signature';

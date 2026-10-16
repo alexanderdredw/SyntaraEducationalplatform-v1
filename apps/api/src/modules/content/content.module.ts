@@ -1,9 +1,36 @@
 import { Module } from '@nestjs/common';
+import { AiModule } from '../ai/ai.module';
+import { AuditModule } from '../audit/audit.module';
+import { FilesModule } from '../files/files.module';
+import { AiDraftService } from './ai-draft.service';
+import {
+  StudentContentController,
+  TeacherSubjectsController,
+  TeacherTopicsController,
+} from './content.controller';
+import { LessonService } from './lesson.service';
+import { OwnershipGuard } from './ownership.guard';
+import { StudentContentService } from './student-content.service';
+import { SubjectsService } from './subjects.service';
+import { TopicsService } from './topics.service';
 import { VisibilityService } from './visibility.service';
 
-/** Модуль «content» (раздел 2.2 SPEC): видимость учебного контента (BR-VIS-01); редактор — итерация 7. */
+/**
+ * Модуль «content» (раздел 2.2 SPEC): предметы, выдача классу, темы, публикация и версии (итерация 7);
+ * видимость для ученика — единая точка VisibilityService (BR-VIS-01).
+ */
 @Module({
-  providers: [VisibilityService],
-  exports: [VisibilityService],
+  imports: [AuditModule, FilesModule, AiModule],
+  controllers: [TeacherSubjectsController, TeacherTopicsController, StudentContentController],
+  providers: [
+    VisibilityService,
+    OwnershipGuard,
+    SubjectsService,
+    TopicsService,
+    LessonService,
+    AiDraftService,
+    StudentContentService,
+  ],
+  exports: [VisibilityService, OwnershipGuard, LessonService],
 })
 export class ContentModule {}

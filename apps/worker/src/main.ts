@@ -4,6 +4,8 @@ import nodemailer from 'nodemailer';
 import pino from 'pino';
 import { createDb } from '@syntara/db';
 import { loadEnv } from './env';
+import { createScanners } from './processors/scanners';
+import { createS3Storage } from './processors/storage';
 import { createWorkers, scheduleJobs } from './queues';
 
 const env = loadEnv(process.env);
@@ -19,6 +21,8 @@ const { workers, close } = createWorkers(connection, logger, {
   mailFrom: env.MAIL_FROM,
   tokens: connection,
   appBaseUrl: env.APP_BASE_URL,
+  storage: createS3Storage(env),
+  scanners: createScanners(env.CLAMD_HOST, env.OLEVBA_URL),
 });
 void scheduleJobs(connection).catch((err: Error) => logger.error({ err: err.message }, 'scheduling failed'));
 logger.info({ queues: workers.map((w) => w.name) }, 'worker started');

@@ -31,6 +31,18 @@ const EnvSchema = z
       .enum(['true', 'false', '1', '0'])
       .default('false')
       .transform((v) => v === 'true' || v === '1'),
+    /**
+     * Только для тестов (решение Q-13): API-T-11 возвращает детерминированный черновик вместо «недоступен»,
+     * чтобы проверить AC-TCH-04 без настоящего поставщика ИИ. В продуктиве запрещено (проверка ниже).
+     */
+    AI_DRAFT_FIXTURE: z
+      .enum(['true', 'false', '1', '0'])
+      .default('false')
+      .transform((v) => v === 'true' || v === '1'),
+  })
+  .refine((env) => !(env.NODE_ENV === 'production' && env.AI_DRAFT_FIXTURE), {
+    path: ['AI_DRAFT_FIXTURE'],
+    message: 'must not be set in production',
   })
   .refine((env) => !(env.NODE_ENV === 'production' && env.RATE_LIMITS_DISABLED), {
     path: ['RATE_LIMITS_DISABLED'],

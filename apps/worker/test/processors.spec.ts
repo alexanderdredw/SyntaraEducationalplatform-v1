@@ -87,8 +87,8 @@ describe('worker processors', () => {
 
   it('BR-FRM-01 outbox events are published to the email queue once and marked processed', async () => {
     const { email } = await queueConfirmation('T-261014-0001');
-    expect(await processOutbox(db, emailQueue, logger)).toBe(1);
-    expect(await processOutbox(db, emailQueue, logger)).toBe(0);
+    expect(await processOutbox(db, { email: emailQueue }, logger)).toBe(1);
+    expect(await processOutbox(db, { email: emailQueue }, logger)).toBe(0);
 
     const queued = await emailQueue.getJob(email.id);
     expect(queued?.data).toEqual({ emailQueueId: email.id });

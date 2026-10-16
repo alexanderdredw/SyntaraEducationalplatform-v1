@@ -11,11 +11,18 @@ export const OUTBOX_EVENT_TYPES = {
   emailTicketReply: 'email.ticket_reply',
   /** API-AUTH-03, API-AUTH-04: письма аккаунта. */
   emailAccount: 'email.account',
+  /** API-T-17, BR-FILE-03: загруженный файл — в очередь проверки file-scan. */
+  fileScan: 'file.scan',
 } as const;
 export type OutboxEventType = (typeof OUTBOX_EVENT_TYPES)[keyof typeof OUTBOX_EVENT_TYPES];
 
 export interface OutboxEmailPayload {
   emailQueueId: string;
+}
+
+/** Событие file.scan и задание очереди file-scan (SM-FILE). */
+export interface OutboxFileScanPayload {
+  mediaId: string;
 }
 
 export const EMAIL_TEMPLATES = {

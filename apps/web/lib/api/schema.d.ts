@@ -388,6 +388,262 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/teacher/subjects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherSubjectsController_list"];
+        put?: never;
+        post: operations["TeacherSubjectsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/subjects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherSubjectsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["TeacherSubjectsController_update"];
+        trace?: never;
+    };
+    "/api/teacher/subjects/{id}/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherSubjectsController_grant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/subjects/{id}/access/{classId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["TeacherSubjectsController_revoke"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/subjects/{id}/topics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherSubjectsController_createTopic"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherTopicsController_get"];
+        put: operations["TeacherTopicsController_save"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/ai-draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherTopicsController_draft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherTopicsController_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherTopicsController_unpublish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherTopicsController_versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherTopicsController_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentContentController_catalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/topics/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentContentController_topic"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/files/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FilesController_uploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/files/{mediaId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FilesController_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/gallery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GalleryController_gallery"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/assistant": {
         parameters: {
             query?: never;
@@ -399,6 +655,54 @@ export interface paths {
         put?: never;
         post: operations["AssistantController_ask"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/quiz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherQuizController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/topics/{id}/quiz/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TeacherQuizController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/questions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["TeacherQuizController_update"];
+        post?: never;
+        delete: operations["TeacherQuizController_archive"];
         options?: never;
         head?: never;
         patch?: never;
@@ -852,6 +1156,291 @@ export interface components {
             /** @description Код класса (необязательно, BR-CLS-01) */
             code?: string;
         };
+        SubjectSummaryDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string | null;
+            /**
+             * @description Язык, на котором отдано название
+             * @enum {string}
+             */
+            locale: "ru" | "kk" | "en";
+            inPublicCatalog: boolean;
+            topicsCount: number;
+        };
+        SubjectBody: {
+            /** @description Переводы по языкам ru / kk / en; хотя бы один язык с названием */
+            translations: {
+                ru?: {
+                    title?: string;
+                    description?: string;
+                };
+                kk?: {
+                    title?: string;
+                    description?: string;
+                };
+                en?: {
+                    title?: string;
+                    description?: string;
+                };
+            };
+            /** @default false */
+            inPublicCatalog: boolean;
+        };
+        CreatedIdDto: {
+            /** Format: uuid */
+            id: string;
+        };
+        TopicListItemDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description Номер темы (позиция в предмете) */
+            number: number;
+            /** @description null — тема ещё без названия */
+            title: string | null;
+            /** @enum {string} */
+            status: "draft" | "published";
+        };
+        SubjectDetailDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description Переводы по языкам ru / kk / en; хотя бы один язык с названием */
+            translations: {
+                ru?: {
+                    title?: string;
+                    description?: string;
+                };
+                kk?: {
+                    title?: string;
+                    description?: string;
+                };
+                en?: {
+                    title?: string;
+                    description?: string;
+                };
+            };
+            inPublicCatalog: boolean;
+            /** @description Классы с действующей выдачей */
+            grantedClassIds: string[];
+            topics: components["schemas"]["TopicListItemDto"][];
+        };
+        GrantAccessBody: {
+            /** Format: uuid */
+            classId: string;
+        };
+        MaterialDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            mime: string;
+            size: number;
+            /** @enum {string} */
+            scanStatus: "pending" | "clean" | "rejected";
+            /** @description Подписанная ссылка на 10 минут, только clean */
+            url: string | null;
+        };
+        TopicDetailDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            subjectId: string;
+            number: number;
+            /** @enum {string} */
+            status: "draft" | "published";
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** @description Номер опубликованной версии */
+            versionNo: number | null;
+            /** @description Переводы по языкам ru / kk / en; хотя бы один язык с названием */
+            translations: {
+                ru?: {
+                    title?: string;
+                    description?: string;
+                    funFact?: string;
+                    bodyMd?: string;
+                };
+                kk?: {
+                    title?: string;
+                    description?: string;
+                    funFact?: string;
+                    bodyMd?: string;
+                };
+                en?: {
+                    title?: string;
+                    description?: string;
+                    funFact?: string;
+                    bodyMd?: string;
+                };
+            };
+            /** Format: uuid */
+            coverMediaId: string | null;
+            coverUrl: string | null;
+            /** @description Миниатюра выбранной обложки */
+            coverPreviewUrl: string | null;
+            materials: components["schemas"]["MaterialDto"][];
+            /** Format: uuid */
+            quizId: string;
+        };
+        TopicBody: {
+            /** @description Переводы по языкам ru / kk / en; хотя бы один язык с названием */
+            translations: {
+                ru?: {
+                    title?: string;
+                    description?: string;
+                    funFact?: string;
+                    bodyMd?: string;
+                };
+                kk?: {
+                    title?: string;
+                    description?: string;
+                    funFact?: string;
+                    bodyMd?: string;
+                };
+                en?: {
+                    title?: string;
+                    description?: string;
+                    funFact?: string;
+                    bodyMd?: string;
+                };
+            };
+            /** Format: uuid */
+            coverMediaId?: string | null;
+            /** @description https-ссылка на изображение */
+            coverUrl?: string | null;
+            materialIds: string[];
+        };
+        AiDraftBody: {
+            /** @description Название из формы (может быть не сохранено) */
+            title?: string;
+        };
+        AiDraftLangDto: {
+            description: string;
+            funFact: string;
+            bodyMd: string;
+        };
+        AiDraftResponse: {
+            ru: components["schemas"]["AiDraftLangDto"];
+            kk: components["schemas"]["AiDraftLangDto"];
+        };
+        PublishBody: {
+            changeNote?: string;
+        };
+        PublishResultDto: {
+            /** @enum {string} */
+            status: "draft" | "published";
+            versionNo: number | null;
+            /** Format: date-time */
+            publishedAt: string | null;
+        };
+        TopicVersionDto: {
+            /** Format: uuid */
+            id: string;
+            versionNo: number;
+            changeNote: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            authorName: string;
+        };
+        LessonSubjectDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+        };
+        LessonSectionDto: {
+            /** Format: uuid */
+            id: string;
+            number: number;
+            title: string;
+            body: string | null;
+        };
+        LessonMaterialDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @description Подписанная ссылка на 10 минут (BR-FILE-04) */
+            url: string;
+        };
+        LessonNextDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+        };
+        LessonDto: {
+            /** Format: uuid */
+            id: string;
+            subject: components["schemas"]["LessonSubjectDto"];
+            title: string;
+            number: number;
+            questionsCount: number;
+            summary: string | null;
+            bodyMd?: string | null;
+            illustrationUrl?: string | null;
+            sections: components["schemas"]["LessonSectionDto"][];
+            /** @description Материалы урока — только прошедшие проверку (BR-FILE-04) */
+            materials: components["schemas"]["LessonMaterialDto"][];
+            next: components["schemas"]["LessonNextDto"] | null;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+        };
+        CatalogSectionDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string | null;
+            /** @enum {string} */
+            status: "section";
+        };
+        CatalogSubjectDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string | null;
+            /** @enum {string} */
+            status: "available";
+        };
+        CatalogDto: {
+            sections: components["schemas"]["CatalogSectionDto"][];
+            subjects: components["schemas"]["CatalogSubjectDto"][];
+        };
+        UploadUrlBody: {
+            /** @enum {string} */
+            kind: "cover" | "material";
+            /**
+             * Format: uuid
+             * @description Обязательно для материала (лимиты на тему)
+             */
+            topicId?: string;
+            fileName: string;
+            mime: string;
+            /** @description Размер в байтах */
+            size: number;
+        };
+        UploadUrlResponse: {
+            /** Format: uuid */
+            mediaId: string;
+            /** @description Подписанная ссылка на PUT */
+            uploadUrl: string;
+            headers: {
+                [key: string]: string;
+            };
+        };
+        MediaStatusDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            scanStatus: "pending" | "clean" | "rejected";
+            url: string | null;
+        };
+        GalleryItemDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @enum {string} */
+            scanStatus: "pending" | "clean" | "rejected";
+            /** @description Миниатюра — только после проверки */
+            url: string | null;
+        };
         ChatMessageBody: {
             /** @enum {string} */
             role: "user" | "assistant";
@@ -860,6 +1449,53 @@ export interface components {
         PublicAssistantBody: {
             message: string;
             history?: components["schemas"]["ChatMessageBody"][];
+        };
+        OptionItemDto: {
+            /** Format: uuid */
+            id: string;
+            isCorrect: boolean;
+            translations: {
+                [key: string]: string;
+            };
+        };
+        QuestionItemDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description Порядковый номер в квизе */
+            number: number;
+            /** @enum {string} */
+            type: "single_choice" | "true_false" | "text_input";
+            /** @enum {string} */
+            difficulty: "easy" | "medium" | "hard";
+            textAnswer: string | null;
+            translations: {
+                [key: string]: unknown;
+            };
+            options: components["schemas"]["OptionItemDto"][];
+        };
+        QuizDto: {
+            /** Format: uuid */
+            quizId: string;
+            questions: components["schemas"]["QuestionItemDto"][];
+        };
+        QuestionBody: {
+            /** @enum {string} */
+            type: "single_choice" | "true_false" | "text_input";
+            /** @enum {string} */
+            difficulty: "easy" | "medium" | "hard";
+            /** @description По языкам: { text ≤ 1000, explanation? ≤ 2000 }; хотя бы один язык */
+            translations: {
+                [key: string]: unknown;
+            };
+            /** @description 2–8 вариантов, ровно один isCorrect; для true_false тексты задаёт сервер */
+            options?: {
+                [key: string]: unknown;
+            }[];
+            textAnswer?: string;
+        };
+        QuestionIdDto: {
+            /** Format: uuid */
+            id: string;
         };
         SchoolRequestBody: {
             schoolName: string;
@@ -2032,6 +2668,865 @@ export interface operations {
             };
         };
     };
+    TeacherSubjectsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubjectSummaryDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherSubjectsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubjectBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedIdDto"];
+                };
+            };
+            /** @description Ни в одном языке нет названия; длины PH-23 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherSubjectsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubjectDetailDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherSubjectsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubjectBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherSubjectsController_grant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GrantAccessBody"];
+            };
+        };
+        responses: {
+            /** @description Уже выдан — без изменений */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Предмет выдан классу */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Чужой предмет или чужой класс
+             *
+             *     Объект не найден или принадлежит другому учителю
+             */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherSubjectsController_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                classId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherSubjectsController_createTopic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedIdDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicDetailDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopicBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Лимиты материалов BR-FILE-02 */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_draft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiDraftBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiDraftResponse"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description «ИИ-черновик сейчас недоступен» (PH-19) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublishResultDto"];
+                };
+            };
+            /** @description У темы нет названия ни на одном языке */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublishResultDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description INVALID_TRANSITION: тема не опубликована */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_versions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopicVersionDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherTopicsController_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentContentController_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentContentController_topic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LessonDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_uploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadUrlBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadUrlResponse"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Файл или сумма файлов темы больше лимита */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Недопустимый тип или 20 файлов на тему */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FilesController_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mediaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaStatusDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Сигнатура не совпала или объект не загружен */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GalleryController_gallery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GalleryItemDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AssistantController_ask: {
         parameters: {
             query?: never;
@@ -2066,6 +3561,193 @@ export interface operations {
             };
             /** @description Превышен лимит; retryAfterSeconds в теле */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherQuizController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuizDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherQuizController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionIdDto"];
+                };
+            };
+            /** @description min2 / max8 / exactlyOneCorrect / atLeastOneLanguage */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherQuizController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuestionBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuestionIdDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherQuizController_archive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

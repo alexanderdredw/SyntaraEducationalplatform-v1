@@ -18,6 +18,8 @@ export interface TestStack {
 export async function startStack(
   seed: SeedSet = 'demo',
   override: (builder: TestingModuleBuilder) => TestingModuleBuilder = (b) => b,
+  /** Переопределение переменных окружения (например, S3 из контейнера MinIO). */
+  env: Record<string, string> = {},
 ): Promise<TestStack> {
   const [pg, redis] = await Promise.all([
     new PostgreSqlContainer('postgres:16-alpine').start(),
@@ -33,6 +35,8 @@ export async function startStack(
     S3_SECRET_KEY: 'test',
     SESSION_SECRET: 'x'.repeat(64),
     APP_BASE_URL: 'http://127.0.0.1:3000',
+    AI_DRAFT_FIXTURE: 'false',
+    ...env,
   });
   const db = createDb(pg.getConnectionUri(), { max: 2 });
   await migrateUp(db);

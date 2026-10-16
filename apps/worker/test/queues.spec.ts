@@ -15,6 +15,8 @@ describe('worker queues', () => {
     mailFrom: 'noreply@syntara-edu.me',
     tokens: { set: async () => 'OK' },
     appBaseUrl: 'http://localhost:3000',
+    storage: { read: async () => Buffer.alloc(0), remove: async () => undefined },
+    scanners: { antivirus: async () => ({ infected: false }), macros: async () => ({ macros: false }) },
   };
 
   beforeAll(async () => {
@@ -36,7 +38,7 @@ describe('worker queues', () => {
     const logger = pino({}, { write: (line: string) => lines.push(line) });
     const { close } = createWorkers(connection, logger, deps);
     try {
-      for (const name of ['file-scan', 'recalc'] as const) {
+      for (const name of ['recalc'] as const) {
         const queue = new Queue(name, { connection });
         // QueueEvents по умолчанию читает поток с «$» и не видит события, записанные до первого XREAD:
         // если worker завершал задание раньше, «completed» терялся и тест падал по таймауту.

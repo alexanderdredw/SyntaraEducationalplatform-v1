@@ -912,6 +912,871 @@
         ]
       }
     },
+    "/api/teacher/subjects": {
+      "get": {
+        "operationId": "TeacherSubjectsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SubjectSummaryDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "post": {
+        "operationId": "TeacherSubjectsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedIdDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ни в одном языке нет названия; длины PH-23"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/subjects/{id}": {
+      "get": {
+        "operationId": "TeacherSubjectsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "patch": {
+        "operationId": "TeacherSubjectsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/subjects/{id}/access": {
+      "post": {
+        "operationId": "TeacherSubjectsController_grant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantAccessBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Уже выдан — без изменений"
+          },
+          "201": {
+            "description": "Предмет выдан классу"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Чужой предмет или чужой класс\n\nОбъект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/subjects/{id}/access/{classId}": {
+      "delete": {
+        "operationId": "TeacherSubjectsController_revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "classId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/subjects/{id}/topics": {
+      "post": {
+        "operationId": "TeacherSubjectsController_createTopic",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedIdDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}": {
+      "get": {
+        "operationId": "TeacherTopicsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicDetailDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "put": {
+        "operationId": "TeacherTopicsController_save",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "422": {
+            "description": "Лимиты материалов BR-FILE-02"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/ai-draft": {
+      "post": {
+        "operationId": "TeacherTopicsController_draft",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiDraftBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiDraftResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "503": {
+            "description": "«ИИ-черновик сейчас недоступен» (PH-19)"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/publish": {
+      "post": {
+        "operationId": "TeacherTopicsController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "У темы нет названия ни на одном языке"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/unpublish": {
+      "post": {
+        "operationId": "TeacherTopicsController_unpublish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "409": {
+            "description": "INVALID_TRANSITION: тема не опубликована"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/versions": {
+      "get": {
+        "operationId": "TeacherTopicsController_versions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TopicVersionDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/preview": {
+      "get": {
+        "operationId": "TeacherTopicsController_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/student/catalog": {
+      "get": {
+        "operationId": "StudentContentController_catalog",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/topics/{id}": {
+      "get": {
+        "operationId": "StudentContentController_topic",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/files/upload-url": {
+      "post": {
+        "operationId": "FilesController_uploadUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadUrlBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUrlResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "413": {
+            "description": "Файл или сумма файлов темы больше лимита"
+          },
+          "422": {
+            "description": "Недопустимый тип или 20 файлов на тему"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/files/{mediaId}/complete": {
+      "post": {
+        "operationId": "FilesController_complete",
+        "parameters": [
+          {
+            "name": "mediaId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaStatusDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "413": {
+            "description": ""
+          },
+          "422": {
+            "description": "Сигнатура не совпала или объект не загружен"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/gallery": {
+      "get": {
+        "operationId": "GalleryController_gallery",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GalleryItemDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
     "/api/public/assistant": {
       "post": {
         "operationId": "AssistantController_ask",
@@ -956,6 +1821,199 @@
         },
         "tags": [
           "public"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/quiz": {
+      "get": {
+        "operationId": "TeacherQuizController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/topics/{id}/quiz/questions": {
+      "post": {
+        "operationId": "TeacherQuizController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionIdDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "min2 / max8 / exactlyOneCorrect / atLeastOneLanguage"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/questions/{id}": {
+      "put": {
+        "operationId": "TeacherQuizController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionIdDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "delete": {
+        "operationId": "TeacherQuizController_archive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
         ]
       }
     },
@@ -2426,6 +3484,965 @@
           "password"
         ]
       },
+      "SubjectSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ],
+            "description": "Язык, на котором отдано название"
+          },
+          "inPublicCatalog": {
+            "type": "boolean"
+          },
+          "topicsCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "locale",
+          "inPublicCatalog",
+          "topicsCount"
+        ]
+      },
+      "SubjectBody": {
+        "type": "object",
+        "properties": {
+          "translations": {
+            "type": "object",
+            "description": "Переводы по языкам ru / kk / en; хотя бы один язык с названием",
+            "properties": {
+              "ru": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "kk": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "en": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              }
+            }
+          },
+          "inPublicCatalog": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "translations",
+          "inPublicCatalog"
+        ]
+      },
+      "CreatedIdDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "TopicListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number",
+            "description": "Номер темы (позиция в предмете)"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "description": "null — тема ещё без названия"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title",
+          "status"
+        ]
+      },
+      "SubjectDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "translations": {
+            "type": "object",
+            "description": "Переводы по языкам ru / kk / en; хотя бы один язык с названием",
+            "properties": {
+              "ru": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "kk": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "en": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              }
+            }
+          },
+          "inPublicCatalog": {
+            "type": "boolean"
+          },
+          "grantedClassIds": {
+            "description": "Классы с действующей выдачей",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopicListItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "translations",
+          "inPublicCatalog",
+          "grantedClassIds",
+          "topics"
+        ]
+      },
+      "GrantAccessBody": {
+        "type": "object",
+        "properties": {
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "classId"
+        ]
+      },
+      "MaterialDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "clean",
+              "rejected"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Подписанная ссылка на 10 минут, только clean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "mime",
+          "size",
+          "scanStatus",
+          "url"
+        ]
+      },
+      "TopicDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "versionNo": {
+            "type": "number",
+            "nullable": true,
+            "description": "Номер опубликованной версии"
+          },
+          "translations": {
+            "type": "object",
+            "description": "Переводы по языкам ru / kk / en; хотя бы один язык с названием",
+            "properties": {
+              "ru": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "funFact": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "bodyMd": {
+                    "type": "string",
+                    "maxLength": 50000
+                  }
+                }
+              },
+              "kk": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "funFact": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "bodyMd": {
+                    "type": "string",
+                    "maxLength": 50000
+                  }
+                }
+              },
+              "en": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "funFact": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "bodyMd": {
+                    "type": "string",
+                    "maxLength": 50000
+                  }
+                }
+              }
+            }
+          },
+          "coverMediaId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "coverUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverPreviewUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Миниатюра выбранной обложки"
+          },
+          "materials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaterialDto"
+            }
+          },
+          "quizId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "subjectId",
+          "number",
+          "status",
+          "publishedAt",
+          "versionNo",
+          "translations",
+          "coverMediaId",
+          "coverUrl",
+          "coverPreviewUrl",
+          "materials",
+          "quizId"
+        ]
+      },
+      "TopicBody": {
+        "type": "object",
+        "properties": {
+          "translations": {
+            "type": "object",
+            "description": "Переводы по языкам ru / kk / en; хотя бы один язык с названием",
+            "properties": {
+              "ru": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "funFact": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "bodyMd": {
+                    "type": "string",
+                    "maxLength": 50000
+                  }
+                }
+              },
+              "kk": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "funFact": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "bodyMd": {
+                    "type": "string",
+                    "maxLength": 50000
+                  }
+                }
+              },
+              "en": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 150
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "funFact": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "bodyMd": {
+                    "type": "string",
+                    "maxLength": 50000
+                  }
+                }
+              }
+            }
+          },
+          "coverMediaId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "coverUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "https-ссылка на изображение"
+          },
+          "materialIds": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "translations",
+          "materialIds"
+        ]
+      },
+      "AiDraftBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 150,
+            "description": "Название из формы (может быть не сохранено)"
+          }
+        }
+      },
+      "AiDraftLangDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "funFact": {
+            "type": "string"
+          },
+          "bodyMd": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "funFact",
+          "bodyMd"
+        ]
+      },
+      "AiDraftResponse": {
+        "type": "object",
+        "properties": {
+          "ru": {
+            "$ref": "#/components/schemas/AiDraftLangDto"
+          },
+          "kk": {
+            "$ref": "#/components/schemas/AiDraftLangDto"
+          }
+        },
+        "required": [
+          "ru",
+          "kk"
+        ]
+      },
+      "PublishBody": {
+        "type": "object",
+        "properties": {
+          "changeNote": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "PublishResultDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          },
+          "versionNo": {
+            "type": "number",
+            "nullable": true
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "status",
+          "versionNo",
+          "publishedAt"
+        ]
+      },
+      "TopicVersionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "versionNo": {
+            "type": "number"
+          },
+          "changeNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "versionNo",
+          "changeNote",
+          "createdAt",
+          "authorName"
+        ]
+      },
+      "LessonSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "LessonSectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title",
+          "body"
+        ]
+      },
+      "LessonMaterialDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Подписанная ссылка на 10 минут (BR-FILE-04)"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "url"
+        ]
+      },
+      "LessonNextDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "LessonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/LessonSubjectDto"
+          },
+          "title": {
+            "type": "string"
+          },
+          "number": {
+            "type": "number"
+          },
+          "questionsCount": {
+            "type": "number"
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          },
+          "bodyMd": {
+            "type": "string",
+            "nullable": true
+          },
+          "illustrationUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonSectionDto"
+            }
+          },
+          "materials": {
+            "description": "Материалы урока — только прошедшие проверку (BR-FILE-04)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonMaterialDto"
+            }
+          },
+          "next": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LessonNextDto"
+              }
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "subject",
+          "title",
+          "number",
+          "questionsCount",
+          "summary",
+          "sections",
+          "materials",
+          "next",
+          "locale"
+        ]
+      },
+      "CatalogSectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "section"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "status"
+        ]
+      },
+      "CatalogSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "status"
+        ]
+      },
+      "CatalogDto": {
+        "type": "object",
+        "properties": {
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSectionDto"
+            }
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CatalogSubjectDto"
+            }
+          }
+        },
+        "required": [
+          "sections",
+          "subjects"
+        ]
+      },
+      "UploadUrlBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "cover",
+              "material"
+            ]
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Обязательно для материала (лимиты на тему)"
+          },
+          "fileName": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "mime": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number",
+            "description": "Размер в байтах"
+          }
+        },
+        "required": [
+          "kind",
+          "fileName",
+          "mime",
+          "size"
+        ]
+      },
+      "UploadUrlResponse": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uploadUrl": {
+            "type": "string",
+            "description": "Подписанная ссылка на PUT"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "mediaId",
+          "uploadUrl",
+          "headers"
+        ]
+      },
+      "MediaStatusDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "clean",
+              "rejected"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "scanStatus",
+          "url"
+        ]
+      },
+      "GalleryItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "clean",
+              "rejected"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "nullable": true,
+            "description": "Миниатюра — только после проверки"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "scanStatus",
+          "url"
+        ]
+      },
       "ChatMessageBody": {
         "type": "object",
         "properties": {
@@ -2462,6 +4479,155 @@
         },
         "required": [
           "message"
+        ]
+      },
+      "OptionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isCorrect": {
+            "type": "boolean"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "isCorrect",
+          "translations"
+        ]
+      },
+      "QuestionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number",
+            "description": "Порядковый номер в квизе"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false",
+              "text_input"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ]
+          },
+          "textAnswer": {
+            "type": "string",
+            "nullable": true
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "type",
+          "difficulty",
+          "textAnswer",
+          "translations",
+          "options"
+        ]
+      },
+      "QuizDto": {
+        "type": "object",
+        "properties": {
+          "quizId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionItemDto"
+            }
+          }
+        },
+        "required": [
+          "quizId",
+          "questions"
+        ]
+      },
+      "QuestionBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false",
+              "text_input"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ]
+          },
+          "translations": {
+            "type": "object",
+            "description": "По языкам: { text ≤ 1000, explanation? ≤ 2000 }; хотя бы один язык",
+            "additionalProperties": true
+          },
+          "options": {
+            "type": "array",
+            "description": "2–8 вариантов, ровно один isCorrect; для true_false тексты задаёт сервер",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "textAnswer": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "type",
+          "difficulty",
+          "translations"
+        ]
+      },
+      "QuestionIdDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
         ]
       },
       "SchoolRequestBody": {

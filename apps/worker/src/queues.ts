@@ -1,9 +1,12 @@
 import { Queue, Worker, type ConnectionOptions, type Job, type Processor } from 'bullmq';
 import { type Logger } from 'pino';
+import { type OutboxFileScanPayload } from '@syntara/shared';
 import { type Database } from '@syntara/db';
 import { type EmailJobData, type MailTransport, sendEmail, type TokenStore } from './processors/email';
+import { type ObjectStorage, scanFile } from './processors/file-scan';
 import { autoCloseResolved, cleanupIdempotencyKeys } from './processors/maintenance';
 import { processOutbox } from './processors/outbox';
+import { type Scanners } from './processors/scanners';
 
 /** Очереди worker (раздел 2.2 SPEC). */
 export const QUEUE_NAMES = ['outbox', 'email', 'file-scan', 'recalc', 'cleanup'] as const;
@@ -15,6 +18,9 @@ export interface WorkerDeps {
   mailFrom: string;
   tokens: TokenStore;
   appBaseUrl: string;
+  /** Проверка файлов (BR-FILE-03). */
+  storage: ObjectStorage;
+  scanners: Scanners;
 }
 
 /** Периодические задачи (BullMQ job schedulers): опрос outbox, автозакрытие обращений, очистка ключей. */
@@ -25,8 +31,7 @@ export const SCHEDULES = [
 ] as const satisfies ReadonlyArray<{ queue: QueueName; id: string; name: string; every: number }>;
 
 /**
- * Процессоры-заготовки для очередей, логика которых появится позже: file-scan — итерация 7 (BR-FILE-03),
- * recalc — итерация 8. Данные задания в журнал не пишутся (REQ-NFR-SEC-07).
+ * Процессор-заготовка для очереди, логика которой появится позже: recalc — итерация 8. Данные задания в журнал не пишутся (REQ-NFR-SEC-07).
  */
 export function placeholderProcessor(queue: QueueName, logger: Logger): Processor {
   return async (job: Job) => {
@@ -41,12 +46,18 @@ export function createProcessors(
   deps: WorkerDeps,
 ): { processors: Record<QueueName, Processor>; close: () => Promise<void> } {
   const emailQueue = new Queue('email', { connection });
+  const fileScanQueue = new Queue('file-scan', { connection });
   const processors: Record<QueueName, Processor> = {
     // BR-FRM-01: события outbox → очередь email.
-    outbox: async () => ({ published: await processOutbox(deps.db, emailQueue, logger) }),
+    outbox: async () => ({
+      published: await processOutbox(deps.db, { email: emailQueue, fileScan: fileScanQueue }, logger),
+    }),
     // BR-FRM-03/04, API-SUP-04: отправка письма с повторами.
     email: async (job: Job<EmailJobData>) => ({ result: await sendEmail(job, { ...deps, logger }) }),
-    'file-scan': placeholderProcessor('file-scan', logger),
+    // BR-FILE-03, SM-FILE: ClamAV + olevba; отклонённый файл удаляется из хранилища.
+    'file-scan': async (job: Job<OutboxFileScanPayload>) => ({
+      result: await scanFile(job, { ...deps, logger }),
+    }),
     recalc: placeholderProcessor('recalc', logger),
     cleanup: async (job: Job) => {
       if (job.name === 'auto-close') return { closed: await autoCloseResolved(deps.db) };
@@ -54,7 +65,12 @@ export function createProcessors(
       return { handled: false };
     },
   };
-  return { processors, close: () => emailQueue.close() };
+  return {
+    processors,
+    close: async () => {
+      await Promise.allSettled([emailQueue.close(), fileScanQueue.close()]);
+    },
+  };
 }
 
 export function createWorkers(

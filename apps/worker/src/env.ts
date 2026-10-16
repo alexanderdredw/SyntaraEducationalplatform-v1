@@ -9,7 +9,13 @@ const EnvSchema = z.object({
   MAIL_FROM: z.email(),
   APP_BASE_URL: z.url(),
   PLATFORM_TZ: z.string().default('Asia/Almaty'),
-  // CLAMD_HOST, OLEVBA_URL станут обязательными вместе с проверкой файлов (итерация 7).
+  // Проверка файлов (BR-FILE-03): хранилище, ClamAV (host:port) и сервис olevba.
+  S3_ENDPOINT: z.url(),
+  S3_BUCKET: z.string().min(1),
+  S3_ACCESS_KEY: z.string().min(1),
+  S3_SECRET_KEY: z.string().min(1),
+  CLAMD_HOST: z.string().regex(/^[^:s]+:d+$/),
+  OLEVBA_URL: z.url(),
 });
 export type WorkerEnv = z.infer<typeof EnvSchema>;
 

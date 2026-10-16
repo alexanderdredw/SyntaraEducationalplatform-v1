@@ -21,5 +21,6 @@ export function createProvider(env: Env): LLMProvider {
 @Module({
   controllers: [AssistantController],
   providers: [AssistantService, { provide: LLM_PROVIDER, inject: [ENV], useFactory: createProvider }],
+  exports: [LLM_PROVIDER],
 })
 export class AiModule {}

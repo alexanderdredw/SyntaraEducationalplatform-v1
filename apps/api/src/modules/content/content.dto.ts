@@ -1,0 +1,214 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+/** OpenAPI-описание тел и ответов модуля content (6.4, 6.5). Валидация — Zod-схемами packages/shared. */
+
+const translationsSchema = (props: Record<string, { type: 'string'; maxLength: number }>) => ({
+  type: 'object' as const,
+  description: 'Переводы по языкам ru / kk / en; хотя бы один язык с названием',
+  properties: Object.fromEntries(
+    ['ru', 'kk', 'en'].map((l) => [l, { type: 'object' as const, properties: props }]),
+  ),
+});
+
+const subjectLang = {
+  title: { type: 'string' as const, maxLength: 150 },
+  description: { type: 'string' as const, maxLength: 1000 },
+};
+const topicLang = {
+  ...subjectLang,
+  funFact: { type: 'string' as const, maxLength: 500 },
+  bodyMd: { type: 'string' as const, maxLength: 50000 },
+};
+
+export type Translations<T> = Partial<Record<'ru' | 'kk' | 'en', T>>;
+export interface SubjectLangDto {
+  title: string;
+  description?: string | null;
+}
+export interface TopicLangDto extends SubjectLangDto {
+  funFact?: string | null;
+  bodyMd?: string | null;
+}
+
+/** API-T-02 / API-T-03 PATCH */
+export class SubjectBody {
+  @ApiProperty(translationsSchema(subjectLang)) translations: Translations<SubjectLangDto>;
+  @ApiProperty({ default: false }) inPublicCatalog: boolean;
+}
+
+/** API-T-01: «Мои курсы» (минимальная версия, PH-24). */
+export class SubjectSummaryDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) description: string | null;
+  @ApiProperty({ enum: ['ru', 'kk', 'en'], description: 'Язык, на котором отдано название' }) locale: string;
+  @ApiProperty() inPublicCatalog: boolean;
+  @ApiProperty() topicsCount: number;
+}
+
+/** REQ-TCH-ACC-02: номер, название, статус. */
+export class TopicListItemDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ description: 'Номер темы (позиция в предмете)' }) number: number;
+  @ApiProperty({ type: String, nullable: true, description: 'null — тема ещё без названия' })
+  title: string | null;
+  @ApiProperty({ enum: ['draft', 'published'] }) status: 'draft' | 'published';
+}
+
+/** API-T-03 GET */
+export class SubjectDetailDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty(translationsSchema(subjectLang)) translations: Translations<SubjectLangDto>;
+  @ApiProperty() inPublicCatalog: boolean;
+  @ApiProperty({ type: String, format: 'uuid', isArray: true, description: 'Классы с действующей выдачей' })
+  grantedClassIds: string[];
+  @ApiProperty({ type: TopicListItemDto, isArray: true }) topics: TopicListItemDto[];
+}
+
+/** API-T-07 */
+export class GrantAccessBody {
+  @ApiProperty({ format: 'uuid' }) classId: string;
+}
+
+export class CreatedIdDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+}
+
+/** Материал темы со статусом проверки (REQ-TCH-TOP-05). */
+export class MaterialDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() name: string;
+  @ApiProperty() mime: string;
+  @ApiProperty() size: number;
+  @ApiProperty({ enum: ['pending', 'clean', 'rejected'] }) scanStatus: 'pending' | 'clean' | 'rejected';
+  @ApiProperty({ type: String, nullable: true, description: 'Подписанная ссылка на 10 минут, только clean' })
+  url: string | null;
+}
+
+/** API-T-10 PUT */
+export class TopicBody {
+  @ApiProperty(translationsSchema(topicLang)) translations: Translations<TopicLangDto>;
+  @ApiPropertyOptional({ type: String, format: 'uuid', nullable: true }) coverMediaId?: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true, description: 'https-ссылка на изображение' })
+  coverUrl?: string | null;
+  @ApiProperty({ type: String, format: 'uuid', isArray: true, maxItems: 20 }) materialIds: string[];
+}
+
+/** API-T-10 GET */
+export class TopicDetailDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ format: 'uuid' }) subjectId: string;
+  @ApiProperty() number: number;
+  @ApiProperty({ enum: ['draft', 'published'] }) status: 'draft' | 'published';
+  @ApiProperty({ type: String, format: 'date-time', nullable: true }) publishedAt: string | null;
+  @ApiProperty({ type: Number, nullable: true, description: 'Номер опубликованной версии' })
+  versionNo: number | null;
+  @ApiProperty(translationsSchema(topicLang)) translations: Translations<TopicLangDto>;
+  @ApiProperty({ type: String, format: 'uuid', nullable: true }) coverMediaId: string | null;
+  @ApiProperty({ type: String, nullable: true }) coverUrl: string | null;
+  @ApiProperty({ type: String, nullable: true, description: 'Миниатюра выбранной обложки' })
+  coverPreviewUrl: string | null;
+  @ApiProperty({ type: MaterialDto, isArray: true }) materials: MaterialDto[];
+  @ApiProperty({ format: 'uuid' }) quizId: string;
+}
+
+/** API-T-11 */
+export class AiDraftBody {
+  @ApiPropertyOptional({ maxLength: 150, description: 'Название из формы (может быть не сохранено)' })
+  title?: string;
+}
+
+class AiDraftLangDto {
+  @ApiProperty() description: string;
+  @ApiProperty() funFact: string;
+  @ApiProperty() bodyMd: string;
+}
+
+export class AiDraftResponse {
+  @ApiProperty({ type: AiDraftLangDto }) ru: AiDraftLangDto;
+  @ApiProperty({ type: AiDraftLangDto }) kk: AiDraftLangDto;
+}
+
+/** API-T-12 */
+export class PublishBody {
+  @ApiPropertyOptional({ maxLength: 500 }) changeNote?: string;
+}
+
+export class PublishResultDto {
+  @ApiProperty({ enum: ['draft', 'published'] }) status: 'draft' | 'published';
+  @ApiProperty({ type: Number, nullable: true }) versionNo: number | null;
+  @ApiProperty({ type: String, format: 'date-time', nullable: true }) publishedAt: string | null;
+}
+
+/** API-T-14 (PH-25: без восстановления) */
+export class TopicVersionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() versionNo: number;
+  @ApiProperty({ type: String, nullable: true }) changeNote: string | null;
+  @ApiProperty({ format: 'date-time' }) createdAt: string;
+  @ApiProperty() authorName: string;
+}
+
+class LessonSubjectDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+}
+
+class LessonSectionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() number: number;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) body: string | null;
+}
+
+class LessonNextDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+}
+
+class LessonMaterialDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() name: string;
+  @ApiProperty({ description: 'Подписанная ссылка на 10 минут (BR-FILE-04)' }) url: string;
+}
+
+/** API-S-06 и API-T-15 (предпросмотр глазами ученика). */
+export class LessonDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ type: LessonSubjectDto }) subject: LessonSubjectDto;
+  @ApiProperty() title: string;
+  @ApiProperty() number: number;
+  @ApiProperty() questionsCount: number;
+  @ApiProperty({ type: String, nullable: true }) summary: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) bodyMd?: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) illustrationUrl?: string | null;
+  @ApiProperty({ type: LessonSectionDto, isArray: true }) sections: LessonSectionDto[];
+  @ApiProperty({
+    type: LessonMaterialDto,
+    isArray: true,
+    description: 'Материалы урока — только прошедшие проверку (BR-FILE-04)',
+  })
+  materials: LessonMaterialDto[];
+  @ApiProperty({ type: LessonNextDto, nullable: true }) next: LessonNextDto | null;
+  @ApiProperty({ enum: ['ru', 'kk', 'en'] }) locale: string;
+}
+
+class CatalogSectionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) description: string | null;
+  @ApiProperty({ enum: ['section'] }) status: 'section';
+}
+
+class CatalogSubjectDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, nullable: true }) description: string | null;
+  @ApiProperty({ enum: ['available'] }) status: 'available';
+}
+
+/** API-S-04 */
+export class CatalogDto {
+  @ApiProperty({ type: CatalogSectionDto, isArray: true }) sections: CatalogSectionDto[];
+  @ApiProperty({ type: CatalogSubjectDto, isArray: true }) subjects: CatalogSubjectDto[];
+}

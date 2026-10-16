@@ -25,6 +25,11 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
   let student: Session;
   let support: Session;
   let foreignClassId: string;
+  /** Объекты учителя A по префиксу маршрута — для проверки «чужое → 404» от имени учителя B. */
+  const foreign: Array<{ prefix: string; id: () => string }> = [];
+  let foreignSubjectId: string;
+  let foreignTopicId: string;
+  let foreignQuestionId: string;
   const http = () => request(stack.app.getHttpServer());
 
   const call = (op: Operation, path: string, s?: Session) => {
@@ -77,6 +82,30 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
       .send({ code: code.body.code, displayName: 'ACL', login: 'acl.student', password: 'student-pass-1' })
       .expect(201);
     student = await login(http, 'acl.student', 'student-pass-1');
+
+    const asA = (path: string, body: object = {}) =>
+      http().post(path).set('Cookie', teacherA.cookie).set('X-CSRF-Token', teacherA.csrf).send(body);
+    foreignSubjectId = (
+      await asA('/api/teacher/subjects', {
+        translations: { ru: { title: 'ACL' } },
+        inPublicCatalog: false,
+      }).expect(201)
+    ).body.id;
+    foreignTopicId = (await asA(`/api/teacher/subjects/${foreignSubjectId}/topics`).expect(201)).body.id;
+    foreignQuestionId = (
+      await asA(`/api/teacher/topics/${foreignTopicId}/quiz/questions`, {
+        type: 'text_input',
+        difficulty: 'easy',
+        translations: { ru: { text: 'ACL?' } },
+        textAnswer: 'да',
+      }).expect(201)
+    ).body.id;
+    foreign.push(
+      { prefix: '/api/teacher/classes/', id: () => foreignClassId },
+      { prefix: '/api/teacher/subjects/', id: () => foreignSubjectId },
+      { prefix: '/api/teacher/topics/', id: () => foreignTopicId },
+      { prefix: '/api/teacher/questions/', id: () => foreignQuestionId },
+    );
   });
 
   afterAll(() => stack?.stop());
@@ -91,6 +120,14 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
         'POST /api/student/join',
         'GET /api/student/class',
         'POST /api/student/class/leave',
+        'GET /api/teacher/subjects',
+        'POST /api/teacher/subjects/{id}/access',
+        'PUT /api/teacher/topics/{id}',
+        'POST /api/teacher/topics/{id}/publish',
+        'PUT /api/teacher/questions/{id}',
+        'GET /api/teacher/gallery',
+        'GET /api/student/catalog',
+        'GET /api/student/topics/{id}',
       ]),
     );
   });
@@ -117,10 +154,9 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
     for (const op of withId) {
       const owner = op.path.startsWith('/api/teacher/') ? teacherB : student;
       expect((await call(op, fill(op.path, UNKNOWN_ID), owner)).status, `unknown ${op.path}`).toBe(404);
-      if (op.path.startsWith('/api/teacher/classes/')) {
-        expect((await call(op, fill(op.path, foreignClassId), teacherB)).status, `foreign ${op.path}`).toBe(
-          404,
-        );
+      const own = foreign.find((f) => op.path.startsWith(f.prefix));
+      if (own) {
+        expect((await call(op, fill(op.path, own.id()), teacherB)).status, `foreign ${op.path}`).toBe(404);
       }
     }
   });

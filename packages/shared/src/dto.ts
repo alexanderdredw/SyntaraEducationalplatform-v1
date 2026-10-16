@@ -71,6 +71,17 @@ export const QuestionDto = z
       const n = q.options?.length ?? 0;
       const correct = q.options?.filter((o) => o.isCorrect).length ?? 0;
       if (n < 2) ctx.addIssue({ code: 'custom', path: ['options'], message: 'min2' });
+      // REQ-TCH-QZ-02: 2–8 вариантов; «Верно/Неверно» — ровно два фиксированных (BR-QZ-02, PH-28).
+      if (q.type === 'single_choice' && n > 8)
+        ctx.addIssue({ code: 'custom', path: ['options'], message: 'max8' });
+      if (q.type === 'true_false' && n > 2)
+        ctx.addIssue({ code: 'custom', path: ['options'], message: 'trueFalseTwo' });
+      // Текст варианта «Выбор варианта» — хотя бы на одном языке (тексты «Верно/Неверно» задаёт сервер).
+      if (q.type === 'single_choice')
+        q.options?.forEach((o, i) => {
+          if (Object.keys(o.translations).length === 0)
+            ctx.addIssue({ code: 'custom', path: ['options', i, 'translations'], message: 'required' });
+        });
       if (correct !== 1) ctx.addIssue({ code: 'custom', path: ['options'], message: 'exactlyOneCorrect' });
     } else if (!q.textAnswer) {
       ctx.addIssue({ code: 'custom', path: ['textAnswer'], message: 'required' });
