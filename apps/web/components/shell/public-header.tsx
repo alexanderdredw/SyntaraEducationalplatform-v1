@@ -15,8 +15,16 @@ import { DataSaverToggle, LanguageSwitcher, ThemeToggle } from './preference-con
  * Публичный хедер (REQ-GEN-SHELL-01) и мобильное меню (REQ-GEN-SHELL-06).
  * ≥ 1024 px: логотип, 6 пунктов меню, язык, трафик, тема, «Войти». < 1024 px: логотип, «Войти», «Меню».
  */
-export function PublicHeader({ enabledLocales }: { enabledLocales: readonly Locale[] }) {
+export function PublicHeader({
+  enabledLocales,
+  cabinetHref,
+}: {
+  enabledLocales: readonly Locale[];
+  /** Вошедший пользователь: вместо «Войти» — «Кабинет» его роли (решение владельца 2026-10-16). */
+  cabinetHref?: string;
+}) {
   const t = useTranslations('shell');
+  const tFooter = useTranslations('footer');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -48,10 +56,11 @@ export function PublicHeader({ enabledLocales }: { enabledLocales: readonly Loca
 
   const loginButton = (
     <AppLink
-      href="/auth/login"
+      href={cabinetHref ?? '/auth/login'}
+      data-testid={cabinetHref ? 'header-cabinet' : 'header-login'}
       className="inline-flex min-h-[var(--control-h)] items-center rounded-[var(--radius-pill)] bg-[var(--accent-strong)] px-5 text-sm font-semibold text-white shadow-accent hover:brightness-110 active:scale-[0.98]"
     >
-      {t('login')}
+      {cabinetHref ? tFooter('cabinet') : t('login')}
     </AppLink>
   );
 

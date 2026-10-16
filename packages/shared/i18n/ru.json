@@ -943,7 +943,12 @@
       "back": "← Предметы",
       "topics": "Темы",
       "empty": "В предмете пока нет опубликованных тем",
-      "number": "Тема {number}"
+      "number": "Тема {number}",
+      "status": {
+        "mastered": "Освоена",
+        "started": "Начата",
+        "not_started": "Не начата"
+      }
     },
     "lesson": {
       "breadcrumbs": "Навигация по уроку",
@@ -968,12 +973,16 @@
       "answerLabel": "Твой ответ",
       "answer": "Ответить",
       "next": "Далее",
-      "result": "Результат: {score}%",
+      "result": "Результат: {score} %",
       "xp": "+{xp} XP",
       "badges": "Новые бейджи",
       "retry": "Пройти ещё раз",
       "empty": "В этой теме пока нет вопросов",
-      "loading": "Загружаем вопросы..."
+      "loading": "Загружаем вопросы...",
+      "correctCount": "{correct} из {total} правильно",
+      "masteredYes": "Тема освоена!",
+      "masteredNo": "Тема освоена при {threshold} % — попробуй ещё раз",
+      "keyboardHint": "Стрелки — выбор варианта, Enter или пробел — ответить"
     }
   },
   "privacy": {

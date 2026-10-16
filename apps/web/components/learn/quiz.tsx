@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Award, Check, X } from 'lucide-react';
 import { Button, Card, cn, fieldClass, Pill, Skeleton } from '@syntara/ui';
+import { MASTERY_THRESHOLD } from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 
@@ -87,6 +88,9 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState('');
   const [finish, setFinish] = useState<Finish | null>(null);
+  // Выбранный, но ещё не отправленный вариант (клавиатура); источник последнего действия — мышь или клавиши.
+  const [selected, setSelected] = useState<string | null>(null);
+  const pointer = useRef(false);
 
   if (state === 'failed') {
     return (
@@ -99,11 +103,29 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
   if (state === 'finished' && finish) {
     return (
       <Card className="flex flex-col items-start gap-4 p-6" data-testid="quiz-result">
+        {/* Целые проценты, «N из M правильно» и порог освоения (решение владельца 2026-10-16, PH-38). */}
         <h2 className="text-cabinet-title font-bold">
-          {t('result', {
-            score: new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(finish.scorePercent),
-          })}
+          {t('result', { score: Math.round(finish.scorePercent) })}
         </h2>
+        <p data-testid="quiz-correct-count">
+          {t('correctCount', {
+            correct: attempt.questions.filter((q) => answered[q.id]?.correct).length,
+            total: attempt.questions.length,
+          })}
+        </p>
+        <p
+          data-testid="quiz-mastery"
+          className={cn(
+            'font-semibold',
+            finish.scorePercent >= MASTERY_THRESHOLD
+              ? 'text-[var(--success-text)]'
+              : 'text-[var(--text-muted)]',
+          )}
+        >
+          {finish.scorePercent >= MASTERY_THRESHOLD
+            ? t('masteredYes')
+            : t('masteredNo', { threshold: MASTERY_THRESHOLD })}
+        </p>
         {finish.xpAwarded > 0 ? (
           <p className="text-lg font-semibold text-[var(--accent)]" data-testid="quiz-xp">
             {t('xp', { xp: finish.xpAwarded })}
@@ -156,6 +178,7 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
     if (!last) {
       setIndex(index + 1);
       setText('');
+      setSelected(null);
       return;
     }
     setBusy(true);
@@ -243,7 +266,15 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
           </Button>
         </form>
       ) : (
-        <div role="radiogroup" aria-labelledby={`q-${question.id}`} className="flex flex-col gap-2">
+        <div
+          role="radiogroup"
+          aria-labelledby={`q-${question.id}`}
+          aria-describedby={`hint-${question.id}`}
+          className="flex flex-col gap-2"
+        >
+          <p id={`hint-${question.id}`} className="sr-only">
+            {t('keyboardHint')}
+          </p>
           {question.options.map((o, i) => {
             const chosen = result?.optionId === o.id;
             const correct = result?.correctOptionId === o.id;
@@ -251,6 +282,10 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
               <label
                 key={o.id}
                 data-testid="quiz-option"
+                // Мышь: клик по варианту сразу отправляет ответ (решение владельца 2026-10-16).
+                onPointerDown={() => {
+                  pointer.current = true;
+                }}
                 data-state={result ? (correct ? 'correct' : chosen ? 'wrong' : 'idle') : 'idle'}
                 className={cn(
                   'flex min-h-12 items-center gap-3 rounded-[var(--radius-field)] border bg-[var(--surface)] px-4 py-2 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--accent)]',
@@ -267,9 +302,21 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
                   type="radio"
                   name={`answer-${question.id}`}
                   value={o.id}
-                  checked={chosen}
+                  checked={result ? chosen : selected === o.id}
                   disabled={Boolean(result) || busy}
-                  onChange={() => void submit({ optionId: o.id })}
+                  // Клавиатура: стрелки только перемещают выбор; Enter или пробел — ответ.
+                  onChange={() => setSelected(o.id)}
+                  onClick={() => {
+                    if (pointer.current) void submit({ optionId: o.id });
+                    pointer.current = false;
+                  }}
+                  onKeyDown={(e) => {
+                    pointer.current = false;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      void submit({ optionId: o.id });
+                    }
+                  }}
                   className="sr-only"
                 />
                 <span
@@ -280,7 +327,7 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
                 </span>
                 <span className="flex-1">{o.text}</span>
                 {result && correct ? (
-                  <Check aria-hidden="true" className="size-4 text-[var(--success)]" />
+                  <Check aria-hidden="true" className="size-4 text-[var(--success-text)]" />
                 ) : null}
                 {result && chosen && !correct ? (
                   <X aria-hidden="true" className="size-4 text-[var(--danger-text)]" />
@@ -290,6 +337,19 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
           })}
         </div>
       )}
+
+      {question.type !== 'text_input' && !result ? (
+        <div>
+          <Button
+            variant="secondary"
+            disabled={!selected || busy}
+            onClick={() => selected && void submit({ optionId: selected })}
+            data-testid="quiz-answer"
+          >
+            {t('answer')}
+          </Button>
+        </div>
+      ) : null}
 
       <div aria-live="polite" data-testid="quiz-feedback">
         {result ? (
@@ -302,7 +362,7 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
             <p
               className={cn(
                 'font-semibold',
-                result.correct ? 'text-[var(--success)]' : 'text-[var(--danger-text)]',
+                result.correct ? 'text-[var(--success-text)]' : 'text-[var(--danger-text)]',
               )}
             >
               {result.correct ? t('correct') : t('incorrect')}

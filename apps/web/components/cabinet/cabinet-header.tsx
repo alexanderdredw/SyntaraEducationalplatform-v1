@@ -176,10 +176,8 @@ export function CabinetHeader({
             >
               {me.initials.charAt(0)}
             </span>
+            {/* Роль показывается один раз — в выборе роли (REQ-GEN-SHELL-02, решение владельца 2026-10-16). */}
             <span className="hidden sm:inline">{me.displayName}</span>
-            <span className="hidden text-xs uppercase tracking-wide text-[var(--text-muted)] lg:inline">
-              {t(`roles.${role}`)}
-            </span>
           </AppLink>
           <LogoutButton label={t('logout')} />
         </div>

@@ -138,7 +138,7 @@ syntara/
 │  │  └─ components/        # компоненты страниц
 │  ├─ api/                 # NestJS
 │  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit}
-│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, recalc, cleanup
+│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, cleanup
 ├─ packages/
 │  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
 │  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
@@ -224,8 +224,8 @@ pnpm lint && pnpm typecheck
 
 | **ID** | **Требование** |
 |---|-----------------------------|
-| REQ-GEN-SHELL-01 | Публичный хедер: логотип Syntara; меню «Главная», «Предметы», «О проекте», «Syntara AI», «Школам», «Помощь» (активный пункт — светлая капсула); справа язык, «Экономия трафика выключена», переключатель темы, кнопка «Войти». Хедер закреплён сверху; якоря учитывают его высоту (`scroll-margin-top`). |
-| REQ-GEN-SHELL-02 | Хедер кабинетов: вместо меню — выбор роли («Учитель»/«Ученик»), язык, трафик, тема, уведомления, профиль (буква аватара + имя из аккаунта), «Выйти». У ученика дополнительно индикаторы серии (пламя) и XP из `GET /me/stats`. |
+| REQ-GEN-SHELL-01 | Публичный хедер: логотип Syntara; меню «Главная», «Предметы», «О проекте», «Syntara AI», «Школам», «Помощь» (активный пункт — светлая капсула); справа язык, «Экономия трафика выключена», переключатель темы, кнопка «Войти» (у вошедшего пользователя — «Кабинет»: главная страница его активной роли). Хедер закреплён сверху; якоря учитывают его высоту (`scroll-margin-top`). |
+| REQ-GEN-SHELL-02 | Хедер кабинетов: вместо меню — выбор роли («Учитель»/«Ученик»), язык, трафик, тема, уведомления, профиль (буква аватара + имя из аккаунта; роль показывается один раз — в выборе роли), «Выйти». У ученика дополнительно индикаторы серии (пламя) и XP из `GET /me/stats`. |
 | REQ-GEN-SHELL-03 | Боковая панель кабинетов ~70 px со значками; активный — синяя подложка и полоса слева. Значки без страницы ведут на заглушку «Раздел в разработке» (PH-24). |
 | REQ-GEN-SHELL-04 | Плавающие кнопки справа внизу: «?» — краткая справка по странице и ссылки поддержки; синяя кнопка диалога — публичный помощник. В кабинетах между ними жёлтая «лампочка» (PH-32). Кнопки не перекрывают поля ввода, cookie-баннер и чат. |
 | REQ-GEN-SHELL-05 | Футер (синий градиент): колонка бренда — «Учись в своём темпе — на казахском и русском», email поддержки (PH-09), «KK · RU · EN»; ПРОДУКТ — Главная, Предметы, О проекте, Syntara AI; ШКОЛАМ — Школам, Оставить заявку, Помощь, Войти, Подключиться к классу (в кабинетах последние две → «Кабинет»); ПРАВОВОЕ — три документа. Низ: «© 2026 Syntara Education Platform. Образовательный продукт.» |
@@ -270,6 +270,7 @@ pnpm lint && pnpm typecheck
 | /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
 | /learn/subjects | Каталог и класс | student | U13 | 8.4.2 |
 | /learn/sections/:id | Раздел каталога | student | U03 | 8.4.2 |
+| /learn/subjects/:id | Предмет: темы и их статусы | student | — | 8.4.2 |
 | /learn/topics/:id?tab=overview|quiz|ai | Урок | student | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
 | /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
 | /learn/progress | Мои показатели | student | U08 | 8.4.6 |
@@ -577,7 +578,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
 |---|------------|------------|------------|
 | API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` |
-| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
+| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, subjectId, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `subjectId` — предмет вопроса («Перейти к предмету» для ученика); `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
 | API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
 | API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
 | API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
@@ -644,9 +645,9 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
 | API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available' }] }` |
 | API-S-05 | GET /api/student/sections/:id | Предметы раздела |
-| API-S-06 | GET /api/student/topics/:id | `{ id, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, sections: [{ id, number, title, body }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04) |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, sections: [{ id, number, title, body }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04) |
 | API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` |
-| API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, explanation }` (PH-37) |
+| API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
 | API-S-10 | GET /api/student/assignments | Мои задания (PH-33) |
 | API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }` |
@@ -654,8 +655,9 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-S-13 | GET /api/student/ai/conversations/:id | История сообщений |
 | API-S-14 | GET /api/student/progress | `?period=today|7d|30d|90d|quarter|year` → `{ range: {from, to}, compareRange, nextStep: {action, reason, href}, progress: { mastered, total, percent, deltaPercent }, streak: { days, lastActivityDate, delta } }` |
 | API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` |
-| API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal }` для хедера |
+| API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
 | API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }] }` — опубликованные темы по position; предмет не виден (BR-VIS-01) → 404 |
 
 ## 6.6 Служебная поддержка
 
@@ -755,7 +757,8 @@ BR-QZ-06  Попытки не ограничены; в зачёт идёт лу�
           (in_progress) продолжается при повторном входе (API-S-07 возвращает уже данные ответы).
 BR-QZ-07  Тема освоена: best_percent >= 80 (PH-38) → mastered_at = now() при первом достижении.
 BR-QZ-08  Попытка связана с topic_version_id опубликованной версии на момент старта.
-BR-QZ-09  Гостевой пробный вопрос: questions.is_demo = true; баллы и события не начисляются.
+BR-QZ-09  Гостевой пробный вопрос: questions.is_demo = true; баллы и события не начисляются. В квизе своей темы пробный
+          вопрос — обычный вопрос ученика.
 ```
 
 ## 7.3 Геймификация (PH-39)
@@ -784,6 +787,8 @@ BR-BDG-01 Бейджи и правила (rule jsonb):
             bug_fixing        5 such topics                                     «Работа над ошибками» — «Пять тем вытянуто с неудачной попытки»
           Пороги «неудачной попытки» (<50%) — PH-39. Ещё 5 бейджей не создаются; totalCount = 12.
 BR-BDG-02 Бейдж выдаётся один раз (PK student_id, badge_id).
+BR-XP-04  Начисление XP, пересчёт уровня и серии и выдача бейджей — синхронно, в транзакции события (finish, lesson_opened);
+          отдельной очереди пересчёта нет (решение по Q-17). Серия в хедере учитывает дату последней активности (API-S-16).
 ```
 
 ## 7.4 Показатели (PH-38)
@@ -1098,6 +1103,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | REQ-ST-CAT-01 | Карточка класса (API-S-02): «Вы в классе «{name}»», «Учитель: {teacher} · {school}», кнопка «Выйти из класса» (EN-эталон U13: «You're in class «{name}»», «Teacher: {teacher} · {school}», «Leave»). Выход из аккаунта в хедере — «Выйти» / EN «Log out». Подтверждение «Выйти из класса «{name}»?» → API-S-03 (PH-40). Это не выход из аккаунта. Без класса — поле «Подключиться к классу». |
 | REQ-ST-CAT-02 | Заголовок «Предметы платформы» (EN «Platform subjects»); сетка 3 колонки: разделы (статус «Раздел»/«Section») и доступные предметы («Доступно»/«Available»); вся карточка кликабельна, без отдельной кнопки. Пользовательские названия не переводятся. Эталон U13 (EN), 7 карточек по порядку: Biology — Human Anatomy (Section); Natural sciences — Physics · Geography (Section); Exact sciences — Mathematics · Algebra · Geometry · Informatics (Section); Humanities — History of Kazakhstan (Section); Languages — Kazakh language · Russian language · English language (Section); ботаника — растение, животные (Available, название учителя не переводится); Chemistry — Elements, reactions, molecular structures (Available). |
 | REQ-ST-CAT-03 | /learn/sections/:id: «← Предметы», заголовок раздела, карточки предметов (пример U03: «Анатомия человека», «11 систем организма», «Доступно»). |
+| REQ-ST-CAT-04 | /learn/subjects/:id (API-S-18): «← Предметы», название и описание предмета, «Темы» — карточки тем по порядку («Тема {N}», название) со статусом ученика: «Освоена» (лучший результат ≥ 80 %, PH-38), «Начата» (тема открыта или есть попытка квиза), «Не начата». Сюда ведут карточка предмета, крошки урока и «Перейти к предмету». |
 
 ### 8.4.3 Урок (/learn/topics/:id, U04, U09, U12)
 
@@ -1121,8 +1127,8 @@ answered: ссылка «Перейти к предмету». Баллы не �
 
 | **ID** | **Требование** |
 |---|-----------------------------|
-| REQ-ST-QZ-01 | Маркеры прогресса, сложность («Лёгкий»/«Средний»/«Сложный»), «Вопрос {i} из {n}», текст, варианты A–D (radio-группа). Логика — SM-ATTEMPT и BR-QZ-*. |
-| REQ-ST-QZ-02 | После выбора — сразу результат: «Верно»/«Неверно», правильный вариант, объяснение; кнопка «Далее». В конце — «Результат: {score}%», начисленные XP и бейджи, «Пройти ещё раз». |
+| REQ-ST-QZ-01 | Маркеры прогресса, сложность («Лёгкий»/«Средний»/«Сложный»), «Вопрос {i} из {n}», текст, варианты A–D (radio-группа). Клавиатура: стрелки только перемещают выбор, ответ — Enter, пробел или кнопка «Ответить»; клик мышью по варианту сразу отправляет ответ. Логика — SM-ATTEMPT и BR-QZ-*. |
+| REQ-ST-QZ-02 | После выбора — сразу результат: «Верно»/«Неверно», правильный вариант, объяснение; кнопка «Далее». В конце — «Результат: {score} %» (целые проценты), «{N} из {M} правильно», при результате ≥ 80 % — «Тема освоена!», иначе — «Тема освоена при 80 % — попробуй ещё раз» (порог — PH-38); начисленные XP и бейджи, «Пройти ещё раз». |
 
 ### 8.4.5 Учебный ИИ (?tab=ai, /learn/assistant; U06, U07, U02)
 
@@ -1446,3 +1452,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-14 | 6.2 API-PUB-02: поле `hasAnother` (есть ли другие пробные вопросы) и `locale` в ответе | Решение владельца по итогам итерации 5 |
 | 2026-10-14 | 5.3 (`users.email_verified_at`, `users.must_change_password`, `schools.status = unverified`), 6.2 API-PUB-09, 6.3 API-AUTH-03S/05/06 и MeDto, 6.4 API-T-26/27, 7.7 BR-CLS-04/05, 8.2 REQ-GEN-AUTH-01..03, 10 REQ-NFR-DATA-03, 11 PH-17 = true и PH-44 (Q-16 решён), 13 AC-AUTH-05..08: самостоятельная регистрация ученика (эталон `media/student-auth.png`), временный пароль от учителя, подтверждение email учителя | Решение владельца по итогам итерации 6 |
 | 2026-10-16 | 2.3 `S3_PUBLIC_ENDPOINT`; 4 и 8.3.2 REQ-TCH-ACC-02: без отдельного экрана «Новая тема» (`/topics/new` → страница предмета); 6.4 API-T-10 (обложка по ссылке скачивается сервером), API-T-11 (название в черновике); 6.5 API-S-06 (`funFact`, `materials`); 7.8 BR-FILE-06 (обложка по ссылке, защита от SSRF) и BR-FILE-07 (очистка незавершённых загрузок); 8.3.3 REQ-TCH-TOP-02/04; 8.4.3 REQ-ST-LES-02 (карточка «Интересный факт», также в «Посмотреть глазами ученика») | Решение владельца по итогам итерации 7 |
+| 2026-10-16 | 2.2: очередь recalc удалена; 3.3 REQ-GEN-SHELL-01 («Кабинет» у вошедшего), REQ-GEN-SHELL-02 (роль один раз); 4 и 8.4.2 REQ-ST-CAT-04: страница предмета ученика `/learn/subjects/:id` со статусами тем; 6.2 API-PUB-02 `subjectId`; 6.5 API-S-06 `quizId`, API-S-08 `correctAnswer`, API-S-16 `continueTopicId` и «живая» серия, новая API-S-18; 7.2 BR-QZ-09 (пробный вопрос в квизе темы); 7.3 BR-XP-04 (начисление синхронно, Q-17 решён); 8.4.4 REQ-ST-QZ-01 (клавиатура), REQ-ST-QZ-02 (формат результата) | Решение владельца по итогам итерации 8 |

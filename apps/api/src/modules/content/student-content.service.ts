@@ -11,7 +11,7 @@ import { LessonService } from './lesson.service';
 import { VisibilityService } from './visibility.service';
 
 const { catalogSections, catalogSectionTranslations: cst, subjects, subjectTranslations: st } = schema;
-const { topics, topicVersions, learningEvents } = schema;
+const { topics, topicVersions, learningEvents, topicMastery, quizAttempts, quizzes } = schema;
 
 const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 
@@ -72,9 +72,8 @@ export class StudentContentService {
   }
 
   /**
-   * Страница предмета ученика (решение владельца 2026-10-14, «Перейти к предмету»): опубликованные темы по
-   * position (PH-35 — без блокировки), названия — из опубликованного снимка.
-   * TODO(OWNER): маршрут /learn/subjects/:id и этот ответ в разделах 4 и 6.5 SPEC не описаны.
+   * Страница предмета ученика (API-S-18, решения владельца 2026-10-14 и 2026-10-16): опубликованные темы по
+   * position (PH-35 — без блокировки), названия — из опубликованного снимка, статус темы для ученика.
    */
   async subject(studentId: string, subjectId: string, locale: Locale): Promise<StudentSubjectDto> {
     if (!(await this.visibility.canStudentSeeSubject(studentId, subjectId))) throw notFound();
@@ -90,6 +89,10 @@ export class StudentContentService {
         .orderBy(asc(topics.position)),
     ]);
     const tr = pickTranslation(translations, locale);
+    const status = await this.topicStatuses(
+      studentId,
+      rows.map((r) => r.id),
+    );
     return {
       id: subjectId,
       title: tr?.title ?? '',
@@ -97,9 +100,51 @@ export class StudentContentService {
       topics: rows.map((r) => {
         const snapshot = r.snapshot as TopicSnapshot;
         const t = [locale, 'ru', 'en', 'kk'].map((l) => snapshot.translations[l as Locale]).find(Boolean);
-        return { id: r.id, number: r.position, title: t?.title ?? '' };
+        return {
+          id: r.id,
+          number: r.position,
+          title: t?.title ?? '',
+          status: status.get(r.id) ?? 'not_started',
+        };
       }),
     };
+  }
+
+  /**
+   * Статус темы для ученика (решение владельца 2026-10-16): «Освоена» — mastered_at задан (≥ порога PH-38);
+   * «Начата» — тема открыта (lesson_opened) или есть попытка квиза; иначе «Не начата».
+   */
+  private async topicStatuses(
+    studentId: string,
+    topicIds: string[],
+  ): Promise<Map<string, 'mastered' | 'started' | 'not_started'>> {
+    const result = new Map<string, 'mastered' | 'started' | 'not_started'>();
+    if (topicIds.length === 0) return result;
+    const [mastery, opened, attempted] = await Promise.all([
+      this.db
+        .select({ topicId: topicMastery.topicId, masteredAt: topicMastery.masteredAt })
+        .from(topicMastery)
+        .where(and(eq(topicMastery.studentId, studentId), inArray(topicMastery.topicId, topicIds))),
+      this.db
+        .selectDistinct({ topicId: learningEvents.topicId })
+        .from(learningEvents)
+        .where(
+          and(
+            eq(learningEvents.studentId, studentId),
+            eq(learningEvents.type, 'lesson_opened'),
+            inArray(learningEvents.topicId, topicIds),
+          ),
+        ),
+      this.db
+        .selectDistinct({ topicId: quizzes.topicId })
+        .from(quizAttempts)
+        .innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
+        .where(and(eq(quizAttempts.studentId, studentId), inArray(quizzes.topicId, topicIds))),
+    ]);
+    for (const row of [...opened, ...attempted, ...mastery])
+      if (row.topicId) result.set(row.topicId, 'started');
+    for (const row of mastery) if (row.topicId && row.masteredAt) result.set(row.topicId, 'mastered');
+    return result;
   }
 
   /** API-S-06 */

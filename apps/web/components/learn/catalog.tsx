@@ -165,12 +165,27 @@ export function StudentSubject({ id }: { id: string }) {
               <AppLink
                 href={`/learn/topics/${topic.id}`}
                 data-testid="student-topic"
-                className="flex flex-col rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card hover:border-[var(--border-strong)]"
+                data-status={topic.status}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card hover:border-[var(--border-strong)]"
               >
-                <span className="text-xs text-[var(--text-muted)]">
-                  {t('number', { number: topic.number })}
+                <span className="flex flex-col">
+                  <span className="text-xs text-[var(--text-muted)]">
+                    {t('number', { number: topic.number })}
+                  </span>
+                  <span className="font-medium">{topic.title}</span>
                 </span>
-                <span className="font-medium">{topic.title}</span>
+                {/* Статус темы для ученика (решение владельца 2026-10-16). */}
+                <Pill
+                  className={
+                    topic.status === 'mastered'
+                      ? 'border-[var(--success)] text-[var(--text)]'
+                      : topic.status === 'started'
+                        ? 'border-[var(--accent)] text-[var(--text)]'
+                        : 'text-[var(--text-muted)]'
+                  }
+                >
+                  {t(`status.${topic.status}`)}
+                </Pill>
               </AppLink>
             </li>
           ))}

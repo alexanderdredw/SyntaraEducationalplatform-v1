@@ -258,7 +258,7 @@ export class StudentContentController {
     return this.content.section(req.user!.id, id, locale(req));
   }
 
-  /** Страница предмета ученика (решение владельца 2026-10-14): невидимый предмет → 404 (BR-VIS-01). */
+  /** API-S-18: страница предмета ученика (решения владельца 2026-10-14, 2026-10-16); невидимый → 404 (BR-VIS-01). */
   @Get('subjects/:id')
   @ApiOkResponse({ type: StudentSubjectDto })
   @ApiNotFoundResponse()

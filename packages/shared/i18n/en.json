@@ -943,7 +943,12 @@
       "back": "← Subjects",
       "topics": "Topics",
       "empty": "No published topics yet",
-      "number": "Topic {number}"
+      "number": "Topic {number}",
+      "status": {
+        "mastered": "Mastered",
+        "started": "Started",
+        "not_started": "Not started"
+      }
     },
     "lesson": {
       "breadcrumbs": "Lesson navigation",
@@ -973,7 +978,11 @@
       "badges": "New badges",
       "retry": "Try again",
       "empty": "This topic has no questions yet",
-      "loading": "Loading questions..."
+      "loading": "Loading questions...",
+      "correctCount": "{correct} of {total} correct",
+      "masteredYes": "Topic mastered!",
+      "masteredNo": "The topic is mastered at {threshold}% — try again",
+      "keyboardHint": "Arrow keys choose an option, Enter or Space answers"
     }
   },
   "privacy": {

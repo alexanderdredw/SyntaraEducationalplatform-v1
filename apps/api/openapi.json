@@ -4497,12 +4497,22 @@
           },
           "title": {
             "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "mastered",
+              "started",
+              "not_started"
+            ],
+            "description": "«Освоена» (лучший результат ≥ порога PH-38), «Начата» (тема открыта или есть попытка), «Не начата»"
           }
         },
         "required": [
           "id",
           "number",
-          "title"
+          "title",
+          "status"
         ]
       },
       "StudentSubjectDto": {

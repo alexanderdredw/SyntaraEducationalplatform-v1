@@ -197,6 +197,9 @@ log('header:', await page.getByTestId('cabinet-stats').innerText());
 await page.goto(`${base}/ru`);
 await shot('u01-home-continue');
 log('continue →', await page.getByTestId('hero-continue').getAttribute('href'));
+await page.goto(`${base}/ru/learn/subjects/${subject.id}`);
+await page.getByTestId('student-topic').first().waitFor();
+await shot('subject-page-statuses');
 
 // 3. Английская версия и мобильная ширина.
 await page.goto(`${base}/en/learn/topics/${topic.id}`);

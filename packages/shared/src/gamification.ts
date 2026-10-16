@@ -5,6 +5,12 @@ import { z } from 'zod';
  * Числа — заглушки PH-28, PH-38, PH-39 (значения берутся из app_config, здесь — типы и формулы).
  */
 
+/**
+ * PH-38 `progress.mastery_threshold` — порог освоения темы (BR-QZ-07). Значение из seed; сервер берёт его из
+ * app_config, интерфейс — для текста результата квиза.
+ */
+export const MASTERY_THRESHOLD = 80;
+
 /** PH-39 `xp` */
 export interface XpConfig {
   quiz_finished: number;

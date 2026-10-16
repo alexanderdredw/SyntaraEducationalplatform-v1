@@ -29,16 +29,16 @@ describe('worker queues', () => {
     await redis?.stop();
   });
 
-  it('registers exactly the queues outbox, email, file-scan, recalc, cleanup', () => {
-    expect(QUEUE_NAMES).toEqual(['outbox', 'email', 'file-scan', 'recalc', 'cleanup']);
+  it('registers exactly the queues outbox, email, file-scan, cleanup (recalc removed, Q-17)', () => {
+    expect(QUEUE_NAMES).toEqual(['outbox', 'email', 'file-scan', 'cleanup']);
   });
 
-  it('REQ-NFR-SEC-07 processes jobs on not-yet-implemented queues without logging their payload', async () => {
+  it('REQ-NFR-SEC-07 processes an unknown job without logging its payload', async () => {
     const lines: string[] = [];
     const logger = pino({}, { write: (line: string) => lines.push(line) });
     const { close } = createWorkers(connection, logger, deps);
     try {
-      for (const name of ['recalc'] as const) {
+      for (const name of ['cleanup'] as const) {
         const queue = new Queue(name, { connection });
         // QueueEvents по умолчанию читает поток с «$» и не видит события, записанные до первого XREAD:
         // если worker завершал задание раньше, «completed» терялся и тест падал по таймауту.
@@ -48,7 +48,7 @@ describe('worker queues', () => {
         await events.waitUntilReady();
         const job = await queue.add('probe', { email: 'kid@example.kz' });
         const result = await job.waitUntilFinished(events, 10_000);
-        expect(result).toEqual({ queue: name, handled: false });
+        expect(result).toEqual({ handled: false });
         await Promise.all([queue.close(), events.close()]);
         await eventsConnection.quit();
       }

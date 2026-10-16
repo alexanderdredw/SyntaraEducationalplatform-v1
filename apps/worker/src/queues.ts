@@ -14,7 +14,8 @@ import { processOutbox } from './processors/outbox';
 import { type Scanners } from './processors/scanners';
 
 /** Очереди worker (раздел 2.2 SPEC). */
-export const QUEUE_NAMES = ['outbox', 'email', 'file-scan', 'recalc', 'cleanup'] as const;
+// Очередь recalc удалена (решение владельца 2026-10-16, Q-17): XP, уровень, серия и бейджи начисляются синхронно в api.
+export const QUEUE_NAMES = ['outbox', 'email', 'file-scan', 'cleanup'] as const;
 export type QueueName = (typeof QUEUE_NAMES)[number];
 
 export interface WorkerDeps {
@@ -39,16 +40,6 @@ export const SCHEDULES = [
   { queue: 'cleanup', id: 'abandon-attempts', name: 'abandon-attempts', every: 24 * 60 * 60_000 },
 ] as const satisfies ReadonlyArray<{ queue: QueueName; id: string; name: string; every: number }>;
 
-/**
- * Процессор-заготовка для очереди, логика которой появится позже: recalc — итерация 8. Данные задания в журнал не пишутся (REQ-NFR-SEC-07).
- */
-export function placeholderProcessor(queue: QueueName, logger: Logger): Processor {
-  return async (job: Job) => {
-    logger.info({ queue, jobId: job.id, jobName: job.name }, 'job received (no processor yet)');
-    return { queue, handled: false };
-  };
-}
-
 export function createProcessors(
   connection: ConnectionOptions,
   logger: Logger,
@@ -67,7 +58,6 @@ export function createProcessors(
     'file-scan': async (job: Job<OutboxFileScanPayload>) => ({
       result: await scanFile(job, { ...deps, logger }),
     }),
-    recalc: placeholderProcessor('recalc', logger),
     cleanup: async (job: Job) => {
       if (job.name === 'auto-close') return { closed: await autoCloseResolved(deps.db) };
       if (job.name === 'idempotency-keys') return { deleted: await cleanupIdempotencyKeys(deps.db) };

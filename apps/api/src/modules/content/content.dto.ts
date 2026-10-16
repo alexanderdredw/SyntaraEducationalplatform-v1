@@ -228,6 +228,12 @@ class StudentTopicItemDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() number: number;
   @ApiProperty() title: string;
+  @ApiProperty({
+    enum: ['mastered', 'started', 'not_started'],
+    description:
+      '«Освоена» (лучший результат ≥ порога PH-38), «Начата» (тема открыта или есть попытка), «Не начата»',
+  })
+  status: 'mastered' | 'started' | 'not_started';
 }
 
 /** Страница предмета ученика (решение владельца 2026-10-14): опубликованные темы по position. */

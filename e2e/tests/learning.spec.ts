@@ -292,6 +292,59 @@ test.describe('Интерфейс ученика: обучение (итерац
     await expectNoSeriousA11yViolations(page);
   });
 
+  test('REQ-ST-QZ-01, REQ-NFR-A11Y-01 keyboard: arrows only move the choice, Enter or Space answers; result «Тема освоена!»', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const { student, topicId } = await setup(baseURL!, 2);
+    await signIn(context, student, baseURL!);
+    await page.goto(`/ru/learn/topics/${topicId}?tab=quiz`);
+    const radios = page.getByRole('radiogroup').getByRole('radio');
+    await radios.first().focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    // Стрелки не отправляют ответ.
+    await expect(radios.nth(2)).toBeChecked();
+    await expect(page.getByTestId('quiz-feedback')).toBeEmpty();
+    await expect(page.getByTestId('quiz-answer')).toBeEnabled();
+    await expectNoSeriousA11yViolations(page);
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('quiz-feedback')).toContainText(st.quiz.correct);
+    await page.getByTestId('quiz-next').focus();
+    await page.keyboard.press('Enter');
+    // Второй вопрос: выбор стрелкой, ответ пробелом; затем кнопка «Ответить» не нужна.
+    await radios.first().focus();
+    await page.keyboard.press(' ');
+    await expect(page.getByTestId('quiz-feedback')).toContainText(st.quiz.correct);
+    await page.getByTestId('quiz-next').click();
+    await expect(page.getByTestId('quiz-result')).toContainText(st.quiz.result.replace('{score}', '100'));
+    await expect(page.getByTestId('quiz-correct-count')).toHaveText(
+      st.quiz.correctCount.replace('{correct}', '2').replace('{total}', '2'),
+    );
+    await expect(page.getByTestId('quiz-mastery')).toHaveText(st.quiz.masteredYes);
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test('REQ-ST-QZ-01 the «Ответить» button sends the option chosen with the keyboard', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const { student, topicId } = await setup(baseURL!, 1);
+    await signIn(context, student, baseURL!);
+    await page.goto(`/ru/learn/topics/${topicId}?tab=quiz`);
+    const radios = page.getByRole('radiogroup').getByRole('radio');
+    await radios.first().focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByTestId('quiz-feedback')).toBeEmpty();
+    await page.getByTestId('quiz-answer').click();
+    await expect(page.getByTestId('quiz-feedback')).toContainText(st.quiz.incorrect);
+    await expect(page.getByTestId('quiz-option').nth(1)).toHaveAttribute('data-state', 'wrong');
+  });
+
   test('AC-ST-03 leaving and coming back continues from the same question; «Пройти ещё раз»', async ({
     page,
     context,
@@ -309,6 +362,13 @@ test.describe('Интерфейс ученика: обучение (итерац
     await answerOption(page, 'Ответ 2.3');
     await page.getByTestId('quiz-next').click();
     await expect(page.getByTestId('quiz-result')).toContainText(st.quiz.result.replace('{score}', '50'));
+    // Результат: целые проценты, «N из M правильно», порог освоения (решение владельца 2026-10-16).
+    await expect(page.getByTestId('quiz-correct-count')).toHaveText(
+      st.quiz.correctCount.replace('{correct}', '1').replace('{total}', '2'),
+    );
+    await expect(page.getByTestId('quiz-mastery')).toHaveText(
+      st.quiz.masteredNo.replace('{threshold}', '80'),
+    );
     await page.getByRole('button', { name: st.quiz.retry }).click();
     await expect(page.getByTestId('quiz-progress')).toHaveText(
       st.quiz.progress.replace('{index}', '1').replace('{count}', '2'),
@@ -326,6 +386,11 @@ test.describe('Интерфейс ученика: обучение (итерац
     await expect(page.getByRole('heading', { name: st.catalog.title })).toBeVisible();
     await expect(page.getByTestId('catalog-section').first()).toContainText(st.catalog.section);
     await expect(page.getByTestId('catalog-subject').first()).toContainText(st.catalog.available);
+    // Статусы тем на странице предмета: «Не начата» → после открытия «Начата».
+    await page.goto(`/ru/learn/subjects/${subjectId}`);
+    await expect(page.getByTestId('student-topic').first()).toHaveAttribute('data-status', 'not_started');
+    await expect(page.getByTestId('student-topic').first()).toContainText(st.subject.status.not_started);
+    await page.goto('/ru/learn/subjects');
     await expectNoSeriousA11yViolations(page);
     expect(await hasHorizontalScroll(page)).toBe(false);
 
@@ -345,6 +410,13 @@ test.describe('Интерфейс ученика: обучение (итерац
     await page.goto('/ru');
     await expect(page.getByTestId('hero-continue')).toHaveText(ru.home.hero.continue);
     await expect(page.getByTestId('hero-continue')).toHaveAttribute('href', `/ru/learn/topics/${topicId}`);
+    // Шапка публичных страниц у вошедшего — «Кабинет» его роли вместо «Войти».
+    await expect(page.getByTestId('header-cabinet')).toHaveText(ru.footer.cabinet);
+    await expect(page.getByTestId('header-cabinet')).toHaveAttribute('href', '/ru/learn/subjects');
+    await expect(page.getByTestId('header-login')).toHaveCount(0);
+    await page.goto(`/ru/learn/subjects/${subjectId}`);
+    await expect(page.getByTestId('student-topic').first()).toHaveAttribute('data-status', 'started');
+    await page.goto('/ru');
 
     // Пробный вопрос: «Перейти к предмету» → страница предмета ученика.
     const demo = page.getByTestId('home-demo');

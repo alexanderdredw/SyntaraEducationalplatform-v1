@@ -135,7 +135,7 @@ describe('student learning (integration)', () => {
     await as(teacher).post(`/api/teacher/subjects/${subjectId}/topics`).expect(201);
     const page = await as(student).get(`/api/student/subjects/${subjectId}`).expect(200);
     expect(page.body).toMatchObject({ id: subjectId, title: 'Ботаника' });
-    expect(page.body.topics).toEqual([{ id: topicId, number: 1, title: 'Растения' }]);
+    expect(page.body.topics).toEqual([{ id: topicId, number: 1, title: 'Растения', status: 'not_started' }]);
   });
 
   it('BR-VIS-01 a student of another class and a guest cannot see the subject, lesson or quiz (404/401)', async () => {
@@ -265,6 +265,24 @@ describe('student learning (integration)', () => {
       .from(schema.topicMastery)
       .where(and(eq(schema.topicMastery.studentId, fresh.userId), eq(schema.topicMastery.topicId, id)));
     expect(after).toMatchObject({ bestPercent: '85.00', attemptsCount: 2 });
+
+    // API-S-18: статусы тем ученика — «Освоена», «Начата», «Не начата».
+    const statuses = async () =>
+      Object.fromEntries(
+        (await as(fresh).get(`/api/student/subjects/${subjectId}`).expect(200)).body.topics.map(
+          (t: { id: string; status: string }) => [t.id, t.status],
+        ),
+      );
+    expect((await statuses())[id]).toBe('mastered');
+    expect((await statuses())[topicId]).toBe('not_started');
+    await as(fresh)
+      .post('/api/student/events', {
+        type: 'lesson_opened',
+        topicId,
+        idempotencyKey: `lesson:${topicId}:${localDate(new Date(), TZ)}`,
+      })
+      .expect(204);
+    expect((await statuses())[topicId]).toBe('started');
   });
 
   it('BR-BDG-01 «Исправился»: a topic mastered after a failed attempt (< 50 %)', async () => {

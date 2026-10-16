@@ -1469,6 +1469,11 @@ export interface components {
             id: string;
             number: number;
             title: string;
+            /**
+             * @description «Освоена» (лучший результат ≥ порога PH-38), «Начата» (тема открыта или есть попытка), «Не начата»
+             * @enum {string}
+             */
+            status: "mastered" | "started" | "not_started";
         };
         StudentSubjectDto: {
             /** Format: uuid */
