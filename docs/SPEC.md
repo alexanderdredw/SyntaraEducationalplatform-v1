@@ -61,7 +61,7 @@ Syntara Education Platform — адаптивная веб-платформа д
 
 | **Режим** | **Роль** | **Объём** |
 |-------|------|-----------------------------|
-| Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы |
+| Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы; каталог и «Обзор» базовых уроков платформы (BR-VIS-04) |
 | Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса |
 | Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс |
 | Служебная поддержка | support_agent, onboarding_agent | Очереди обращений и школьных заявок |
@@ -73,13 +73,16 @@ Syntara Education Platform — адаптивная веб-платформа д
 | Публичные страницы, помощник, пробный вопрос, формы, правовые | R | R | R | R | R |
 | Подключение к классу по коду | → login | W | — | — | — |
 | Каталог, тема, квиз (только опубликованное, BR-VIS-01) | — | R | R (предпросмотр) | — | — |
+| Каталог и «Обзор» базовых уроков платформы (BR-VIS-04) | R | R | R | R | R |
+| Квиз, Syntara AI, XP и прогресс по базовым урокам | → login | R/W (свои) | — | — | — |
+| Базовые предметы, темы, вопросы, картинки (BR-ACL-05) | — | — | — | — | — |
 | Учебный ИИ, личные показатели, достижения | — | R/W (свои) | — | — | — |
 | Предметы, темы, вопросы, материалы | — | — | R/W (свои) | — | — |
 | Выдача предмета классу, задания, аналитика | — | — | R/W (свои классы) | — | — |
 | Очередь обращений | — | — | — | R/W | — |
 | Очередь школьных заявок | — | — | — | — | R/W |
 
-R — чтение, W — изменение, «→ login» — перенаправление на вход с сохранением цели. Служебные роли MUST NOT иметь доступ к учебным данным. Роли teacher/student MUST NOT иметь доступ к очередям поддержки.
+R — чтение, W — изменение, «→ login» — перенаправление на вход с сохранением цели. Базовые уроки платформы через сайт и API не изменяет никто: они создаются и меняются только файлами `content/` и командой импорта (BR-CNT-01, решение владельца 2026-10-16). Служебные роли MUST NOT иметь доступ к учебным данным. Роли teacher/student MUST NOT иметь доступ к очередям поддержки.
 
 ## 1.3 Вне объёма (MUST NOT реализовывать)
 
@@ -142,7 +145,8 @@ syntara/
 ├─ packages/
 │  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
 │  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
-│  └─ db/                  # Drizzle schema, миграции, seed (demo, visual)
+│  └─ db/                  # Drizzle schema, миграции, seed (demo, visual), импорт базовой программы
+├─ content/                # базовая программа платформы: файлы уроков (BR-CNT-02, docs/CONTENT_GUIDE.md)
 ├─ infra/                  # docker-compose.yml, nginx.conf, grafana dashboards
 └─ e2e/                    # Playwright: сценарии, визуальные эталоны, axe
 ```
@@ -172,7 +176,9 @@ syntara/
 pnpm i                      # установка
 pnpm dev                    # web :3000, api :3001, worker; инфраструктура через docker compose
 pnpm db:migrate             # применить миграции
-pnpm db:seed --set=demo     # демо-данные (эталоны скриншотов)
+pnpm db:seed --set=demo     # демо-данные (эталоны скриншотов) и импорт базовой программы из content/
+pnpm content:check          # проверка файлов content/ без записи в БД (в CI)
+pnpm content:import         # импорт content/ в БД (BR-CNT-*); --dry-run — только проверка и план изменений
 pnpm test                   # unit + integration (Vitest + Testcontainers)
 pnpm e2e                    # Playwright: сценарии, визуальные и axe-проверки
 pnpm lint && pnpm typecheck
@@ -268,10 +274,10 @@ pnpm lint && pnpm typecheck
 | /teacher/topics/:id/quiz | Квиз темы | teacher (владелец) | T08 | 8.3.5 |
 | /teacher/assignments | Задания | teacher | T09 | 8.3.6 |
 | /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
-| /learn/subjects | Каталог и класс | student | U13 | 8.4.2 |
-| /learn/sections/:id | Раздел каталога | student | U03 | 8.4.2 |
-| /learn/subjects/:id | Предмет: темы и их статусы | student | — | 8.4.2 |
-| /learn/topics/:id?tab=overview|quiz|ai | Урок | student | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
+| /learn/subjects | Каталог и класс | student; гость — каталог базовых уроков (BR-VIS-04) | U13 | 8.4.2 |
+| /learn/sections/:id | Раздел каталога | student; гость (BR-VIS-04) | U03 | 8.4.2 |
+| /learn/subjects/:id | Предмет: темы и их статусы | student; гость — базовый предмет, без статусов (BR-VIS-04) | — | 8.4.2 |
+| /learn/topics/:id?tab=overview|quiz|ai | Урок | student; гость — «Обзор» базового урока, на «Квиз» и «Syntara AI» — приглашение войти (REQ-ST-LES-06) | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
 | /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
 | /learn/progress | Мои показатели | student | U08 | 8.4.6 |
 | /learn/achievements | Достижения | student | U10 | 8.4.7 |
@@ -409,6 +415,15 @@ ALTER TABLE topics ADD FOREIGN KEY (published_version_id) REFERENCES topic_versi
 CREATE TABLE topic_materials (topic_id uuid REFERENCES topics, media_id uuid REFERENCES media_files,
   position int NOT NULL, PRIMARY KEY (topic_id, media_id));
 CREATE INDEX ix_topics_subject ON topics (subject_id, position);
+
+-- Базовая программа (этап 8.6, решение владельца 2026-10-16): постоянные коды строк, созданных импортом content/
+-- (BR-CNT-04). У контента учителей code = NULL. Базовый контент — subjects.is_official = true (owner_id NULL).
+ALTER TABLE subjects ADD COLUMN code text UNIQUE, ADD CONSTRAINT subjects_code_official CHECK (code IS NULL OR is_official);
+ALTER TABLE topics ADD COLUMN code text UNIQUE;
+ALTER TABLE topic_sections ADD COLUMN code text UNIQUE;
+ALTER TABLE questions ADD COLUMN code text UNIQUE;
+-- Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05); ученик видит пометку «На проверке».
+ALTER TABLE topic_translations ADD COLUMN needs_review boolean NOT NULL DEFAULT false;
 ```
 
 ## 5.5 Квизы и задания
@@ -577,7 +592,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 
 | **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
 |---|------------|------------|------------|
-| API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` |
+| API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` — элементы по кодам PH-01 (код раздела каталога или базового предмета); `open` — есть опубликованные базовые темы, `href` — `/learn/sections/:id` или `/learn/subjects/:id`; иначе `soon` без ссылки (BR-CNT-08) |
 | API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, subjectId, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `subjectId` — предмет вопроса («Перейти к предмету» для ученика); `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
 | API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
 | API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
@@ -586,6 +601,10 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
 | API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса |
 | API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
+| API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
+| API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }] }` — без статусов; не базовый → 404 |
+| API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
 
 ## 6.3 Аутентификация и профиль
 
@@ -643,9 +662,9 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02) |
 | API-S-02 | GET /api/student/class | `{ classId, className, teacherName, schoolName } | null` |
 | API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
-| API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available' }] }` |
-| API-S-05 | GET /api/student/sections/:id | Предметы раздела |
-| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, sections: [{ id, number, title, body }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04) |
+| API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
+| API-S-05 | GET /api/student/sections/:id | Предметы раздела (`status: 'available'|'soon'`, BR-CNT-08) |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05) |
 | API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` |
 | API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
@@ -742,6 +761,13 @@ BR-ACL-01  Учитель изменяет только subjects.owner_id = me �
 BR-ACL-02  Учитель работает только со своими классами (classes.teacher_id = me): выдача, задания, аналитика, коды.
 BR-ACL-03  Ученик читает только свои attempts, events, stats, badges, ai_conversations, submissions.
 BR-ACL-04  Служебные роли не имеют доступа к /api/teacher/*, /api/student/*; учебные роли — к /api/staff/*.
+BR-ACL-05  Базовый контент (subjects.is_official = true, его темы, разделы, вопросы, картинки) не изменяется ни одним
+           эндпоинтом API: у него нет владельца, поэтому API-T-* отвечают 404 (BR-ACL-01), прочие роли — 401/403.
+           Изменение — только файлами content/ и командой импорта (BR-CNT-01).
+BR-VIS-04  canGuestSeeTopic(topic): topic.status == 'published' AND topic.archived_at IS NULL
+             AND subject(topic).is_official AND subject(topic).in_public_catalog AND subject(topic).archived_at IS NULL.
+           Гость видит каталог, предметы и «Обзор» только базовых уроков (API-PUB-10..13); личные уроки учителей
+           гостю не видны, даже если они в общем каталоге. Квиз, учебный ИИ, события, XP и прогресс — только после входа.
 ```
 
 ## 7.2 Квиз
@@ -894,6 +920,39 @@ BR-AI-07 Публичный помощник: ссылки в ответах т�
          остальные ссылки удаляются при санитизации.
 ```
 
+## 7.11 Базовая программа платформы (этап 8.6)
+
+```text
+BR-CNT-01 Источник правды базовых уроков — файлы content/. Создаёт и меняет их разработчик по решению владельца
+          командой `pnpm content:import`; через сайт и API базовые уроки не меняет никто (BR-ACL-05). Деления на классы
+          (годы обучения) нет (1.3). Кто готовит контент — TODO(OWNER).
+BR-CNT-02 Формат (docs/CONTENT_GUIDE.md): content/<раздел>/section.yaml, content/<раздел>/<предмет>/subject.yaml,
+          content/<раздел>/<предмет>/<тема>/{ru.md, kk.md, en.md, quiz.yaml, media/}; предмет вне разделов —
+          content/_root/<предмет>/. Тема — Markdown с YAML-заголовком, один файл на язык; разделы аккордеона —
+          заголовки «## Название {#код}». Разделы аккордеона есть только у базовых уроков (редактор учителя их не
+          поддерживает — TODO(OWNER)).
+BR-CNT-03 До записи проверяются все файлы: YAML-схемы, обязательные поля, длины 5.4, коды (a-z, 0-9, «-», «_»)
+          и их уникальность, ссылки на картинки, вопросы — по BR-QZ-02 и QuestionDto. Любая ошибка → импорт ничего
+          не меняет (одна транзакция), выводит все ошибки в виде «файл: поле — причина» и завершается с кодом 1.
+BR-CNT-04 Сопоставление — по постоянным кодам (catalog_sections.code, subjects/topics/topic_sections/questions.code).
+          Повторный запуск без изменений ничего не меняет. Изменённая тема (хеш снимка) → новая topic_version
+          и публикация; тема, удалённая из файлов → status = 'draft' (снята с публикации, строки и прогресс учеников
+          сохраняются); вопрос, удалённый из quiz.yaml → archived_at. Импорт управляет только строками с кодом.
+BR-CNT-05 Языки: ru.md обязателен; kk.md и en.md необязательны и содержат review: needs_review | reviewed. Переводы
+          готовит ИИ, до вычитки человеком — needs_review (topic_translations.needs_review), ученик видит «На проверке».
+          Нет файла языка — ученику показывается RU с пометкой «Урок пока доступен на русском» (REQ-GEN-PREF-02).
+BR-CNT-06 Картинки — только в content/.../media/: WEBP, PNG или JPG (сигнатура совпадает с расширением), не больше
+          300 КБ (307 200 байт); у каждой в YAML — источник (source) и лицензия: own (собственная), CC0 или
+          public-domain. Проверка — в импорте и в CI (`pnpm content:check`). Импорт кладёт файл в наше хранилище
+          (media_files: kind = 'illustration', owner_id NULL, ключ по sha256 — повтор не дублирует, scan_status = 'clean'
+          после проверки типа, сигнатуры и размера — как у обложек, BR-FILE-01); ученику — подписанные ссылки (BR-FILE-04).
+BR-CNT-07 Автор версий импорта — системный пользователь «Импорт» (users.status = 'system', без пароля и ролей).
+          Каждый запуск с изменениями пишется в audit_log: actor = «Импорт», entity_type = 'content_import',
+          action = 'content.import', after = сводка (создано, обновлено, снято с публикации).
+BR-CNT-08 Предмет без опубликованных тем — статус «Скоро», карточка не кликабельна: каталог ученика и гостя
+          (API-S-04/05, API-PUB-10/11) и /subjects (API-PUB-01).
+```
+
 
 # 8. Функциональные требования по экранам
 
@@ -920,7 +979,7 @@ BR-AI-07 Публичный помощник: ссылки в ответах т�
 | **ID** | **Требование** |
 |---|-----------------------------|
 | REQ-PUB-SUBJ-01 | Заголовок «Предметы»; карточки из API-PUB-01 (название, описание, иконка, статус, адрес). |
-| REQ-PUB-SUBJ-02 | Статусы: open — «Открыт для знакомства» + «Открыть →»; login_required — «Нужен вход» + переход на /auth/login?returnTo=…; soon — «Скоро», без кнопки, в отдельной группе после доступных. |
+| REQ-PUB-SUBJ-02 | Статусы: open — «Открыт для знакомства» + «Открыть →» (гость открывает каталог и «Обзор» базовых уроков, BR-VIS-04); login_required — «Нужен вход» + переход на /auth/login?returnTo=…; soon — «Скоро», без кнопки, в отдельной группе после доступных. |
 | REQ-PUB-SUBJ-03 | Поиск и фильтры MUST NOT добавляться. |
 
 ### 8.1.3 О проекте (/about, S09–S14)
@@ -1101,7 +1160,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | **ID** | **Требование** |
 |---|-----------------------------|
 | REQ-ST-CAT-01 | Карточка класса (API-S-02): «Вы в классе «{name}»», «Учитель: {teacher} · {school}», кнопка «Выйти из класса» (EN-эталон U13: «You're in class «{name}»», «Teacher: {teacher} · {school}», «Leave»). Выход из аккаунта в хедере — «Выйти» / EN «Log out». Подтверждение «Выйти из класса «{name}»?» → API-S-03 (PH-40). Это не выход из аккаунта. Без класса — поле «Подключиться к классу». |
-| REQ-ST-CAT-02 | Заголовок «Предметы платформы» (EN «Platform subjects»); сетка 3 колонки: разделы (статус «Раздел»/«Section») и доступные предметы («Доступно»/«Available»); вся карточка кликабельна, без отдельной кнопки. Пользовательские названия не переводятся. Эталон U13 (EN), 7 карточек по порядку: Biology — Human Anatomy (Section); Natural sciences — Physics · Geography (Section); Exact sciences — Mathematics · Algebra · Geometry · Informatics (Section); Humanities — History of Kazakhstan (Section); Languages — Kazakh language · Russian language · English language (Section); ботаника — растение, животные (Available, название учителя не переводится); Chemistry — Elements, reactions, molecular structures (Available). |
+| REQ-ST-CAT-02 | Заголовок «Предметы платформы» (EN «Platform subjects»); сетка 3 колонки: разделы (статус «Раздел»/«Section») и доступные предметы («Доступно»/«Available»); вся карточка кликабельна, без отдельной кнопки. Предмет без опубликованных тем — «Скоро»/«Soon», карточка не кликабельна (BR-CNT-08). Гость видит тот же каталог базовых уроков без карточки класса (BR-VIS-04). Пользовательские названия не переводятся. Эталон U13 (EN), 7 карточек по порядку: Biology — Human Anatomy (Section); Natural sciences — Physics · Geography (Section); Exact sciences — Mathematics · Algebra · Geometry · Informatics (Section); Humanities — History of Kazakhstan (Section); Languages — Kazakh language · Russian language · English language (Section); ботаника — растение, животные (Available, название учителя не переводится); Chemistry — Elements, reactions, molecular structures (Available). |
 | REQ-ST-CAT-03 | /learn/sections/:id: «← Предметы», заголовок раздела, карточки предметов (пример U03: «Анатомия человека», «11 систем организма», «Доступно»). |
 | REQ-ST-CAT-04 | /learn/subjects/:id (API-S-18): «← Предметы», название и описание предмета, «Темы» — карточки тем по порядку («Тема {N}», название) со статусом ученика: «Освоена» (лучший результат ≥ 80 %, PH-38), «Начата» (тема открыта или есть попытка квиза), «Не начата». Сюда ведут карточка предмета, крошки урока и «Перейти к предмету». |
 
@@ -1120,6 +1179,8 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | REQ-ST-LES-03 | Внизу карточка «СЛЕДУЮЩАЯ — {Тема} →» (по position, PH-35); переход не засчитывает текущую тему. |
 | REQ-ST-LES-04 | Открытие темы → API-S-17 (lesson_opened, idempotencyKey = `lesson:{topicId}:{date}`). |
 | REQ-ST-LES-05 | Смена языка или темы оформления сохраняет тему, вкладку и результаты. |
+| REQ-ST-LES-06 | Гость (BR-VIS-04): базовый урок в публичной оболочке; «Обзор» как у ученика; на вкладках «Квиз» и «Syntara AI» — «Войди или зарегистрируйся, чтобы пройти квиз» и кнопка «Войти» (вход с возвратом на урок). Событие открытия урока, XP и прогресс гостю не создаются. |
+| REQ-ST-LES-07 | Пометки языка урока: перевод ждёт вычитки (BR-CNT-05) — «На проверке»; урока нет на выбранном языке — показывается RU с пометкой «Урок пока доступен на русском». Иллюстрации разделов базовых уроков — внутри раздела аккордеона, с подписью из файла. |
 
 ### 8.4.4 Квиз (?tab=quiz, U05)
 
@@ -1242,7 +1303,7 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 
 ```json
 {
-  "PH-01 catalog.public_subjects": ["biology", "chemistry", "physics"],
+  "PH-01 catalog.public_subjects": ["biology", "chemistry", "physics", "geography", "mathematics", "algebra", "geometry", "informatics", "history-of-kazakhstan", "kazakh-language", "russian-language", "english-language"],
   "PH-01 home.subjects_subtitle": "Предметы на казахском и русском — открывай любой",
   "PH-02 demo.questions": [{
     "text": "Какой сосуд несёт кровь от сердца к телу?",
@@ -1391,6 +1452,13 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | AC-ST-07 | Учебный ИИ | Ответ модели содержит ссылку и HTML-скрипт | Скрипт удалён; ИИ не изменил данные |
 | AC-ST-08 | Мои показатели | Смена периода на «7 дней» | Даты периода и сравнения, прогресс и серия пересчитаны по BR-ST-* |
 | AC-ST-09 | Ученик A | Запрос /api/student/... с ID объектов ученика B | 404 |
+| AC-CNT-01 | Гость, базовый урок опубликован | Открывает каталог и урок | Виден «Обзор»; на «Квиз» и «Syntara AI» — приглашение войти; API квиза → 401; личные уроки учителей не видны |
+| AC-CNT-02 | Ученик | Проходит квиз базового урока | Результат сохранён, начислены XP |
+| AC-CNT-03 | Учитель или другая роль | Пытается изменить базовый предмет, тему, вопрос или файл | 404 или 401/403; данные не изменены |
+| AC-CNT-04 | Импорт выполнен | Повторный запуск без изменений | Ни одной новой строки или версии; изменений 0 |
+| AC-CNT-05 | Изменён файл темы | Импорт | Новая опубликованная версия; ученик видит новый текст; прогресс сохранён |
+| AC-CNT-06 | Файл с ошибкой | Импорт | Код выхода 1, список ошибок; БД не изменена |
+| AC-CNT-07 | Тема удалена из файлов | Импорт | Тема снята с публикации, не удалена; результаты учеников сохранены |
 | AC-VIS-01 | Seed visual | Скриншот-тесты на эталонных размерах | Совпадение с T04–T10, U01–U13, S01–S26 в пределах порога (ручн. для итогового сравнения) |
 
 # 14. Трассировка к исходному ТЗ
@@ -1453,3 +1521,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-14 | 5.3 (`users.email_verified_at`, `users.must_change_password`, `schools.status = unverified`), 6.2 API-PUB-09, 6.3 API-AUTH-03S/05/06 и MeDto, 6.4 API-T-26/27, 7.7 BR-CLS-04/05, 8.2 REQ-GEN-AUTH-01..03, 10 REQ-NFR-DATA-03, 11 PH-17 = true и PH-44 (Q-16 решён), 13 AC-AUTH-05..08: самостоятельная регистрация ученика (эталон `media/student-auth.png`), временный пароль от учителя, подтверждение email учителя | Решение владельца по итогам итерации 6 |
 | 2026-10-16 | 2.3 `S3_PUBLIC_ENDPOINT`; 4 и 8.3.2 REQ-TCH-ACC-02: без отдельного экрана «Новая тема» (`/topics/new` → страница предмета); 6.4 API-T-10 (обложка по ссылке скачивается сервером), API-T-11 (название в черновике); 6.5 API-S-06 (`funFact`, `materials`); 7.8 BR-FILE-06 (обложка по ссылке, защита от SSRF) и BR-FILE-07 (очистка незавершённых загрузок); 8.3.3 REQ-TCH-TOP-02/04; 8.4.3 REQ-ST-LES-02 (карточка «Интересный факт», также в «Посмотреть глазами ученика») | Решение владельца по итогам итерации 7 |
 | 2026-10-16 | 2.2: очередь recalc удалена; 3.3 REQ-GEN-SHELL-01 («Кабинет» у вошедшего), REQ-GEN-SHELL-02 (роль один раз); 4 и 8.4.2 REQ-ST-CAT-04: страница предмета ученика `/learn/subjects/:id` со статусами тем; 6.2 API-PUB-02 `subjectId`; 6.5 API-S-06 `quizId`, API-S-08 `correctAnswer`, API-S-16 `continueTopicId` и «живая» серия, новая API-S-18; 7.2 BR-QZ-09 (пробный вопрос в квизе темы); 7.3 BR-XP-04 (начисление синхронно, Q-17 решён); 8.4.4 REQ-ST-QZ-01 (клавиатура), REQ-ST-QZ-02 (формат результата) | Решение владельца по итогам итерации 8 |
+| 2026-10-16 | Этап 8.6 «Базовая программа платформы»: 1.1, 1.2 (гость читает базовые уроки; базовый контент не меняется через сайт); 2.2 `content/`; 2.4 `content:check`, `content:import`; 4 гостевой доступ к /learn/...; 5.4 коды `code` и `topic_translations.needs_review`; 6.2 API-PUB-01 (PH-01 — разделы и базовые предметы, `open`), API-PUB-10..13; 6.5 API-S-04/05 `soon`, API-S-06 `needsReview`, подписи и иллюстрации разделов; 7.1 BR-ACL-05, BR-VIS-04; 7.11 BR-CNT-01..08; 8.1.2 REQ-PUB-SUBJ-02; 8.4.2 REQ-ST-CAT-02 «Скоро»; 8.4.3 REQ-ST-LES-06/07; 11 PH-01; 13 AC-CNT-01..07. Роли «Методист» нет; деления на классы нет (1.3 в силе) | Решение владельца 2026-10-16 по вопросам этапа 8.6 |
