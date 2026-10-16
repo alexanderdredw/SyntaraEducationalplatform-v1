@@ -119,6 +119,7 @@ export class AiDraftBody {
 }
 
 class AiDraftLangDto {
+  @ApiProperty({ maxLength: 150 }) title: string;
   @ApiProperty() description: string;
   @ApiProperty() funFact: string;
   @ApiProperty() bodyMd: string;
@@ -180,6 +181,12 @@ export class LessonDto {
   @ApiProperty() number: number;
   @ApiProperty() questionsCount: number;
   @ApiProperty({ type: String, nullable: true }) summary: string | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: '«Интересный факт» — карточка после описания (решение владельца 2026-10-16)',
+  })
+  funFact: string | null;
   @ApiPropertyOptional({ type: String, nullable: true }) bodyMd?: string | null;
   @ApiPropertyOptional({ type: String, nullable: true }) illustrationUrl?: string | null;
   @ApiProperty({ type: LessonSectionDto, isArray: true }) sections: LessonSectionDto[];

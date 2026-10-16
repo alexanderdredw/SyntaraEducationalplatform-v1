@@ -1315,6 +1315,7 @@ export interface components {
             title?: string;
         };
         AiDraftLangDto: {
+            title: string;
             description: string;
             funFact: string;
             bodyMd: string;
@@ -1374,6 +1375,8 @@ export interface components {
             number: number;
             questionsCount: number;
             summary: string | null;
+            /** @description «Интересный факт» — карточка после описания (решение владельца 2026-10-16) */
+            funFact: string | null;
             bodyMd?: string | null;
             illustrationUrl?: string | null;
             sections: components["schemas"]["LessonSectionDto"][];

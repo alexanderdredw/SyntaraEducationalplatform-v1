@@ -12,6 +12,7 @@ import { ApiException } from '../../common/api-exception';
 import { AppConfigService } from '../../config/app-config.service';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
+import { FilesService } from '../files/files.service';
 import { StorageService } from '../files/storage.service';
 import {
   type LessonDto,
@@ -45,6 +46,7 @@ export class TopicsService {
     private readonly audit: AuditService,
     private readonly lessons: LessonService,
     private readonly storage: StorageService,
+    private readonly files: FilesService,
     private readonly config: AppConfigService,
   ) {}
 
@@ -87,6 +89,19 @@ export class TopicsService {
    * Статус не меняется. Материалы — только свои файлы kind=material; лимиты BR-FILE-02 проверяются повторно.
    */
   async save(teacherId: string, id: string, dto: TopicContentDto): Promise<void> {
+    // BR-FILE-06: ссылка на обложку — картинка скачивается в наше хранилище (до транзакции: сетевой запрос).
+    // Та же ссылка, что уже сохранена, повторно не скачивается.
+    let coverMediaId = dto.coverMediaId ?? null;
+    if (dto.coverUrl) {
+      const [current] = await this.db
+        .select({ coverUrl: topics.coverUrl, coverMediaId: topics.coverMediaId })
+        .from(topics)
+        .where(eq(topics.id, id));
+      coverMediaId =
+        current?.coverUrl === dto.coverUrl && current.coverMediaId
+          ? current.coverMediaId
+          : await this.files.ingestCover(teacherId, dto.coverUrl);
+    }
     await this.db.transaction(async (tx) => {
       if (dto.coverMediaId) {
         const [cover] = await tx
@@ -124,8 +139,9 @@ export class TopicsService {
       await tx
         .update(topics)
         .set({
-          coverMediaId: dto.coverMediaId ?? null,
-          coverUrl: dto.coverMediaId ? null : (dto.coverUrl ?? null),
+          coverMediaId,
+          // Ссылка хранится как источник для формы учителя; ученику отдаётся только файл из хранилища.
+          coverUrl: dto.coverUrl ?? null,
         })
         .where(eq(topics.id, id));
       await tx.delete(tt).where(eq(tt.topicId, id));

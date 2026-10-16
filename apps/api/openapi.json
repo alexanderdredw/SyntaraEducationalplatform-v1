@@ -4002,6 +4002,10 @@
       "AiDraftLangDto": {
         "type": "object",
         "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 150
+          },
           "description": {
             "type": "string"
           },
@@ -4013,6 +4017,7 @@
           }
         },
         "required": [
+          "title",
           "description",
           "funFact",
           "bodyMd"
@@ -4199,6 +4204,11 @@
             "type": "string",
             "nullable": true
           },
+          "funFact": {
+            "type": "string",
+            "nullable": true,
+            "description": "«Интересный факт» — карточка после описания (решение владельца 2026-10-16)"
+          },
           "bodyMd": {
             "type": "string",
             "nullable": true
@@ -4245,6 +4255,7 @@
           "number",
           "questionsCount",
           "summary",
+          "funFact",
           "sections",
           "materials",
           "next",

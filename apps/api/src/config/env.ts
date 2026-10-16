@@ -16,7 +16,7 @@ const EnvSchema = z
     S3_SECRET_KEY: z.string().min(1),
     /**
      * Адрес хранилища для браузера (подписанные ссылки на загрузку и чтение, 7.8). По умолчанию — S3_ENDPOINT.
-     * TODO(OWNER): публичный адрес S3 в продуктиве (Q-27) — S3_ENDPOINT внутри сети браузеру недоступен.
+     * Раздел 2.3 SPEC (решение владельца 2026-10-16): S3_ENDPOINT внутри сети браузеру недоступен.
      */
     S3_PUBLIC_ENDPOINT: z.url().optional(),
     SESSION_SECRET: z.string().min(64, 'SESSION_SECRET must be at least 64 characters'),

@@ -123,6 +123,7 @@ export class LessonService {
       number: position,
       questionsCount: Number(questionsRow?.n ?? 0),
       summary: tr?.summary ?? tr?.description ?? null,
+      funFact: tr?.funFact ?? null,
       bodyMd: tr?.bodyMd ?? null,
       illustrationUrl: await this.coverUrl(snapshot),
       sections: [...snapshot.sections]
@@ -137,7 +138,10 @@ export class LessonService {
     };
   }
 
-  /** Обложка: файл из хранилища (только clean) или внешняя ссылка. */
+  /**
+   * Обложка — только из нашего хранилища и только clean (BR-FILE-04). Ссылку учителя сервер скачивает при
+   * сохранении (BR-FILE-06); внешний адрес ученику не отдаётся.
+   */
   async coverUrl(snapshot: Pick<TopicSnapshot, 'coverMediaId' | 'coverUrl'>): Promise<string | null> {
     if (snapshot.coverMediaId) {
       const [media] = await this.db
@@ -146,7 +150,7 @@ export class LessonService {
         .where(eq(mediaFiles.id, snapshot.coverMediaId));
       return media?.status === 'clean' ? this.storage.downloadUrl(media.key) : null;
     }
-    return snapshot.coverUrl ?? null;
+    return null;
   }
 
   private async cleanMaterials(ids: string[]): Promise<LessonDto['materials']> {

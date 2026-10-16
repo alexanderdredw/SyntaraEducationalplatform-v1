@@ -49,3 +49,46 @@ export async function cleanupIdempotencyKeys(db: Database): Promise<number> {
     .returning({ key: k.key });
   return deleted.length;
 }
+
+/** BR-FILE-07: срок незавершённой загрузки. */
+export const STALE_UPLOAD_HOURS = 24;
+
+/**
+ * BR-FILE-07 (решение владельца 2026-10-16): раз в сутки удаляются незавершённые загрузки — записи «pending»
+ * старше 24 часов, которые так и не были подтверждены (API-T-17 не вызван, события file.scan нет), и их объект
+ * в хранилище, если он есть. Файлы, ждущие проверки после подтверждения, не трогаются.
+ */
+export async function cleanupStaleUploads(
+  db: Database,
+  storage: { remove(key: string): Promise<void> },
+  now = new Date(),
+): Promise<number> {
+  const { mediaFiles: m, topicMaterials, topics, topicSections, outboxEvents: o } = schema;
+  const threshold = new Date(now.getTime() - STALE_UPLOAD_HOURS * 60 * 60 * 1000);
+  const keys = await db.transaction(async (tx) => {
+    const stale = await tx
+      .select({ id: m.id, key: m.storageKey })
+      .from(m)
+      .where(
+        and(
+          eq(m.scanStatus, 'pending'),
+          lt(m.createdAt, threshold),
+          sql`NOT EXISTS (SELECT 1 FROM ${o} WHERE ${o.type} = 'file.scan' AND ${o.payload}->>'mediaId' = ${m.id}::text)`,
+        ),
+      )
+      .for('update', { skipLocked: true });
+    for (const { id } of stale) {
+      await tx.delete(topicMaterials).where(eq(topicMaterials.mediaId, id));
+      await tx.update(topics).set({ coverMediaId: null }).where(eq(topics.coverMediaId, id));
+      await tx
+        .update(topicSections)
+        .set({ illustrationMediaId: null })
+        .where(eq(topicSections.illustrationMediaId, id));
+      await tx.delete(m).where(eq(m.id, id));
+    }
+    return stale.map((s) => s.key);
+  });
+  // Объекта может не быть (загрузка не началась) — удаление отсутствующего ключа в S3 не ошибка.
+  for (const key of keys) await storage.remove(key).catch(() => undefined);
+  return keys.length;
+}

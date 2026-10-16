@@ -10,6 +10,7 @@ import { migrateUp } from '@syntara/db/migrator';
 import { runSeed } from '@syntara/db/seed';
 import { DEMO_IDS } from '@syntara/db/seed';
 import { FILE_SCAN_JOB_OPTIONS, hasMacroParts, scanFile, zipEntryNames } from '../src/processors/file-scan';
+import { cleanupStaleUploads } from '../src/processors/maintenance';
 import { processOutbox } from '../src/processors/outbox';
 import { clamdScan, type Scanners } from '../src/processors/scanners';
 
@@ -243,5 +244,51 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
     const email = { add: async () => undefined } as unknown as Queue;
     expect(await processOutbox(db, { email, fileScan }, logger)).toBeGreaterThanOrEqual(1);
     expect(added).toContainEqual(['scan', { mediaId: id }, expect.objectContaining({ jobId: id })]);
+  });
+
+  it('BR-FILE-07 unconfirmed uploads older than 24 h are deleted with their object; others stay', async () => {
+    const now = new Date();
+    const old = new Date(now.getTime() - 25 * 60 * 60 * 1000);
+    const insert = async (createdAt: Date, confirmed: boolean) => {
+      const key = `material/${crypto.randomUUID()}`;
+      objects.set(key, Buffer.from('%PDF-1.4'));
+      const [row] = await db
+        .insert(schema.mediaFiles)
+        .values({
+          ownerId: DEMO_IDS.teacher,
+          kind: 'material',
+          originalName: 'a.pdf',
+          mime: 'application/pdf',
+          sizeBytes: 8,
+          storageKey: key,
+          createdAt,
+        })
+        .returning();
+      if (confirmed)
+        await db
+          .insert(schema.outboxEvents)
+          .values({ type: OUTBOX_EVENT_TYPES.fileScan, payload: { mediaId: row!.id } });
+      return row!;
+    };
+    const stale = await insert(old, false);
+    const waitingScan = await insert(old, true);
+    const fresh = await insert(now, false);
+    // Незавершённый материал уже привязан к теме (API-T-16) — привязка удаляется вместе с записью.
+    const [topic] = await db.select({ id: schema.topics.id }).from(schema.topics).limit(1);
+    await db.insert(schema.topicMaterials).values({ topicId: topic!.id, mediaId: stale.id, position: 99 });
+
+    expect(await cleanupStaleUploads(db, storage, now)).toBe(1);
+    const left = (await db.select({ id: schema.mediaFiles.id }).from(schema.mediaFiles)).map((r) => r.id);
+    expect(left).not.toContain(stale.id);
+    expect(left).toEqual(expect.arrayContaining([waitingScan.id, fresh.id]));
+    expect(removed).toContain(stale.storageKey);
+    expect(objects.has(waitingScan.storageKey)).toBe(true);
+    const links = await db
+      .select()
+      .from(schema.topicMaterials)
+      .where(eq(schema.topicMaterials.mediaId, stale.id));
+    expect(links).toEqual([]);
+    // Повторный запуск ничего не удаляет.
+    expect(await cleanupStaleUploads(db, storage, now)).toBe(0);
   });
 });

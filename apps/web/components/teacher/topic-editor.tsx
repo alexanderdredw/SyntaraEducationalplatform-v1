@@ -124,10 +124,12 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
     setMaterialsError(undefined);
     form.clearErrors();
     const values = form.getValues();
+    // PH-26: ссылка в поле — источник обложки (сервер скачает её, BR-FILE-06), иначе — выбранный файл.
+    const coverUrl = values.coverUrl.trim();
     const parsed = TopicContentDto.safeParse({
       translations: values.translations,
-      coverMediaId: values.coverMediaId,
-      coverUrl: values.coverMediaId ? null : values.coverUrl,
+      coverMediaId: coverUrl ? null : values.coverMediaId,
+      coverUrl: coverUrl || null,
       materialIds: (materials ?? []).map((m) => m.id),
     });
     if (!parsed.success) {
@@ -138,9 +140,15 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
     const res = await apiRequest(`/api/teacher/topics/${id}`, { method: 'PUT', body: parsed.data, locale });
     setSaving(false);
     if (res.kind === 'ok') {
-      form.reset(values);
+      // Обложка по ссылке скачана в галерею — отмечаем её выбранной.
+      const fresh = await apiRequest<Topic>(`/api/teacher/topics/${id}`, { locale });
+      form.reset({
+        ...values,
+        coverMediaId: fresh.kind === 'ok' ? fresh.data.coverMediaId : values.coverMediaId,
+      });
       setSaveStatus('saved');
       await queryClient.invalidateQueries({ queryKey: ['teacher', 'topic', id] });
+      await queryClient.invalidateQueries({ queryKey: ['teacher', 'gallery'] });
       return true;
     }
     if (res.kind === 'http' && res.error.fieldErrors) applyErrors(res.error.fieldErrors);
@@ -160,7 +168,8 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
     });
     if (res.kind !== 'ok') return setAi('unavailable');
     for (const l of ['ru', 'kk'] as const) {
-      for (const field of ['description', 'funFact', 'bodyMd'] as const) {
+      // Название — тоже от ИИ, на языке черновика; учитель может его поправить.
+      for (const field of ['title', 'description', 'funFact', 'bodyMd'] as const) {
         form.setValue(`translations.${l}.${field}`, res.data[l][field], { shouldDirty: true });
       }
     }

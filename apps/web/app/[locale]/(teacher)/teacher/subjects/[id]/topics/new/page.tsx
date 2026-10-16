@@ -1,9 +1,8 @@
 import { redirect } from '@/i18n/navigation';
 
 /**
- * /teacher/subjects/:id/topics/new (раздел 4). Тема создаётся кнопкой «+ Добавить тему» (API-T-09 → редактор,
- * REQ-TCH-ACC-02) — открыть адрес без создания черновика можно только со страницы предмета.
- * TODO(OWNER): нужен ли отдельный экран «Новая тема» до первого сохранения (тогда ИИ-черновик — без темы)?
+ * /teacher/subjects/:id/topics/new (раздел 4): отдельного экрана нет (решение владельца 2026-10-16) — тема
+ * создаётся кнопкой «+ Добавить тему» на странице предмета (API-T-09 → редактор, REQ-TCH-ACC-02).
  */
 export default async function Page({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;

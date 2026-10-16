@@ -129,7 +129,10 @@ test.describe('Кабинет учителя: контент (итерация 7
     await expect(page.getByTestId('ai-status')).toHaveText(tt.topic.aiFilled);
     await expect(editor.getByLabel(tt.topic.description, { exact: true })).toHaveValue(/Как работает сердце/);
     await expect(editor.getByLabel(tt.topic.funFact, { exact: true })).not.toHaveValue('');
+    await expect(editor.getByLabel(tt.topic.name, { exact: true })).toHaveValue('Как работает сердце');
     await tab('KK').click();
+    // Название — на языке черновика (решение владельца 2026-10-16).
+    await expect(editor.getByLabel(tt.topic.name, { exact: true })).toHaveValue(/Как работает сердце/);
     await expect(editor.getByLabel(tt.topic.description, { exact: true })).toHaveValue(/Как работает сердце/);
     await expect(editor.getByLabel(tt.topic.body, { exact: true })).toHaveValue(/## Как работает сердце/);
 
@@ -148,6 +151,9 @@ test.describe('Кабинет учителя: контент (итерация 7
     const editor = page.getByTestId('topic-editor');
     await editor.getByLabel(tt.topic.name, { exact: true }).fill('Строение сердца');
     await editor.getByLabel(tt.topic.description, { exact: true }).fill('Четыре камеры');
+    await editor
+      .getByLabel(tt.topic.funFact, { exact: true })
+      .fill('Сердце бьётся около 100 000 раз в сутки');
     await editor
       .getByLabel(tt.topic.body, { exact: true })
       .fill('## Камеры\n\n- **предсердия**\n\n<script>window.x=1</script>');
@@ -171,6 +177,18 @@ test.describe('Кабинет учителя: контент (итерация 7
     await page.getByRole('button', { name: tt.topic.preview }).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByTestId('lesson-view')).toContainText('Строение сердца');
+    // «Интересный факт» — карточка после описания, перед текстом урока.
+    const fact = dialog.getByTestId('lesson-fun-fact');
+    await expect(fact).toContainText(tt.lesson.funFact);
+    await expect(fact).toContainText('Сердце бьётся около 100 000 раз в сутки');
+    const order = await dialog
+      .getByTestId('lesson-view')
+      .evaluate(
+        (el) =>
+          el.textContent!.indexOf('Четыре камеры') < el.textContent!.indexOf('100 000') &&
+          el.textContent!.indexOf('100 000') < el.textContent!.indexOf('предсердия'),
+      );
+    expect(order).toBe(true);
     await expect(dialog.getByRole('heading', { name: 'Камеры' })).toBeVisible();
     await expectNoSeriousA11yViolations(page);
     await page.keyboard.press('Escape');
@@ -194,6 +212,13 @@ test.describe('Кабинет учителя: контент (итерация 7
       .setInputFiles({ name: 'cover.png', mimeType: 'image/png', buffer: PNG });
     await expect(page.getByTestId('gallery-item')).toHaveCount(1);
     await expect(page.getByTestId('gallery-item')).toHaveAttribute('aria-pressed', 'true');
+
+    // BR-FILE-06: ссылка на внутренний адрес не скачивается (SSRF) — понятная ошибка учителю.
+    await page.getByLabel(tt.topic.coverUrl).fill('http://localhost/cover.png');
+    await page.getByTestId('topic-save').click();
+    await expect(page.getByTestId('topic-cover')).toContainText(ru.validation.coverDownload);
+    await page.getByTestId('gallery-item').click();
+    await expect(page.getByLabel(tt.topic.coverUrl)).toHaveValue('');
 
     await page.getByTestId('material-file').setInputFiles({
       name: 'Конспект.txt',

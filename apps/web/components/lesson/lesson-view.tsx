@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FileText } from 'lucide-react';
+import { FileText, Lightbulb } from 'lucide-react';
 import { Accordion, Card } from '@syntara/ui';
 import type { components } from '@/lib/api/schema';
 import { SafeMarkdown } from '../markdown/safe-markdown';
@@ -30,6 +30,16 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       <div className="grid gap-5 @2xl:grid-cols-[1fr_auto]">
         <div className="flex min-w-0 flex-col gap-4">
           {lesson.summary ? <p className="text-[var(--text-muted)]">{lesson.summary}</p> : null}
+          {/* «Интересный факт» — отдельная карточка после описания, перед текстом урока (решение владельца 2026-10-16). */}
+          {lesson.funFact ? (
+            <Card className="flex flex-col gap-1 p-4" data-testid="lesson-fun-fact">
+              <h3 className="flex items-center gap-2 font-semibold">
+                <Lightbulb aria-hidden="true" className="size-4 text-[var(--warning)]" />
+                {t('funFact')}
+              </h3>
+              <p>{lesson.funFact}</p>
+            </Card>
+          ) : null}
           {lesson.bodyMd ? <SafeMarkdown>{lesson.bodyMd}</SafeMarkdown> : null}
         </div>
         {lesson.illustrationUrl ? (

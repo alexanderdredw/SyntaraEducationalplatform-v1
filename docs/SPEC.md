@@ -154,6 +154,7 @@ syntara/
 | DATABASE_URL | postgres://syntara:***@pgbouncer:6432/syntara | api, worker |
 | REDIS_URL | redis://redis:6379 | api, worker |
 | S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY | http://minio:9000, syntara-files | api, worker |
+| S3_PUBLIC_ENDPOINT | https://files.syntara-edu.me — адрес хранилища для браузера: подписанные ссылки на загрузку и чтение, CSP web; пусто — как S3_ENDPOINT | api, web |
 | SESSION_SECRET | 64 случайных байта | api |
 | APP_BASE_URL | https://syntara-edu.me | web, api |
 | API_INTERNAL_URL | http://api:3001 | web (SSR) |
@@ -263,7 +264,7 @@ pnpm lint && pnpm typecheck
 | /teacher/courses | Мои курсы | teacher | — | 8.3 |
 | /teacher/subjects/new | Новый предмет | teacher | T05 | 8.3.1 |
 | /teacher/subjects/:id | Предмет: доступ классу и темы | teacher (владелец) | T04 | 8.3.2 |
-| /teacher/subjects/:id/topics/new, /teacher/topics/:id | Редактор темы | teacher (владелец) | T06–T07 | 8.3.3 |
+| /teacher/subjects/:id/topics/new, /teacher/topics/:id | Редактор темы (`/topics/new` — переход на страницу предмета: тема создаётся кнопкой «+ Добавить тему», REQ-TCH-ACC-02) | teacher (владелец) | T06–T07 | 8.3.3 |
 | /teacher/topics/:id/quiz | Квиз темы | teacher (владелец) | T08 | 8.3.5 |
 | /teacher/assignments | Задания | teacher | T09 | 8.3.6 |
 | /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
@@ -615,8 +616,8 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-T-07 | POST /api/teacher/subjects/:id/access | Выдать предмет классу `{ classId }`; повтор → 200 без дубля |
 | API-T-08 | DELETE /api/teacher/subjects/:id/access/:classId | Отозвать выдачу |
 | API-T-09 | POST /api/teacher/subjects/:id/topics | Создать тему (черновик) |
-| API-T-10 | GET / PUT /api/teacher/topics/:id | Получить / сохранить тему: `{ translations, coverMediaId?, coverUrl?, materialIds[] }` |
-| API-T-11 | POST /api/teacher/topics/:id/ai-draft | ИИ-черновик: ответ `{ ru: {description, funFact, bodyMd}, kk: {...} }`; ничего не сохраняет |
+| API-T-10 | GET / PUT /api/teacher/topics/:id | Получить / сохранить тему: `{ translations, coverMediaId?, coverUrl?, materialIds[] }`; `coverUrl` (http/https) сервер скачивает в своё хранилище и проверяет как загруженную обложку (BR-FILE-06); не удалось — 422 `fieldErrors.coverUrl` |
+| API-T-11 | POST /api/teacher/topics/:id/ai-draft | ИИ-черновик: ответ `{ ru: {title, description, funFact, bodyMd}, kk: {...} }` — название на языке черновика; ничего не сохраняет |
 | API-T-12 | POST /api/teacher/topics/:id/publish | `{ changeNote? }` → создаёт topic_version, status = published |
 | API-T-13 | POST /api/teacher/topics/:id/unpublish | Снять с публикации (PH-27) |
 | API-T-14 | GET /api/teacher/topics/:id/versions | История версий (PH-25) |
@@ -643,7 +644,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
 | API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available' }] }` |
 | API-S-05 | GET /api/student/sections/:id | Предметы раздела |
-| API-S-06 | GET /api/student/topics/:id | `{ id, subject: {id, title}, title, number, questionsCount, summary, bodyMd?, illustrationUrl?, sections: [{ id, number, title, body }], next: { id, title } | null, locale }` |
+| API-S-06 | GET /api/student/topics/:id | `{ id, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, sections: [{ id, number, title, body }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04) |
 | API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` |
 | API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, explanation }` (PH-37) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
@@ -850,6 +851,16 @@ BR-FILE-03 После загрузки: проверка ClamAV и olevba; на�
            файл удаляется из хранилища, учителю показывается ошибка «Файл отклонён: обнаружены макросы или вредоносный код».
 BR-FILE-04 Ученикам отдаются только файлы со scan_status = 'clean' через подписанные ссылки сроком 10 минут.
 BR-FILE-05 Галерея обложек = media_files(kind='cover', owner_id = me). Выбор обложки — последнее действие побеждает (PH-26).
+BR-FILE-06 Обложка по ссылке учителя (REQ-TCH-TOP-04): при сохранении темы сервер скачивает картинку в своё хранилище
+           (media_files kind='cover', галерея учителя) и проверяет как загруженную: BR-FILE-01 (тип, ≤ 5 МБ, сигнатура),
+           затем BR-FILE-03. Ученику внешняя ссылка не отдаётся — только файл из хранилища (BR-FILE-04).
+           Защита от SSRF: только http/https, порты 80/443, без учётных данных в адресе; все адреса имени после DNS —
+           публичные (запрещены 0.0.0.0/8, 10/8, 100.64/10, 127/8, 169.254/16, 172.16/12, 192.168/16 и прочие служебные,
+           ::1, fc00::/7, fe80::/10, IPv4-mapped); соединение — на проверенный адрес; перенаправления (≤ 3) проверяются
+           заново; таймаут 10 с; чтение прерывается после 5 МБ. Не удалось скачать — учителю ошибка у поля ссылки.
+BR-FILE-07 Незавершённые загрузки: worker раз в сутки удаляет записи scan_status = 'pending' старше 24 часов, загрузка
+           которых не подтверждена (API-T-17 не вызван), и их объект в хранилище, если он есть. Подтверждённые файлы,
+           ожидающие проверки BR-FILE-03, не удаляются.
 ```
 
 ## 7.9 Формы и поддержка
@@ -1009,7 +1020,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | **ID** | **Требование** |
 |---|-----------------------------|
 | REQ-TCH-ACC-01 | Блок «Выдать предмет классу» с пояснением «После подключения ученики этого класса увидят предмет и его опубликованные темы в „Курсах".»; список классов учителя: название, «Учеников: N», кнопка «Выдать классу» (API-T-07). Для уже выданного — состояние «Выдан» и действие «Отозвать». |
-| REQ-TCH-ACC-02 | Блок «Темы», кнопка «+ Добавить тему» (API-T-09 → редактор). Пустое состояние «Пока нет тем — добавьте первую». Список тем: номер, название, статус (Черновик / Опубликована). |
+| REQ-TCH-ACC-02 | Блок «Темы», кнопка «+ Добавить тему» (API-T-09 → редактор). Пустое состояние «Пока нет тем — добавьте первую». Список тем: номер, название, статус (Черновик / Опубликована). Отдельного экрана «Новая тема» до первого сохранения нет: `/teacher/subjects/:id/topics/new` ведёт на страницу предмета. |
 
 ### 8.3.3 Редактор темы (/teacher/topics/:id, T06–T07)
 
@@ -1018,9 +1029,9 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | **ID** | **Требование** |
 |---|-----------------------------|
 | REQ-TCH-TOP-01 | Заголовок «Новая тема», ссылка «← К предмету». Порядок: панель ИИ → RU/KK/EN → «Название» → «Описание» → «Интересный факт» → «Текст урока» → «Обложка темы» → «Материалы урока» → «Сохранить» → блок публикации (8.3.4). |
-| REQ-TCH-TOP-02 | Кнопка «Сгенерировать черновик ИИ» (`--ai-gradient`) → API-T-11; заполняет описание, факт и текст урока для RU и KK в форме; не сохраняет и не публикует. При недоступности ИИ — сообщение «ИИ-черновик сейчас недоступен». |
+| REQ-TCH-TOP-02 | Кнопка «Сгенерировать черновик ИИ» (`--ai-gradient`) → API-T-11; заполняет название, описание, факт и текст урока для RU и KK в форме (название — на языке черновика, учитель может его поправить); не сохраняет и не публикует. При недоступности ИИ — сообщение «ИИ-черновик сейчас недоступен». |
 | REQ-TCH-TOP-03 | «Текст урока» — Markdown (заголовки `##`, списки, жирный, курсив) с вкладкой «Просмотр»; рендер через rehype-sanitize. |
-| REQ-TCH-TOP-04 | «Обложка темы»: поле «Ссылка на изображение (необязательно)» или «Загрузить файл»; JPG, PNG, WEBP, GIF до 5 МБ; миниатюры галереи (API-T-18); выбор — синяя рамка (PH-26). |
+| REQ-TCH-TOP-04 | «Обложка темы»: поле «Ссылка на изображение (необязательно)» или «Загрузить файл»; JPG, PNG, WEBP, GIF до 5 МБ; миниатюры галереи (API-T-18); выбор — синяя рамка (PH-26). Картинку по ссылке сервер скачивает в хранилище при сохранении (BR-FILE-06). |
 | REQ-TCH-TOP-05 | «Материалы урока»: «Добавить файл»; PDF, DOCX, XLSX, PPTX, ODT, TXT, CSV; до 25 МБ на файл, до 20 файлов и 200 МБ на тему; статус проверки файла (Проверяется / Готов / Отклонён) по BR-FILE-*. |
 | REQ-TCH-TOP-06 | «Сохранить» → API-T-10; статус темы не меняется. Сообщение «Сохранено». |
 
@@ -1099,7 +1110,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | **ID** | **Требование** |
 |---|-----------------------------|
 | REQ-ST-LES-01 | Хлебные крошки «← {Предмет} / {Тема}», заголовок, «Тема {N}», «{K} вопросов». Вкладки «Обзор», «Квиз», «Syntara AI» — параметр `?tab=`; переключение без перезагрузки. |
-| REQ-ST-LES-02 | «Обзор»: краткое описание; текст; иллюстрация справа (~336×190); аккордеон разделов (все свёрнуты, можно раскрыть несколько — PH-36). Эталон U04/U11 (RU): «01 Основные функции», «02 Состав сердечно-сосудистой системы», «03 Строение сердца», «04 Круги кровообращения», «05 Кровеносные сосуды и давление»; U09 (EN): «Main Functions», «Components of the Cardiovascular System», «Structure of the Heart», «Circulatory Pathways», «Blood Vessels and Pressure Regulation», «06 Microcirculation». Для авторских тем — Markdown целиком. |
+| REQ-ST-LES-02 | «Обзор»: краткое описание; карточка «Интересный факт» (если задан) — после описания, перед текстом урока; текст; материалы урока (только прошедшие проверку); иллюстрация справа (~336×190); аккордеон разделов (все свёрнуты, можно раскрыть несколько — PH-36). Эталон U04/U11 (RU): «01 Основные функции», «02 Состав сердечно-сосудистой системы», «03 Строение сердца», «04 Круги кровообращения», «05 Кровеносные сосуды и давление»; U09 (EN): «Main Functions», «Components of the Cardiovascular System», «Structure of the Heart», «Circulatory Pathways», «Blood Vessels and Pressure Regulation», «06 Microcirculation». Для авторских тем — Markdown целиком. |
 | REQ-ST-LES-03 | Внизу карточка «СЛЕДУЮЩАЯ — {Тема} →» (по position, PH-35); переход не засчитывает текущую тему. |
 | REQ-ST-LES-04 | Открытие темы → API-S-17 (lesson_opened, idempotencyKey = `lesson:{topicId}:{date}`). |
 | REQ-ST-LES-05 | Смена языка или темы оформления сохраняет тему, вкладку и результаты. |
@@ -1434,3 +1445,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-14 | 8.5 REQ-SUP-04, 11 PH-22: срок первого ответа считается в рабочих часах PH-22 (пн–пт 09:00–18:00, UTC+5): `first_response_business_days` рабочих дней от ближайшего рабочего момента после создания | Решение владельца по итогам итерации 4 |
 | 2026-10-14 | 6.2 API-PUB-02: поле `hasAnother` (есть ли другие пробные вопросы) и `locale` в ответе | Решение владельца по итогам итерации 5 |
 | 2026-10-14 | 5.3 (`users.email_verified_at`, `users.must_change_password`, `schools.status = unverified`), 6.2 API-PUB-09, 6.3 API-AUTH-03S/05/06 и MeDto, 6.4 API-T-26/27, 7.7 BR-CLS-04/05, 8.2 REQ-GEN-AUTH-01..03, 10 REQ-NFR-DATA-03, 11 PH-17 = true и PH-44 (Q-16 решён), 13 AC-AUTH-05..08: самостоятельная регистрация ученика (эталон `media/student-auth.png`), временный пароль от учителя, подтверждение email учителя | Решение владельца по итогам итерации 6 |
+| 2026-10-16 | 2.3 `S3_PUBLIC_ENDPOINT`; 4 и 8.3.2 REQ-TCH-ACC-02: без отдельного экрана «Новая тема» (`/topics/new` → страница предмета); 6.4 API-T-10 (обложка по ссылке скачивается сервером), API-T-11 (название в черновике); 6.5 API-S-06 (`funFact`, `materials`); 7.8 BR-FILE-06 (обложка по ссылке, защита от SSRF) и BR-FILE-07 (очистка незавершённых загрузок); 8.3.3 REQ-TCH-TOP-02/04; 8.4.3 REQ-ST-LES-02 (карточка «Интересный факт», также в «Посмотреть глазами ученика») | Решение владельца по итогам итерации 7 |

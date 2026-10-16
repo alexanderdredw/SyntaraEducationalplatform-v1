@@ -41,7 +41,8 @@ describe('shell helpers', () => {
     expect(storageOrigin({ S3_ENDPOINT: 'not a url' })).toBeUndefined();
     const csp = buildCsp('abc', false, origin);
     expect(csp).toContain("connect-src 'self' http://localhost:9000");
-    expect(csp).toContain('img-src');
+    // BR-FILE-06: внешних картинок нет — обложка по ссылке скачивается сервером в хранилище.
+    expect(csp).toContain("img-src 'self' data: blob: http://localhost:9000;");
     expect(buildCsp('abc', false)).toContain("connect-src 'self';");
   });
 });

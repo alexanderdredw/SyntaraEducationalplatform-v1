@@ -37,8 +37,12 @@ describe('AI draft with the test fixture (integration)', () => {
     const res = await post(`/api/teacher/topics/${topicId}/ai-draft`, {
       title: 'Как работает сердце',
     }).expect(200);
+    // Название — на языке черновика (решение владельца 2026-10-16).
+    expect(res.body.ru.title).toBe('Как работает сердце');
+    expect(res.body.kk.title).toContain('Как работает сердце');
     for (const locale of ['ru', 'kk'] as const) {
       expect(res.body[locale]).toEqual({
+        title: expect.any(String),
         description: expect.stringContaining('Как работает сердце'),
         funFact: expect.stringContaining('Как работает сердце'),
         bodyMd: expect.stringContaining('## Как работает сердце'),

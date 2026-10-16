@@ -6,6 +6,9 @@ import { FILE_LIMITS, OUTBOX_EVENT_TYPES } from '@syntara/shared';
 import { schema } from '@syntara/db';
 import { ACCOUNTS, freshIp, login, type Session } from './support/session';
 import { startStack, type TestStack } from './support/stack';
+import { createServer, type Server } from 'node:http';
+import { type AddressInfo } from 'node:net';
+import { REMOTE_ADDRESS_POLICY } from '../src/modules/files/remote-image';
 
 const BUCKET = 'syntara-test';
 const MB = 1_048_576;
@@ -20,6 +23,8 @@ describe('files (integration, MinIO)', () => {
   let teacher: Session;
   let otherTeacher: Session;
   let topicId: string;
+  let imageServer: Server;
+  let imageBase: string;
   const http = () => request(stack.app.getHttpServer());
   const post = (s: Session, path: string, body: object = {}) =>
     http()
@@ -82,12 +87,32 @@ describe('files (integration, MinIO)', () => {
       credentials: { accessKeyId: minio.getUsername(), secretAccessKey: minio.getPassword() },
     });
     await s3.send(new CreateBucketCommand({ Bucket: BUCKET }));
-    stack = await startStack('demo', (b) => b, {
-      S3_ENDPOINT: minio.getConnectionUrl(),
-      S3_BUCKET: BUCKET,
-      S3_ACCESS_KEY: minio.getUsername(),
-      S3_SECRET_KEY: minio.getPassword(),
+    // Сайт с картинкой для BR-FILE-06 — локальный, поэтому политика адресов в этом тесте разрешает loopback
+    // (сама защита от SSRF проверяется в remote-image.spec.ts).
+    imageServer = createServer((req, res) => {
+      if (req.url === '/heart.png') {
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(PNG);
+      } else {
+        res.writeHead(404);
+        res.end();
+      }
     });
+    await new Promise<void>((resolve) => imageServer.listen(0, '127.0.0.1', resolve));
+    imageBase = `http://127.0.0.1:${(imageServer.address() as AddressInfo).port}`;
+    stack = await startStack(
+      'demo',
+      (b) =>
+        b
+          .overrideProvider(REMOTE_ADDRESS_POLICY)
+          .useValue({ allowAddress: () => true, allowPort: () => true }),
+      {
+        S3_ENDPOINT: minio.getConnectionUrl(),
+        S3_BUCKET: BUCKET,
+        S3_ACCESS_KEY: minio.getUsername(),
+        S3_SECRET_KEY: minio.getPassword(),
+      },
+    );
     teacher = await login(http, ACCOUNTS.teacher);
     await http()
       .post('/api/auth/register')
@@ -106,6 +131,7 @@ describe('files (integration, MinIO)', () => {
   afterAll(async () => {
     await stack?.stop();
     await minio?.stop();
+    imageServer?.close();
   });
 
   it('BR-FILE-01 cover: only JPG/PNG/WEBP/GIF up to 5 MB — checked before the upload link is issued', async () => {
@@ -293,5 +319,56 @@ describe('files (integration, MinIO)', () => {
       'rejected',
       'pending',
     ]);
+  });
+
+  it('BR-FILE-06 a cover link is downloaded into our storage; the student gets our signed link, not the external one', async () => {
+    const topic = await newTopic(teacher, true);
+    const coverUrl = `${imageBase}/heart.png`;
+    const save = (url: string) =>
+      http()
+        .put(`/api/teacher/topics/${topic}`)
+        .set('Cookie', teacher.cookie)
+        .set('X-CSRF-Token', teacher.csrf)
+        .send({ translations: { ru: { title: 'Обложка по ссылке' } }, coverUrl: url, materialIds: [] });
+    await save(coverUrl).expect(204);
+
+    const saved = await get(teacher, `/api/teacher/topics/${topic}`).expect(200);
+    expect(saved.body.coverUrl).toBe(coverUrl);
+    const cover = await media(saved.body.coverMediaId);
+    expect(cover).toMatchObject({
+      kind: 'cover',
+      mime: 'image/png',
+      sizeBytes: PNG.length,
+      scanStatus: 'pending',
+    });
+    expect(await exists(cover.storageKey)).toBe(true);
+    // Та же проверка, что у загруженных файлов (BR-FILE-03): событие file.scan.
+    const events = (await stack.db.select().from(schema.outboxEvents)).filter(
+      (e) =>
+        e.type === OUTBOX_EVENT_TYPES.fileScan && (e.payload as { mediaId: string }).mediaId === cover.id,
+    );
+    expect(events).toHaveLength(1);
+    // Пока файл не проверен, обложки нет ни в предпросмотре, ни у ученика.
+    expect(saved.body.coverPreviewUrl).toBeNull();
+
+    // Повторное сохранение той же ссылки не скачивает картинку заново.
+    await save(coverUrl).expect(204);
+    expect((await get(teacher, `/api/teacher/topics/${topic}`)).body.coverMediaId).toBe(cover.id);
+
+    await stack.db
+      .update(schema.mediaFiles)
+      .set({ scanStatus: 'clean' })
+      .where(eq(schema.mediaFiles.id, cover.id));
+    await post(teacher, `/api/teacher/topics/${topic}/publish`).expect(200);
+    const student = await login(http, 'files.student', 'student-pass-1');
+    const lesson = await get(student, `/api/student/topics/${topic}`).expect(200);
+    expect(lesson.body.illustrationUrl).toContain(minio.getConnectionUrl());
+    expect(lesson.body.illustrationUrl).toContain('X-Amz-Expires=600');
+    expect(lesson.body.illustrationUrl).not.toContain(imageBase);
+
+    // Не удалось скачать — понятная ошибка учителю, тема не меняется.
+    const failed = await save(`${imageBase}/missing.png`).expect(422);
+    expect(failed.body.fieldErrors).toEqual({ coverUrl: 'coverDownload' });
+    expect((await get(teacher, `/api/teacher/topics/${topic}`)).body.coverMediaId).toBe(cover.id);
   });
 });

@@ -81,6 +81,13 @@ export class StorageService {
     return Buffer.from(await res.Body!.transformToByteArray());
   }
 
+  /** Запись объекта сервером — обложка, скачанная по ссылке (BR-FILE-06). */
+  async put(key: string, data: Buffer, mime: string): Promise<void> {
+    await this.client.send(
+      new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: data, ContentType: mime }),
+    );
+  }
+
   async remove(key: string): Promise<void> {
     await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
   }

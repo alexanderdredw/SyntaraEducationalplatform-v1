@@ -17,6 +17,7 @@ import { ApiException } from '../../common/api-exception';
 import { type Tx } from '../../common/idempotency';
 import { DB } from '../../infra/tokens';
 import { type GalleryItemDto, type MediaStatusDto, type UploadUrlResponse } from './files.dto';
+import { RemoteImageFetcher } from './remote-image';
 import { StorageService } from './storage.service';
 
 const { mediaFiles, topicMaterials, topics, subjects, outboxEvents } = schema;
@@ -41,7 +42,37 @@ export class FilesService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly storage: StorageService,
+    private readonly remote: RemoteImageFetcher,
   ) {}
+
+  /**
+   * BR-FILE-06: обложка по ссылке учителя — сервер скачивает картинку (защита от SSRF — RemoteImageFetcher),
+   * проверяет как загруженную (BR-FILE-01) и кладёт в хранилище; дальше — та же проверка file-scan, что у
+   * загруженных файлов (BR-FILE-03). Возвращает id обложки в галерее учителя.
+   */
+  async ingestCover(ownerId: string, url: string): Promise<string> {
+    const image = await this.remote.fetch(url);
+    const storageKey = `cover/${crypto.randomUUID()}`;
+    await this.storage.put(storageKey, image.data, image.mime);
+    return this.db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(mediaFiles)
+        .values({
+          ownerId,
+          kind: 'cover',
+          originalName: image.fileName,
+          mime: image.mime,
+          sizeBytes: image.data.length,
+          storageKey,
+        })
+        .returning({ id: mediaFiles.id });
+      await tx.insert(outboxEvents).values({
+        type: OUTBOX_EVENT_TYPES.fileScan,
+        payload: { mediaId: row!.id } satisfies OutboxFileScanPayload,
+      });
+      return row!.id;
+    });
+  }
 
   /** API-T-16 */
   async uploadUrl(ownerId: string, dto: UploadUrlDto): Promise<UploadUrlResponse> {

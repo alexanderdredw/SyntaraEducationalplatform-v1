@@ -203,6 +203,8 @@ describe('teacher content (integration)', () => {
         title: 'Растения',
         number: 1,
         summary: 'Описание темы',
+        // «Интересный факт» — в API-S-06 (решение владельца 2026-10-16).
+        funFact: 'Факт',
         bodyMd: '## Раздел\n\nТекст',
         next: null,
         locale: 'ru',
@@ -244,7 +246,6 @@ describe('teacher content (integration)', () => {
             kk: { title: 'Жүрек' },
             en: { title: '', description: '' },
           },
-          coverUrl: 'https://example.org/heart.png',
           materialIds: [],
         })
         .expect(204);
@@ -252,8 +253,8 @@ describe('teacher content (integration)', () => {
       expect(res.body).toMatchObject({
         status: 'draft',
         number: 1,
-        coverUrl: 'https://example.org/heart.png',
-        coverPreviewUrl: 'https://example.org/heart.png',
+        coverUrl: null,
+        coverPreviewUrl: null,
         materials: [],
         translations: {
           ru: { title: 'Сердце', description: 'Камеры', funFact: 'Клапаны', bodyMd: '## Камеры' },
@@ -263,7 +264,7 @@ describe('teacher content (integration)', () => {
       expect(res.body.translations.en).toBeUndefined();
     });
 
-    it('REQ-TCH-TOP-04 the cover link must be https; a foreign file cannot be a cover or material', async () => {
+    it('REQ-TCH-TOP-04 the cover link must be http(s); a foreign file cannot be a cover or material', async () => {
       const id = await newTopic(teacher, await newSubject(teacher), 'Тема');
       const bad = await as(teacher)
         .put(`/api/teacher/topics/${id}`, topicBody('Тема', { coverUrl: 'javascript:alert(1)' }))

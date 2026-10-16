@@ -114,12 +114,15 @@ const TopicLang = z.object({
 });
 export type TopicLang = z.infer<typeof TopicLang>;
 
-/** Внешняя ссылка на обложку (REQ-TCH-TOP-04): только https. */
+/**
+ * Ссылка на обложку (REQ-TCH-TOP-04, BR-FILE-06): только http(s). При сохранении сервер скачивает картинку
+ * в своё хранилище; ученику внешняя ссылка не отдаётся.
+ */
 const coverUrl = z
   .string()
   .trim()
   .max(2000, 'tooLong')
-  .refine((v) => v === '' || /^https:\/\/[^\s]+$/i.test(v), 'invalidUrl')
+  .refine((v) => v === '' || /^https?:\/\/[^\s]+$/i.test(v), 'invalidUrl')
   .transform((v) => v || null)
   .nullable()
   .optional();
@@ -150,8 +153,9 @@ export type TopicContentDto = z.infer<typeof TopicContentDto>;
 export const AiDraftDto = z.object({ title: optionalText(CONTENT_LIMITS.title) });
 export type AiDraftDto = z.infer<typeof AiDraftDto>;
 
-/** API-T-11: ответ — RU и KK (REQ-TCH-TOP-02). */
+/** API-T-11: ответ — RU и KK (REQ-TCH-TOP-02), включая название на языке черновика (решение владельца 2026-10-16). */
 export const AiDraftLang = z.object({
+  title: z.string().trim().min(1).max(CONTENT_LIMITS.title),
   description: z.string().max(CONTENT_LIMITS.description),
   funFact: z.string().max(CONTENT_LIMITS.funFact),
   bodyMd: z.string().max(CONTENT_LIMITS.bodyMd),

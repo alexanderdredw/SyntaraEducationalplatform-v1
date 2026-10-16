@@ -18,11 +18,13 @@ export function fixtureDraft(title: string): AiDraft {
   const subject = title || '—';
   return {
     ru: {
+      title: title || 'Черновик ИИ',
       description: `Черновик ИИ: ${subject}`,
       funFact: `Факт ИИ: ${subject}`,
       bodyMd: `## ${subject}\n\nТекст урока от ИИ.`,
     },
     kk: {
+      title: `ЖИ: ${subject}`,
       description: `ЖИ жобасы: ${subject}`,
       funFact: `ЖИ дерегі: ${subject}`,
       bodyMd: `## ${subject}\n\nЖИ сабақ мәтіні.`,
@@ -31,7 +33,8 @@ export function fixtureDraft(title: string): AiDraft {
 }
 
 /**
- * API-T-11 (REQ-TCH-TOP-02): описание, факт и текст урока на RU и KK через LLMProvider (BR-AI-01).
+ * API-T-11 (REQ-TCH-TOP-02): название, описание, факт и текст урока на RU и KK через LLMProvider (BR-AI-01);
+ * название — на языке черновика, учитель может его поправить (решение владельца 2026-10-16).
  * Ничего не сохраняет (BR-AI-03). Пока ai.mode = mock (PH-19, Q-11) или поставщик недоступен — 503, и интерфейс
  * показывает «ИИ-черновик сейчас недоступен». В промпт уходит только название темы (BR-AI-02).
  */
@@ -56,7 +59,8 @@ export class AiDraftService {
         {
           system:
             'Ты помогаешь учителю подготовить черновик школьного урока. Ответь только JSON вида ' +
-            '{"ru":{"description":"","funFact":"","bodyMd":""},"kk":{"description":"","funFact":"","bodyMd":""}}: ' +
+            '{"ru":{"title":"","description":"","funFact":"","bodyMd":""},"kk":{"title":"","description":"","funFact":"","bodyMd":""}}: ' +
+            'название на языке черновика до 150 символов, ' +
             'описание до 1000 символов, интересный факт до 500, текст урока в Markdown (заголовки ##, списки).',
           messages: [{ role: 'user', content: `Тема урока: ${title}` }],
           locale: 'ru',
