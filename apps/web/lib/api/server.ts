@@ -66,3 +66,21 @@ export async function getMeStats(cookieHeader: string): Promise<MeStats> {
     api().GET('/api/me/stats', { headers: { cookie: cookieHeader }, signal: signal(), cache: 'no-store' }),
   );
 }
+
+/**
+ * HTTP-статус GET к api от имени пользователя (по cookie запроса) — страницы кабинета отдают 404, если объект
+ * чужой или не существует (BR-ACL-01, API-GEN-08). Права проверяет api; при его недоступности — null.
+ */
+export async function apiStatus(path: string, cookieHeader: string): Promise<number | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      headers: { cookie: cookieHeader, Accept: 'application/json' },
+      signal: signal(),
+      cache: 'no-store',
+    });
+    return res.status;
+  } catch (err) {
+    console.error(`[web] GET ${path} failed: ${(err as Error).message}`);
+    return null;
+  }
+}

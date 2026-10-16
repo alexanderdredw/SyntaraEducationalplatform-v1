@@ -1,7 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
-import { buildCsp } from './lib/csp';
+import { buildCsp, storageOrigin } from './lib/csp';
 
 const handleI18n = createMiddleware(routing);
 
@@ -35,7 +35,14 @@ export default function middleware(request: NextRequest) {
   }
 
   const nonce = btoa(crypto.randomUUID());
-  const csp = buildCsp(nonce, process.env.NODE_ENV !== 'production');
+  const csp = buildCsp(
+    nonce,
+    process.env.NODE_ENV !== 'production',
+    storageOrigin({
+      S3_PUBLIC_ENDPOINT: process.env.S3_PUBLIC_ENDPOINT,
+      S3_ENDPOINT: process.env.S3_ENDPOINT,
+    }),
+  );
 
   const headers = new Headers(request.headers);
   headers.delete('accept-language');

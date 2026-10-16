@@ -69,7 +69,8 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     const header = page.getByTestId('cabinet-header');
     await expect(header.getByTestId('cabinet-role')).toContainText(ru.cabinet.roles.teacher);
     await expect(header.getByRole('link', { name: new RegExp('Айгерим Сапарова') })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.common.sectionInDevelopment);
+    // С итерации 7 «Мои курсы» — список предметов (API-T-01), а не заглушка.
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.teacher.courses.title);
   });
 
   test('REQ-GEN-SHELL-02..05 cabinet header, sidebar, lamp and «Кабинет» in the footer', async ({ page }) => {

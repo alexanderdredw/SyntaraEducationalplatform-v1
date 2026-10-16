@@ -14,7 +14,7 @@ export type ApiResult<T> =
   | { kind: 'timeout' };
 
 export interface ApiRequestOptions {
-  method?: 'GET' | 'POST' | 'PATCH';
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
   headers?: Record<string, string>;
   locale?: string;

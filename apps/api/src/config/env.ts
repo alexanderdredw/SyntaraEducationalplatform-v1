@@ -14,6 +14,11 @@ const EnvSchema = z
     S3_BUCKET: z.string().min(1),
     S3_ACCESS_KEY: z.string().min(1),
     S3_SECRET_KEY: z.string().min(1),
+    /**
+     * Адрес хранилища для браузера (подписанные ссылки на загрузку и чтение, 7.8). По умолчанию — S3_ENDPOINT.
+     * TODO(OWNER): публичный адрес S3 в продуктиве (Q-27) — S3_ENDPOINT внутри сети браузеру недоступен.
+     */
+    S3_PUBLIC_ENDPOINT: z.url().optional(),
     SESSION_SECRET: z.string().min(64, 'SESSION_SECRET must be at least 64 characters'),
     APP_BASE_URL: z.url(),
     LLM_PROVIDER: z.enum(['mock', 'openai-compatible', 'anthropic']).default('mock'),

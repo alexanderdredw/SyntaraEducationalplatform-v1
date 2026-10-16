@@ -14,7 +14,7 @@ const EnvSchema = z.object({
   S3_BUCKET: z.string().min(1),
   S3_ACCESS_KEY: z.string().min(1),
   S3_SECRET_KEY: z.string().min(1),
-  CLAMD_HOST: z.string().regex(/^[^:s]+:d+$/),
+  CLAMD_HOST: z.string().regex(/^[^:\s]+:\d+$/),
   OLEVBA_URL: z.url(),
 });
 export type WorkerEnv = z.infer<typeof EnvSchema>;

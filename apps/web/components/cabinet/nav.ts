@@ -6,6 +6,8 @@ export interface CabinetNavItem {
   href: string;
   key: string;
   icon: CabinetIcon;
+  /** Вложенные разделы, при которых пункт активен (предмет и тема — внутри «Мои курсы»). */
+  also?: string[];
 }
 
 /**
@@ -14,7 +16,12 @@ export interface CabinetNavItem {
  */
 export const CABINET_NAV: Partial<Record<UserRole, CabinetNavItem[]>> = {
   teacher: [
-    { href: '/teacher/courses', key: 'courses', icon: 'courses' },
+    {
+      href: '/teacher/courses',
+      key: 'courses',
+      icon: 'courses',
+      also: ['/teacher/subjects', '/teacher/topics'],
+    },
     { href: '/teacher/classes', key: 'classes', icon: 'classes' },
     { href: '/teacher/assignments', key: 'assignments', icon: 'assignments' },
   ],

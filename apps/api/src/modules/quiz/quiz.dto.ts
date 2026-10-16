@@ -2,15 +2,23 @@ import { ApiProperty } from '@nestjs/swagger';
 
 type Tr<T> = Partial<Record<'ru' | 'kk' | 'en', T>>;
 
+/** OpenAPI: объект по языкам ru / kk / en с одинаковой схемой значения. */
+const byLocale = (value: object, description?: string) => ({
+  type: 'object' as const,
+  description,
+  properties: { ru: value, kk: value, en: value },
+});
+const questionText = {
+  type: 'object',
+  properties: { text: { type: 'string' }, explanation: { type: 'string', nullable: true } },
+  required: ['text'],
+};
+
 /** API-T-20 / API-T-21 PUT (QuestionDto, 6.7). */
 export class QuestionBody {
   @ApiProperty({ enum: ['single_choice', 'true_false', 'text_input'] }) type: string;
   @ApiProperty({ enum: ['easy', 'medium', 'hard'] }) difficulty: string;
-  @ApiProperty({
-    type: 'object',
-    description: 'По языкам: { text ≤ 1000, explanation? ≤ 2000 }; хотя бы один язык',
-    additionalProperties: true,
-  })
+  @ApiProperty(byLocale(questionText, 'text ≤ 1000, explanation ≤ 2000; хотя бы один язык'))
   translations: Tr<{ text: string; explanation?: string }>;
   @ApiProperty({
     required: false,
@@ -25,7 +33,7 @@ export class QuestionBody {
 class OptionItemDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() isCorrect: boolean;
-  @ApiProperty({ type: 'object', additionalProperties: { type: 'string' } }) translations: Tr<string>;
+  @ApiProperty(byLocale({ type: 'string' })) translations: Tr<string>;
 }
 
 /** Вопрос для автора (правильный ответ виден только владельцу). */
@@ -36,8 +44,7 @@ export class QuestionItemDto {
   type: 'single_choice' | 'true_false' | 'text_input';
   @ApiProperty({ enum: ['easy', 'medium', 'hard'] }) difficulty: 'easy' | 'medium' | 'hard';
   @ApiProperty({ type: String, nullable: true }) textAnswer: string | null;
-  @ApiProperty({ type: 'object', additionalProperties: true })
-  translations: Tr<{ text: string; explanation: string | null }>;
+  @ApiProperty(byLocale(questionText)) translations: Tr<{ text: string; explanation: string | null }>;
   @ApiProperty({ type: OptionItemDto, isArray: true }) options: OptionItemDto[];
 }
 

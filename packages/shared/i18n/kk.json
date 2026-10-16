@@ -859,7 +859,8 @@
       "versionMeta": "{date} · {author}",
       "noVersions": "Әзірге нұсқа жоқ — тақырыпты жариялаңыз",
       "previewTitle": "Оқушы көзімен: {title}",
-      "unsaved": "Сақталмаған өзгерістер бар"
+      "unsaved": "Сақталмаған өзгерістер бар",
+      "fileSize": "{size} МБ"
     },
     "lesson": {
       "number": "{number}-тақырып",

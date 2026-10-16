@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildCsp } from '../../lib/csp';
+import { buildCsp, storageOrigin } from '../../lib/csp';
 import { helpKey, isActive, NAV_ITEMS } from './nav-items';
 
 describe('shell helpers', () => {
@@ -30,5 +30,18 @@ describe('shell helpers', () => {
     expect(prod).toContain("object-src 'none'");
     expect(prod).not.toContain('unsafe-eval');
     expect(buildCsp('abc', true)).toContain("'unsafe-eval'");
+  });
+
+  it('REQ-NFR-SEC-01, BR-FILE-04 CSP allows only the storage origin for uploads and file links', () => {
+    const origin = storageOrigin({ S3_ENDPOINT: 'http://localhost:9000/' });
+    expect(origin).toBe('http://localhost:9000');
+    expect(
+      storageOrigin({ S3_PUBLIC_ENDPOINT: 'https://files.example.kz/x', S3_ENDPOINT: 'http://minio:9000' }),
+    ).toBe('https://files.example.kz');
+    expect(storageOrigin({ S3_ENDPOINT: 'not a url' })).toBeUndefined();
+    const csp = buildCsp('abc', false, origin);
+    expect(csp).toContain("connect-src 'self' http://localhost:9000");
+    expect(csp).toContain('img-src');
+    expect(buildCsp('abc', false)).toContain("connect-src 'self';");
   });
 });

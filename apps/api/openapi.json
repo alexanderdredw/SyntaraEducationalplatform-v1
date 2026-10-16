@@ -4493,8 +4493,16 @@
           },
           "translations": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
+            "properties": {
+              "ru": {
+                "type": "string"
+              },
+              "kk": {
+                "type": "string"
+              },
+              "en": {
+                "type": "string"
+              }
             }
           }
         },
@@ -4537,7 +4545,53 @@
           },
           "translations": {
             "type": "object",
-            "additionalProperties": true
+            "properties": {
+              "ru": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              },
+              "kk": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              },
+              "en": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              }
+            }
           },
           "options": {
             "type": "array",
@@ -4596,8 +4650,54 @@
           },
           "translations": {
             "type": "object",
-            "description": "По языкам: { text ≤ 1000, explanation? ≤ 2000 }; хотя бы один язык",
-            "additionalProperties": true
+            "description": "text ≤ 1000, explanation ≤ 2000; хотя бы один язык",
+            "properties": {
+              "ru": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              },
+              "kk": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              },
+              "en": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              }
+            }
           },
           "options": {
             "type": "array",

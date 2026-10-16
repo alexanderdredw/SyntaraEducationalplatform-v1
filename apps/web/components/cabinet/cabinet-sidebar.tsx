@@ -52,7 +52,7 @@ export function CabinetSidebar({ items }: { items: CabinetNavItem[] }) {
               item.href,
               t(`nav.${item.key}`),
               ICONS[item.icon],
-              pathname === item.href || pathname.startsWith(`${item.href}/`),
+              [item.href, ...(item.also ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`)),
             )}
           </li>
         ))}

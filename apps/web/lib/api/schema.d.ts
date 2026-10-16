@@ -1455,7 +1455,9 @@ export interface components {
             id: string;
             isCorrect: boolean;
             translations: {
-                [key: string]: string;
+                ru?: string;
+                kk?: string;
+                en?: string;
             };
         };
         QuestionItemDto: {
@@ -1469,7 +1471,18 @@ export interface components {
             difficulty: "easy" | "medium" | "hard";
             textAnswer: string | null;
             translations: {
-                [key: string]: unknown;
+                ru?: {
+                    text: string;
+                    explanation?: string | null;
+                };
+                kk?: {
+                    text: string;
+                    explanation?: string | null;
+                };
+                en?: {
+                    text: string;
+                    explanation?: string | null;
+                };
             };
             options: components["schemas"]["OptionItemDto"][];
         };
@@ -1483,9 +1496,20 @@ export interface components {
             type: "single_choice" | "true_false" | "text_input";
             /** @enum {string} */
             difficulty: "easy" | "medium" | "hard";
-            /** @description По языкам: { text ≤ 1000, explanation? ≤ 2000 }; хотя бы один язык */
+            /** @description text ≤ 1000, explanation ≤ 2000; хотя бы один язык */
             translations: {
-                [key: string]: unknown;
+                ru?: {
+                    text: string;
+                    explanation?: string | null;
+                };
+                kk?: {
+                    text: string;
+                    explanation?: string | null;
+                };
+                en?: {
+                    text: string;
+                    explanation?: string | null;
+                };
             };
             /** @description 2–8 вариантов, ровно один isCorrect; для true_false тексты задаёт сервер */
             options?: {

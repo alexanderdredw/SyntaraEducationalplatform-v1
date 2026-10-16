@@ -859,7 +859,8 @@
       "versionMeta": "{date} · {author}",
       "noVersions": "No versions yet — publish the topic",
       "previewTitle": "As a student: {title}",
-      "unsaved": "There are unsaved changes"
+      "unsaved": "There are unsaved changes",
+      "fileSize": "{size} MB"
     },
     "lesson": {
       "number": "Topic {number}",

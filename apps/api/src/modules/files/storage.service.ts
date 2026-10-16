@@ -17,23 +17,29 @@ import { ENV, type Env } from '../../config/env';
  */
 @Injectable()
 export class StorageService {
+  /** Обращения api к хранилищу (внутренняя сеть). */
   private readonly client: S3Client;
+  /** Подпись ссылок для браузера — публичный адрес хранилища (подпись SigV4 включает хост). */
+  private readonly signer: S3Client;
   private readonly bucket: string;
 
   constructor(@Inject(ENV) env: Env) {
     this.bucket = env.S3_BUCKET;
-    this.client = new S3Client({
-      endpoint: env.S3_ENDPOINT,
-      region: 'us-east-1',
-      forcePathStyle: true,
-      credentials: { accessKeyId: env.S3_ACCESS_KEY, secretAccessKey: env.S3_SECRET_KEY },
-    });
+    const client = (endpoint: string) =>
+      new S3Client({
+        endpoint,
+        region: 'us-east-1',
+        forcePathStyle: true,
+        credentials: { accessKeyId: env.S3_ACCESS_KEY, secretAccessKey: env.S3_SECRET_KEY },
+      });
+    this.client = client(env.S3_ENDPOINT);
+    this.signer = client(env.S3_PUBLIC_ENDPOINT ?? env.S3_ENDPOINT);
   }
 
   /** Подписанная ссылка на PUT; Content-Type входит в подпись. */
   uploadUrl(key: string, mime: string): Promise<string> {
     return getSignedUrl(
-      this.client,
+      this.signer,
       new PutObjectCommand({ Bucket: this.bucket, Key: key, ContentType: mime }),
       {
         expiresIn: FILE_LIMITS.signedUrlSeconds,
@@ -44,7 +50,7 @@ export class StorageService {
   /** BR-FILE-04: ссылка на чтение сроком 10 минут; имя файла — для «Сохранить как». */
   downloadUrl(key: string, fileName?: string): Promise<string> {
     return getSignedUrl(
-      this.client,
+      this.signer,
       new GetObjectCommand({
         Bucket: this.bucket,
         Key: key,

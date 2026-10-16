@@ -23,7 +23,11 @@ export default defineConfig({
     {
       command: 'pnpm --filter @syntara/api start',
       // Сценарии идут с одного IP: лимиты API-GEN-06 (5 форм в минуту) отключены; сами лимиты проверяют integration-тесты.
-      env: { ...process.env, RATE_LIMITS_DISABLED: 'true' } as Record<string, string>,
+      // AI_DRAFT_FIXTURE: детерминированный ИИ-черновик для AC-TCH-04 (решение Q-13).
+      env: { ...process.env, RATE_LIMITS_DISABLED: 'true', AI_DRAFT_FIXTURE: 'true' } as Record<
+        string,
+        string
+      >,
       url: 'http://localhost:3001/api/health',
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

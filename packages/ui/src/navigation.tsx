@@ -61,6 +61,8 @@ export interface SegmentOption {
   disabled?: boolean;
   /** Подпись рядом с недоступным вариантом, например «скоро» (PH-04). */
   hint?: string;
+  /** Значок после подписи — например, отметка заполненного языка (эталон T05). Не меняет доступное имя. */
+  adornment?: ReactNode;
 }
 
 /** SegmentedControl (3.2): RU/KK/EN, тип, сложность, период. Всегда выбран ровно один вариант. */
@@ -99,6 +101,7 @@ export function SegmentedControl({
         >
           {o.label}
           {o.hint ? <span className="ml-1 text-xs">{o.hint}</span> : null}
+          {o.adornment}
         </ToggleGroup.Item>
       ))}
     </ToggleGroup.Root>
