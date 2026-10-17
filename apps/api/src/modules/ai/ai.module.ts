@@ -9,7 +9,8 @@ import { MockProvider } from './mock-provider';
 /**
  * Поставщик ИИ (BR-AI-01, BR-AI-06): LLM_PROVIDER = 'mock' (по умолчанию) — PH-19 без внешнего поставщика;
  * openai-compatible / anthropic — реальная модель через Vercel AI SDK (ai-sdk-provider.ts).
- * TODO(OWNER): какую модель и у какого поставщика использовать в продуктиве — Q-11 (с учётом REQ-NFR-DATA-01).
+ * Реальный ИИ пока не подключается — поставщик будет выбран позже (решение владельца 2026-10-17, Q-11);
+ * порядок подключения и критерии выбора (в т. ч. хранение данных в РК, REQ-NFR-DATA-01) — docs/AI_PROVIDER.md.
  */
 export function createProvider(env: Env): LLMProvider {
   const real = createRealProvider(env);

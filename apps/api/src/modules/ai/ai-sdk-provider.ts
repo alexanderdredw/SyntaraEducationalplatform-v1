@@ -10,7 +10,8 @@ const MAX_OUTPUT_TOKENS = 1024;
 /**
  * Реальная модель через Vercel AI SDK (раздел 2.1) за интерфейсом LLMProvider (BR-AI-01): openai-compatible
  * (любой API в формате OpenAI Chat Completions) или anthropic. Выбор поставщика, ключ и модель — только
- * переменные окружения сервера (AG-10); какую модель использовать — Q-11, TODO(OWNER).
+ * переменные окружения сервера (AG-10). Реальный ИИ пока не подключается (решение владельца 2026-10-17, Q-11);
+ * как подключить поставщика — docs/AI_PROVIDER.md.
  * Инструментов нет — модель только генерирует текст (BR-AI-03).
  */
 export class AiSdkProvider implements LLMProvider {
