@@ -47,4 +47,25 @@ describe('env (раздел 2.3)', () => {
       /RATE_LIMITS_DISABLED/,
     );
   });
+
+  it('BR-AI-01, AG-10 a real LLM provider needs a key and a model (and a base URL for openai-compatible); values are not echoed', () => {
+    expect(() => loadEnv({ ...base, LLM_PROVIDER: 'anthropic' })).toThrow(/LLM_API_KEY/);
+    expect(() =>
+      loadEnv({ ...base, LLM_PROVIDER: 'openai-compatible', LLM_API_KEY: 'sk-secret-123', LLM_MODEL: 'm' }),
+    ).toThrow(/LLM_BASE_URL/);
+    try {
+      loadEnv({ ...base, LLM_PROVIDER: 'openai-compatible', LLM_API_KEY: 'sk-secret-123', LLM_MODEL: 'm' });
+    } catch (err) {
+      expect((err as Error).message).not.toContain('sk-secret-123');
+    }
+    const env = loadEnv({ ...base, LLM_PROVIDER: 'anthropic', LLM_API_KEY: 'k', LLM_MODEL: 'm' });
+    expect(env.LLM_PROVIDER).toBe('anthropic');
+  });
+
+  it('AC-ST-06 the tutor fixture stream is test-only: forbidden in production', () => {
+    expect(loadEnv({ ...base, AI_TUTOR_FIXTURE: 'true' }).AI_TUTOR_FIXTURE).toBe(true);
+    expect(() => loadEnv({ ...base, NODE_ENV: 'production', AI_TUTOR_FIXTURE: 'true' })).toThrow(
+      /AI_TUTOR_FIXTURE/,
+    );
+  });
 });

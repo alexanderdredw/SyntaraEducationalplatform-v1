@@ -21,9 +21,16 @@ const EnvSchema = z
     S3_PUBLIC_ENDPOINT: z.url().optional(),
     SESSION_SECRET: z.string().min(64, 'SESSION_SECRET must be at least 64 characters'),
     APP_BASE_URL: z.url(),
+    /**
+     * Поставщик ИИ (BR-AI-01, BR-AI-06): mock — PH-19 без внешнего поставщика (по умолчанию). Реальная модель —
+     * openai-compatible (любой API в формате OpenAI Chat Completions; нужен LLM_BASE_URL) или anthropic.
+     * Какую модель использовать — Q-11, TODO(OWNER). Ключ — секрет: только здесь, в журналы не попадает (AG-10).
+     */
     LLM_PROVIDER: z.enum(['mock', 'openai-compatible', 'anthropic']).default('mock'),
     LLM_API_KEY: z.string().optional(),
     LLM_MODEL: z.string().optional(),
+    /** Адрес API поставщика: обязателен для openai-compatible, для anthropic — необязателен (свой шлюз). */
+    LLM_BASE_URL: z.url().optional(),
     SUPPORT_EMAIL: z.email().optional(),
     PLATFORM_TZ: z.string().default('Asia/Almaty'),
     SENTRY_DSN: z.string().optional(),
@@ -44,6 +51,26 @@ const EnvSchema = z
       .enum(['true', 'false', '1', '0'])
       .default('false')
       .transform((v) => v === 'true' || v === '1'),
+    /**
+     * Только для e2e (итерация 9, AC-ST-06): учебный ИИ отвечает детерминированным потоком вместо PH-19,
+     * чтобы проверить потоковый вывод и «Остановить» без настоящего поставщика. В продуктиве запрещено.
+     */
+    AI_TUTOR_FIXTURE: z
+      .enum(['true', 'false', '1', '0'])
+      .default('false')
+      .transform((v) => v === 'true' || v === '1'),
+  })
+  .refine((env) => env.LLM_PROVIDER === 'mock' || (env.LLM_API_KEY && env.LLM_MODEL), {
+    path: ['LLM_API_KEY'],
+    message: 'LLM_API_KEY and LLM_MODEL are required unless LLM_PROVIDER=mock',
+  })
+  .refine((env) => env.LLM_PROVIDER !== 'openai-compatible' || env.LLM_BASE_URL, {
+    path: ['LLM_BASE_URL'],
+    message: 'required for LLM_PROVIDER=openai-compatible',
+  })
+  .refine((env) => !(env.NODE_ENV === 'production' && env.AI_TUTOR_FIXTURE), {
+    path: ['AI_TUTOR_FIXTURE'],
+    message: 'must not be set in production',
   })
   .refine((env) => !(env.NODE_ENV === 'production' && env.AI_DRAFT_FIXTURE), {
     path: ['AI_DRAFT_FIXTURE'],

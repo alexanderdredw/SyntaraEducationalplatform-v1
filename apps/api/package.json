@@ -13,6 +13,8 @@
     "openapi:generate": "nest build && node dist/generate-openapi.js"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "4.0.71",
+    "@ai-sdk/openai-compatible": "3.0.62",
     "@aws-sdk/client-s3": "3.1152.0",
     "@aws-sdk/s3-request-presigner": "3.1152.0",
     "@nestjs/common": "^11.2.7",
@@ -26,6 +28,7 @@
     "@sentry/node": "^10.76.2",
     "@syntara/db": "workspace:*",
     "@syntara/shared": "workspace:*",
+    "ai": "7.0.126",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
     "drizzle-orm": "^0.45.4",

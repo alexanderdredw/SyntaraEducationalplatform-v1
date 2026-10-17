@@ -7,13 +7,19 @@ export interface Prompt {
   locale: Locale;
 }
 
+/** Расход токенов ответа (ai_messages.tokens_in / tokens_out), если поставщик его сообщает. */
+export interface Usage {
+  tokensIn: number | null;
+  tokensOut: number | null;
+}
+
 /**
  * Поставщик ИИ (BR-AI-01): клиент обращается к ИИ только через API. Поставщик лишь генерирует текст —
  * инструментов с записью у него нет (BR-AI-03). Отмена — через `signal`.
  */
 export interface LLMProvider {
   readonly name: string;
-  stream(prompt: Prompt, signal: AbortSignal): AsyncIterable<string>;
+  stream(prompt: Prompt, signal: AbortSignal, onUsage?: (usage: Usage) => void): AsyncIterable<string>;
 }
 
 export const LLM_PROVIDER = Symbol('LLM_PROVIDER');

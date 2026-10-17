@@ -2414,6 +2414,155 @@
         ]
       }
     },
+    "/api/student/ai/conversations": {
+      "post": {
+        "operationId": "TutorController_open",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Действующий диалог ученика по теме или общий",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationCreatedDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Тема не найдена или не видна ученику"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/ai/conversations/{id}": {
+      "get": {
+        "operationId": "TutorController_history",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/ai/conversations/{id}/messages": {
+      "post": {
+        "operationId": "TutorController_ask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Поток text/event-stream: delta {text} … done {} | error {code}",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "VALIDATION_FAILED: content ≤ 2000, quickAction из PH-21"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/api/public/school-requests": {
       "post": {
         "operationId": "FormsController_schoolRequest",
@@ -5541,6 +5690,160 @@
           "scorePercent",
           "xpAwarded",
           "badgesAwarded"
+        ]
+      },
+      "ConversationBody": {
+        "type": "object",
+        "properties": {
+          "context": {
+            "type": "string",
+            "enum": [
+              "topic_tutor",
+              "general_tutor"
+            ]
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Обязателен для topic_tutor"
+          }
+        },
+        "required": [
+          "context"
+        ]
+      },
+      "ConversationCreatedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ConversationTopicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "MessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "partial",
+              "failed"
+            ],
+            "description": "SM-AI-MESSAGE"
+          },
+          "quickAction": {
+            "type": "string",
+            "enum": [
+              "simpler",
+              "more_detail",
+              "check_me"
+            ],
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "content",
+          "status",
+          "quickAction",
+          "createdAt"
+        ]
+      },
+      "ConversationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "context": {
+            "type": "string",
+            "enum": [
+              "topic_tutor",
+              "general_tutor"
+            ]
+          },
+          "topic": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ConversationTopicDto"
+              }
+            ]
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "context",
+          "topic",
+          "messages"
+        ]
+      },
+      "MessageBody": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "quickAction": {
+            "type": "string",
+            "enum": [
+              "simpler",
+              "more_detail",
+              "check_me"
+            ]
+          }
+        },
+        "required": [
+          "content"
         ]
       },
       "SchoolRequestBody": {

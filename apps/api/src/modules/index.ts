@@ -7,6 +7,7 @@ import { AssignmentsModule } from './assignments/assignments.module';
 import { ResultsModule } from './results/results.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { AiModule } from './ai/ai.module';
+import { TutorModule } from './ai/tutor.module';
 import { SupportModule } from './support/support.module';
 import { PublicModule } from './public/public.module';
 import { FilesModule } from './files/files.module';
@@ -23,6 +24,7 @@ export const DOMAIN_MODULES = [
   ResultsModule,
   GamificationModule,
   AiModule,
+  TutorModule,
   SupportModule,
   PublicModule,
   FilesModule,

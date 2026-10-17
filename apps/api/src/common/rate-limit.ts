@@ -23,7 +23,8 @@ import { ApiException } from './api-exception';
 
 /**
  * Лимиты API-GEN-06 (Redis): формы — 5 в минуту на IP; вход — 10 за 15 минут на IP+email;
- * проверка кода класса — 10 за 15 минут на IP; ИИ — PH-20 `ai.limits` (per_minute и per_day на IP).
+ * проверка кода класса — 10 за 15 минут на IP; ИИ — PH-20 `ai.limits` (per_minute и per_day): публичный помощник —
+ * на IP, учебный ИИ — на ученика (класс в школе часто выходит в интернет с одного IP).
  */
 export const RATE_LIMITS = {
   forms: { limit: 5, ttl: 60_000 },
@@ -37,6 +38,7 @@ export const RATE_LIMIT_GROUPS = {
   login: ['login'],
   join: ['join'],
   ai: ['ai_minute', 'ai_day'],
+  aiStudent: ['ai_student_minute', 'ai_student_day'],
 } as const;
 export type RateLimitName = keyof typeof RATE_LIMIT_GROUPS;
 const ALL_THROTTLERS = Object.values(RATE_LIMIT_GROUPS).flat();
@@ -47,6 +49,8 @@ interface AiLimits {
 }
 
 const ip = (req: Record<string, unknown>) => String(req.ip ?? 'unknown');
+/** Ученик сессии (SessionGuard выполняется раньше); без сессии маршрут всё равно отдаст 401. */
+const student = (req: Record<string, unknown>) => (req.user as { id?: string } | undefined)?.id ?? ip(req);
 /** Счётчик общий для всех маршрутов лимита (например, обе публичные формы — 5 в минуту на IP вместе). */
 const sharedKey = (_context: ExecutionContext, tracker: string, name: string) => `${name}:${tracker}`;
 
@@ -129,6 +133,20 @@ export function throttlerOptions(
         ttl: 24 * 60 * 60_000,
         limit: async () => (await ai()).per_day,
         getTracker: ip,
+        generateKey: sharedKey,
+      },
+      {
+        name: 'ai_student_minute',
+        ttl: 60_000,
+        limit: async () => (await ai()).per_minute,
+        getTracker: student,
+        generateKey: sharedKey,
+      },
+      {
+        name: 'ai_student_day',
+        ttl: 24 * 60 * 60_000,
+        limit: async () => (await ai()).per_day,
+        getTracker: student,
         generateKey: sharedKey,
       },
     ],

@@ -163,7 +163,8 @@ syntara/
 | APP_BASE_URL | https://syntara-edu.me | web, api |
 | API_INTERNAL_URL | http://api:3001 | web (SSR) |
 | LLM_PROVIDER | mock / openai-compatible / anthropic | api |
-| LLM_API_KEY, LLM_MODEL | — | api |
+| LLM_API_KEY, LLM_MODEL | — (обязательны, если LLM_PROVIDER ≠ mock; ключ — секрет, в журналы не попадает) | api |
+| LLM_BASE_URL | адрес API поставщика: обязателен для openai-compatible (…/v1), для anthropic — необязателен | api |
 | SMTP_URL, MAIL_FROM | smtp://..., noreply@syntara-edu.me | worker |
 | SUPPORT_EMAIL | PH-09 | api, web (через API config) |
 | CLAMD_HOST, OLEVBA_URL | clamav:3310, http://olevba:8080 | worker |
@@ -672,9 +673,9 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
 | API-S-10 | GET /api/student/assignments | Мои задания (PH-33) |
-| API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }` |
-| API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content, quickAction? }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial) |
-| API-S-13 | GET /api/student/ai/conversations/:id | История сообщений |
+| API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }`; `topic_tutor` — только по видимой теме (BR-VIS-01, иначе 404). У ученика один действующий диалог на тему и один общий: повторный вызов возвращает его (история после перезагрузки) |
+| API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content ≤ 2000, quickAction?: 'simpler'|'more_detail'|'check_me' }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial). Вопрос сохраняется сразу вместе с событием `ai_question` (без XP, BR-XP-01; не входит в серию, BR-ST-02), ответ — по завершении: complete / partial / failed (SM-AI-MESSAGE). Пока поставщик mock или недоступен — `event: error {code: 'AI_UNAVAILABLE'}`, ответ failed, клиент показывает PH-19 «Учебный ИИ скоро будет доступен». Лимиты PH-20 — на ученика (не на IP). Чужой диалог → 404 (BR-ACL-03) |
+| API-S-13 | GET /api/student/ai/conversations/:id | `{ id, context, topic: { id, title } | null, messages: [{ id, role, content, status, quickAction, createdAt }] }` — история сообщений; чужой диалог → 404 (BR-ACL-03) |
 | API-S-14 | GET /api/student/progress | `?period=today|7d|30d|90d|quarter|year` → `{ range: {from, to}, compareRange, nextStep: {action, reason, href}, progress: { mastered, total, percent, deltaPercent }, streak: { days, lastActivityDate, delta } }` |
 | API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` |
 | API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
@@ -920,7 +921,14 @@ BR-AI-04 Отмена клиентом → сообщение сохраняет
 BR-AI-05 Гостевая история хранится только в памяти вкладки; на сервере не сохраняется.
 BR-AI-06 Пока LLM_PROVIDER = 'mock' или поставщик недоступен — поведение PH-19.
 BR-AI-07 Публичный помощник: ссылки в ответах только на внутренние маршруты раздела 4 и URL атласов из конфигурации;
-         остальные ссылки удаляются при санитизации.
+         остальные ссылки удаляются при санитизации. Учебный ИИ — та же серверная санитизация (REQ-NFR-SEC-06).
+BR-AI-08 (предложение агента 2026-10-17, TODO(OWNER): подтвердить формулировку) Учебный ИИ не решает за ученика:
+         объясняет, подсказывает и задаёт наводящие вопросы; на вопросы квиза текущей темы не даёт готового ответа
+         (вариант, букву, число или слово), даже если ученик просит прямо или просит «забыть правила». В промпт topic_tutor
+         передаются тексты вопросов квиза темы без вариантов, правильных ответов и объяснений; при «Проверь меня» ИИ
+         задаёт свои вопросы, а не вопросы квиза.
+BR-AI-09 Текст текущей темы (topic_tutor, решение владельца 2026-10-17): снимок опубликованной версии на языке ученика
+         (нет перевода — RU, REQ-ST-LES-07): название, описание, интересный факт, текст урока и все разделы аккордеона.
 ```
 
 ## 7.11 Базовая программа платформы (этап 8.6)
@@ -1528,3 +1536,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-16 | Этап 8.6 «Базовая программа платформы»: 1.1, 1.2 (гость читает базовые уроки; базовый контент не меняется через сайт); 2.2 `content/`; 2.4 `content:check`, `content:import`; 4 гостевой доступ к /learn/...; 5.4 коды `code` и `topic_translations.needs_review`; 6.2 API-PUB-01 (PH-01 — разделы и базовые предметы, `open`), API-PUB-10..13; 6.5 API-S-04/05 `soon`, API-S-06 `needsReview`, подписи и иллюстрации разделов; 7.1 BR-ACL-05, BR-VIS-04; 7.11 BR-CNT-01..08; 8.1.2 REQ-PUB-SUBJ-02; 8.4.2 REQ-ST-CAT-02 «Скоро»; 8.4.3 REQ-ST-LES-06/07; 11 PH-01; 13 AC-CNT-01..07. Роли «Методист» нет; деления на классы нет (1.3 в силе) | Решение владельца 2026-10-16 по вопросам этапа 8.6 |
 | 2026-10-16 | 15: seed `visual` больше не переписывает базовые уроки — эталонные значения U03 «11 систем организма», U04/U05 «9 вопросов», U08 «из 41 темы», U13 «Chemistry — Available» не воспроизводятся (базовые уроки — только `content/`, BR-CNT-01); 2.2 `scripts/content-art/` — исходники собственных схем | Этап 8.6 |
 | 2026-10-17 | 5.4 `subjects.position` (миграция 0006); 6.2 API-PUB-01 — порядок по content/; 7.11 BR-CNT-02 — порядок предметов в `subject.yaml`, предметов вне разделов нет (`content/_root/` убран); 8.1.1 REQ-PUB-HOME-06 — не больше 6 карточек, открытые первыми, «Все предметы →»; 8.4.2 REQ-ST-CAT-02 — «Химия» в «Естественных науках» (отступление от эталона U13: карточки «Chemistry — Available» вне разделов больше нет); 8.4.3 REQ-ST-LES-06 — текст приглашения на «Syntara AI», REQ-ST-LES-07 — ширина иллюстраций разделов | Решение владельца 2026-10-17 при приёмке этапа 8.6 |
+| 2026-10-17 | 2.3 `LLM_BASE_URL`, обязательность `LLM_API_KEY`/`LLM_MODEL` при реальном поставщике; 6.5 API-S-11 (один действующий диалог на тему и общий), API-S-12 (событие `ai_question`, mock → `AI_UNAVAILABLE`, лимиты PH-20 на ученика), API-S-13 (формат истории); 7.10 BR-AI-07 (санитизация учебного ИИ), BR-AI-08 (не решает за ученика — предложение, TODO(OWNER)), BR-AI-09 (текст темы для ИИ) | Итерация 9, решение владельца 2026-10-17 |

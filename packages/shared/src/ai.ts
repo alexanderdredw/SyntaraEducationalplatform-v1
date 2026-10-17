@@ -17,6 +17,24 @@ export const PublicAssistantDto = z.object({
 });
 export type PublicAssistantDto = z.infer<typeof PublicAssistantDto>;
 
+/** PH-21 `ai.quick_actions`: быстрые действия учебного ИИ (REQ-ST-AI-01). */
+export const AI_QUICK_ACTIONS = ['simpler', 'more_detail', 'check_me'] as const;
+export type AiQuickAction = (typeof AI_QUICK_ACTIONS)[number];
+
+/** API-S-11: диалог с учебным ИИ; `topic_tutor` — по теме урока (нужен topicId), `general_tutor` — /learn/assistant. */
+export const StudentConversationDto = z.discriminatedUnion('context', [
+  z.object({ context: z.literal('topic_tutor'), topicId: z.uuid('required') }),
+  z.object({ context: z.literal('general_tutor') }),
+]);
+export type StudentConversationDto = z.infer<typeof StudentConversationDto>;
+
+/** API-S-12: вопрос ученика (PH-20 `max_chars`); быстрое действие — PH-21. */
+export const StudentMessageDto = z.object({
+  content: z.string().trim().min(1, 'required').max(AI_MAX_MESSAGE_CHARS, 'tooLong'),
+  quickAction: z.enum(AI_QUICK_ACTIONS).optional(),
+});
+export type StudentMessageDto = z.infer<typeof StudentMessageDto>;
+
 /** API-PUB-03 */
 export const DemoAnswerDto = z.object({
   questionId: z.uuid('required'),
