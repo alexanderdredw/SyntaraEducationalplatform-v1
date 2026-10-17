@@ -948,6 +948,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/teacher/classes/{id}/mastery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAnalyticsController_mastery"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/progress": {
         parameters: {
             query?: never;
@@ -2045,6 +2061,8 @@ export interface components {
             grade: number | null;
             /** @description Срок прошёл, а работа не сдана */
             overdue: boolean;
+            /** @description Сдано после срока (BR-ASG-03) */
+            late: boolean;
         };
         EngagementDto: {
             active: number;
@@ -2081,6 +2099,44 @@ export interface components {
             engagement: components["schemas"]["EngagementDto"];
             weakTopics: components["schemas"]["WeakTopicDto"][];
             attention: components["schemas"]["AttentionDto"][];
+        };
+        MasterySubjectDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** @description Базовый предмет платформы */
+            official: boolean;
+        };
+        MasteryTopicDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+        };
+        MasteryStudentDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        MasteryCellDto: {
+            /** Format: uuid */
+            studentId: string;
+            /** Format: uuid */
+            topicId: string;
+            /** @enum {string} */
+            status: "mastered" | "started" | "not_started";
+            /** @description Лучший результат, % */
+            percent: number | null;
+        };
+        MasteryMapDto: {
+            subjects: components["schemas"]["MasterySubjectDto"][];
+            /**
+             * Format: uuid
+             * @description Выбранный предмет
+             */
+            subjectId: string | null;
+            topics: components["schemas"]["MasteryTopicDto"][];
+            students: components["schemas"]["MasteryStudentDto"][];
+            cells: components["schemas"]["MasteryCellDto"][];
         };
         DayRangeDto: {
             /** Format: date */
@@ -5059,6 +5115,50 @@ export interface operations {
                 };
                 content?: never;
             };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAnalyticsController_mastery: {
+        parameters: {
+            query?: {
+                subjectId?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MasteryMapDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Класс не свой или предмет нельзя показать этому классу */
             404: {
                 headers: {
                     [name: string]: unknown;

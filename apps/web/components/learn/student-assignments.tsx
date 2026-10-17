@@ -55,6 +55,11 @@ export function StudentAssignments({ timeZone }: { timeZone: string }) {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {a.overdue ? <Badge tone="danger">{t('overdue')}</Badge> : null}
+                  {a.late ? (
+                    <Badge tone="danger" data-testid="assignment-late">
+                      {t('late')}
+                    </Badge>
+                  ) : null}
                   <Badge
                     tone={a.status === 'graded' ? 'success' : a.status === 'submitted' ? 'accent' : 'neutral'}
                   >

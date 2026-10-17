@@ -2663,6 +2663,58 @@
         ]
       }
     },
+    "/api/teacher/classes/{id}/mastery": {
+      "get": {
+        "operationId": "TeacherAnalyticsController_mastery",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subjectId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasteryMapDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Класс не свой или предмет нельзя показать этому классу"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
     "/api/student/progress": {
       "get": {
         "operationId": "StudentResultsController_progress",
@@ -6229,6 +6281,10 @@
           "overdue": {
             "type": "boolean",
             "description": "Срок прошёл, а работа не сдана"
+          },
+          "late": {
+            "type": "boolean",
+            "description": "Сдано после срока (BR-ASG-03)"
           }
         },
         "required": [
@@ -6239,7 +6295,8 @@
           "dueAt",
           "status",
           "grade",
-          "overdue"
+          "overdue",
+          "late"
         ]
       },
       "EngagementDto": {
@@ -6355,6 +6412,133 @@
           "engagement",
           "weakTopics",
           "attention"
+        ]
+      },
+      "MasterySubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "official": {
+            "type": "boolean",
+            "description": "Базовый предмет платформы"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "official"
+        ]
+      },
+      "MasteryTopicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "MasteryStudentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "MasteryCellDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "mastered",
+              "started",
+              "not_started"
+            ]
+          },
+          "percent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Лучший результат, %"
+          }
+        },
+        "required": [
+          "studentId",
+          "topicId",
+          "status",
+          "percent"
+        ]
+      },
+      "MasteryMapDto": {
+        "type": "object",
+        "properties": {
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MasterySubjectDto"
+            }
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Выбранный предмет"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MasteryTopicDto"
+            }
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MasteryStudentDto"
+            }
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MasteryCellDto"
+            }
+          }
+        },
+        "required": [
+          "subjects",
+          "subjectId",
+          "topics",
+          "students",
+          "cells"
         ]
       },
       "DayRangeDto": {

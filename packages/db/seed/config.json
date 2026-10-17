@@ -246,7 +246,7 @@
     {
       "key": "teacher.mastery_map",
       "note": "PH-24",
-      "value": "stub"
+      "value": "simple"
     },
     {
       "key": "topic.versions_restore",
@@ -330,9 +330,26 @@
         "mastery_threshold": 80,
         "school_year": {
           "from": "09-01",
-          "to": "05-31"
+          "to": "05-25"
         },
-        "quarters": []
+        "quarters": [
+          {
+            "from": "2026-09-01",
+            "to": "2026-10-25"
+          },
+          {
+            "from": "2026-11-02",
+            "to": "2026-12-27"
+          },
+          {
+            "from": "2027-01-11",
+            "to": "2027-03-21"
+          },
+          {
+            "from": "2027-03-29",
+            "to": "2027-05-25"
+          }
+        ]
       }
     },
     {

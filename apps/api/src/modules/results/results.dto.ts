@@ -100,3 +100,37 @@ export class AchievementsDto {
   @ApiProperty() earnedCount: number;
   @ApiProperty() totalCount: number;
 }
+
+class MasterySubjectDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ description: 'Базовый предмет платформы' }) official: boolean;
+}
+
+class MasteryTopicDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+}
+
+class MasteryStudentDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() name: string;
+}
+
+class MasteryCellDto {
+  @ApiProperty({ format: 'uuid' }) studentId: string;
+  @ApiProperty({ format: 'uuid' }) topicId: string;
+  @ApiProperty({ enum: ['mastered', 'started', 'not_started'] }) status:
+    'mastered' | 'started' | 'not_started';
+  @ApiProperty({ type: Number, nullable: true, description: 'Лучший результат, %' }) percent: number | null;
+}
+
+/** API-T-29: «Карта освоения» — ученики × темы выбранного предмета. */
+export class MasteryMapDto {
+  @ApiProperty({ type: MasterySubjectDto, isArray: true }) subjects: MasterySubjectDto[];
+  @ApiProperty({ type: String, format: 'uuid', nullable: true, description: 'Выбранный предмет' })
+  subjectId: string | null;
+  @ApiProperty({ type: MasteryTopicDto, isArray: true }) topics: MasteryTopicDto[];
+  @ApiProperty({ type: MasteryStudentDto, isArray: true }) students: MasteryStudentDto[];
+  @ApiProperty({ type: MasteryCellDto, isArray: true }) cells: MasteryCellDto[];
+}

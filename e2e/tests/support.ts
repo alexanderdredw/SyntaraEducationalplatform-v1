@@ -29,6 +29,8 @@ export const isMobile = (page: Page) => (page.viewportSize()?.width ?? 1440) < 1
 
 /** DoD 5 / REQ-NFR-A11Y-01: axe без нарушений уровня serious и critical. */
 export async function expectNoSeriousA11yViolations(page: Page) {
+  // После клиентского перехода Next.js заново выставляет <title> (метаданные корневого layout) — ждём его.
+  await page.waitForFunction(() => document.title !== '');
   // Переходы 150–200 мс (hover, смена вкладки): axe не должен мерить контраст промежуточного цвета.
   // Бесконечные анимации (скелетоны) не ждём.
   await page.evaluate(() =>

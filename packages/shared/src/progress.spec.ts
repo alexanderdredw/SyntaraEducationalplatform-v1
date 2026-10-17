@@ -36,7 +36,7 @@ describe('progress rules (7.4–7.6)', () => {
     });
   });
 
-  it('BR-ST-04, Q-23 quarter comes from configuration; no quarters — unavailable', () => {
+  it('BR-ST-04, Q-23 quarter comes from configuration (holidays — the last started one); none started — unavailable', () => {
     expect(periodRanges('quarter', '2026-10-17', config)).toBeNull();
     const quarters = [
       { from: '2026-09-01', to: '2026-10-26' },
@@ -46,8 +46,9 @@ describe('progress rules (7.4–7.6)', () => {
       range: { from: '2026-11-03', to: '2026-12-28' },
       compare: { from: '2026-09-08', to: '2026-11-02' },
     });
-    // Каникулы между четвертями — четверти нет.
-    expect(periodRanges('quarter', '2026-10-30', { ...config, quarters })).toBeNull();
+    // Каникулы — последняя начавшаяся четверть; до первой четверти — недоступно.
+    expect(periodRanges('quarter', '2026-10-30', { ...config, quarters })!.range).toEqual(quarters[0]);
+    expect(periodRanges('quarter', '2026-08-20', { ...config, quarters })).toBeNull();
   });
 
   it('BR-ST-01 day boundaries in UTC+5: 19:30 UTC is already the next day in Almaty', () => {

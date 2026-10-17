@@ -61,4 +61,5 @@ export class StudentAssignmentDto {
   @ApiProperty({ type: Number, nullable: true, description: 'Оценка, % (лучшая попытка)' }) grade:
     number | null;
   @ApiProperty({ description: 'Срок прошёл, а работа не сдана' }) overdue: boolean;
+  @ApiProperty({ description: 'Сдано после срока (BR-ASG-03)' }) late: boolean;
 }

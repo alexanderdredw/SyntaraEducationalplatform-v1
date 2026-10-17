@@ -924,6 +924,15 @@
     "student.achievements.levelProgress": "needs_review",
     "student.achievements.badges": "needs_review",
     "student.achievements.earned": "needs_review",
-    "student.achievements.locked": "needs_review"
+    "student.achievements.locked": "needs_review",
+    "student.progress.subtitle": "needs_review",
+    "student.progress.intro.title": "needs_review",
+    "student.progress.intro.text": "needs_review",
+    "student.assignments.late": "needs_review",
+    "teacher.mastery.title": "needs_review",
+    "teacher.mastery.student": "needs_review",
+    "teacher.mastery.caption": "needs_review",
+    "teacher.mastery.legend": "needs_review",
+    "teacher.mastery.withPercent": "needs_review"
   }
 }

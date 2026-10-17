@@ -213,23 +213,33 @@ describe('assignments, progress, analytics (integration)', () => {
     ]);
     expect((await as(outsider).get('/api/student/assignments').expect(200)).body).toEqual([]);
 
-    // Квиз без задания сдачу не создаёт (BR-ASG-03: только попытка из задания).
-    await passQuiz(student, own.topicId, 4);
-    expect(await stack.db.select().from(submissions).where(eq(submissions.assignmentId, assignment))).toEqual(
-      [],
-    );
-
-    await passQuiz(student, own.topicId, 3, assignment);
+    // BR-ASG-03 (решение владельца 2026-10-17): квиз темы, пройденный из урока после выдачи задания, — тоже сдача.
+    await passQuiz(student, own.topicId, 3);
     list = (await as(student).get('/api/student/assignments').expect(200)).body;
     expect(list.find((a: { id: string }) => a.id === assignment)).toMatchObject({
       status: 'graded',
       grade: 75,
+      late: false,
     });
-    // Повторная попытка хуже — оценка остаётся лучшей.
+    // Из задания — лучше; затем хуже — оценка остаётся лучшей.
+    await passQuiz(student, own.topicId, 4, assignment);
     await passQuiz(student, own.topicId, 1, assignment);
     const [sub] = await stack.db.select().from(submissions).where(eq(submissions.assignmentId, assignment));
-    expect(sub).toMatchObject({ status: 'graded', grade: '75.00', gradedBy: null });
+    expect(sub).toMatchObject({ status: 'graded', grade: '100.00', gradedBy: null });
     expect(sub!.submittedAt).toBeTruthy();
+
+    // После срока сдача принимается с пометкой «Сдано после срока» (submitted_at > due_at).
+    const lesson = await as(student).get(`/api/student/topics/${B.topicCardio}`).expect(200);
+    const late = (await as(student).post(`/api/student/quizzes/${lesson.body.quizId}/attempts`).expect(200))
+      .body;
+    await as(student).post(`/api/student/attempts/${late.attemptId}/finish`).expect(200);
+    list = (await as(student).get('/api/student/assignments').expect(200)).body;
+    expect(list.find((a: { id: string }) => a.id === past)).toMatchObject({
+      status: 'graded',
+      grade: 0,
+      overdue: false,
+      late: true,
+    });
 
     const teacherList = (await as(teacher).get('/api/teacher/assignments').expect(200)).body;
     expect(teacherList.find((a: { id: string }) => a.id === assignment)).toMatchObject({
@@ -238,16 +248,76 @@ describe('assignments, progress, analytics (integration)', () => {
       counts: { submitted: 1, inReview: 0, graded: 1 },
     });
     expect(teacherList.find((a: { id: string }) => a.id === past).counts).toEqual({
-      submitted: 0,
+      submitted: 1,
       inReview: 0,
-      graded: 0,
+      graded: 1,
     });
-    // REQ-NFR-SEC-05: оценки — в журнале аудита.
+    // REQ-NFR-SEC-05: каждая оценка — в журнале аудита.
     const graded = await stack.db.select().from(auditLog).where(eq(auditLog.action, 'submission.graded'));
-    expect(graded.filter((a) => a.entityId === assignment)).toHaveLength(2);
-    expect(graded.at(-1)!.after).toMatchObject({ studentId: student.userId, grade: 75 });
+    expect(graded.filter((a) => a.entityId === assignment)).toHaveLength(3);
+    expect(graded.filter((a) => a.entityId === assignment).at(-1)!.after).toMatchObject({
+      studentId: student.userId,
+      grade: 100,
+    });
     // API-T-24 (PH-29): ручной проверки нет — очередь пуста.
     expect((await as(teacher).get('/api/teacher/review-queue').expect(200)).body).toEqual([]);
+  });
+
+  it('BR-ASG-03 a quiz finished before the assignment was issued is not a submission; another class is not affected', async () => {
+    const cls = await newClass('8 «Г»');
+    const own = await ownSubject('Астрономия', cls.id);
+    const student = await newStudent(cls.code);
+    await passQuiz(student, own.topicId, 4);
+    const assignment = (
+      await as(teacher)
+        .post('/api/teacher/assignments', {
+          classId: cls.id,
+          subjectId: own.subjectId,
+          topicId: own.topicId,
+          dueAt: dueIn(3),
+        })
+        .expect(201)
+    ).body.id as string;
+    expect(await stack.db.select().from(submissions).where(eq(submissions.assignmentId, assignment))).toEqual(
+      [],
+    );
+    const list = (await as(student).get('/api/student/assignments').expect(200)).body;
+    expect(list[0]).toMatchObject({ id: assignment, status: 'not_started', late: false });
+  });
+
+  it('API-T-29 «Карта освоения»: students × topics of a base or own granted subject, status per cell, subject filter', async () => {
+    const cls = await newClass('10 «Б»');
+    const own = await ownSubject('Экология', cls.id);
+    const a = await newStudent(cls.code, 'Айжан');
+    const b = await newStudent(cls.code, 'Болат');
+    await newStudent(cls.code, 'Вера');
+    await passQuiz(a, own.topicId, 4); // освоена
+    await passQuiz(b, own.topicId, 1); // начата, 25 %
+    const base = (await as(teacher).get(`/api/teacher/classes/${cls.id}/mastery`).expect(200)).body;
+    // По умолчанию — первый доступный предмет (базовые — первыми).
+    expect(base.subjectId).toBe(B.subjectAnatomy);
+    expect(base.subjects.map((s: { id: string }) => s.id)).toEqual(
+      expect.arrayContaining([B.subjectAnatomy, own.subjectId]),
+    );
+    expect(base.topics).toHaveLength(3);
+    expect(base.students.map((s: { name: string }) => s.name)).toEqual(['Айжан', 'Болат', 'Вера']);
+    expect(base.cells).toHaveLength(9);
+
+    const map = (
+      await as(teacher).get(`/api/teacher/classes/${cls.id}/mastery?subjectId=${own.subjectId}`).expect(200)
+    ).body;
+    expect(map.topics).toEqual([{ id: own.topicId, title: 'Экология: тема' }]);
+    const cell = (studentId: string) =>
+      map.cells.find((c: { studentId: string }) => c.studentId === studentId);
+    expect(cell(a.userId)).toMatchObject({ status: 'mastered', percent: 100 });
+    expect(cell(b.userId)).toMatchObject({ status: 'started', percent: 25 });
+    expect(map.cells.filter((c: { status: string }) => c.status === 'not_started')).toHaveLength(1);
+
+    // Предмет, который классу не показать, и чужой класс — 404; не учитель — 403.
+    const other = await ownSubject('Не выдан');
+    await as(teacher).get(`/api/teacher/classes/${cls.id}/mastery?subjectId=${other.subjectId}`).expect(404);
+    await as(teacher).get('/api/teacher/classes/0190a1b2-0000-7000-8000-000000000000/mastery').expect(404);
+    await as(a).get(`/api/teacher/classes/${cls.id}/mastery`).expect(403);
   });
 
   it('AC-ST-09, Q-18 an assignment of another class or another topic → 404 when starting the quiz', async () => {
@@ -382,22 +452,45 @@ describe('assignments, progress, analytics (integration)', () => {
     expect(day.progress).toMatchObject({ percent: 33.3, deltaPercent: 0 });
     expect(day.streak).toEqual({ days: 2, lastActivityDate: today, delta: 1 });
 
-    // Q-23: четвертей нет — 422, в доступных периодах четверти нет; заданные четверти — работают.
-    const quarter = await as(s).get('/api/student/progress?period=quarter').expect(422);
-    expect(quarter.body.fieldErrors).toEqual({ period: 'periodUnavailable' });
-    expect(week.availablePeriods).toEqual(['today', '7d', '30d', '90d', 'year']);
-    const config = stack.app.get(AppConfigService);
+    // Q-23 (решение владельца 2026-10-17): четверти 2026–2027 — в app_config (PH-38), «Четверть» активна; учебный год
+    // — 1 сентября — 25 мая.
     const [row] = await stack.db.select().from(appConfig).where(eq(appConfig.key, 'progress'));
-    const value = row!.value as { quarters: unknown[] };
-    await stack.db
-      .update(appConfig)
-      .set({ value: { ...value, quarters: [{ from: localDate(ago(10), TZ), to: localDate(ago(-10), TZ) }] } })
-      .where(eq(appConfig.key, 'progress'));
-    await config.invalidate('progress');
+    const value = row!.value as {
+      school_year: { from: string; to: string };
+      quarters: Array<{ from: string; to: string }>;
+    };
+    expect(value.school_year).toEqual({ from: '09-01', to: '05-25' });
+    expect(value.quarters).toEqual([
+      { from: '2026-09-01', to: '2026-10-25' },
+      { from: '2026-11-02', to: '2026-12-27' },
+      { from: '2027-01-11', to: '2027-03-21' },
+      { from: '2027-03-29', to: '2027-05-25' },
+    ]);
+    expect(week.availablePeriods).toEqual(['today', '7d', '30d', '90d', 'quarter', 'year']);
+    const seeded = (await as(s).get('/api/student/progress?period=quarter').expect(200)).body;
+    expect(value.quarters).toContainEqual(seeded.range);
+    const year = (await as(s).get('/api/student/progress?period=year').expect(200)).body;
+    expect(year.range.to).toMatch(/-05-25$/);
+
+    // Даты меняются без изменения кода: другие четверти — другой период; без четвертей — 422.
+    const config = stack.app.get(AppConfigService);
+    const setQuarters = async (quarters: unknown[]) => {
+      await stack.db
+        .update(appConfig)
+        .set({ value: { ...value, quarters } })
+        .where(eq(appConfig.key, 'progress'));
+      await config.invalidate('progress');
+    };
     try {
+      await setQuarters([{ from: localDate(ago(10), TZ), to: localDate(ago(-10), TZ) }]);
       const q = (await as(s).get('/api/student/progress?period=quarter').expect(200)).body;
       expect(q.range).toEqual({ from: localDate(ago(10), TZ), to: localDate(ago(-10), TZ) });
-      expect(q.availablePeriods).toContain('quarter');
+      await setQuarters([]);
+      const none = await as(s).get('/api/student/progress?period=quarter').expect(422);
+      expect(none.body.fieldErrors).toEqual({ period: 'periodUnavailable' });
+      expect((await as(s).get('/api/student/progress').expect(200)).body.availablePeriods).not.toContain(
+        'quarter',
+      );
     } finally {
       await stack.db.update(appConfig).set({ value }).where(eq(appConfig.key, 'progress'));
       await config.invalidate('progress');

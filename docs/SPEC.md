@@ -657,6 +657,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-T-24 | GET /api/teacher/review-queue | Работы на проверку (PH-29 — пустой список) |
 | API-T-25 | GET /api/teacher/classes/:id/analytics | `{ avgPercent, engagement: { active, total, windowDays: 7 }, weakTopics: [{ topicId, title, students, percent, color }], attention: [{ studentId, name, lastActivityAt, reason: 'inactive' }] }` Учитываются и базовые уроки платформы, и личные уроки учителя (решение владельца 2026-10-17, см. BR-AN-02). |
 | API-T-28 | GET /api/teacher/classes/:id/assignment-options | `{ subjects: [{ id, title, official, topics: [{ id, title }] }] }` — что можно назначить классу (BR-ASG-01/02): базовые предметы и свои предметы, выданные классу; только опубликованные темы. Чужой класс → 404 (итерация 10) |
+| API-T-29 | GET /api/teacher/classes/:id/mastery | `?subjectId` (необязательно; по умолчанию — первый предмет API-T-28) → `{ subjects: [{ id, title, official }], subjectId, topics: [{ id, title }], students: [{ id, name }], cells: [{ studentId, topicId, status: 'mastered'|'started'|'not_started', percent }] }` — «Карта освоения»; чужой класс или недоступный предмет → 404 |
 | API-T-26 | GET /api/teacher/classes/:id/roster | Ростер: минимальная версия — `[{ id, displayName, login, hasEmail }]` активных учеников (страница «Ростер» — PH-24) |
 | API-T-27 | POST /api/teacher/classes/:id/students/:studentId/temporary-password | Временный пароль ученику своего класса без email → `{ temporaryPassword }` (показывается один раз); ученик меняет его при входе (API-AUTH-05) |
 
@@ -673,7 +674,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` Тело (необязательно): `{ assignmentId }` — попытка из задания (решение по Q-18): назначение действующего класса ученика по этой теме, иначе 404; незавершённая попытка продолжается и связывается с заданием. |
 | API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
-| API-S-10 | GET /api/student/assignments | Мои задания (PH-33) `[{ id, topicId, topicTitle, subjectTitle, dueAt, status: 'not_started'|'submitted'|'graded', grade, overdue }]` — назначения действующих классов ученика по видимым ему темам, ближайший срок — первым; `overdue` — срок прошёл, а работа не сдана. |
+| API-S-10 | GET /api/student/assignments | Мои задания (PH-33) `[{ id, topicId, topicTitle, subjectTitle, dueAt, status: 'not_started'|'submitted'|'graded', grade, overdue }]` — назначения действующих классов ученика по видимым ему темам, ближайший срок — первым; `overdue` — срок прошёл, а работа не сдана. `late` — сдано после срока (BR-ASG-03). |
 | API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }`; `topic_tutor` — только по видимой теме (BR-VIS-01, иначе 404). У ученика один действующий диалог на тему и один общий: повторный вызов возвращает его (история после перезагрузки) |
 | API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content ≤ 2000, quickAction?: 'simpler'|'more_detail'|'check_me' }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial). Вопрос сохраняется сразу вместе с событием `ai_question` (без XP, BR-XP-01; не входит в серию, BR-ST-02), ответ — по завершении: complete / partial / failed (SM-AI-MESSAGE). Пока поставщик mock или недоступен — `event: error {code: 'AI_UNAVAILABLE'}`, ответ failed, клиент показывает PH-19 «Учебный ИИ скоро будет доступен». Лимиты PH-20 — на ученика (не на IP). Чужой диалог → 404 (BR-ACL-03) |
 | API-S-13 | GET /api/student/ai/conversations/:id | `{ id, context, topic: { id, title } | null, messages: [{ id, role, content, status, quickAction, createdAt }] }` — история сообщений; чужой диалог → 404 (BR-ACL-03) |
@@ -829,7 +830,8 @@ BR-ST-01  Часовой пояс расчётов — PLATFORM_TZ (UTC+5).
 BR-ST-02  День активности — календарный день, в котором есть learning_events типа quiz_finished или lesson_opened.
 BR-ST-03  streak_current = число подряд идущих дней активности, заканчивающихся сегодня или вчера; иначе 0.
 BR-ST-04  Периоды: today; 7d/30d/90d — последние N дней включая сегодня; quarter — текущая четверть из app_config
-          'calendar.quarters'; year — 'calendar.school_year' (по умолчанию 01.09–31.05).
+          'progress.quarters' (PH-38), на каникулах и летом — последняя начавшаяся; year — 'progress.school_year'
+          (01.09–25.05, решение владельца 2026-10-17).
           compareRange — предыдущий период той же длины.
 BR-ST-05  progress.total = число опубликованных тем во всех предметах, где у ученика есть хотя бы одно событие;
           progress.mastered = число освоенных из них; percent = round(100 * mastered / total, 1). Значения — на конец
@@ -861,11 +863,14 @@ BR-AN-05  attention: ученики без learning_events 7 дней и бол�
 ```text
 BR-ASG-01 topic MUST принадлежать subject; класс MUST принадлежать учителю; subject — свой или is_official.
 BR-ASG-02 Список тем в форме фильтруется по выбранному предмету; при смене предмета выбранная тема сбрасывается.
-BR-ASG-03 Сдача (PH-29): завершение попытки квиза темы, начатой в контексте назначения (attempt.assignment_id),
-          создаёт/обновляет submission: status = 'graded', grade = score_percent (лучший).
+BR-ASG-03 Сдача (PH-29, решение владельца 2026-10-17): завершение попытки квиза темы создаёт/обновляет submission
+          каждого назначения по этой теме в действующих классах ученика, выданного до завершения попытки, — и попытки
+          из назначения (attempt.assignment_id), и попытки из урока: status = 'graded', grade = score_percent (лучший).
+          Попытки, завершённые до выдачи назначения, не засчитываются. После срока сдача принимается и помечается
+          «Сдано после срока» (submitted_at > due_at; SPEC сдачу после срока не запрещает).
           Счётчики: submitted = число submissions; inReview = status 'in_review' (сейчас всегда 0); graded = status 'graded'.
           Категории пересекаются (сданная и оценённая работа учитывается в обоих счётчиках).
-          Квиз темы, пройденный не из задания, сдачу не создаёт. Каждая оценка — в audit_log (submission.graded,
+          Каждая оценка — в audit_log (submission.graded,
           автор — система), REQ-NFR-SEC-05.
 ```
 
@@ -1159,7 +1164,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 
 | **ID** | **Требование** |
 |---|-----------------------------|
-| REQ-TCH-AN-01 | Ссылка «← К классам», название класса, вкладки «Ростер», «Карта освоения», «Аналитика класса»; класс сохраняется при переключении вкладок. «Ростер» и «Карта освоения» — PH-24. |
+| REQ-TCH-AN-01 | Ссылка «← К классам», название класса, вкладки «Ростер», «Карта освоения», «Аналитика класса»; класс сохраняется при переключении вкладок. «Ростер» и «Карта освоения» — PH-24. «Карта освоения» (решение владельца 2026-10-17, вместо PH-24) — простая версия: таблица «ученики × темы» выбранного предмета (базового или своего, выданного классу, API-T-29), в ячейке — цвет и подпись статуса «Освоена» (≥ 80 %) / «Начата» / «Не начата» (с процентом лучшего результата); фильтр по предмету; на мобильном — горизонтальная прокрутка таблицы. |
 | REQ-TCH-AN-02 | Карточки «Средняя успеваемость класса» (avgPercent, %) и «Вовлечённость» («active/total», подпись «за последние 7 дней»). |
 | REQ-TCH-AN-03 | «Слабые темы класса»: строки — название, «N уч.», процент, полоса шириной = percent%; цвет по BR-AN-04. |
 | REQ-TCH-AN-04 | «Требуют внимания» (красная рамка): имя, «N дней назад», метка «неактивен». Пустое — «Все ученики активны». |
@@ -1233,8 +1238,8 @@ answered: ссылка «Перейти к предмету». Баллы не �
 
 | **ID** | **Требование** |
 |---|-----------------------------|
-| REQ-ST-PRG-01 | Метка «ПЕРИОД», заголовок «Мои показатели»; сегменты «Сегодня», «7 дней», «30 дней», «90 дней», «Четверть», «Учебный год»; строка с датами периода и «Сравнение с: …». |
-| REQ-ST-PRG-02 | Блок «Начни отсюда» / «С чего начать сейчас?»: «Что делать» и «Почему» (BR-ST-06). |
+| REQ-ST-PRG-01 | Метка «ПЕРИОД», заголовок «Мои показатели»; сегменты «Сегодня», «7 дней», «30 дней», «90 дней», «Четверть», «Учебный год»; строка с датами периода и «Сравнение с: …». Подзаголовок «Как у вас идут дела за период.» (эталон U08, решение владельца 2026-10-17). «Четверть» — по датам PH-38. |
+| REQ-ST-PRG-02 | Блок «Начни отсюда» / «С чего начать сейчас?»: «Что делать» и «Почему» (BR-ST-06). Перед ним — блок «Начни отсюда»: «Это не оценки и не контрольная. Сначала смотри следующий шаг, затем прогресс и серию — так сразу понятно, что делать сегодня.» (эталон U08, решение владельца 2026-10-17). |
 | REQ-ST-PRG-03 | Карточки «Мой прогресс» («{mastered} из {total} тем», «{percent} %», дельта) и «Серия» («{days} дн.», последнее занятие, дельта). Кнопки «Что это значит» и «Как считается» — модальные окна с текстом правил BR-ST-*. |
 | REQ-ST-PRG-04 | Смена периода → API-S-14, пересчёт всех значений. |
 
@@ -1251,7 +1256,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 
 | **ID** | **Требование** |
 |---|-----------------------------|
-| REQ-ST-ASG-01 | Список назначений класса: тема, предмет, срок, статус («Не начато», «Сдано», «Оценено: {grade}%»); переход открывает квиз темы с assignment_id. Просроченные помечены «Срок прошёл». |
+| REQ-ST-ASG-01 | Список назначений класса: тема, предмет, срок, статус («Не начато», «Сдано», «Оценено: {grade}%»); переход открывает квиз темы с assignment_id. Просроченные помечены «Срок прошёл». Сдача после срока — пометка «Сдано после срока» (BR-ASG-03). |
 
 ## 8.5 Служебная поддержка (/staff)
 
@@ -1372,7 +1377,7 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
   "PH-21 ai.explain_level": "beginner",
   "PH-22 support.hours": { "days": "mon-fri", "from": "09:00", "to": "18:00", "tz": "UTC+5", "first_response_business_days": 1 },
   "PH-23 limits": { "title": 150, "description": 1000, "fun_fact": 500, "body_md": 50000, "question": 1000, "option": 300, "explanation": 2000, "min_options": 2 },
-  "PH-24 teacher.mastery_map": "stub",
+  "PH-24 teacher.mastery_map": "simple",   // решение владельца 2026-10-17: таблица «ученики × темы» (REQ-TCH-AN-01)
   "PH-25 topic.versions_restore": false,
   "PH-26 cover.selection": "last_action_wins",
   "PH-27 topic.unpublish_enabled": true,
@@ -1386,7 +1391,11 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
   "PH-35 topics.sequential_lock": false,
   "PH-36 overview.accordion_multi": true,
   "PH-37 quiz": { "check_mode": "immediate", "attempts_limit": null, "score": "best", "resume": true },
-  "PH-38 progress": { "mastery_threshold": 80, "school_year": { "from": "09-01", "to": "05-31" }, "quarters": [] },
+  "PH-38 progress": { "mastery_threshold": 80, "school_year": { "from": "09-01", "to": "05-25" },
+    "quarters": [ { "from": "2026-09-01", "to": "2026-10-25" }, { "from": "2026-11-02", "to": "2026-12-27" },
+                  { "from": "2027-01-11", "to": "2027-03-21" }, { "from": "2027-03-29", "to": "2027-05-25" } ] },
+    // Четверти 2026–2027 (решение владельца 2026-10-17): каникулы — по официальной публикации; начало 1 сентября
+    // и конец 25 мая — стандартные. TODO(OWNER): сверить с приказом Минпросвещения РК. Меняются в app_config без кода.
   "PH-39 xp": { "quiz_finished": 10, "high_score_bonus": 10, "high_score_threshold": 80, "first_lesson_open": 5, "per_level": 100, "failed_attempt_below": 50 },
   "PH-40 class.leave_confirm": true,
   "PH-41 load.expected": { "schools": 50, "students": 20000, "concurrent_sessions": 2000 },
@@ -1548,3 +1557,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-17 | 2.3 `LLM_BASE_URL`, обязательность `LLM_API_KEY`/`LLM_MODEL` при реальном поставщике; 6.5 API-S-11 (один действующий диалог на тему и общий), API-S-12 (событие `ai_question`, mock → `AI_UNAVAILABLE`, лимиты PH-20 на ученика), API-S-13 (формат истории); 7.10 BR-AI-07 (санитизация учебного ИИ), BR-AI-08 (не решает за ученика — предложение, TODO(OWNER)), BR-AI-09 (текст темы для ИИ) | Итерация 9, решение владельца 2026-10-17 |
 | 2026-10-17 | 7.10 BR-AI-08 подтверждено; 8.4.5 REQ-ST-AI-03 — абзац U02 «Syntara анализирует ваш прогресс…» не выводится, пока такой функции нет (отступление от эталона); REQ-ST-AI-04 — mock: вопрос сохраняется, ответ PH-19; лимиты PH-20 на ученика; Q-11 — реальный ИИ пока не подключается, mock по умолчанию, порядок подключения — docs/AI_PROVIDER.md (хранение данных в РК — обязательный критерий) | Решение владельца 2026-10-17 при приёмке итерации 9 |
 | 2026-10-17 | 6.4 API-T-22 (ошибки и аудит), API-T-23, API-T-25, новая API-T-28 (что можно назначить классу); 6.5 API-S-07 `assignmentId` (Q-18), API-S-10 (формат), API-S-14 (`period`, `availablePeriods`, формат `nextStep`, по умолчанию 30d), API-S-15 `xpPerLevel`; 7.4 BR-ST-05 (значения на конец периода, дельты к концу периода сравнения), BR-ST-06; 7.5 BR-AN-02 (базовые предметы, округление), BR-AN-04/05; 7.6 BR-ASG-03 (только попытка из задания, аудит оценок) | Итерация 10; показатели и аналитика учитывают базовые и личные уроки — решение владельца 2026-10-17 |
+| 2026-10-17 | 11 PH-38 — четверти 2026–2027 и учебный год 01.09–25.05 (TODO(OWNER): сверить с приказом Минпросвещения); 7.4 BR-ST-04 — на каникулах последняя начавшаяся четверть; 7.6 BR-ASG-03 — засчитывается и квиз из урока после выдачи задания, сдача после срока — «Сдано после срока»; 6.5 API-S-10 `late`; 8.4.8 REQ-ST-ASG-01; 8.4.6 REQ-ST-PRG-01/02 — подзаголовок и блок «Начни отсюда» с эталона U08; 8.3.7 REQ-TCH-AN-01 и новая API-T-29 — «Карта освоения» (простая версия вместо PH-24); BR-ST-05 (толкование) и правила назначения (только опубликованные темы, свой предмет — выданный классу) подтверждены | Решение владельца 2026-10-17 при приёмке итерации 10 |

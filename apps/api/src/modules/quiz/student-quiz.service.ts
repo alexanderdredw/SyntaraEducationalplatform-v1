@@ -290,15 +290,16 @@ export class StudentQuizService {
         },
         locale,
       );
-      // BR-ASG-03: попытка из задания — сдача «Оценено» с лучшим результатом (PH-29).
-      if (attempt.assignmentId) {
-        await this.assignments.recordSubmission(tx, {
-          assignmentId: attempt.assignmentId,
-          studentId,
-          attemptId,
-          score,
-        });
-      }
+      // BR-ASG-03: сдача «Оценено» с лучшим результатом (PH-29) — по заданию попытки и по всем заданиям этой темы
+      // действующих классов ученика, выданным до завершения попытки.
+      await this.assignments.recordSubmissions(tx, {
+        assignmentId: attempt.assignmentId,
+        topicId: quiz.topicId,
+        studentId,
+        attemptId,
+        score,
+        finishedAt: now,
+      });
       return { scorePercent: score, xpAwarded, badgesAwarded };
     });
   }

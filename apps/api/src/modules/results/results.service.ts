@@ -27,6 +27,7 @@ import { VisibilityService } from '../content/visibility.service';
 import {
   type AchievementsDto,
   type ClassAnalyticsDto,
+  type MasteryMapDto,
   type NextStepDto,
   type ProgressDto,
 } from './results.dto';
@@ -151,6 +152,74 @@ export class ResultsService {
       engagement: { active: active.length, total: students.length, windowDays },
       weakTopics,
       attention,
+    };
+  }
+
+  /**
+   * API-T-29 «Карта освоения» (решение владельца 2026-10-17, вместо заглушки PH-24): ученики класса × опубликованные
+   * темы выбранного предмета — базового или своего, выданного классу (те же предметы, что можно назначить, API-T-28).
+   * Статус ячейки: освоена (mastered_at, ≥ порога PH-38) / начата (есть попытка или урок открыт) / не начата.
+   */
+  async masteryMap(
+    teacherId: string,
+    classId: string,
+    subjectId: string | undefined,
+    locale: Locale,
+  ): Promise<MasteryMapDto> {
+    // Проверка своего класса (404) — внутри options.
+    const { subjects: available } = await this.assignments.options(teacherId, classId, locale);
+    const subject = subjectId ? available.find((s) => s.id === subjectId) : available[0];
+    if (subjectId && !subject) throw notFound();
+    const students = await this.db
+      .select({ id: users.id, name: users.displayName })
+      .from(m)
+      .innerJoin(users, eq(users.id, m.studentId))
+      .where(and(eq(m.classId, classId), eq(m.status, 'active')))
+      .orderBy(asc(users.displayName), asc(users.id));
+    const topicList = subject?.topics ?? [];
+    const studentIds = students.map((s) => s.id);
+    const topicIds = topicList.map((t) => t.id);
+    const ready = studentIds.length > 0 && topicIds.length > 0;
+    const [mastery, opened] = ready
+      ? await Promise.all([
+          this.db
+            .select()
+            .from(topicMastery)
+            .where(and(inArray(topicMastery.studentId, studentIds), inArray(topicMastery.topicId, topicIds))),
+          this.db
+            .selectDistinct({ studentId: ev.studentId, topicId: ev.topicId })
+            .from(ev)
+            .where(
+              and(
+                inArray(ev.studentId, studentIds),
+                inArray(ev.topicId, topicIds),
+                eq(ev.type, 'lesson_opened'),
+              ),
+            ),
+        ])
+      : [[], []];
+    const cells = students.flatMap((s) =>
+      topicList.map((t) => {
+        const row = mastery.find((r) => r.studentId === s.id && r.topicId === t.id);
+        const started = row || opened.some((o) => o.studentId === s.id && o.topicId === t.id);
+        return {
+          studentId: s.id,
+          topicId: t.id,
+          status: row?.masteredAt
+            ? ('mastered' as const)
+            : started
+              ? ('started' as const)
+              : ('not_started' as const),
+          percent: row ? Math.round(Number(row.bestPercent)) : null,
+        };
+      }),
+    );
+    return {
+      subjects: available.map(({ id, title, official }) => ({ id, title, official })),
+      subjectId: subject?.id ?? null,
+      topics: topicList,
+      students,
+      cells,
     };
   }
 

@@ -179,12 +179,31 @@ test.describe('Задания, показатели, аналитика (ите�
     await expect(page.getByTestId('class-name')).toHaveText(className);
     await expect(page.getByTestId('class-roster-tab')).toContainText('Бауыржан');
     await page.getByRole('link', { name: tan.mastery }).click();
-    await expect(page.getByTestId('mastery-stub')).toContainText(ru.common.sectionInDevelopment);
+    // «Карта освоения»: ученики × темы базового предмета, статус — цветом и подписью.
+    await expect(page.getByRole('link', { name: tan.mastery })).toHaveAttribute('aria-current', 'page');
+    const table = page.getByTestId('mastery-table');
+    await expect(table.getByRole('columnheader')).toHaveText([
+      ru.teacher.mastery.student,
+      'Сердечно-сосудистая система',
+      'Дыхательная система',
+      'Пищеварительная система',
+    ]);
+    await expect(page.getByTestId('mastery-row')).toHaveCount(2);
+    const row = (name: string) => page.getByTestId('mastery-row').filter({ hasText: name });
+    await expect(row('Асель').getByTestId('mastery-cell').first()).toHaveAttribute('data-status', 'started');
+    await expect(row('Асель').getByTestId('mastery-cell').first()).toContainText(
+      `${st.subject.status.started} · 0 %`,
+    );
+    await expect(row('Бауыржан').getByTestId('mastery-cell').first()).toContainText(
+      st.subject.status.not_started,
+    );
+    await expectNoSeriousA11yViolations(page);
+    expect(await hasHorizontalScroll(page)).toBe(false);
     await page.goto(`/ru/teacher/classes/0190a1b2-0000-7000-8000-000000000000/analytics`);
     await expect(page.getByTestId('class-analytics')).toHaveCount(0);
   });
 
-  test('AC-ST-08, REQ-ST-PRG-01..04 «Мои показатели»: period «7 дней» recalculates dates; quarter is unavailable; rules in modals', async ({
+  test('AC-ST-08, REQ-ST-PRG-01..04 «Мои показатели»: period «7 дней» recalculates dates; quarter (2026–2027) is active; U08 texts; rules in modals', async ({
     page,
     baseURL,
   }) => {
@@ -199,7 +218,10 @@ test.describe('Задания, показатели, аналитика (ите�
     await expect(page.getByRole('heading', { level: 1, name: st.progress.title })).toBeVisible();
     const range = page.getByTestId('progress-range');
     await expect(range).toContainText('30 дней');
-    await expect(page.getByRole('radio', { name: new RegExp(st.progress.periods.quarter) })).toBeDisabled();
+    await expect(page.getByTestId('progress-subtitle')).toHaveText(st.progress.subtitle);
+    await expect(page.getByTestId('progress-intro')).toContainText(st.progress.intro.text);
+    const quarter = page.getByRole('radio', { name: st.progress.periods.quarter, exact: true });
+    await expect(quarter).toBeEnabled();
     await expect(page.getByTestId('progress-value')).toContainText('0 из 3 тем');
     await expect(page.getByTestId('streak-days')).toHaveText('1 дн.');
     await expect(page.getByTestId('next-step-action')).toHaveAttribute('data-action', 'next_topic');
@@ -211,6 +233,12 @@ test.describe('Задания, показатели, аналитика (ите�
     await expect(range).toContainText('7 дней');
     expect(await range.textContent()).not.toBe(before);
     await expect(page.getByTestId('streak-delta')).toContainText('+1');
+    // Q-23: четверти 2026–2027 из app_config.
+    await quarter.click();
+    await expect(range).toContainText(st.progress.periods.quarter);
+    await expect(range).toContainText(
+      /01\.09\.2026 — 25\.10\.2026|02\.11\.2026 — 27\.12\.2026|11\.01\.2027 — 21\.03\.2027|29\.03\.2027 — 25\.05\.2027/,
+    );
 
     await page.getByTestId('progress-card').getByRole('button', { name: st.progress.howCounted }).click();
     await expect(page.getByTestId('progress-help')).toHaveText(st.progress.help.progressCounted);

@@ -957,6 +957,13 @@
       "inactive": "inactive",
       "allActive": "All students are active",
       "noStudents": "No students in the class yet"
+    },
+    "mastery": {
+      "title": "Mastery map",
+      "student": "Student",
+      "caption": "Topic mastery in «{subject}» by the class students",
+      "legend": "Legend",
+      "withPercent": "{status} · {percent} %"
     }
   },
   "student": {
@@ -1080,7 +1087,8 @@
       },
       "overdue": "Overdue",
       "due": "Due: {due}",
-      "empty": "No assignments yet"
+      "empty": "No assignments yet",
+      "late": "Submitted late"
     },
     "progress": {
       "label": "PERIOD",
@@ -1130,6 +1138,11 @@
         "progressCounted": "Total — published topics in all subjects where you opened a lesson or took a quiz. Mastered — topics with 80 % or more. Percent = mastered ÷ total × 100, one decimal. Values are at the end of the period; the change is against the end of the comparison period.",
         "streakMeaning": "How many days in a row you study. Miss a day and the streak starts over.",
         "streakCounted": "A study day is a day when you opened a lesson or finished a quiz (Astana time, UTC+5). The streak is the run of study days ending today or yesterday; otherwise 0."
+      },
+      "subtitle": "How things are going for you over the period.",
+      "intro": {
+        "title": "Start here",
+        "text": "These are not grades or a test. Look at the next step first, then progress and streak — so you know right away what to do today."
       }
     },
     "achievements": {

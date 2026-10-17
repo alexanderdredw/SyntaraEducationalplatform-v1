@@ -44,7 +44,7 @@ export const daysBetween = (from: string, to: string) => toNum(to) - toNum(from)
 
 /**
  * BR-ST-04: границы периода на дату `today` (уже в PLATFORM_TZ). today; 7d/30d/90d — последние N дней включая
- * сегодня; quarter — текущая четверть из конфигурации (нет четвертей или сегодня вне них — null, Q-23);
+ * сегодня; quarter — текущая четверть из конфигурации, на каникулах — последняя начавшаяся (ни одна не началась — null, Q-23);
  * year — учебный год `school_year` (по умолчанию 01.09–31.05), который начался последним.
  * compare — предыдущий период той же длины (для года — предыдущий учебный год).
  */
@@ -67,7 +67,11 @@ export function periodRanges(
     case '90d':
       return lastDays(90);
     case 'quarter': {
-      const current = config.quarters.find((q) => q.from <= today && today <= q.to);
+      // Текущая четверть; на каникулах и летом — последняя начавшаяся (решение владельца 2026-10-17).
+      const current = [...config.quarters]
+        .filter((q) => q.from <= today)
+        .sort((a, b) => (a.from < b.from ? -1 : 1))
+        .at(-1);
       if (!current) return null;
       const length = daysBetween(current.from, current.to) + 1;
       return {

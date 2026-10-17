@@ -63,6 +63,9 @@ export function StudentProgress({ timeZone }: { timeZone: string }) {
         <div className="flex flex-col gap-1">
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">{t('label')}</p>
           <h1 className="text-cabinet-title font-bold">{t('title')}</h1>
+          <p className="text-sm text-[var(--text-muted)]" data-testid="progress-subtitle">
+            {t('subtitle')}
+          </p>
         </div>
         <SegmentedControl
           label={t('label')}
@@ -89,6 +92,12 @@ export function StudentProgress({ timeZone }: { timeZone: string }) {
             <span className="text-[var(--text-muted)]">
               {t('compare', { from: day(p.compareRange.from), to: day(p.compareRange.to) })}
             </span>
+          </Card>
+
+          {/* Эталон U08: пояснение перед следующим шагом (решение владельца 2026-10-17). */}
+          <Card tone="accent" className="flex flex-col gap-1" data-testid="progress-intro">
+            <h2 className="font-semibold">{t('intro.title')}</h2>
+            <p className="text-sm text-[var(--text-muted)]">{t('intro.text')}</p>
           </Card>
 
           <Card tone="accent" className="flex flex-col gap-4" data-testid="progress-next-step">

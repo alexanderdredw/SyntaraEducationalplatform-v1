@@ -6,13 +6,14 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { z } from 'zod';
 import { PROGRESS_PERIODS, ProgressPeriod } from '@syntara/shared';
 import { resolveLocale } from '../../common/locale';
 import { UuidParamPipe } from '../../common/uuid-param.pipe';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { Roles } from '../auth/auth.guards';
 import { type AuthRequest } from '../auth/auth.types';
-import { AchievementsDto, ClassAnalyticsDto, ProgressDto } from './results.dto';
+import { AchievementsDto, ClassAnalyticsDto, MasteryMapDto, ProgressDto } from './results.dto';
 import { ResultsService } from './results.service';
 
 const locale = (req: AuthRequest) => resolveLocale(req.headers['accept-language']);
@@ -33,6 +34,19 @@ export class TeacherAnalyticsController {
     @Req() req: AuthRequest,
   ): Promise<ClassAnalyticsDto> {
     return this.results.classAnalytics(req.user!.id, id, locale(req));
+  }
+
+  /** API-T-29: «Карта освоения»; без subjectId — первый доступный предмет. */
+  @Get(':id/mastery')
+  @ApiQuery({ name: 'subjectId', required: false, type: String })
+  @ApiOkResponse({ type: MasteryMapDto })
+  @ApiNotFoundResponse({ description: 'Класс не свой или предмет нельзя показать этому классу' })
+  mastery(
+    @Param('id', new UuidParamPipe()) id: string,
+    @Query('subjectId', new ZodValidationPipe(z.uuid().optional())) subjectId: string | undefined,
+    @Req() req: AuthRequest,
+  ): Promise<MasteryMapDto> {
+    return this.results.masteryMap(req.user!.id, id, subjectId, locale(req));
   }
 }
 

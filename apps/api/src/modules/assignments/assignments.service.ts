@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, asc, count, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, lte, or, sql } from 'drizzle-orm';
 import { type AssignmentCreateDto, type Locale } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
@@ -233,6 +233,7 @@ export class AssignmentsService {
         grade:
           submission?.grade === null || submission?.grade === undefined ? null : Number(submission.grade),
         overdue: !submission && r.dueAt.getTime() < now,
+        late: Boolean(submission?.submittedAt && submission.submittedAt > r.dueAt),
       };
     });
   }
@@ -254,14 +255,43 @@ export class AssignmentsService {
   }
 
   /**
-   * BR-ASG-03, SM-SUBMISSION, PH-29: завершение попытки из задания создаёт или обновляет сдачу — status = graded,
-   * grade = лучший score_percent. Запись — в транзакции finish; оценка — в журнале аудита (REQ-NFR-SEC-05).
+   * BR-ASG-03, SM-SUBMISSION, PH-29 (решение владельца 2026-10-17): завершённая попытка квиза темы засчитывается
+   * сдачей каждого задания по этой теме в действующих классах ученика, выданного до завершения попытки, — и попытка из
+   * задания (Q-18), и попытка из урока. status = graded, grade = лучший score_percent. После срока сдача тоже
+   * принимается и помечается «Сдано после срока» (submitted_at > due_at). Запись — в транзакции finish; оценка —
+   * в журнале аудита (REQ-NFR-SEC-05).
    */
-  async recordSubmission(
+  async recordSubmissions(
     tx: Tx,
-    input: { assignmentId: string; studentId: string; attemptId: string; score: number },
+    input: {
+      assignmentId: string | null;
+      topicId: string;
+      studentId: string;
+      attemptId: string;
+      score: number;
+      finishedAt: Date;
+    },
   ): Promise<void> {
-    const now = new Date();
+    const matching = await tx
+      .select({ id: assignments.id })
+      .from(assignments)
+      .innerJoin(
+        m,
+        and(eq(m.classId, assignments.classId), eq(m.studentId, input.studentId), eq(m.status, 'active')),
+      )
+      .where(and(eq(assignments.topicId, input.topicId), lte(assignments.createdAt, input.finishedAt)));
+    const ids = new Set(matching.map((a) => a.id));
+    if (input.assignmentId) ids.add(input.assignmentId);
+    for (const assignmentId of [...ids].sort()) {
+      await this.recordSubmission(tx, { ...input, assignmentId, now: input.finishedAt });
+    }
+  }
+
+  private async recordSubmission(
+    tx: Tx,
+    input: { assignmentId: string; studentId: string; attemptId: string; score: number; now: Date },
+  ): Promise<void> {
+    const now = input.now;
     const [before] = await tx
       .select()
       .from(submissions)
