@@ -124,7 +124,9 @@ await page.keyboard.press('Escape');
 await page.getByTestId('assistant-start').click();
 await page.keyboard.type('Что такое фотосинтез?');
 await page.keyboard.press('Enter');
-await page.locator('[data-testid="tutor-assistant-message"][data-status="complete"]').waitFor({ timeout: 20_000 });
+await page
+  .locator('[data-testid="tutor-assistant-message"][data-status="complete"]')
+  .waitFor({ timeout: 20_000 });
 await shot('ai-09-assistant-answer', { fullPage: true });
 await page.context().close();
 
