@@ -241,7 +241,8 @@ export class StudentContentService {
       .select({ id: subjects.id, hasTopics })
       .from(subjects)
       .where(and(where, visible))
-      .orderBy(asc(subjects.createdAt), asc(subjects.id));
+      // Базовые предметы — в порядке content/ (subjects.position), предметы учителей — после них по дате создания.
+      .orderBy(sql`${subjects.position} ASC NULLS LAST`, asc(subjects.createdAt), asc(subjects.id));
     if (rows.length === 0) return [];
     const translations = await this.db
       .select()

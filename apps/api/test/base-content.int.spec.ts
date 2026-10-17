@@ -60,7 +60,15 @@ describe('base content (integration)', () => {
       'Гуманитарные науки',
       'Языки',
     ]);
-    expect(catalog.body.subjects).toEqual([expect.objectContaining({ title: 'Химия', status: 'soon' })]);
+    // «Химия» — в «Естественных науках», предметов вне разделов у базовой программы нет; порядок — position
+    // из subject.yaml (решение владельца 2026-10-17).
+    expect(catalog.body.subjects).toEqual([]);
+    const natural = await guest(`/api/public/sections/${catalog.body.sections[1].id}`).expect(200);
+    expect(natural.body.subjects.map((s: { title: string; status: string }) => [s.title, s.status])).toEqual([
+      ['Химия', 'soon'],
+      ['Физика', 'soon'],
+      ['География', 'soon'],
+    ]);
 
     const section = await guest(`/api/public/sections/${B.sectionBiology}`).expect(200);
     expect(section.body.subjects).toEqual([

@@ -156,7 +156,7 @@ export async function applyCatalog(
   const subjectIds = new Map<string, string>();
   for (const s of catalog.subjects) {
     const [row] = await tx.select().from(subjects).where(eq(subjects.code, s.code));
-    const sectionId = s.sectionCode ? (sectionIds.get(s.sectionCode) ?? null) : null;
+    const sectionId = sectionIds.get(s.sectionCode) ?? null;
     let id = row?.id;
     if (!row) {
       [{ id } = { id: '' }] = await tx
@@ -164,17 +164,22 @@ export async function applyCatalog(
         .values({
           code: s.code,
           sectionId,
+          position: s.position,
           isOfficial: true,
           inPublicCatalog: true,
-          // Порядок предметов в каталоге — по времени создания (порядок папок), а не по времени транзакции.
-          createdAt: sql`clock_timestamp()`,
         })
         .returning({ id: subjects.id });
       summary.subjects.created++;
-    } else if (row.sectionId !== sectionId || row.archivedAt || !row.inPublicCatalog || !row.isOfficial) {
+    } else if (
+      row.sectionId !== sectionId ||
+      row.position !== s.position ||
+      row.archivedAt ||
+      !row.inPublicCatalog ||
+      !row.isOfficial
+    ) {
       await tx
         .update(subjects)
-        .set({ sectionId, archivedAt: null, inPublicCatalog: true, isOfficial: true })
+        .set({ sectionId, position: s.position, archivedAt: null, inPublicCatalog: true, isOfficial: true })
         .where(eq(subjects.id, row.id));
       summary.subjects.updated++;
     }
@@ -191,7 +196,8 @@ export async function applyCatalog(
         ]),
       ),
     );
-    if (row && changed && !(row.sectionId !== sectionId || row.archivedAt)) summary.subjects.updated++;
+    if (row && changed && !(row.sectionId !== sectionId || row.position !== s.position || row.archivedAt))
+      summary.subjects.updated++;
   }
   // Предмет, удалённый из файлов, — в архив; его темы снимаются с публикации ниже.
   const goneSubjects = await tx

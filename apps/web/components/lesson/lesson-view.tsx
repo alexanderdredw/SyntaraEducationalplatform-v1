@@ -108,7 +108,7 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
                       src={s.illustrationUrl}
                       alt={s.illustrationAlt ?? ''}
                       loading="lazy"
-                      className="w-full max-w-[480px] rounded-[var(--radius-field)]"
+                      className="w-full rounded-[var(--radius-field)] md:w-[var(--illustration-w)]"
                       data-testid="section-illustration"
                     />
                   ) : null}

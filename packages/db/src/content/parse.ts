@@ -14,7 +14,6 @@ import {
   type MediaModel,
   type QuestionModel,
   QuizFile,
-  ROOT_DIR,
   RuFrontMatter,
   SectionFile,
   type SectionModel,
@@ -72,23 +71,20 @@ export function readContent(
 
   for (const sectionDir of dirs(dir)) {
     const sectionPath = join(dir, sectionDir);
-    let sectionCode: string | null = null;
-    if (sectionDir !== ROOT_DIR) {
-      const file = join(sectionPath, 'section.yaml');
-      if (!existsSync(file)) {
-        errors.push({ file: rel(sectionPath), message: 'нет section.yaml' });
-        continue;
-      }
-      const data = yamlFile(file, SectionFile);
-      if (!data) continue;
-      sectionCode = data.code;
-      catalog.sections.push({
-        code: data.code,
-        position: data.position,
-        translations: translations(data.title, data.description),
-        file: rel(file),
-      } satisfies SectionModel);
+    const sectionFile = join(sectionPath, 'section.yaml');
+    if (!existsSync(sectionFile)) {
+      errors.push({ file: rel(sectionPath), message: 'нет section.yaml' });
+      continue;
     }
+    const section = yamlFile(sectionFile, SectionFile);
+    if (!section) continue;
+    const sectionCode = section.code;
+    catalog.sections.push({
+      code: section.code,
+      position: section.position,
+      translations: translations(section.title, section.description),
+      file: rel(sectionFile),
+    } satisfies SectionModel);
     for (const subjectDir of dirs(sectionPath)) {
       const subjectPath = join(sectionPath, subjectDir);
       const file = join(subjectPath, 'subject.yaml');
@@ -101,6 +97,7 @@ export function readContent(
       catalog.subjects.push({
         code: data.code,
         sectionCode,
+        position: data.position,
         translations: translations(data.title, data.description),
         file: rel(file),
       } satisfies SubjectModel);
@@ -118,6 +115,20 @@ export function readContent(
   checkUnique(catalog.sections, (s) => s.code, 'code', 'код раздела повторяется', errors);
   checkUnique(catalog.subjects, (s) => s.code, 'code', 'код предмета повторяется', errors);
   checkUnique(catalog.topics, (t) => t.code, 'code', 'код темы повторяется', errors);
+  checkUnique(
+    catalog.sections,
+    (s) => String(s.position),
+    'position',
+    'порядковый номер раздела повторяется',
+    errors,
+  );
+  checkUnique(
+    catalog.subjects,
+    (s) => `${s.sectionCode}#${s.position}`,
+    'position',
+    'порядковый номер предмета в разделе повторяется',
+    errors,
+  );
   checkUnique(
     catalog.topics,
     (t) => `${t.subjectCode}#${t.position}`,

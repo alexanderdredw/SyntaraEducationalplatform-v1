@@ -388,10 +388,13 @@ test.describe('Интерфейс ученика: обучение (итерац
     await expect(
       page.getByTestId('catalog-subject').filter({ hasText: st.catalog.available }).first(),
     ).toBeVisible();
-    // BR-CNT-08: предмет без опубликованных тем — «Скоро», не ссылка.
-    await expect(page.locator('[data-testid="catalog-subject"][data-status="soon"]').first()).toContainText(
-      st.catalog.soon,
-    );
+    // BR-CNT-08: предмет без опубликованных тем — «Скоро», не ссылка. Все базовые предметы — в разделах
+    // («Химия» — в «Естественных науках», решение владельца 2026-10-17).
+    await page.getByTestId('catalog-section').filter({ hasText: 'Естественные науки' }).click();
+    const soon = page.locator('[data-testid="catalog-subject"][data-status="soon"]');
+    await expect(soon.first()).toContainText('Химия');
+    await expect(soon.first()).toContainText(st.catalog.soon);
+    await expect(soon.first().getByRole('link')).toHaveCount(0);
     // Статусы тем на странице предмета: «Не начата» → после открытия «Начата».
     await page.goto(`/ru/learn/subjects/${subjectId}`);
     await expect(page.getByTestId('student-topic').first()).toHaveAttribute('data-status', 'not_started');

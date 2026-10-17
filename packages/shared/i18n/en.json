@@ -169,7 +169,8 @@
       "label": "SUBJECTS",
       "title": "CHOOSE WHAT TO STUDY",
       "subtitle": "Subjects in Kazakh and Russian — open any of them",
-      "open": "Open →"
+      "open": "Open →",
+      "all": "All subjects →"
     },
     "why": {
       "label": "WHAT'S DIFFERENT",
@@ -961,7 +962,8 @@
       "guestInvite": "Log in or sign up to take the quiz",
       "guestLogin": "Log in",
       "needsReview": "Under review",
-      "onlyRussian": "This lesson is only available in Russian for now"
+      "onlyRussian": "This lesson is only available in Russian for now",
+      "guestInviteAi": "Log in or sign up to ask Syntara AI a question"
     },
     "quiz": {
       "difficulty": {

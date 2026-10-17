@@ -118,4 +118,19 @@ describe('content check', () => {
       ]),
     );
   });
+
+  it('BR-CNT-02 subjects need a position, unique inside a section; every folder is a section (no _root)', () => {
+    edit('natural-sciences/02-physics/subject.yaml', 'position: 2', 'position: 1');
+    edit('natural-sciences/03-geography/subject.yaml', 'position: 3\n', '');
+    cpSync(join(dir, 'natural-sciences/01-chemistry'), join(dir, '_root/01-chemistry'), { recursive: true });
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(
+          /02-physics\/subject\.yaml: position — порядковый номер предмета в разделе повторяется/,
+        ),
+        expect.stringMatching(/03-geography\/subject\.yaml: position — /),
+        expect.stringMatching(/_root — нет section\.yaml/),
+      ]),
+    );
+  });
 });

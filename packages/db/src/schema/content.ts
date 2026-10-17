@@ -49,11 +49,17 @@ export const subjects = pgTable(
     archivedAt: tstz('archived_at'),
     /** Постоянный код базового предмета из content/ (BR-CNT-04); у предметов учителей — NULL. */
     code: text('code').unique(),
+    /** Порядок базового предмета в каталоге — из subject.yaml (решение владельца 2026-10-17); у предметов учителей — NULL. */
+    position: integer('position'),
     ...timestamps,
   },
   (t) => [
     check('subjects_official_or_owner', sql`${t.isOfficial} OR ${t.ownerId} IS NOT NULL`),
     check('subjects_code_official', sql`${t.code} IS NULL OR ${t.isOfficial}`),
+    check(
+      'subjects_position_official',
+      sql`${t.position} IS NULL OR (${t.isOfficial} AND ${t.position} >= 1)`,
+    ),
   ],
 );
 

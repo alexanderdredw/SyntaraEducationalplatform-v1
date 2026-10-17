@@ -5,6 +5,9 @@ import { AppLink } from '../app-link';
 
 const ICONS: Record<string, LucideIcon> = { dna: Dna, 'flask-conical': FlaskConical, atom: Atom };
 
+/** На главной — не больше 6 карточек, открытые первыми (порядок API-PUB-01); остальные — на /subjects. */
+export const HOME_SUBJECTS_LIMIT = 6;
+
 /**
  * Карточки предметов из API-PUB-01.
  * На главной (REQ-PUB-HOME-06) статус и «Открыть →» — только при status = 'open';
@@ -57,7 +60,7 @@ export async function SubjectCards({
   };
 
   const grid = (items: PublicSubject[]) => <ul className="grid gap-4 md:grid-cols-3">{items.map(card)}</ul>;
-  if (variant === 'home') return grid(subjects);
+  if (variant === 'home') return grid(subjects.slice(0, HOME_SUBJECTS_LIMIT));
 
   const available = subjects.filter((s) => s.status !== 'soon');
   const soon = subjects.filter((s) => s.status === 'soon');

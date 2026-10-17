@@ -39,6 +39,7 @@ describe('migrations (integration)', () => {
       '0003_app_maintenance_role',
       '0004_self_registration',
       '0005_base_content',
+      '0006_subject_position',
     ]);
     expect(await tables()).toBe(55);
     expect(await enums()).toBe(16);
@@ -46,6 +47,7 @@ describe('migrations (integration)', () => {
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0006_subject_position',
       '0005_base_content',
       '0004_self_registration',
       '0003_app_maintenance_role',
@@ -67,6 +69,13 @@ describe('migrations (integration)', () => {
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
     expect(await tables()).toBe(55);
+    expect(await rollback(db, 1)).toEqual(['0006_subject_position']);
+    expect(
+      await count(
+        db,
+        sql`select count(*) as n from information_schema.columns where table_name = 'subjects' and column_name = 'position'`,
+      ),
+    ).toBe(0);
     expect(await rollback(db, 1)).toEqual(['0005_base_content']);
     expect(
       await count(
@@ -86,6 +95,6 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(6);
+    expect(await appliedMigrations(db)).toHaveLength(7);
   });
 });

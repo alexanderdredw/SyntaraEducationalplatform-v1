@@ -106,6 +106,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
         text={t('subjects.subtitle')}
       >
         <SubjectCards subjects={subjects} variant="home" />
+        <div className="mt-6">
+          <LinkButton href="/subjects" variant="text" testId="subjects-all">
+            {t('subjects.all')}
+          </LinkButton>
+        </div>
       </Section>
 
       {/* REQ-PUB-HOME-07 */}

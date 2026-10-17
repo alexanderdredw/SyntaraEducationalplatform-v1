@@ -802,6 +802,8 @@
     "studentAuth.forgotLink": "needs_review",
     "studentAuth.guest": "needs_review",
     "studentAuth.identifier": "needs_review",
-    "studentAuth.loginSubmit": "needs_review"
+    "studentAuth.loginSubmit": "needs_review",
+    "home.subjects.all": "needs_review",
+    "student.lesson.guestInviteAi": "needs_review"
   }
 }

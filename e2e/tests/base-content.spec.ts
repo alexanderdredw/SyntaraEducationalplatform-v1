@@ -56,7 +56,13 @@ test.describe('Базовая программа платформы (этап 8.
     const sections = page.getByTestId('lesson-overview').getByRole('button');
     await expect(sections).toHaveCount(5);
     await sections.filter({ hasText: 'Строение сердца' }).click();
-    await expect(page.getByTestId('section-illustration')).toHaveAttribute('alt', /Схема сердца/);
+    const illustration = page.getByTestId('section-illustration');
+    await expect(illustration).toHaveAttribute('alt', /Схема сердца/);
+    // Иллюстрация раздела: ~336 px на десктопе, во всю ширину на мобильном (решение владельца 2026-10-17).
+    const width = (await illustration.boundingBox())!.width;
+    const viewport = page.viewportSize()!.width;
+    if (viewport >= 768) expect(Math.round(width)).toBe(336);
+    else expect(width).toBeGreaterThan(viewport * 0.7);
     await expectNoSeriousA11yViolations(page);
     expect(await hasHorizontalScroll(page)).toBe(false);
 
@@ -64,7 +70,7 @@ test.describe('Базовая программа платформы (этап 8.
     for (const tab of ['quiz', 'ai'] as const) {
       await page.getByRole('tab', { name: st.lesson[tab] }).click();
       const invite = page.getByTestId('guest-invite');
-      await expect(invite).toContainText(st.lesson.guestInvite);
+      await expect(invite).toContainText(tab === 'ai' ? st.lesson.guestInviteAi : st.lesson.guestInvite);
       await expect(invite.getByTestId('guest-login')).toHaveAttribute(
         'href',
         `/ru/auth/login?returnTo=${encodeURIComponent(`/learn/topics/${ids.cardio}?tab=${tab}`)}`,

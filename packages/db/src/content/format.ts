@@ -4,14 +4,12 @@ import { type Locale } from '@syntara/shared';
 /**
  * Формат базовой программы (BR-CNT-02, docs/CONTENT_GUIDE.md):
  *   content/<раздел>/section.yaml
- *   content/<раздел>/<предмет>/subject.yaml          (content/_root/<предмет>/ — предмет вне разделов)
+ *   content/<раздел>/<предмет>/subject.yaml          (порядок предмета в разделе — position)
  *   content/<раздел>/<предмет>/<тема>/{ru.md, kk.md, en.md, quiz.yaml, media/}
  * Длины — ограничения 5.4/5.5; коды — постоянные ключи импорта (BR-CNT-04).
  */
 
 export const CONTENT_LOCALES = ['ru', 'kk', 'en'] as const satisfies readonly Locale[];
-/** Каталог предметов вне разделов (эталон U13: «Химия — Доступно»). */
-export const ROOT_DIR = '_root';
 /** BR-CNT-06: не больше 300 КБ. */
 export const MAX_IMAGE_BYTES = 300 * 1024;
 export const IMAGE_TYPES = {
@@ -44,6 +42,8 @@ export type SectionFile = z.infer<typeof SectionFile>;
 
 export const SubjectFile = z.strictObject({
   code,
+  /** Порядок в разделе каталога (решение владельца 2026-10-17). */
+  position,
   title: localized(150),
   description: localizedOptional(1000).optional(),
 });
@@ -127,7 +127,8 @@ export interface SectionModel {
 
 export interface SubjectModel {
   code: string;
-  sectionCode: string | null;
+  sectionCode: string;
+  position: number;
   translations: Partial<Record<Locale, { title: string; description?: string }>>;
   file: string;
 }

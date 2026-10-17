@@ -30,7 +30,8 @@ export class PublicService {
    * API-PUB-01. Список — коды PH-01 `catalog.public_subjects`: код раздела каталога или базового предмета
    * (решение владельца 2026-10-16: все базовые предметы каталога). Гость читает каталог и «Обзор» базовых уроков
    * (BR-VIS-04), поэтому есть опубликованные базовые темы → 'open' со ссылкой на раздел или предмет, иначе — 'soon'
-   * без ссылки (BR-CNT-08). Сортировка: доступные — первыми, «Скоро» — отдельной группой (REQ-PUB-SUBJ-02).
+   * без ссылки (BR-CNT-08). Сортировка: доступные — первыми, «Скоро» — отдельной группой (REQ-PUB-SUBJ-02); внутри
+   * группы — порядок content/ (позиция раздела, затем предмета в разделе; решение владельца 2026-10-17).
    */
   async subjects(locale: Locale): Promise<PublicSubjectDto[]> {
     const codes = await this.config.get<string[]>('catalog.public_subjects');
@@ -44,11 +45,15 @@ export class PublicService {
 
     const [sections, baseSubjects, withContent] = await Promise.all([
       this.db
-        .select({ id: catalogSections.id, code: catalogSections.code })
-        .from(catalogSections)
-        .where(inArray(catalogSections.code, codes)),
+        .select({ id: catalogSections.id, code: catalogSections.code, position: catalogSections.position })
+        .from(catalogSections),
       this.db
-        .select({ id: subjects.id, code: subjects.code, sectionId: subjects.sectionId })
+        .select({
+          id: subjects.id,
+          code: subjects.code,
+          sectionId: subjects.sectionId,
+          position: subjects.position,
+        })
         .from(subjects)
         .where(and(base, inArray(subjects.code, codes))),
       this.db
@@ -84,7 +89,23 @@ export class PublicService {
     const openSections = new Set(withContent.map((r) => r.sectionId));
     const openSubjects = new Set(withContent.map((r) => r.subjectId));
 
-    const items = codes.flatMap((code): PublicSubjectDto[] => {
+    const sectionPosition = new Map(sections.map((s) => [s.id, s.position]));
+    const order = (code: string): [number, number] => {
+      const section = sections.find((s) => s.code === code);
+      if (section) return [section.position, 0];
+      const subject = baseSubjects.find((s) => s.code === code);
+      return [
+        subject?.sectionId ? (sectionPosition.get(subject.sectionId) ?? 0) : 0,
+        subject?.position ?? Number.MAX_SAFE_INTEGER,
+      ];
+    };
+    const ordered = [...codes].sort((a, b) => {
+      const [sa, pa] = order(a);
+      const [sb, pb] = order(b);
+      return sa - sb || pa - pb;
+    });
+
+    const items = ordered.flatMap((code): PublicSubjectDto[] => {
       const section = sections.find((s) => s.code === code);
       const subject = section ? undefined : baseSubjects.find((s) => s.code === code);
       const id = section?.id ?? subject?.id;

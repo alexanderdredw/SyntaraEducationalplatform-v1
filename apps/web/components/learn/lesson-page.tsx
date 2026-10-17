@@ -79,7 +79,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
   // REQ-ST-LES-06: на «Квиз» и «Syntara AI» гостю — приглашение войти с возвратом на эту вкладку урока.
   const invite = (tabValue: LessonTab) => (
     <div className="flex flex-col items-start gap-4 py-4" data-testid="guest-invite">
-      <p className="text-lg">{t('guestInvite')}</p>
+      <p className="text-lg">{t(tabValue === 'ai' ? 'guestInviteAi' : 'guestInvite')}</p>
       <LinkButton
         variant="blue"
         href={`/auth/login?returnTo=${encodeURIComponent(`/learn/topics/${topicId}?tab=${tabValue}`)}`}

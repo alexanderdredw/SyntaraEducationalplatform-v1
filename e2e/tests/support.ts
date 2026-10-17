@@ -29,6 +29,16 @@ export const isMobile = (page: Page) => (page.viewportSize()?.width ?? 1440) < 1
 
 /** DoD 5 / REQ-NFR-A11Y-01: axe без нарушений уровня serious и critical. */
 export async function expectNoSeriousA11yViolations(page: Page) {
+  // Переходы 150–200 мс (hover, смена вкладки): axe не должен мерить контраст промежуточного цвета.
+  // Бесконечные анимации (скелетоны) не ждём.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
   const { violations } = await new AxeBuilder({ page }).analyze();
   const serious = violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
   expect(

@@ -81,14 +81,19 @@ test.describe('Публичные страницы', () => {
     await expect(panel).toHaveText(panels[0]!);
   });
 
-  test('REQ-PUB-HOME-06 subjects on home: cards from API-PUB-01, status/«Открыть →» only when open', async ({
+  test('REQ-PUB-HOME-06 subjects on home: open first, at most 6 cards, «Все предметы →», status only when open', async ({
     page,
   }) => {
     await page.goto('/ru');
     const cards = page.getByTestId('home-subjects').getByTestId('subject-card');
-    // PH-01 — все базовые предметы каталога (решение владельца 2026-10-16); статус и «Открыть →» — только у open.
-    await expect(cards).toHaveCount(12);
+    // PH-01 — 12 базовых предметов; на главной — 6, открытые первыми, остальные — по «Все предметы →»
+    // (решение владельца 2026-10-17). Порядок — из content/: Биология, затем Химия, Физика, География…
+    await expect(cards).toHaveCount(6);
     await expect(cards.first()).toContainText('Биология');
+    await expect(cards.nth(1)).toContainText('Химия');
+    const all = page.getByTestId('subjects-all');
+    await expect(all).toHaveText(ru.home.subjects.all);
+    await expect(all).toHaveAttribute('href', '/ru/subjects');
     await expect(page.getByTestId('home-subjects').getByTestId('subject-status')).toHaveCount(1);
     await expect(cards.first()).toContainText(ru.subjects.open);
     await expect(page.getByTestId('home-subjects').getByText(ru.home.subjects.subtitle)).toBeVisible();

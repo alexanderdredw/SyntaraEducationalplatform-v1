@@ -10,6 +10,7 @@ import {
   auditLog,
   mediaFiles,
   questions,
+  subjects,
   topicMastery,
   topics,
   topicTranslations,
@@ -123,6 +124,23 @@ describe('content import (integration)', () => {
     expect(again.errors).toEqual([]);
     expect(changesCount(again.summary!)).toBe(0);
     expect(await rowCounts()).toEqual(before);
+  });
+
+  it('BR-CNT-04 subject order comes from subject.yaml position (owner decision 2026-10-17)', async () => {
+    const order = async () =>
+      (await db.select({ code: subjects.code, position: subjects.position }).from(subjects))
+        .filter((s) => ['chemistry', 'physics', 'geography'].includes(s.code ?? ''))
+        .sort((a, b) => a.position! - b.position!)
+        .map((s) => s.code);
+    expect(await order()).toEqual(['chemistry', 'physics', 'geography']);
+    edit('natural-sciences/01-chemistry/subject.yaml', 'position: 1', 'position: 4');
+    const moved = await importContent(db, { dir, media: store });
+    expect(moved.errors).toEqual([]);
+    expect(moved.summary!.subjects.updated).toBe(1);
+    expect(await order()).toEqual(['physics', 'geography', 'chemistry']);
+    edit('natural-sciences/01-chemistry/subject.yaml', 'position: 4', 'position: 1');
+    await importContent(db, { dir, media: store });
+    expect(await order()).toEqual(['chemistry', 'physics', 'geography']);
   });
 
   it('AC-CNT-05 a changed topic file creates a new published version; progress is kept', async () => {
