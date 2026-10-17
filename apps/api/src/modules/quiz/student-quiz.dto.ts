@@ -15,6 +15,11 @@ class AttemptQuestionDto {
   options: AttemptOptionDto[];
 }
 
+/** API-S-07: тело (необязательно) — попытка из задания (Q-18). */
+export class AttemptStartBody {
+  @ApiPropertyOptional({ format: 'uuid' }) assignmentId?: string;
+}
+
 /** API-S-08: результат ответа (BR-QZ-04). */
 export class AnswerResultDto {
   @ApiProperty() correct: boolean;

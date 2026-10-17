@@ -163,7 +163,8 @@ export class LessonService {
   }
 
   /** Файл нашего хранилища со scan_status = clean — подписанная ссылка на 10 минут (BR-FILE-04); иначе null. */
-  private async cleanMediaUrl(mediaId: string | null | undefined): Promise<string | null> {
+  /** Подписанная ссылка на файл нашего хранилища — только clean (BR-FILE-04). */
+  async cleanMediaUrl(mediaId: string | null | undefined): Promise<string | null> {
     if (!mediaId) return null;
     const [media] = await this.db
       .select({ key: mediaFiles.storageKey, status: mediaFiles.scanStatus })

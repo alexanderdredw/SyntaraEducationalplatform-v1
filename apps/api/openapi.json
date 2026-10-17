@@ -2276,6 +2276,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttemptStartBody"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -2294,7 +2304,7 @@
             "description": "Нет роли или неверный X-CSRF-Token"
           },
           "404": {
-            "description": ""
+            "description": "Тема не видна или назначение не найдено"
           },
           "409": {
             "description": "В квизе нет вопросов"
@@ -2402,6 +2412,329 @@
           },
           "409": {
             "description": "INVALID_TRANSITION: попытка уже завершена"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/teacher/assignments": {
+      "post": {
+        "operationId": "TeacherAssignmentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Класс или предмет не найден"
+          },
+          "422": {
+            "description": "subjectNotGranted / topicNotInSubject / topicNotPublished (BR-ASG-01)"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "get": {
+        "operationId": "TeacherAssignmentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TeacherAssignmentDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/review-queue": {
+      "get": {
+        "operationId": "TeacherAssignmentsController_reviewQueue",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewItemDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/assignment-options": {
+      "get": {
+        "operationId": "TeacherAssignmentsController_options",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOptionsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/student/assignments": {
+      "get": {
+        "operationId": "StudentAssignmentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StudentAssignmentDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/teacher/classes/{id}/analytics": {
+      "get": {
+        "operationId": "TeacherAnalyticsController_analytics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassAnalyticsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/student/progress": {
+      "get": {
+        "operationId": "StudentResultsController_progress",
+        "parameters": [
+          {
+            "name": "period",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "today",
+                "7d",
+                "30d",
+                "90d",
+                "quarter",
+                "year"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "422": {
+            "description": "periodUnavailable — четверти не заданы (Q-23)"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/achievements": {
+      "get": {
+        "operationId": "StudentResultsController_achievements",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AchievementsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
           }
         },
         "security": [
@@ -5522,6 +5855,15 @@
           "textAnswer"
         ]
       },
+      "AttemptStartBody": {
+        "type": "object",
+        "properties": {
+          "assignmentId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
       "AttemptOptionDto": {
         "type": "object",
         "properties": {
@@ -5690,6 +6032,576 @@
           "scorePercent",
           "xpAwarded",
           "badgesAwarded"
+        ]
+      },
+      "AssignmentBody": {
+        "type": "object",
+        "properties": {
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Срок сдачи (ISO 8601 с часовым поясом)"
+          }
+        },
+        "required": [
+          "classId",
+          "subjectId",
+          "topicId",
+          "dueAt"
+        ]
+      },
+      "CreatedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "SubmissionCountsDto": {
+        "type": "object",
+        "properties": {
+          "submitted": {
+            "type": "number"
+          },
+          "inReview": {
+            "type": "number"
+          },
+          "graded": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "submitted",
+          "inReview",
+          "graded"
+        ]
+      },
+      "TeacherAssignmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicTitle": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/SubmissionCountsDto"
+          }
+        },
+        "required": [
+          "id",
+          "topicTitle",
+          "className",
+          "dueAt",
+          "counts"
+        ]
+      },
+      "ReviewItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "OptionTopicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "OptionSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "official": {
+            "type": "boolean",
+            "description": "Базовый предмет платформы"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionTopicDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "official",
+          "topics"
+        ]
+      },
+      "AssignmentOptionsDto": {
+        "type": "object",
+        "properties": {
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionSubjectDto"
+            }
+          }
+        },
+        "required": [
+          "subjects"
+        ]
+      },
+      "StudentAssignmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicTitle": {
+            "type": "string"
+          },
+          "subjectTitle": {
+            "type": "string"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "submitted",
+              "graded"
+            ]
+          },
+          "grade": {
+            "type": "number",
+            "nullable": true,
+            "description": "Оценка, % (лучшая попытка)"
+          },
+          "overdue": {
+            "type": "boolean",
+            "description": "Срок прошёл, а работа не сдана"
+          }
+        },
+        "required": [
+          "id",
+          "topicId",
+          "topicTitle",
+          "subjectTitle",
+          "dueAt",
+          "status",
+          "grade",
+          "overdue"
+        ]
+      },
+      "EngagementDto": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "windowDays": {
+            "type": "number",
+            "description": "Окно активности, дней (PH-30 inactive_days)"
+          }
+        },
+        "required": [
+          "active",
+          "total",
+          "windowDays"
+        ]
+      },
+      "WeakTopicDto": {
+        "type": "object",
+        "properties": {
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "students": {
+            "type": "number",
+            "description": "Учеников класса с попытками"
+          },
+          "percent": {
+            "type": "number",
+            "description": "Среднее best_percent, %"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "red",
+              "blue",
+              "green"
+            ]
+          }
+        },
+        "required": [
+          "topicId",
+          "title",
+          "students",
+          "percent",
+          "color"
+        ]
+      },
+      "AttentionDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "null — событий ещё не было"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "inactive"
+            ]
+          }
+        },
+        "required": [
+          "studentId",
+          "name",
+          "lastActivityAt",
+          "reason"
+        ]
+      },
+      "ClassAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "avgPercent": {
+            "type": "number",
+            "description": "Средняя успеваемость, % (BR-AN-02)"
+          },
+          "engagement": {
+            "$ref": "#/components/schemas/EngagementDto"
+          },
+          "weakTopics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WeakTopicDto"
+            }
+          },
+          "attention": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttentionDto"
+            }
+          }
+        },
+        "required": [
+          "avgPercent",
+          "engagement",
+          "weakTopics",
+          "attention"
+        ]
+      },
+      "DayRangeDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "NextStepDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "assignment",
+              "improve_topic",
+              "next_topic",
+              "catalog"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "assignment_due",
+              "below_mastery",
+              "continue",
+              "start"
+            ]
+          },
+          "href": {
+            "type": "string",
+            "description": "Внутренний маршрут без префикса языка"
+          },
+          "topicTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "percent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Лучший результат темы, %"
+          }
+        },
+        "required": [
+          "action",
+          "reason",
+          "href",
+          "topicTitle",
+          "dueAt",
+          "percent"
+        ]
+      },
+      "ProgressValueDto": {
+        "type": "object",
+        "properties": {
+          "mastered": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "percent": {
+            "type": "number"
+          },
+          "deltaPercent": {
+            "type": "number",
+            "description": "Изменение процента к концу периода сравнения, п. п."
+          }
+        },
+        "required": [
+          "mastered",
+          "total",
+          "percent",
+          "deltaPercent"
+        ]
+      },
+      "StreakDto": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "number"
+          },
+          "lastActivityDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "delta": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "days",
+          "lastActivityDate",
+          "delta"
+        ]
+      },
+      "ProgressDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": [
+              "today",
+              "7d",
+              "30d",
+              "90d",
+              "quarter",
+              "year"
+            ]
+          },
+          "availablePeriods": {
+            "type": "array",
+            "description": "Четверть — только если задана (Q-23)",
+            "items": {
+              "type": "string",
+              "enum": [
+                "today",
+                "7d",
+                "30d",
+                "90d",
+                "quarter",
+                "year"
+              ]
+            }
+          },
+          "range": {
+            "$ref": "#/components/schemas/DayRangeDto"
+          },
+          "compareRange": {
+            "$ref": "#/components/schemas/DayRangeDto"
+          },
+          "nextStep": {
+            "$ref": "#/components/schemas/NextStepDto"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ProgressValueDto"
+          },
+          "streak": {
+            "$ref": "#/components/schemas/StreakDto"
+          }
+        },
+        "required": [
+          "period",
+          "availablePeriods",
+          "range",
+          "compareRange",
+          "nextStep",
+          "progress",
+          "streak"
+        ]
+      },
+      "BadgeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "earned": {
+            "type": "boolean"
+          },
+          "earnedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "condition",
+          "imageUrl",
+          "earned",
+          "earnedAt"
+        ]
+      },
+      "AchievementsDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "rankTitle": {
+            "type": "string"
+          },
+          "xpTotal": {
+            "type": "number"
+          },
+          "xpToNext": {
+            "type": "number"
+          },
+          "xpPerLevel": {
+            "type": "number",
+            "description": "XP на уровень (PH-39 per_level) — для полосы прогресса"
+          },
+          "streakDays": {
+            "type": "number"
+          },
+          "badges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BadgeDto"
+            }
+          },
+          "earnedCount": {
+            "type": "number"
+          },
+          "totalCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "level",
+          "rankTitle",
+          "xpTotal",
+          "xpToNext",
+          "xpPerLevel",
+          "streakDays",
+          "badges",
+          "earnedCount",
+          "totalCount"
         ]
       },
       "ConversationBody": {

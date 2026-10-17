@@ -7,7 +7,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AnswerDto } from '@syntara/shared';
+import { AnswerDto, AttemptStartDto } from '@syntara/shared';
 import { type Dto } from '../../common/dto';
 import { resolveLocale } from '../../common/locale';
 import { UuidParamPipe } from '../../common/uuid-param.pipe';
@@ -15,7 +15,14 @@ import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { Roles } from '../auth/auth.guards';
 import { Owns } from '../content/ownership.guard';
 import { type AuthRequest } from '../auth/auth.types';
-import { AnswerBody, AnsweredDto, AnswerResultDto, AttemptDto, FinishResultDto } from './student-quiz.dto';
+import {
+  AnswerBody,
+  AnsweredDto,
+  AttemptStartBody,
+  AnswerResultDto,
+  AttemptDto,
+  FinishResultDto,
+} from './student-quiz.dto';
 import { StudentQuizService } from './student-quiz.service';
 
 const locale = (req: AuthRequest) => resolveLocale(req.headers['accept-language']);
@@ -31,11 +38,16 @@ export class StudentQuizController {
   /** API-S-07 */
   @Post('quizzes/:quizId/attempts')
   @HttpCode(200)
+  @ApiBody({ type: AttemptStartBody, required: false })
   @ApiOkResponse({ type: AttemptDto })
-  @ApiNotFoundResponse()
+  @ApiNotFoundResponse({ description: 'Тема не видна или назначение не найдено' })
   @ApiConflictResponse({ description: 'В квизе нет вопросов' })
-  start(@Param('quizId', new UuidParamPipe()) quizId: string, @Req() req: AuthRequest): Promise<AttemptDto> {
-    return this.quiz.start(req.user!.id, quizId, locale(req));
+  start(
+    @Param('quizId', new UuidParamPipe()) quizId: string,
+    @Body(new ZodValidationPipe(AttemptStartDto)) dto: Dto<typeof AttemptStartDto>,
+    @Req() req: AuthRequest,
+  ): Promise<AttemptDto> {
+    return this.quiz.start(req.user!.id, quizId, locale(req), dto.assignmentId);
   }
 
   /** API-S-08 */

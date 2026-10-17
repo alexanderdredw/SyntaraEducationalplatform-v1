@@ -6,6 +6,7 @@ import { ApiException } from '../../common/api-exception';
 import { pickTranslation } from '../../common/locale';
 import { AppConfigService } from '../../config/app-config.service';
 import { DB } from '../../infra/tokens';
+import { AssignmentsService } from '../assignments/assignments.service';
 import { VisibilityService } from '../content/visibility.service';
 import { GamificationService, quizEventKey } from '../gamification/gamification.service';
 import { type AnswerResultDto, type AttemptDto, type FinishResultDto } from './student-quiz.dto';
@@ -33,11 +34,16 @@ export class StudentQuizService {
     private readonly visibility: VisibilityService,
     private readonly gamification: GamificationService,
     private readonly config: AppConfigService,
+    private readonly assignments: AssignmentsService,
   ) {}
 
-  /** API-S-07: начать или продолжить попытку. */
-  async start(studentId: string, quizId: string, locale: Locale): Promise<AttemptDto> {
+  /**
+   * API-S-07: начать или продолжить попытку. Из задания (Q-18) — с assignmentId: назначение действующего класса по
+   * этой теме; незавершённая попытка продолжается и связывается с заданием (BR-ASG-03).
+   */
+  async start(studentId: string, quizId: string, locale: Locale, assignmentId?: string): Promise<AttemptDto> {
     const quiz = await this.visibleQuiz(studentId, quizId);
+    if (assignmentId) await this.assignments.assertStudentAssignment(studentId, assignmentId, quiz.topicId);
     const list = await this.questions(quizId);
     if (list.length === 0)
       throw new ApiException(HttpStatus.CONFLICT, 'CONFLICT', 'Quiz has no questions', { quiz: 'quizEmpty' });
@@ -55,7 +61,15 @@ export class StudentQuizService {
             eq(attempts.status, 'in_progress'),
           ),
         );
-      if (current) return current;
+      if (current) {
+        if (!assignmentId || current.assignmentId === assignmentId) return current;
+        const [linked] = await tx
+          .update(attempts)
+          .set({ assignmentId })
+          .where(eq(attempts.id, current.id))
+          .returning();
+        return linked!;
+      }
       const [topic] = await tx
         .select({ versionId: topics.publishedVersionId })
         .from(topics)
@@ -63,7 +77,12 @@ export class StudentQuizService {
       // BR-QZ-08: попытка связана с опубликованной версией темы на момент старта.
       const [created] = await tx
         .insert(attempts)
-        .values({ studentId, quizId, topicVersionId: topic?.versionId ?? null })
+        .values({
+          studentId,
+          quizId,
+          topicVersionId: topic?.versionId ?? null,
+          assignmentId: assignmentId ?? null,
+        })
         .returning();
       return created!;
     });
@@ -271,6 +290,15 @@ export class StudentQuizService {
         },
         locale,
       );
+      // BR-ASG-03: попытка из задания — сдача «Оценено» с лучшим результатом (PH-29).
+      if (attempt.assignmentId) {
+        await this.assignments.recordSubmission(tx, {
+          assignmentId: attempt.assignmentId,
+          studentId,
+          attemptId,
+          score,
+        });
+      }
       return { scorePercent: score, xpAwarded, badgesAwarded };
     });
   }

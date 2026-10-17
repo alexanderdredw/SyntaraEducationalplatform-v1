@@ -868,6 +868,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/teacher/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAssignmentsController_list"];
+        put?: never;
+        post: operations["TeacherAssignmentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/review-queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAssignmentsController_reviewQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/classes/{id}/assignment-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAssignmentsController_options"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentAssignmentsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/classes/{id}/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAnalyticsController_analytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentResultsController_progress"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/achievements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentResultsController_achievements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/ai/conversations": {
         parameters: {
             query?: never;
@@ -1814,6 +1926,10 @@ export interface components {
             optionId: string | null;
             textAnswer: string | null;
         };
+        AttemptStartBody: {
+            /** Format: uuid */
+            assignmentId?: string;
+        };
         AttemptOptionDto: {
             /** Format: uuid */
             id: string;
@@ -1862,6 +1978,173 @@ export interface components {
             scorePercent: number;
             xpAwarded: number;
             badgesAwarded: components["schemas"]["AwardedBadgeDto"][];
+        };
+        AssignmentBody: {
+            /** Format: uuid */
+            classId: string;
+            /** Format: uuid */
+            subjectId: string;
+            /** Format: uuid */
+            topicId: string;
+            /**
+             * Format: date-time
+             * @description Срок сдачи (ISO 8601 с часовым поясом)
+             */
+            dueAt: string;
+        };
+        CreatedDto: {
+            /** Format: uuid */
+            id: string;
+        };
+        SubmissionCountsDto: {
+            submitted: number;
+            inReview: number;
+            graded: number;
+        };
+        TeacherAssignmentDto: {
+            /** Format: uuid */
+            id: string;
+            topicTitle: string;
+            className: string;
+            /** Format: date-time */
+            dueAt: string;
+            counts: components["schemas"]["SubmissionCountsDto"];
+        };
+        ReviewItemDto: {
+            /** Format: uuid */
+            id: string;
+        };
+        OptionTopicDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+        };
+        OptionSubjectDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** @description Базовый предмет платформы */
+            official: boolean;
+            topics: components["schemas"]["OptionTopicDto"][];
+        };
+        AssignmentOptionsDto: {
+            subjects: components["schemas"]["OptionSubjectDto"][];
+        };
+        StudentAssignmentDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            topicId: string;
+            topicTitle: string;
+            subjectTitle: string;
+            /** Format: date-time */
+            dueAt: string;
+            /** @enum {string} */
+            status: "not_started" | "submitted" | "graded";
+            /** @description Оценка, % (лучшая попытка) */
+            grade: number | null;
+            /** @description Срок прошёл, а работа не сдана */
+            overdue: boolean;
+        };
+        EngagementDto: {
+            active: number;
+            total: number;
+            /** @description Окно активности, дней (PH-30 inactive_days) */
+            windowDays: number;
+        };
+        WeakTopicDto: {
+            /** Format: uuid */
+            topicId: string;
+            title: string;
+            /** @description Учеников класса с попытками */
+            students: number;
+            /** @description Среднее best_percent, % */
+            percent: number;
+            /** @enum {string} */
+            color: "red" | "blue" | "green";
+        };
+        AttentionDto: {
+            /** Format: uuid */
+            studentId: string;
+            name: string;
+            /**
+             * Format: date-time
+             * @description null — событий ещё не было
+             */
+            lastActivityAt: string | null;
+            /** @enum {string} */
+            reason: "inactive";
+        };
+        ClassAnalyticsDto: {
+            /** @description Средняя успеваемость, % (BR-AN-02) */
+            avgPercent: number;
+            engagement: components["schemas"]["EngagementDto"];
+            weakTopics: components["schemas"]["WeakTopicDto"][];
+            attention: components["schemas"]["AttentionDto"][];
+        };
+        DayRangeDto: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+        };
+        NextStepDto: {
+            /** @enum {string} */
+            action: "assignment" | "improve_topic" | "next_topic" | "catalog";
+            /** @enum {string} */
+            reason: "assignment_due" | "below_mastery" | "continue" | "start";
+            /** @description Внутренний маршрут без префикса языка */
+            href: string;
+            topicTitle: string | null;
+            /** Format: date-time */
+            dueAt: string | null;
+            /** @description Лучший результат темы, % */
+            percent: number | null;
+        };
+        ProgressValueDto: {
+            mastered: number;
+            total: number;
+            percent: number;
+            /** @description Изменение процента к концу периода сравнения, п. п. */
+            deltaPercent: number;
+        };
+        StreakDto: {
+            days: number;
+            /** Format: date */
+            lastActivityDate: string | null;
+            delta: number;
+        };
+        ProgressDto: {
+            /** @enum {string} */
+            period: "today" | "7d" | "30d" | "90d" | "quarter" | "year";
+            /** @description Четверть — только если задана (Q-23) */
+            availablePeriods: ("today" | "7d" | "30d" | "90d" | "quarter" | "year")[];
+            range: components["schemas"]["DayRangeDto"];
+            compareRange: components["schemas"]["DayRangeDto"];
+            nextStep: components["schemas"]["NextStepDto"];
+            progress: components["schemas"]["ProgressValueDto"];
+            streak: components["schemas"]["StreakDto"];
+        };
+        BadgeDto: {
+            code: string;
+            title: string;
+            condition: string;
+            imageUrl: string | null;
+            earned: boolean;
+            /** Format: date-time */
+            earnedAt: string | null;
+        };
+        AchievementsDto: {
+            level: number;
+            rankTitle: string;
+            xpTotal: number;
+            xpToNext: number;
+            /** @description XP на уровень (PH-39 per_level) — для полосы прогресса */
+            xpPerLevel: number;
+            streakDays: number;
+            badges: components["schemas"]["BadgeDto"][];
+            earnedCount: number;
+            totalCount: number;
         };
         ConversationBody: {
             /** @enum {string} */
@@ -4406,7 +4689,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AttemptStartBody"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -4430,6 +4717,7 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Тема не видна или назначение не найдено */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -4540,6 +4828,313 @@ export interface operations {
             };
             /** @description INVALID_TRANSITION: попытка уже завершена */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAssignmentsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeacherAssignmentDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAssignmentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignmentBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Класс или предмет не найден */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description subjectNotGranted / topicNotInSubject / topicNotPublished (BR-ASG-01) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAssignmentsController_reviewQueue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewItemDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAssignmentsController_options: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentOptionsDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAssignmentsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentAssignmentDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAnalyticsController_analytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClassAnalyticsDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentResultsController_progress: {
+        parameters: {
+            query?: {
+                period?: "today" | "7d" | "30d" | "90d" | "quarter" | "year";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgressDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description periodUnavailable — четверти не заданы (Q-23) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentResultsController_achievements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievementsDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
