@@ -236,8 +236,10 @@ export class ResultsService {
       });
     const availablePeriods = PROGRESS_PERIODS.filter((p) => p !== 'quarter' || periodRanges(p, today, cfg));
 
+    // Четверть и учебный год заканчиваются в будущем — значения считаются на сегодня, а не на конец периода.
+    const end = ranges.range.to > today ? today : ranges.range.to;
     const [now, before] = await Promise.all([
-      this.progressAt(studentId, ranges.range.to),
+      this.progressAt(studentId, end),
       this.progressAt(studentId, ranges.compare.to),
     ]);
     const days = await this.activityDays(studentId);
@@ -245,7 +247,7 @@ export class ResultsService {
       const until = days.filter((d) => d <= day);
       return { days: streakOf(until, day).current, last: until.at(-1) ?? null };
     };
-    const streakNow = streakAt(ranges.range.to);
+    const streakNow = streakAt(end);
     const streakBefore = streakAt(ranges.compare.to);
     const percentNow = progressPercent(now.mastered, now.total);
     const percentBefore = progressPercent(before.mastered, before.total);

@@ -124,6 +124,7 @@ const mp = await session(teacher, 320, 640);
 await mp.goto(`${base}/ru/teacher/classes/${cls.id}/mastery`);
 await mp.getByTestId('mastery-table').waitFor();
 await shotOf(mp)('m-03-mastery-mobile-320', { fullPage: true });
+await mp.getByTestId('mastery-table').scrollIntoViewIfNeeded();
 await mp.getByTestId('mastery-table').evaluate((el) => el.scrollBy({ left: 400 }));
 await shotOf(mp)('m-04-mastery-mobile-320-scrolled');
 
