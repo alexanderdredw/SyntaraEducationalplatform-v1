@@ -57,6 +57,14 @@ describe('i18n ↔ раздел 11', () => {
     expect(ru.ai.chat.unavailable).toContain(ru.ai.chat.supportLink);
   });
 
+  it('PH-19 ai.unavailable_tutor', () => {
+    expect(ru.student.ai.unavailable).toBe(config['ai.unavailable_tutor']);
+  });
+
+  it('PH-21 ai.quick_actions: texts sent by the quick actions of the learning AI', () => {
+    expect(ru.student.ai.quickText).toEqual(config['ai.quick_actions']);
+  });
+
   it('PH-14 legal.draft_banner', () => {
     expect(ru.legal.draftBanner).toBe((config['legal.draft_banner'] as { value: string }).value);
   });

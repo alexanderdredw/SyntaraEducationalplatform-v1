@@ -10,6 +10,7 @@ import { apiRequest } from '@/lib/api/browser';
 import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../lesson/lesson-view';
 import { LinkButton } from '../public/blocks';
 import { StudentQuiz } from './quiz';
+import { TutorChatLoader } from './tutor-chat-loader';
 import { useLearnViewer } from './viewer';
 
 export const LESSON_TABS = ['overview', 'quiz', 'ai'] as const;
@@ -121,8 +122,17 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
           {
             value: 'ai',
             label: t('ai'),
-            // Учебный ИИ — итерация 9; пока PH-19 «Учебный ИИ скоро будет доступен».
-            content: guest ? invite('ai') : <p className="text-[var(--text-muted)]">{t('aiSoon')}</p>,
+            // Учебный ИИ по теме урока (8.4.5, REQ-ST-AI-01..02); гостю — приглашение войти.
+            content: guest ? (
+              invite('ai')
+            ) : (
+              <TutorChatLoader
+                context="topic_tutor"
+                topicId={topicId}
+                topicTitle={data.title}
+                inputId="tutor-input"
+              />
+            ),
           },
         ]}
       />

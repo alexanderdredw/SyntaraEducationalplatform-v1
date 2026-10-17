@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import axe from 'axe-core';
 import {
   Accordion,
+  ChatLog,
+  ChatMessage,
   Button,
   Checkbox,
   Field,
@@ -177,5 +179,24 @@ describe('packages/ui (раздел 3.2)', () => {
       expect(fieldClass).toContain(token);
       expect(input.className).toContain(token);
     }
+  });
+
+  it('REQ-ST-AI-02 ChatMessage: author label, avatar letter, side by role, note', async () => {
+    const { container } = render(
+      <ChatLog>
+        <ChatMessage from="assistant" author="Syntara">
+          Привет
+        </ChatMessage>
+        <ChatMessage from="user" author="Вы" note="Ответ прерван">
+          Вопрос
+        </ChatMessage>
+      </ChatLog>,
+    );
+    const [assistant, user] = screen.getAllByRole('listitem');
+    expect(assistant).toHaveAttribute('data-from', 'assistant');
+    expect(assistant).toHaveTextContent('SSyntaraПривет');
+    expect(user!.className).toContain('flex-row-reverse');
+    expect(user).toHaveTextContent('Ответ прерван');
+    await expectNoSeriousA11yViolations(container);
   });
 });

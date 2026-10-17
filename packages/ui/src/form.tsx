@@ -91,11 +91,19 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
   return <input ref={ref} className={cn(fieldClass, className)} {...props} />;
 });
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
-  function Textarea({ className, ...props }, ref) {
-    return <textarea ref={ref} className={cn(fieldBaseClass, 'min-h-32', className)} {...props} />;
-  },
-);
+/** Textarea (3.2); `compact` — поле ввода чата (одна-две строки, U06). */
+export const Textarea = forwardRef<
+  HTMLTextAreaElement,
+  TextareaHTMLAttributes<HTMLTextAreaElement> & { compact?: boolean }
+>(function Textarea({ className, compact = false, ...props }, ref) {
+  return (
+    <textarea
+      ref={ref}
+      className={cn(fieldBaseClass, compact ? 'min-h-20' : 'min-h-32', className)}
+      {...props}
+    />
+  );
+});
 
 export interface SelectOption {
   value: string;

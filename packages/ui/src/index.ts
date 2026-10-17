@@ -22,4 +22,5 @@ export {
   type RadioOption,
 } from './form';
 export { Modal, ToastProvider, Toast } from './overlay';
+export { ChatLog, ChatMessage, ChatAvatar, StatusDot } from './chat';
 export { Header, Footer, Sidebar, type SidebarItem, FloatingHelp } from './layout';

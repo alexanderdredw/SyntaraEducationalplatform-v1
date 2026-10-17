@@ -958,7 +958,6 @@
       "overview": "Overview",
       "quiz": "Quiz",
       "ai": "Syntara AI",
-      "aiSoon": "The learning AI will be available soon",
       "guestInvite": "Log in or sign up to take the quiz",
       "guestLogin": "Log in",
       "needsReview": "Under review",
@@ -990,6 +989,43 @@
       "masteredYes": "Topic mastered!",
       "masteredNo": "The topic is mastered at {threshold}% — try again",
       "keyboardHint": "Arrow keys choose an option, Enter or Space answers"
+    },
+    "ai": {
+      "greeting": "Hi! I'm Syntara. Ask me about «{topic}» — I'll help you figure it out.",
+      "placeholderTopic": "Ask your tutor a question...",
+      "placeholderGeneral": "Ask a question about the topic you are studying.",
+      "ask": "Ask",
+      "quick": {
+        "simpler": "Explain simpler",
+        "more_detail": "Tell me more",
+        "check_me": "Check me"
+      },
+      "quickText": {
+        "simpler": "Explain simpler",
+        "more_detail": "Tell me more",
+        "check_me": "Check me: ask 3 questions on the topic"
+      },
+      "level": "Explaining at your level: Beginner",
+      "disclaimer": "This is AI. It can make mistakes. Check important things in your textbook.",
+      "you": "You",
+      "assistant": "Syntara",
+      "unavailable": "The learning AI will be available soon"
+    },
+    "assistant": {
+      "title": "Syntara AI",
+      "subtitle": "Your personal study assistant",
+      "start": "Start learning with AI",
+      "how": "How it works",
+      "online": "Online",
+      "mode": "Academic support mode",
+      "helpTitle": "I'll help you:",
+      "help": {
+        "explain": "Explain difficult things in simple words",
+        "connect": "Connect the topic with what you already know",
+        "weak": "Find your weak spots",
+        "tests": "Create adaptive tests",
+        "summary": "Make a structured summary"
+      }
     }
   },
   "privacy": {

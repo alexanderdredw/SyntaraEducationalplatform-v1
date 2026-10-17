@@ -2,13 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import ReactMarkdown from 'react-markdown';
-import rehypeSanitize from 'rehype-sanitize';
-import { AI_MAX_HISTORY, AI_MAX_MESSAGE_CHARS, isAllowedLink, parseSse } from '@syntara/shared';
+import { AI_MAX_HISTORY, AI_MAX_MESSAGE_CHARS, parseSse } from '@syntara/shared';
 import { Button, Card, cn, Textarea } from '@syntara/ui';
 import { csrfToken } from '@/lib/api/browser';
-import { AppLink } from '../app-link';
 import { usePreservedState } from '../preferences/preserved-state';
+import { AssistantText } from './assistant-text';
 
 interface Message {
   id: string;
@@ -263,29 +261,5 @@ export default function PublicChat({ atlasUrls }: { atlasUrls: string[] }) {
         </div>
       </form>
     </Card>
-  );
-}
-
-/** Ответ помощника: Markdown без HTML; ссылки — только внутренние маршруты и атласы (BR-AI-07). */
-function AssistantText({ text, atlasUrls }: { text: string; atlasUrls: string[] }) {
-  return (
-    <div className="flex flex-col gap-2 [&_a]:font-semibold [&_a]:text-[var(--accent)] [&_a]:underline">
-      <ReactMarkdown
-        rehypePlugins={[rehypeSanitize]}
-        components={{
-          a: ({ href, children }) => {
-            if (!href || !isAllowedLink(href, atlasUrls)) return <span>{children}</span>;
-            if (href.startsWith('/')) return <AppLink href={href}>{children}</AppLink>;
-            return (
-              <a href={href} target="_blank" rel="noopener noreferrer">
-                {children}
-              </a>
-            );
-          },
-        }}
-      >
-        {text}
-      </ReactMarkdown>
-    </div>
   );
 }

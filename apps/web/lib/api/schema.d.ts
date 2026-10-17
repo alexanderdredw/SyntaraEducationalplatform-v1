@@ -868,6 +868,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/ai/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TutorController_open"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/ai/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TutorController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/ai/conversations/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TutorController_ask"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/public/school-requests": {
         parameters: {
             query?: never;
@@ -1814,6 +1862,53 @@ export interface components {
             scorePercent: number;
             xpAwarded: number;
             badgesAwarded: components["schemas"]["AwardedBadgeDto"][];
+        };
+        ConversationBody: {
+            /** @enum {string} */
+            context: "topic_tutor" | "general_tutor";
+            /**
+             * Format: uuid
+             * @description Обязателен для topic_tutor
+             */
+            topicId?: string;
+        };
+        ConversationCreatedDto: {
+            /** Format: uuid */
+            id: string;
+        };
+        ConversationTopicDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+        };
+        MessageDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            role: "user" | "assistant";
+            content: string;
+            /**
+             * @description SM-AI-MESSAGE
+             * @enum {string}
+             */
+            status: "complete" | "partial" | "failed";
+            /** @enum {string|null} */
+            quickAction: "simpler" | "more_detail" | "check_me" | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ConversationDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            context: "topic_tutor" | "general_tutor";
+            topic: components["schemas"]["ConversationTopicDto"] | null;
+            messages: components["schemas"]["MessageDto"][];
+        };
+        MessageBody: {
+            content: string;
+            /** @enum {string} */
+            quickAction?: "simpler" | "more_detail" | "check_me";
         };
         SchoolRequestBody: {
             schoolName: string;
@@ -4445,6 +4540,154 @@ export interface operations {
             };
             /** @description INVALID_TRANSITION: попытка уже завершена */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TutorController_open: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConversationBody"];
+            };
+        };
+        responses: {
+            /** @description Действующий диалог ученика по теме или общий */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationCreatedDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Тема не найдена или не видна ученику */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TutorController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TutorController_ask: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageBody"];
+            };
+        };
+        responses: {
+            /** @description Поток text/event-stream: delta {text} … done {} | error {code} */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description VALIDATION_FAILED: content ≤ 2000, quickAction из PH-21 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
