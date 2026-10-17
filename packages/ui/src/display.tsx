@@ -4,22 +4,31 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { Progress } from 'radix-ui';
 import { cn } from './cn';
 
+/** Рамка карточки: обычная, акцентная (выделенный блок) или красная («Требуют внимания», T10). */
+export type CardTone = 'default' | 'accent' | 'danger';
+const cardTones: Record<CardTone, string> = {
+  default: 'border-[var(--border)]',
+  accent: 'border-[var(--accent)]',
+  danger: 'border-[var(--danger)]',
+};
+
 /** Card (3.2): поверхность `--surface`, радиус `--radius-card`. */
-export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(function Card(
-  { className, ...props },
-  ref,
-) {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card',
-        className,
-      )}
-      {...props}
-    />
-  );
-});
+export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & { tone?: CardTone }>(
+  function Card({ className, tone = 'default', ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        data-tone={tone === 'default' ? undefined : tone}
+        className={cn(
+          'rounded-[var(--radius-card)] border bg-[var(--surface)] p-6 shadow-card',
+          cardTones[tone],
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
 
 /** Pill (3.2): капсула-метка, например статус темы. */
 export function Pill({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
@@ -40,7 +49,8 @@ const tones: Record<BadgeTone, string> = {
   accent: 'bg-[var(--accent-strong)] text-white',
   // Белый на --success даёт 3.1:1 — для текста статуса нужен тёмный (REQ-NFR-A11Y-01).
   success: 'bg-[var(--success)] text-[#070707]',
-  danger: 'bg-[var(--danger)] text-white',
+  // Белый на --danger не даёт 4,5:1 — красный текст с красной рамкой (T10 «неактивен»).
+  danger: 'border border-[var(--danger)] text-[var(--danger-text)]',
 };
 
 /** Badge (3.2): небольшой статусный знак. */
@@ -91,15 +101,31 @@ export function Skeleton({ className }: { className?: string }) {
   );
 }
 
+/** Цвет полосы и значения: акцент, «слабо» (красный) и «освоено» (зелёный) — BR-AN-04, T10. */
+export type ProgressTone = 'accent' | 'danger' | 'success';
+const barTones: Record<ProgressTone, string> = {
+  accent: 'bg-[var(--accent)]',
+  danger: 'bg-[var(--danger)]',
+  success: 'bg-[var(--success)]',
+};
+/** Текст значения рядом с полосой — контраст ≥ 4,5:1 (REQ-NFR-A11Y-01). */
+export const progressTextTones: Record<ProgressTone, string> = {
+  accent: 'text-[var(--accent)]',
+  danger: 'text-[var(--danger-text)]',
+  success: 'text-[var(--success-text)]',
+};
+
 /** ProgressBar (3.2): `value` 0–100; `label` — доступное имя из i18n. */
 export function ProgressBar({
   value,
   label,
   className,
+  tone = 'accent',
 }: {
   value: number;
   label: string;
   className?: string;
+  tone?: ProgressTone;
 }) {
   const clamped = Math.min(100, Math.max(0, value));
   return (
@@ -112,7 +138,7 @@ export function ProgressBar({
       )}
     >
       <Progress.Indicator
-        className="h-full bg-[var(--accent)] transition-[width] duration-200 ease-[var(--ease-standard)]"
+        className={cn('h-full transition-[width] duration-200 ease-[var(--ease-standard)]', barTones[tone])}
         style={{ width: `${clamped}%` }}
       />
     </Progress.Root>

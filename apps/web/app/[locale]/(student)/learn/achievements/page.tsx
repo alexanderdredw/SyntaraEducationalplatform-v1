@@ -1,8 +1,8 @@
 import { setRequestLocale } from 'next-intl/server';
-import { StubPage } from '@/components/public/stub-page';
+import { StudentAchievements } from '@/components/learn/student-achievements';
 
-/** Заглушка PH-24: раздел кабинета появится в следующих итерациях (раздел 12). */
+/** /learn/achievements (8.4.7, U10): «Достижения». */
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale);
-  return <StubPage />;
+  return <StudentAchievements />;
 }

@@ -1,8 +1,8 @@
 import { setRequestLocale } from 'next-intl/server';
-import { StubPage } from '@/components/public/stub-page';
+import { TeacherAssignmentsPage } from '@/components/teacher/assignments-page';
 
-/** Заглушка PH-24: раздел кабинета появится в следующих итерациях (раздел 12). */
+/** /teacher/assignments (8.3.6, T09): выдача заданий классу, выданные задания, проверка. */
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale);
-  return <StubPage />;
+  return <TeacherAssignmentsPage timeZone={process.env.PLATFORM_TZ ?? 'Asia/Almaty'} />;
 }

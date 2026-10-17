@@ -50,7 +50,11 @@
     "fileMissing": "The file did not upload — try again",
     "max8": "No more than 8 options",
     "trueFalseTwo": "A True/False question has two options",
-    "coverDownload": "Could not download the image from the link. Check the link or upload a file"
+    "coverDownload": "Could not download the image from the link. Check the link or upload a file",
+    "subjectNotGranted": "This subject is not given to the class — give it on the subject page",
+    "topicNotInSubject": "The topic does not belong to the subject",
+    "topicNotPublished": "The topic is not published",
+    "invalidDate": "Enter a date and time"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -913,6 +917,46 @@
       "archived": "Question archived",
       "optionTrue": "True",
       "optionFalse": "False"
+    },
+    "assignments": {
+      "title": "Assignments",
+      "issueTitle": "Give an assignment",
+      "issueText": "Assign a topic to your class — students will see it in «My assignments». You can choose your own subject or an official one.",
+      "class": "Class",
+      "subject": "Subject",
+      "topic": "Topic",
+      "due": "Due date",
+      "issue": "Assign",
+      "issued": "Given assignments",
+      "counts": "Submitted: {submitted} · To review: {inReview} · Graded: {graded}",
+      "review": "Review",
+      "reviewEmpty": "No work to review",
+      "choose": "Choose",
+      "noClasses": "Create a class first — assignments are given to a class",
+      "noTopics": "No published topics for this class",
+      "empty": "No assignments yet",
+      "done": "Assignment given",
+      "classDue": "{className} · {due}"
+    },
+    "analytics": {
+      "back": "← To classes",
+      "tabs": "Class sections",
+      "roster": "Roster",
+      "mastery": "Mastery map",
+      "analytics": "Class analytics",
+      "open": "Class analytics",
+      "avg": "Class average",
+      "engagement": "Engagement",
+      "window": "over the last {days} days",
+      "weak": "Weak topics",
+      "students": "{count} st.",
+      "weakEmpty": "Students have not taken topic quizzes yet",
+      "attention": "Need attention",
+      "daysAgo": "{days, plural, one {# day ago} other {# days ago}}",
+      "never": "no activity yet",
+      "inactive": "inactive",
+      "allActive": "All students are active",
+      "noStudents": "No students in the class yet"
     }
   },
   "student": {
@@ -1026,6 +1070,78 @@
         "tests": "Create adaptive tests",
         "summary": "Make a structured summary"
       }
+    },
+    "assignments": {
+      "title": "My assignments",
+      "status": {
+        "not_started": "Not started",
+        "submitted": "Submitted",
+        "graded": "Graded: {grade}%"
+      },
+      "overdue": "Overdue",
+      "due": "Due: {due}",
+      "empty": "No assignments yet"
+    },
+    "progress": {
+      "label": "PERIOD",
+      "title": "My progress",
+      "periods": {
+        "today": "Today",
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days",
+        "quarter": "Quarter",
+        "year": "School year"
+      },
+      "quarterHint": "(dates not set)",
+      "range": "{period} · {from} — {to}",
+      "compare": "Compared with: {from} — {to}",
+      "start": {
+        "label": "Start here",
+        "title": "Where to start now?",
+        "what": "What to do",
+        "why": "Why"
+      },
+      "actions": {
+        "assignment": "Do the assignment «{topic}» by {due}",
+        "improve_topic": "Retake the quiz «{topic}»",
+        "next_topic": "Open the next topic «{topic}»",
+        "catalog": "Choose a subject in the catalog"
+      },
+      "reasons": {
+        "assignment_due": "it is your teacher's assignment due soonest",
+        "below_mastery": "best result {percent} % — a topic is mastered at 80 %",
+        "continue": "it comes after the topic you opened last",
+        "start": "you have not started any topic yet"
+      },
+      "go": "Go →",
+      "progressTitle": "My progress",
+      "progressValue": "{mastered} of {total} topics",
+      "percent": "{percent} %",
+      "delta": "{sign}{value} vs. comparison period",
+      "streakTitle": "Streak",
+      "streakValue": "{days} d.",
+      "lastActivity": "last activity {date}",
+      "noActivity": "no activity yet",
+      "meaning": "What it means",
+      "howCounted": "How it is counted",
+      "help": {
+        "progressMeaning": "How many topics you have mastered in the subjects you started. A topic is mastered when your best quiz result is 80 % or more.",
+        "progressCounted": "Total — published topics in all subjects where you opened a lesson or took a quiz. Mastered — topics with 80 % or more. Percent = mastered ÷ total × 100, one decimal. Values are at the end of the period; the change is against the end of the comparison period.",
+        "streakMeaning": "How many days in a row you study. Miss a day and the streak starts over.",
+        "streakCounted": "A study day is a day when you opened a lesson or finished a quiz (Astana time, UTC+5). The streak is the run of study days ending today or yesterday; otherwise 0."
+      }
+    },
+    "achievements": {
+      "title": "Achievements",
+      "level": "Level {level}",
+      "streak": "Streak: {days} d.",
+      "xpTotal": "{xp} XP total",
+      "toNext": "To the next level: {xp} XP",
+      "levelProgress": "Level progress",
+      "badges": "Badges",
+      "earned": "Earned {earned} of {total}",
+      "locked": "LOCKED"
     }
   },
   "privacy": {

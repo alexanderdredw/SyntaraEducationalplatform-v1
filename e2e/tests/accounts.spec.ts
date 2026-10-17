@@ -91,7 +91,7 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     );
     await sidebar.getByRole('link', { name: ru.cabinet.nav.assignments }).click();
     await expect(page).toHaveURL(/\/ru\/teacher\/assignments$/);
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.common.sectionInDevelopment);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.teacher.assignments.title);
 
     await expect(page.getByTestId('cabinet-lamp')).toBeVisible();
     const footer = page.getByTestId('site-footer');

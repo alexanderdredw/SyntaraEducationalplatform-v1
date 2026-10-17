@@ -22,18 +22,20 @@ const LETTERS = 'ABCDEFGH';
  * правильный ответ приходит только после ответа (BR-QZ-01). Незавершённая попытка продолжается с первого
  * вопроса без ответа (AC-ST-03). В конце — «Результат: {score}%», XP и бейджи, «Пройти ещё раз».
  */
-export function StudentQuiz({ quizId }: { quizId: string }) {
+export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignmentId?: string }) {
   const t = useTranslations('student.quiz');
   const tf = useTranslations('forms');
   const locale = useLocale();
   // «Пройти ещё раз» начинает новую попытку: номер раунда — часть ключа запроса.
   const [round, setRound] = useState(0);
   const attempt = useQuery({
-    queryKey: ['student', 'attempt', quizId, round],
+    queryKey: ['student', 'attempt', quizId, assignmentId ?? null, round],
     // API-S-07: начать или продолжить попытку (повторный вызов возвращает ту же незавершённую).
     queryFn: async () => {
       const res = await apiRequest<Attempt>(`/api/student/quizzes/${quizId}/attempts`, {
         method: 'POST',
+        // Q-18: квиз из «Мои задания» — попытка связана с заданием (BR-ASG-03).
+        body: assignmentId ? { assignmentId } : {},
         locale,
       });
       if (res.kind === 'ok') return { kind: 'ok' as const, attempt: res.data };

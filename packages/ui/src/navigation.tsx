@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode } from 'react';
+import { type ComponentType, type ReactNode } from 'react';
 import { Tabs as TabsPrimitive, ToggleGroup, Accordion as AccordionPrimitive } from 'radix-ui';
 import { cn } from './cn';
 
@@ -134,5 +134,48 @@ export function Accordion({ items, multiple = true }: { items: AccordionItem[]; 
     <AccordionPrimitive.Root type="single" collapsible>
       {list}
     </AccordionPrimitive.Root>
+  );
+}
+
+export interface NavTabItem {
+  href: string;
+  label: string;
+  active: boolean;
+}
+
+/**
+ * NavTabs (3.2): вкладки-ссылки между страницами (например, «Ростер» / «Карта освоения» / «Аналитика класса»,
+ * REQ-TCH-AN-01) — оформление как у Tabs; текущая страница — aria-current. `link` — компонент ссылки приложения.
+ */
+export function NavTabs({
+  items,
+  label,
+  link: Link,
+}: {
+  items: NavTabItem[];
+  label: string;
+  link: ComponentType<{ href: string; className?: string; 'aria-current'?: 'page'; children: ReactNode }>;
+}) {
+  return (
+    <nav aria-label={label}>
+      <ul className="inline-flex flex-wrap gap-1 rounded-[var(--radius-pill)] border border-[var(--border)] bg-[var(--surface)] p-1">
+        {items.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              aria-current={item.active ? 'page' : undefined}
+              className={cn(
+                'inline-flex min-h-[var(--control-h)] items-center rounded-[var(--radius-pill)] px-4 text-sm',
+                item.active
+                  ? 'bg-[var(--text)] text-[var(--bg)]'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text)]',
+              )}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }

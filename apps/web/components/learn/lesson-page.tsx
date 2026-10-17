@@ -117,7 +117,11 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
           {
             value: 'quiz',
             label: t('quiz'),
-            content: guest ? invite('quiz') : data.quizId ? <StudentQuiz quizId={data.quizId} /> : null,
+            content: guest ? (
+              invite('quiz')
+            ) : data.quizId ? (
+              <StudentQuiz quizId={data.quizId} assignmentId={params.get('assignment') ?? undefined} />
+            ) : null,
           },
           {
             value: 'ai',

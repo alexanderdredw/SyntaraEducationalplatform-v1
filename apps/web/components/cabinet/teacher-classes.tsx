@@ -8,6 +8,7 @@ import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { useErrorText } from '../forms/form-parts';
+import { AppLink } from '../app-link';
 import { ClassRoster } from './class-roster';
 
 type TeacherClass = components['schemas']['TeacherClassDto'];
@@ -21,6 +22,7 @@ const KEY = ['teacher', 'classes'];
  */
 export function TeacherClasses({ timeZone }: { timeZone: string }) {
   const t = useTranslations('teacher.classes');
+  const ta = useTranslations('teacher.analytics');
   const tc = useTranslations('common');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
@@ -127,6 +129,12 @@ export function TeacherClasses({ timeZone }: { timeZone: string }) {
                 </Button>
                 <Button variant="secondary" onClick={() => void issue(cls)}>
                   {t('issueCode')}
+                </Button>
+                {/* REQ-TCH-AN-01: страницы класса — «Ростер», «Карта освоения», «Аналитика класса». */}
+                <Button variant="secondary" asChild>
+                  <AppLink href={`/teacher/classes/${cls.id}/analytics`} data-testid="class-analytics-link">
+                    {ta('open')}
+                  </AppLink>
                 </Button>
               </div>
               {openRoster === cls.id ? (

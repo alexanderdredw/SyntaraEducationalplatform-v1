@@ -1,8 +1,8 @@
 import { setRequestLocale } from 'next-intl/server';
-import { StubPage } from '@/components/public/stub-page';
+import { StudentProgress } from '@/components/learn/student-progress';
 
-/** Заглушка PH-24: раздел кабинета появится в следующих итерациях (раздел 12). */
+/** /learn/progress (8.4.6, U08): «Мои показатели». */
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale);
-  return <StubPage />;
+  return <StudentProgress timeZone={process.env.PLATFORM_TZ ?? 'Asia/Almaty'} />;
 }
