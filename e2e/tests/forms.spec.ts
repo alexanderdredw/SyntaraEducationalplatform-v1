@@ -51,7 +51,8 @@ test.describe('Формы (SM-FORM)', () => {
     await expect(form.getByRole('link', { name: ru.common.backHome })).toHaveAttribute('href', '/ru');
     await expect(form.getByRole('button', { name: sr.submit })).toHaveAttribute(
       'data-variant',
-      'primary-white',
+      // UX-02: главная кнопка публичных страниц — синяя.
+      'primary-blue',
     );
     if (!isMobile(page)) {
       // Регион и город, контактное лицо и телефон — в одной строке.

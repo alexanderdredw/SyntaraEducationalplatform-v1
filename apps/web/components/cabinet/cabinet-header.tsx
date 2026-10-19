@@ -83,7 +83,7 @@ export function CabinetHeader({
       <AppLink
         href="/"
         aria-label={ts('logoLabel')}
-        className="inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-[var(--radius-field)] text-xl"
+        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2.5 rounded-[var(--radius-field)] text-xl"
       >
         <BrandMark />
         {/* < 400 px — только знак: «Войти» и «Меню» помещаются в одну строку (REQ-GEN-SHELL-06). */}

@@ -656,8 +656,8 @@ AC-VIS-01 и регресс всех AC; REQ-NFR-SEC-01..07, DATA-01..03, PERF-0
 ### В работе — приведение интерфейса к эталонам (docs/UX_AI_TZ.md, 2026-10-19)
 - [x] Шаг 1–2: скрипт съёмки `e2e/scripts/ux-audit-shots.mjs`, аудит `docs/UX_AUDIT.md` (коммит `0f612c2`).
 - [x] Шаг 3–4, часть A: токены, хедер и боковая панель, футер, вкладки, аккордеон, урок, квиз, чат ИИ, каталог, показатели, достижения, кабинет учителя T04–T10; склейки «после» — `docs/media/ux-audit/*-compare-after.png`.
-- [ ] Шаг 5, часть B: `docs/UX_TZ.md` UX-01…UX-09 (UX-01 хедер — сделан вместе с частью A).
-- [ ] Шаг 6: lint, typecheck, тесты, e2e, CI, отчёт.
+- [x] Шаг 5, часть B: `docs/UX_TZ.md` UX-01…UX-09 по правилам раздела 6 (коммит `7ae229e`); снимки — `docs/media/ux/after/` (`node e2e/scripts/ux-public-shots.mjs`); e2e `ux-public.spec.ts`.
+- [ ] Шаг 6: lint, typecheck, unit/integration (403) — зелёные; e2e на prod-сборке и CI — см. отчёт; ждём приёмки владельца и ответов на вопросы `docs/UX_AUDIT.md`.
 Как продолжить после обрыва: стек — `pnpm infra:up`, `pnpm db:seed --set=visual`, api с `AI_TUTOR_FIXTURE=true`, web с `S3_ENDPOINT` из .env; съёмка — `node e2e/scripts/ux-audit-shots.mjs after` (из папки e2e); открытые пункты — `docs/UX_AUDIT.md`, раздел «Итог после исправлений».
 
 Итерация 10 принята, доработки выполнены; итерация 8.5 — только по команде владельца. Части итерации 10:

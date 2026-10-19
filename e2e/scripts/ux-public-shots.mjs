@@ -1,3 +1,4 @@
+/* global document -- код внутри page.evaluate выполняется в браузере */
 // Скриншоты «после» части B (docs/UX_TZ.md, UX-01…UX-09): docs/media/ux/after/UX-NN-*.png.
 // Запуск: node e2e/scripts/ux-public-shots.mjs [baseURL]. Нужны web, api и seed `demo`. Гость, тёмная тема, RU.
 import { mkdirSync } from 'node:fs';
@@ -12,7 +13,11 @@ const log = (...a) => process.stdout.write(`${a.join(' ')}\n`);
 const NO_MOTION = `*,*::before,*::after{transition:none!important;animation:none!important}nextjs-portal{display:none!important}`;
 
 const browser = await chromium.launch();
-async function shot(name, path, { width = 1440, height = 900, theme = 'dark', fullPage = false, testId } = {}) {
+async function shot(
+  name,
+  path,
+  { width = 1440, height = 900, theme = 'dark', fullPage = false, testId } = {},
+) {
   const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
   await context.addCookies([
     { name: 'consent', value: 'necessary', url: base },

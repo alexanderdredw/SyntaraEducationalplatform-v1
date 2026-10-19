@@ -1,3 +1,4 @@
+/* global document, window -- код внутри page.evaluate выполняется в браузере */
 // Съёмка экранов ученика и учителя для сверки с эталонами docs/media (docs/UX_AI_TZ.md, шаг 1.3).
 // Запуск: node e2e/scripts/ux-audit-shots.mjs [suffix] [baseURL] [--only=U04,T05]
 //   suffix: current (по умолчанию) → <ID>-current.png и <ID>-compare.png; after → <ID>-after.png и <ID>-compare-after.png.
