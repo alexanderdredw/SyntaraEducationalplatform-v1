@@ -15,7 +15,7 @@ export default async function Layout({
   setRequestLocale(locale);
   await requireOwned(`/api/teacher/classes/${encodeURIComponent(id)}/roster`);
   return (
-    <section className="mx-auto flex max-w-[760px] flex-col gap-6 px-4 py-8">
+    <section className="mx-auto flex max-w-[792px] flex-col gap-6 px-4 py-8">
       <ClassTabs classId={id} />
       {children}
     </section>

@@ -1,3 +1,4 @@
+import { BrandMark } from '@syntara/ui';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookOpen, LineChart, School } from 'lucide-react';
 import { type Locale } from '@syntara/shared';
@@ -27,35 +28,45 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
   return (
     <>
       {/* REQ-PUB-HOME-02 */}
-      <section data-testid="home-hero" className="relative overflow-hidden px-4 py-16 md:py-24">
+      <section data-testid="home-hero" className="relative overflow-hidden px-4 py-12 md:pb-20 md:pt-14">
+        {/* Декоративная сеть тонких линий (эталон U01), только SVG; скрыта в «Экономии трафика». */}
         <svg
           aria-hidden="true"
           data-decorative
-          className="pointer-events-none absolute -right-24 -top-24 size-[480px] text-[var(--accent)] opacity-20"
-          viewBox="0 0 200 200"
+          className="pointer-events-none absolute inset-0 h-full w-full text-[var(--text)] opacity-[0.28]"
+          viewBox="0 0 1300 820"
+          preserveAspectRatio="xMidYMid slice"
           fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
         >
-          <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="1" />
-          <circle cx="100" cy="100" r="50" stroke="currentColor" strokeWidth="1" />
-          <path
-            d="M20 100h160M100 20v160M43 43l114 114M157 43L43 157"
-            stroke="currentColor"
-            strokeWidth="0.5"
-          />
+          <path d="M270 70 L370 40 L450 105 L380 260 L265 195 Z M370 40 L380 260 M265 195 L450 105" />
+          <path d="M450 105 L530 75 L560 210 L470 330 L380 260 M560 210 L640 300 L700 520 L560 470 L470 330" />
+          <path d="M640 300 L760 380 L830 560 L700 520 M760 380 L900 330 L940 470 L830 560" />
+          <path d="M690 85 L760 60 L900 0 L960 140 L1020 190 L1020 260 L960 140 M690 85 L760 105 L900 0" />
+          <path d="M1220 30 L1170 60 M1060 560 L1150 500 L1200 610 M1150 500 L1080 690" />
+          <path d="M80 650 L130 690 M420 790 L490 700 L550 760 M490 700 L610 770 L650 820" />
         </svg>
         <div className="relative mx-auto max-w-[1240px]">
-          <p className="text-xs font-semibold tracking-[0.2em] text-[var(--accent)]">{t('hero.label')}</p>
-          <h1 className="mt-4 text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-7xl lg:text-[96px]">
+          {/* Знак и слово Syntara над меткой (эталон U01); декоративные — заголовок страницы ниже. */}
+          <p aria-hidden="true" className="mb-6 flex items-center gap-3 text-[26px] font-bold">
+            <BrandMark />
+            Syntara
+          </p>
+          <p className="text-[15px] font-bold tracking-[0.2em] text-[var(--text-muted)]">{t('hero.label')}</p>
+          <h1 className="mt-6 text-5xl font-bold leading-[1.08] tracking-tight sm:text-7xl lg:text-[104px]">
             <span className="block">{t('hero.line1')}</span>
             <span className="block">{t('hero.line2')}</span>
-            <span className="block text-[var(--accent)]" data-testid="hero-accent-line">
+            <span className="block text-[var(--accent-bright)]" data-testid="hero-accent-line">
               {t('hero.line3')}
             </span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-[var(--text-muted)] md:text-xl">{t('hero.text')}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <p className="mt-12 max-w-[470px] text-lg leading-relaxed text-[var(--text-muted)]">
+            {t('hero.text')}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-4">
             {student ? (
-              <LinkButton href={continueHref} testId="hero-continue">
+              <LinkButton href={continueHref} testId="hero-continue" size="lg">
                 {t('hero.continue')}
               </LinkButton>
             ) : (

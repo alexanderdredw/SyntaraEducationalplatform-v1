@@ -4,12 +4,19 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { Progress } from 'radix-ui';
 import { cn } from './cn';
 
-/** Рамка карточки: обычная, акцентная (выделенный блок) или красная («Требуют внимания», T10). */
-export type CardTone = 'default' | 'accent' | 'danger';
+/**
+ * Рамка карточки: обычная; акцентная — полупрозрачная синяя рамка и лёгкий синий фон (U08 «Что делать дальше»,
+ * полученный бейдж U10); «выноска» — синяя полоса слева (U08: строка дат, «Начни отсюда»);
+ * красная — «Требуют внимания» (T10).
+ */
+export type CardTone = 'default' | 'accent' | 'callout' | 'danger';
 const cardTones: Record<CardTone, string> = {
   default: 'border-[var(--border)]',
-  accent: 'border-[var(--accent)]',
-  danger: 'border-[var(--danger)]',
+  accent:
+    'border-[color-mix(in_srgb,var(--accent)_55%,transparent)] bg-[color-mix(in_srgb,var(--accent)_6%,var(--surface))]',
+  callout:
+    'border-[var(--border)] border-l-[3px] border-l-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_7%,var(--surface))]',
+  danger: 'border-[color-mix(in_srgb,var(--danger)_60%,transparent)]',
 };
 
 /** Card (3.2): поверхность `--surface`, радиус `--radius-card`. */
@@ -20,7 +27,8 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & 
         ref={ref}
         data-tone={tone === 'default' ? undefined : tone}
         className={cn(
-          'rounded-[var(--radius-card)] border bg-[var(--surface)] p-5 shadow-card',
+          'rounded-[var(--radius-card)] border p-5 shadow-card',
+          tone === 'default' || tone === 'danger' ? 'bg-[var(--surface)]' : null,
           cardTones[tone],
           className,
         )}
@@ -83,7 +91,7 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 py-10 text-center text-[var(--text-muted)]">
+    <div className="flex flex-col items-center gap-3 py-6 text-center text-[var(--text-muted)]">
       {icon ? <span aria-hidden="true">{icon}</span> : null}
       <p className="text-sm">{title}</p>
       {children}

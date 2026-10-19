@@ -183,7 +183,9 @@ export function QuestionForm({
         data-correct={correct}
         className={cn(
           'flex items-center gap-3 rounded-[var(--radius-field)] border p-2',
-          correct ? 'border-[var(--success)]' : 'border-transparent',
+          correct
+            ? 'border-[color-mix(in_srgb,var(--success)_60%,transparent)] bg-[color-mix(in_srgb,var(--success)_6%,transparent)]'
+            : 'border-transparent',
         )}
       >
         <input
@@ -202,7 +204,7 @@ export function QuestionForm({
   return (
     <form noValidate onSubmit={submit} className="flex flex-col gap-5" data-testid="question-form">
       <div className="flex flex-col gap-2">
-        <span className="text-sm" id={`${prefix}-type`}>
+        <span className="text-[13px] text-[var(--text-muted)]" id={`${prefix}-type`}>
           {t('type')}
         </span>
         <SegmentedControl
@@ -220,7 +222,7 @@ export function QuestionForm({
         />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-sm">{t('difficulty')}</span>
+        <span className="text-[13px] text-[var(--text-muted)]">{t('difficulty')}</span>
         <SegmentedControl
           label={t('difficulty')}
           value={values.difficulty}
@@ -246,7 +248,7 @@ export function QuestionForm({
 
         {values.type === 'single_choice' ? (
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-2 text-sm">{t('options')}</legend>
+            <legend className="mb-2 text-[13px] text-[var(--text-muted)]">{t('options')}</legend>
             {options.fields.map((f, i) =>
               correctRow(
                 i,
@@ -290,7 +292,7 @@ export function QuestionForm({
 
         {values.type === 'true_false' ? (
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-2 text-sm">{t('options')}</legend>
+            <legend className="mb-2 text-[13px] text-[var(--text-muted)]">{t('options')}</legend>
             {correctRow(0, <span className="py-2">{t('optionTrue')}</span>, 'true')}
             {correctRow(1, <span className="py-2">{t('optionFalse')}</span>, 'false')}
           </fieldset>

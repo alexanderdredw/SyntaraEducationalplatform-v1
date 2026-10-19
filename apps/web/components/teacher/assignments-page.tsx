@@ -95,14 +95,14 @@ export function TeacherAssignmentsPage({ timeZone }: { timeZone: string }) {
   const noClasses = classes.data?.length === 0;
   return (
     <section
-      className="mx-auto flex max-w-[760px] flex-col gap-8 px-4 py-8"
+      className="mx-auto flex max-w-[792px] flex-col gap-8 px-4 py-8"
       data-testid="teacher-assignments"
     >
       <h1 className="text-cabinet-title font-bold">{t('title')}</h1>
 
       <Card className="flex flex-col gap-4" data-testid="assignment-form">
         <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">{t('issueTitle')}</h2>
+          <h2 className="text-base font-bold">{t('issueTitle')}</h2>
           <p className="text-sm text-[var(--text-muted)]">{t('issueText')}</p>
         </div>
         {noClasses ? (
@@ -174,7 +174,7 @@ export function TeacherAssignmentsPage({ timeZone }: { timeZone: string }) {
       </Card>
 
       <section className="flex flex-col gap-3" aria-labelledby="assignments-issued">
-        <h2 id="assignments-issued" className="text-lg font-semibold">
+        <h2 id="assignments-issued" className="text-base font-bold">
           {t('issued')}
         </h2>
         {list.isPending ? <Skeleton className="h-20" /> : null}
@@ -191,12 +191,12 @@ export function TeacherAssignmentsPage({ timeZone }: { timeZone: string }) {
                 data-testid="assignment-card"
               >
                 <div className="flex flex-col gap-1">
-                  <p className="font-semibold">{a.topicTitle}</p>
+                  <p>{a.topicTitle}</p>
                   <p className="text-sm text-[var(--text-muted)]">
                     {t('classDue', { className: a.className, due: formatDateTime(a.dueAt, timeZone) })}
                   </p>
                 </div>
-                <p className="text-sm text-[var(--text-muted)]" data-testid="assignment-counts">
+                <p className="text-xs text-[var(--text-muted)]" data-testid="assignment-counts">
                   {t('counts', a.counts)}
                 </p>
               </Card>
@@ -206,7 +206,7 @@ export function TeacherAssignmentsPage({ timeZone }: { timeZone: string }) {
       </section>
 
       <section className="flex flex-col gap-3" aria-labelledby="assignments-review">
-        <h2 id="assignments-review" className="text-lg font-semibold">
+        <h2 id="assignments-review" className="text-base font-bold">
           {t('review')}
         </h2>
         <Card data-testid="review-queue">

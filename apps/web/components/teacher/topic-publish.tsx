@@ -104,7 +104,7 @@ export function PublishPanel({
   return (
     <section aria-labelledby="publication-title" className="flex flex-col gap-3" data-testid="publish-panel">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 id="publication-title" className="font-semibold">
+        <h2 id="publication-title" className="text-[15px] font-medium">
           {t('publication')}
         </h2>
         <StatusPill tone={published ? 'success' : 'neutral'}>
@@ -118,7 +118,7 @@ export function PublishPanel({
         <Button variant="publish" disabled={busy} onClick={() => void publish()} data-testid="publish">
           {t('publish')}
         </Button>
-        <Button variant="text" disabled={busy} onClick={() => void showVersions()}>
+        <Button variant="quiet" disabled={busy} onClick={() => void showVersions()}>
           {t('history')}
         </Button>
         {published ? (
@@ -145,8 +145,8 @@ export function PublishPanel({
         {message?.text}
       </p>
       <div>
-        <Button asChild variant="secondary">
-          <AppLink href={`/teacher/topics/${topic.id}/quiz`}>
+        <Button asChild variant="secondary" shape="rounded">
+          <AppLink href={`/teacher/topics/${topic.id}/quiz`} className="text-[var(--text-muted)]">
             <FileText aria-hidden="true" className="size-4" />
             {t('editQuiz')}
             <ArrowRight aria-hidden="true" className="size-4" />

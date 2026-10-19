@@ -99,7 +99,7 @@ export const Textarea = forwardRef<
   return (
     <textarea
       ref={ref}
-      className={cn(fieldBaseClass, compact ? 'min-h-20' : 'min-h-24', className)}
+      className={cn(fieldBaseClass, compact ? 'min-h-20' : 'min-h-20 py-3', className)}
       {...props}
     />
   );

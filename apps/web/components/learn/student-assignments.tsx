@@ -27,7 +27,7 @@ export function StudentAssignments({ timeZone }: { timeZone: string }) {
   });
   return (
     <section
-      className="mx-auto flex max-w-[760px] flex-col gap-6 px-4 py-8"
+      className="mx-auto flex max-w-[792px] flex-col gap-6 px-4 py-8"
       data-testid="student-assignments"
     >
       <h1 className="text-cabinet-title font-bold">{t('title')}</h1>

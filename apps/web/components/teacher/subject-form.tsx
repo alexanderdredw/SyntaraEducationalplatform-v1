@@ -101,7 +101,7 @@ export function SubjectForm({
 
   const translationsError = errors.translations?.message;
   return (
-    <Card className="p-5 sm:p-6">
+    <Card>
       <form noValidate onSubmit={submit} className="flex flex-col gap-5" data-testid="subject-form">
         <div>
           <LanguageTabs value={lang} onChange={setLang} filled={filled} label={t('language')} />
@@ -132,7 +132,7 @@ export function SubjectForm({
         >
           {t('hint')}
         </p>
-        <div className="rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] p-4">
+        <div className="rounded-[14px] border border-[var(--border)] bg-[var(--capsule)] px-4 py-3">
           <Checkbox
             label={t('catalog')}
             description={t('catalogHint')}

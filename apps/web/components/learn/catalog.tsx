@@ -39,12 +39,12 @@ function CatalogCard({
   soon?: boolean;
 }) {
   const className =
-    'flex h-full flex-col gap-2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-card';
+    'flex h-full min-h-[122px] flex-col gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-6 py-5';
   const body = (
     <>
       <span className="flex items-start justify-between gap-3">
         {/* Пользовательские названия не переводятся (REQ-ST-CAT-02). */}
-        <span className="text-cabinet-block font-semibold">{title}</span>
+        <span className="pt-2 text-cabinet-block font-semibold">{title}</span>
         <Pill className={soon ? 'shrink-0 text-[var(--text-muted)]' : 'shrink-0'}>{status}</Pill>
       </span>
       {description ? <span className="text-sm text-[var(--text-muted)]">{description}</span> : null}
@@ -128,7 +128,7 @@ export function StudentCatalog() {
 
 function PageShell({ back, title, children }: { back: string; title?: string; children: ReactNode }) {
   return (
-    <section className="mx-auto flex max-w-[1000px] flex-col gap-6 px-4 py-8">
+    <section className="mx-auto flex max-w-[1012px] flex-col gap-6 px-4 py-8">
       <AppLink
         href="/learn/subjects"
         className="inline-flex min-h-11 w-fit items-center text-sm text-[var(--text-muted)] hover:text-[var(--text)]"

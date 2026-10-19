@@ -195,7 +195,7 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
         title={savedTitle || t('newTitle')}
         back={{ href: `/teacher/subjects/${topic.data.subjectId}`, label: t('back') }}
       />
-      <Card className="p-5 sm:p-6">
+      <Card>
         <form
           noValidate
           className="flex flex-col gap-5"
@@ -204,7 +204,7 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
             void save();
           }}
         >
-          <div className="flex flex-col gap-2 rounded-[var(--radius-field)] border border-dashed border-[#8b5cf6]/60 bg-[var(--field)] p-4">
+          <div className="flex flex-col gap-2 rounded-[var(--radius-field)] border border-dashed border-[#8b5cf6]/60 bg-[color-mix(in_srgb,#8b5cf6_6%,var(--surface))] p-4">
             <div>
               <Button
                 variant="ai"

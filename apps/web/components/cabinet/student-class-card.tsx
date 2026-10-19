@@ -75,17 +75,17 @@ export function StudentClassCard() {
     return (
       <Card
         data-testid="student-class-card"
-        className="flex flex-wrap items-center justify-between gap-3 p-5"
+        className="flex flex-wrap items-center justify-between gap-3 px-4 py-4"
       >
         <div>
-          <p className="font-semibold">{t('inClass', { name: cls.className })}</p>
+          <p>{t('inClass', { name: cls.className })}</p>
           <p className="text-sm text-[var(--text-muted)]">
             {cls.schoolName
               ? t('teacherSchool', { teacher: cls.teacherName, school: cls.schoolName })
               : t('teacher', { teacher: cls.teacherName })}
           </p>
         </div>
-        <Button variant="secondary" onClick={() => setConfirmLeave(true)}>
+        <Button variant="secondary" size="sm" onClick={() => setConfirmLeave(true)}>
           {t('leave')}
         </Button>
         <Modal

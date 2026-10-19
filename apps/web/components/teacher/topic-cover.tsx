@@ -62,7 +62,7 @@ export function CoverPicker({
   const error = errorText(uploadError) ?? urlError;
   return (
     <fieldset className="flex flex-col gap-2" data-testid="topic-cover">
-      <legend className="mb-2 text-sm">{t('cover')}</legend>
+      <legend className="mb-2 text-[13px] text-[var(--text-muted)]">{t('cover')}</legend>
       <div className="flex flex-col gap-2 sm:flex-row">
         <input
           type="url"

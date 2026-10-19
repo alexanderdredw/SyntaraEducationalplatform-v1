@@ -99,7 +99,7 @@ export function SegmentedControl({
       }}
       aria-label={label}
       className={cn(
-        'inline-flex flex-wrap gap-1 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--capsule)] p-1',
+        'inline-flex w-fit max-w-full flex-wrap gap-1 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--capsule)] p-1',
         className,
       )}
     >

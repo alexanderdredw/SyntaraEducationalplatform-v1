@@ -70,7 +70,7 @@ export function MaterialsList({
 
   return (
     <fieldset className="flex flex-col gap-2" data-testid="topic-materials">
-      <legend className="mb-2 text-sm">{t('materials')}</legend>
+      <legend className="mb-2 text-[13px] text-[var(--text-muted)]">{t('materials')}</legend>
       <div>
         <Button variant="secondary" disabled={uploading} onClick={() => input.current?.click()}>
           {uploading ? t('uploading') : t('addFile')}

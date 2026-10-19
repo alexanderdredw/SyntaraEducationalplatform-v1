@@ -27,7 +27,7 @@ export function StudentAchievements() {
   const a = data.data;
   return (
     <section
-      className="mx-auto flex max-w-[760px] flex-col gap-6 px-4 py-8"
+      className="mx-auto flex max-w-[696px] flex-col gap-6 px-4 py-10"
       data-testid="student-achievements"
     >
       <h1 className="text-cabinet-title font-bold">{t('title')}</h1>
@@ -72,29 +72,34 @@ export function StudentAchievements() {
                 {t('earned', { earned: a.earnedCount, total: a.totalCount })}
               </p>
             </div>
-            <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {a.badges.map((b) => (
                 <li key={b.code}>
                   <Card
                     tone={b.earned ? 'accent' : 'default'}
-                    className="flex h-full flex-col items-center gap-2 p-4 text-center"
+                    className="flex h-full min-h-[180px] flex-col items-center gap-1.5 px-3 py-4 text-center"
                     data-testid="badge"
                     data-earned={b.earned}
                   >
                     {b.imageUrl ? (
-                      <img src={b.imageUrl} alt="" className="size-12" />
+                      <img src={b.imageUrl} alt="" className="size-14" />
                     ) : (
-                      <Award
+                      // TODO(OWNER): картинки бейджей (медали эталона U10) не предоставлены — значок в плитке.
+                      <span
                         aria-hidden="true"
                         className={
-                          b.earned ? 'size-12 text-[var(--accent)]' : 'size-12 text-[var(--text-muted)]'
+                          b.earned
+                            ? 'inline-flex size-14 items-center justify-center rounded-[14px] bg-[var(--accent-soft)] text-[var(--accent-bright)]'
+                            : 'inline-flex size-14 items-center justify-center rounded-full bg-[var(--field)] text-[var(--text-muted)]'
                         }
-                      />
+                      >
+                        <Award className="size-8" strokeWidth={1.5} />
+                      </span>
                     )}
-                    <p className="font-semibold">{b.title}</p>
-                    <p className="text-xs text-[var(--text-muted)]">{b.condition}</p>
+                    <p className="mt-1 text-[13px] font-semibold leading-snug">{b.title}</p>
+                    <p className="text-[11px] leading-snug text-[var(--text-muted)]">{b.condition}</p>
                     {b.earned ? null : (
-                      <p className="mt-auto inline-flex items-center gap-1 text-xs text-[var(--text-muted)]">
+                      <p className="mt-1 inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
                         <Lock aria-hidden="true" className="size-3" />
                         {t('locked')}
                       </p>

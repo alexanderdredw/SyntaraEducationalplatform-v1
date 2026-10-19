@@ -77,8 +77,11 @@ export function InfoCard({
   );
 }
 
-const buttonBase =
-  'inline-flex min-h-[var(--control-h)] items-center justify-center rounded-[var(--radius-pill)] px-6 text-sm font-semibold active:scale-[0.98]';
+const buttonBase = 'inline-flex items-center justify-center rounded-[var(--radius-pill)] active:scale-[0.98]';
+const buttonSizes = {
+  md: 'min-h-[var(--control-h)] px-6 text-sm font-semibold',
+  lg: 'min-h-[60px] px-7 text-lg font-bold',
+};
 
 /** Ссылка-кнопка: белая (primary-white) или вторичная (3.2). */
 export function LinkButton({
@@ -86,11 +89,14 @@ export function LinkButton({
   children,
   variant = 'white',
   testId,
+  size = 'md',
 }: {
   href: string;
   children: ReactNode;
   variant?: 'white' | 'blue' | 'secondary' | 'text';
   testId?: string;
+  /** `lg` — крупная кнопка первого экрана («Продолжить учёбу →», эталон U01). */
+  size?: 'md' | 'lg';
 }) {
   const styles = {
     white: 'bg-white text-[#070707] shadow-card hover:bg-white/90',
@@ -100,7 +106,7 @@ export function LinkButton({
     text: 'px-0 text-[var(--accent)] underline-offset-4 hover:underline',
   }[variant];
   return (
-    <AppLink href={href} className={cn(buttonBase, styles)} data-testid={testId}>
+    <AppLink href={href} className={cn(buttonBase, buttonSizes[size], styles)} data-testid={testId}>
       {children}
     </AppLink>
   );

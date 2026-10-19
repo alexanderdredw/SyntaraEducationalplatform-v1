@@ -84,10 +84,10 @@ export function PublicHeader({
       <div className="ml-auto flex items-center gap-2 lg:ml-0">
         <Capsule className="hidden lg:flex">
           <LanguageSwitcher enabledLocales={enabledLocales} />
-          <span className="2xl:hidden">
+          <span className="xl:hidden">
             <DataSaverToggle compact />
           </span>
-          <span className="hidden 2xl:inline-flex">
+          <span className="hidden xl:inline-flex">
             <DataSaverToggle />
           </span>
           <ThemeToggle />

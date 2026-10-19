@@ -11,7 +11,7 @@ export default async function StudentSubjectsPage({ params }: { params: Promise<
   // Гость видит каталог базовых уроков без карточки класса (BR-VIS-04).
   const guest = !(await getMe((await cookies()).toString()));
   return (
-    <section className="mx-auto flex max-w-[1000px] flex-col gap-6 px-4 py-8">
+    <section className="mx-auto flex max-w-[1012px] flex-col gap-6 px-4 py-8">
       <h1 className="text-cabinet-title font-bold">{t('student.subjects.title')}</h1>
       {guest ? null : <StudentClassCard />}
       <StudentCatalog />

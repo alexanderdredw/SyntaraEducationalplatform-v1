@@ -132,11 +132,11 @@ export function SubjectPage({ id }: { id: string }) {
             return (
               <li key={cls.id}>
                 <Card
-                  className="flex flex-wrap items-center justify-between gap-3 p-4"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] px-3 py-2.5"
                   data-testid="access-class"
                 >
                   <span className="flex flex-col">
-                    <span className="font-medium">{cls.name}</span>
+                    <span>{cls.name}</span>
                     <span className="text-xs text-[var(--text-muted)]">
                       {t('students', { count: cls.studentsCount })}
                     </span>
@@ -145,7 +145,8 @@ export function SubjectPage({ id }: { id: string }) {
                     <span className="flex items-center gap-2">
                       <StatusPill tone="success">{t('granted')}</StatusPill>
                       <Button
-                        variant="text"
+                        variant="quiet"
+                        size="sm"
                         disabled={busy === cls.id}
                         onClick={() => void access(cls.id, false)}
                       >
@@ -153,7 +154,7 @@ export function SubjectPage({ id }: { id: string }) {
                       </Button>
                     </span>
                   ) : (
-                    <Button disabled={busy === cls.id} onClick={() => void access(cls.id, true)}>
+                    <Button size="sm" disabled={busy === cls.id} onClick={() => void access(cls.id, true)}>
                       {t('grant')}
                     </Button>
                   )}
@@ -184,7 +185,7 @@ export function SubjectPage({ id }: { id: string }) {
                 <AppLink
                   href={`/teacher/topics/${topic.id}`}
                   data-testid="subject-topic"
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card hover:border-[var(--border-strong)]"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 hover:border-[var(--border-strong)]"
                 >
                   <span className="flex flex-col">
                     <span className="text-xs text-[var(--text-muted)]">
