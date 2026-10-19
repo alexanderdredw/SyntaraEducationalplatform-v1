@@ -933,6 +933,10 @@
     "teacher.mastery.student": "needs_review",
     "teacher.mastery.caption": "needs_review",
     "teacher.mastery.legend": "needs_review",
-    "teacher.mastery.withPercent": "needs_review"
+    "teacher.mastery.withPercent": "needs_review",
+    "shell.dataSaver.label": "needs_review",
+    "shell.dataSaver.stateOff": "needs_review",
+    "shell.dataSaver.stateOn": "needs_review",
+    "teacher.lesson.nextLabel": "needs_review"
   }
 }

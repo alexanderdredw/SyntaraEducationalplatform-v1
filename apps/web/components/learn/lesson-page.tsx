@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { localDate } from '@syntara/shared';
+import { BookOpen, MessageCircle, PencilLine } from 'lucide-react';
 import { Pill, Skeleton, Tabs } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../lesson/lesson-view';
@@ -70,7 +71,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
 
   if (!lesson.data) {
     return (
-      <section className="mx-auto flex max-w-[982px] flex-col gap-4 px-4 py-8">
+      <section className="mx-auto flex max-w-[1012px] flex-col gap-4 px-4 py-8">
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="h-64" />
       </section>
@@ -93,7 +94,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
   return (
     <article
       lang={data.locale}
-      className="mx-auto flex max-w-[982px] flex-col gap-6 px-4 py-8"
+      className="mx-auto flex max-w-[1012px] flex-col gap-6 px-4 py-8"
       data-testid="lesson-page"
     >
       <LessonHeader lesson={data} level={1} subjectHref={`/learn/subjects/${data.subject.id}`} />
@@ -113,10 +114,16 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
         value={tab}
         onValueChange={select}
         items={[
-          { value: 'overview', label: t('overview'), content: <LessonOverview lesson={data} /> },
+          {
+            value: 'overview',
+            label: t('overview'),
+            icon: <BookOpen />,
+            content: <LessonOverview lesson={data} />,
+          },
           {
             value: 'quiz',
             label: t('quiz'),
+            icon: <PencilLine />,
             content: guest ? (
               invite('quiz')
             ) : data.quizId ? (
@@ -126,6 +133,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
           {
             value: 'ai',
             label: t('ai'),
+            icon: <MessageCircle />,
             // Учебный ИИ по теме урока (8.4.5, REQ-ST-AI-01..02); гостю — приглашение войти.
             content: guest ? (
               invite('ai')
@@ -140,7 +148,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
           },
         ]}
       />
-      <div className="border-t border-[var(--border)] pt-6">
+      <div className="mt-6 border-t border-[var(--border)] pt-6">
         <NextTopicCard lesson={data} href={data.next ? `/learn/topics/${data.next.id}` : undefined} />
       </div>
     </article>

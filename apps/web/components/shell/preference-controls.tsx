@@ -4,7 +4,7 @@ import { useSyncExternalStore } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
-import { Check, ChevronDown, Gauge, Languages, Moon, Sun } from 'lucide-react';
+import { ChevronDown, Globe, Moon, Sun, Wifi } from 'lucide-react';
 import { LOCALES, type Locale } from '@syntara/shared';
 import { cn } from '@syntara/ui';
 import { COOKIE, writeCookie } from '@/lib/preferences';
@@ -25,8 +25,13 @@ function useCurrentTheme(): 'light' | 'dark' {
   );
 }
 
-const controlClass =
-  'inline-flex min-h-[var(--control-h)] min-w-11 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border)] px-3 text-sm text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]';
+/**
+ * Капсула внутри общей группы хедера (UX-01, эталоны U01–T10): 36 px с невидимой зоной нажатия 44 px
+ * (REQ-GEN-SHELL-07), своя тонкая рамка на фоне группы.
+ */
+export const capsuleControlClass =
+  "relative inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--chrome)] px-3 text-[13px] text-[var(--text)] after:absolute after:inset-x-0 after:-inset-y-1 after:content-[''] hover:border-[var(--border-strong)] hover:bg-[var(--field)]";
+const controlClass = capsuleControlClass;
 
 /**
  * Переключатель языка (REQ-GEN-PREF-01/-02): клиентская навигация на тот же путь с другим префиксом,
@@ -53,15 +58,15 @@ export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly 
         className={controlClass}
         aria-label={`${ts('language')}: ${t(`names.${locale}`)}`}
       >
-        <Languages aria-hidden="true" className="size-4 text-[var(--accent)]" />
-        <span>{t(locale)}</span>
-        <ChevronDown aria-hidden="true" className="size-3" />
+        <Globe aria-hidden="true" className="size-4 text-[var(--text-muted)]" />
+        <span className="font-semibold">{t(locale)}</span>
+        <ChevronDown aria-hidden="true" className="size-3 text-[var(--text-muted)]" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           align="end"
           sideOffset={6}
-          className="z-50 min-w-44 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--surface)] p-1 text-[var(--text)] shadow-popover"
+          className="z-50 min-w-44 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--capsule)] p-1 text-[var(--text)] shadow-popover"
         >
           {LOCALES.map((code) => {
             const enabled = enabledLocales.includes(code);
@@ -71,14 +76,24 @@ export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly 
                 disabled={!enabled}
                 onSelect={() => switchTo(code)}
                 lang={code}
-                className="flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-item)] px-3 text-sm outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[highlighted]:bg-[var(--field)]"
+                aria-current={code === locale ? 'true' : undefined}
+                className={cn(
+                  'group flex min-h-11 cursor-pointer items-center gap-3 rounded-[var(--radius-item)] px-3 text-sm outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 data-[highlighted]:bg-[var(--field)]',
+                  // Выбранный язык — светло-синяя заливка (эталон U09).
+                  code === locale &&
+                    'bg-[var(--accent-bright)] text-[#050505] data-[highlighted]:bg-[var(--accent-bright)]',
+                )}
               >
-                <span className="w-6 font-semibold">{t(code)}</span>
-                <span className="flex-1">{t(`names.${code}`)}</span>
+                <span className="flex-1 text-[15px]">{t(`names.${code}`)}</span>
                 {!enabled ? <span className="text-xs text-[var(--text-muted)]">{t('soon')}</span> : null}
-                {code === locale ? (
-                  <Check aria-hidden="true" className="size-4 text-[var(--accent)]" />
-                ) : null}
+                <span
+                  className={cn(
+                    'text-[11px] font-semibold',
+                    code === locale ? 'text-[#050505]' : 'text-[var(--text-muted)]',
+                  )}
+                >
+                  {t(code)}
+                </span>
               </DropdownMenu.Item>
             );
           })}
@@ -103,15 +118,19 @@ export function ThemeToggle() {
       data-testid="theme-toggle"
     >
       {current === 'dark' ? (
-        <Sun aria-hidden="true" className="size-4 text-[var(--accent)]" />
+        <Sun aria-hidden="true" className="size-4 text-[var(--text-muted)]" />
       ) : (
-        <Moon aria-hidden="true" className="size-4 text-[var(--accent)]" />
+        <Moon aria-hidden="true" className="size-4 text-[var(--text-muted)]" />
       )}
     </button>
   );
 }
 
-/** Экономия трафика (REQ-GEN-PREF-04): подпись «Экономия трафика выключена/включена». */
+/**
+ * Экономия трафика (REQ-GEN-PREF-04): подпись «Экономия трафика» и статус «выключена/включена» мелким
+ * приглушённым текстом (UX-01, эталоны U01–T10); доступное имя — полный текст «Экономия трафика выключена».
+ * `compact` — только значок (узкие экраны).
+ */
 export function DataSaverToggle({ compact = false }: { compact?: boolean }) {
   const t = useTranslations('shell.dataSaver');
   const { dataSaver, setDataSaver } = usePreferences();
@@ -122,12 +141,19 @@ export function DataSaverToggle({ compact = false }: { compact?: boolean }) {
       className={cn(controlClass, dataSaver && 'border-[var(--accent)]')}
       onClick={() => setDataSaver(!dataSaver)}
       aria-pressed={dataSaver}
-      aria-label={compact ? label : undefined}
+      aria-label={label}
       title={compact ? label : undefined}
       data-testid="data-saver-toggle"
     >
-      <Gauge aria-hidden="true" className="size-4 text-[var(--accent)]" />
-      {compact ? null : <span className="text-xs">{label}</span>}
+      <Wifi aria-hidden="true" className="size-4 text-[var(--text-muted)]" />
+      {compact ? null : (
+        <span aria-hidden="true" className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+          {t('label')}
+          <span className="text-[11px] text-[var(--text-muted)]">
+            {dataSaver ? t('stateOn') : t('stateOff')}
+          </span>
+        </span>
+      )}
     </button>
   );
 }

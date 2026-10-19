@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { BrandMark } from '@syntara/ui';
 import { AppLink } from '../app-link';
 
 /**
@@ -13,11 +14,12 @@ export async function SiteFooter({
   cabinetHref?: string;
 }) {
   const t = await getTranslations();
-  const linkClass = 'inline-flex min-h-11 items-center text-white/85 hover:text-white hover:underline';
+  const linkClass =
+    'inline-flex min-h-11 items-center text-[15px] text-white/90 hover:text-white hover:underline';
   const column = (title: string, links: Array<[string, string]>) => (
     <nav aria-label={title}>
-      <h2 className="text-xs font-semibold tracking-widest text-white/70">{title}</h2>
-      <ul className="mt-3">
+      <h2 className="text-xs font-semibold tracking-[0.18em] text-white/75">{title}</h2>
+      <ul className="mt-2">
         {links.map(([href, label]) => (
           <li key={href}>
             <AppLink href={href} className={linkClass}>
@@ -31,16 +33,19 @@ export async function SiteFooter({
 
   return (
     <footer data-testid="site-footer" className="bg-[linear-gradient(160deg,#1765e8,#0b3a91)] text-white">
-      <div className="mx-auto grid max-w-[1240px] gap-8 px-4 py-12 md:grid-cols-4">
+      <div className="mx-auto grid max-w-[1140px] gap-8 px-4 pb-12 pt-20 md:grid-cols-[2fr_1fr_1fr_1.3fr] md:px-8">
         <div>
-          <p className="text-xl font-bold">Syntara</p>
-          <p className="mt-3 text-sm text-white/85">{t('footer.tagline')}</p>
+          <p className="flex items-center gap-2 text-xl font-bold">
+            <BrandMark size="sm" />
+            Syntara
+          </p>
+          <p className="mt-3 max-w-[320px] text-[15px] text-white/90">{t('footer.tagline')}</p>
           {supportEmail ? (
             <a href={`mailto:${supportEmail}`} className={linkClass}>
               {supportEmail}
             </a>
           ) : null}
-          <p className="mt-2 text-sm text-white/85">{t('footer.languages')}</p>
+          <p className="mt-2 text-xs tracking-[0.18em] text-white/75">{t('footer.languages')}</p>
         </div>
         {column(t('footer.product'), [
           ['/', t('shell.nav.home')],

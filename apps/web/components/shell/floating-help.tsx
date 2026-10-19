@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Popover } from 'radix-ui';
-import { CircleHelp, Lightbulb, MessageCircle, X } from 'lucide-react';
+import { Lightbulb, MessageCircle, X } from 'lucide-react';
 import { FloatingHelp as FloatingHelpFrame } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { AppLink } from '../app-link';
@@ -31,9 +31,12 @@ export function FloatingHelp({
       <Popover.Root>
         <Popover.Trigger
           aria-label={t('open')}
-          className={`${round} border border-[var(--border)] bg-[var(--surface)] text-[var(--text)]`}
+          className={`${round} border border-[var(--border)] bg-[var(--chrome)] text-[var(--text)]`}
         >
-          <CircleHelp aria-hidden="true" className="size-5" />
+          {/* Знак «?» — как на эталонах U01–T10. */}
+          <span aria-hidden="true" className="text-lg font-bold leading-none">
+            ?
+          </span>
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
@@ -79,7 +82,7 @@ export function FloatingHelp({
           <Popover.Trigger
             aria-label={tc('cabinet.lamp')}
             data-testid="cabinet-lamp"
-            className={`${round} border border-[var(--border)] bg-[var(--surface)] text-[var(--warning)]`}
+            className={`${round} border border-[color-mix(in_srgb,var(--warning)_55%,transparent)] bg-[var(--chrome)] text-[var(--warning)] shadow-[0_0_14px_color-mix(in_srgb,var(--warning)_25%,transparent)]`}
           >
             <Lightbulb aria-hidden="true" className="size-5" />
           </Popover.Trigger>
@@ -98,7 +101,7 @@ export function FloatingHelp({
       <AppLink
         href="/ai"
         aria-label={t('assistant')}
-        className={`${round} bg-[var(--accent-strong)] text-white`}
+        className={`${round} bg-[var(--accent-strong)] text-white shadow-[0_0_18px_color-mix(in_srgb,var(--accent)_55%,transparent)]`}
       >
         <MessageCircle aria-hidden="true" className="size-5" />
       </AppLink>

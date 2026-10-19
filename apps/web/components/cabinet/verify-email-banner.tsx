@@ -19,7 +19,7 @@ export function VerifyEmailBanner() {
   return (
     <div
       data-testid="verify-email-banner"
-      className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--field)] px-4 py-3 text-sm"
+      className="mx-4 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--field)] px-4 py-2 text-sm"
     >
       <span className="flex items-center gap-2">
         <MailWarning aria-hidden="true" className="size-4 text-[var(--warning)]" />

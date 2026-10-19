@@ -14,6 +14,9 @@
   --color-muted: var(--text-muted);
   --color-accent: var(--accent);
   --color-accent-teacher: var(--accent-teacher);
+  --color-accent-bright: var(--accent-bright);
+  --color-chrome: var(--chrome);
+  --color-capsule: var(--capsule);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-success: var(--success);
@@ -37,6 +40,7 @@
   --shadow-popover: var(--shadow-popover);
   --shadow-fab: var(--shadow-fab);
   --shadow-accent: var(--shadow-accent);
+  --shadow-chrome: var(--shadow-chrome);
   --ease-standard: var(--ease-standard);
 }
 

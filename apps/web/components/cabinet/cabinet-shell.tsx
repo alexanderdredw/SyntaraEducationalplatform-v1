@@ -27,14 +27,15 @@ export async function CabinetShell({
   return (
     <>
       <CabinetHeader me={me} role={role} stats={stats} enabledLocales={enabledLocales} />
-      {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}
-      <div className="md:flex">
-        <CabinetSidebar items={CABINET_NAV[role] ?? []} />
-        <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none">
+      <CabinetSidebar items={CABINET_NAV[role] ?? []} />
+      {/* Контент и футер — правее закреплённой боковой панели (эталоны T04, U13: футер начинается у её края). */}
+      <div className="md:pl-[var(--sidebar-w)]">
+        {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}
+        <main id="main" tabIndex={-1} className="min-w-0 outline-none">
           {children}
         </main>
+        <SiteFooter supportEmail={supportEmail} cabinetHref={HOME_BY_ROLE[role]} />
       </div>
-      <SiteFooter supportEmail={supportEmail} cabinetHref={HOME_BY_ROLE[role]} />
       <FloatingHelp supportEmail={supportEmail} lamp />
     </>
   );

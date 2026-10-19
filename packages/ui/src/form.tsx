@@ -65,7 +65,7 @@ export function Field({
     : children;
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm text-[var(--text)]">
+      <label htmlFor={id} className="text-[13px] text-[var(--text-muted)]">
         {label}
         {required ? <span aria-hidden="true"> *</span> : null}
       </label>
@@ -99,7 +99,7 @@ export const Textarea = forwardRef<
   return (
     <textarea
       ref={ref}
-      className={cn(fieldBaseClass, compact ? 'min-h-20' : 'min-h-32', className)}
+      className={cn(fieldBaseClass, compact ? 'min-h-20' : 'min-h-24', className)}
       {...props}
     />
   );

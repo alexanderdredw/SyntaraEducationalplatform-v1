@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from './cn';
 
 /**
@@ -6,14 +6,15 @@ import { cn } from './cn';
  * здесь только разметка и доступность. Все тексты приходят пропсами из i18n.
  */
 
-/** Header: закреплён сверху (REQ-GEN-SHELL-01). */
-export function Header({ logo, nav, actions }: { logo: ReactNode; nav?: ReactNode; actions?: ReactNode }) {
+/**
+ * Header: «плавающая» панель, закреплённая сверху (REQ-GEN-SHELL-01/-02, UX-01; эталоны U01–T10):
+ * отступ от краёв окна, скругление, фон --chrome, тонкая рамка.
+ */
+export function Header({ children, className, ...props }: HTMLAttributes<HTMLElement>) {
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur">
-      <div className="mx-auto flex min-h-16 max-w-[1600px] items-center gap-6 px-4">
-        <div className="shrink-0">{logo}</div>
-        {nav ? <div className="hidden flex-1 lg:block">{nav}</div> : <div className="flex-1" />}
-        {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+    <header className={cn('sticky top-0 z-30 px-2 pt-2.5 sm:px-4', className)} {...props}>
+      <div className="flex min-h-[58px] flex-wrap items-center gap-2 rounded-[18px] border border-[var(--chrome-border)] bg-[var(--chrome)] px-3 py-1.5 shadow-chrome">
+        {children}
       </div>
     </header>
   );
@@ -88,6 +89,50 @@ export function FloatingHelp({ children }: { children: ReactNode }) {
     <div
       className="fixed right-4 z-30 flex flex-col items-center gap-3"
       style={{ bottom: 'calc(var(--cookie-banner-h, 0px) + 16px)' }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Знак Syntara в плитке (эталоны U01–T10, UX-01). TODO(OWNER): файл знака (SVG) не предоставлен —
+ * пока плитка с буквой «S» в фирменном цвете. Декоративный: смысл передаёт слово рядом или aria-label ссылки.
+ */
+export function BrandMark({ size = 'md', className }: { size?: 'md' | 'sm' | 'lg'; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'inline-flex shrink-0 items-center justify-center border border-[color-mix(in_srgb,var(--accent)_45%,transparent)] bg-[linear-gradient(160deg,#2f7df0,#1240a8)] font-bold leading-none text-white',
+        size === 'md' && 'size-[34px] rounded-[10px] text-base',
+        size === 'sm' && 'size-7 rounded-[8px] text-sm',
+        size === 'lg' && 'size-11 rounded-[12px] text-xl',
+        className,
+      )}
+    >
+      S
+    </span>
+  );
+}
+
+/** Слово «Syntara»: окончание «ara» — фирменным синим (эталоны хедера). */
+export function Wordmark({ className }: { className?: string }) {
+  return (
+    <span className={cn('font-bold tracking-tight', className)}>
+      Synt<span className="text-[var(--accent-bright)]">ara</span>
+    </span>
+  );
+}
+
+/** Капсула-группа хедера (UX-01, эталоны U01–T10): общая рамка и фон для нескольких элементов управления. */
+export function Capsule({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--capsule)] p-1',
+        className,
+      )}
     >
       {children}
     </div>

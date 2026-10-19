@@ -1,5 +1,5 @@
 export { cn } from './cn';
-export { Button, type ButtonProps, type ButtonVariant } from './button';
+export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './button';
 export {
   Card,
   type CardTone,
@@ -36,5 +36,14 @@ export {
 } from './form';
 export { Modal, ToastProvider, Toast } from './overlay';
 export { Table, Th, Td } from './table';
-export { ChatLog, ChatMessage, ChatAvatar, StatusDot } from './chat';
-export { Header, Footer, Sidebar, type SidebarItem, FloatingHelp } from './layout';
+export { ChatLog, ChatMessage, ChatAvatar, StatusDot, ChatCard, ChatPanel } from './chat';
+export {
+  Header,
+  Footer,
+  Sidebar,
+  type SidebarItem,
+  FloatingHelp,
+  BrandMark,
+  Wordmark,
+  Capsule,
+} from './layout';

@@ -77,7 +77,10 @@
     },
     "dataSaver": {
       "off": "Data saver is off",
-      "on": "Data saver is on"
+      "on": "Data saver is on",
+      "label": "Data saver",
+      "stateOff": "off",
+      "stateOn": "on"
     }
   },
   "footer": {
@@ -875,7 +878,8 @@
       "questions": "{count, plural, one {# question} other {# questions}}",
       "next": "NEXT — {title} →",
       "materials": "Lesson materials",
-      "funFact": "Fun fact"
+      "funFact": "Fun fact",
+      "nextLabel": "Next"
     },
     "quiz": {
       "title": "Topic quiz",

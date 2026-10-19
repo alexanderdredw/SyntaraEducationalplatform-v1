@@ -27,12 +27,20 @@ export function AssistantPage() {
   };
 
   return (
-    <section className="mx-auto flex max-w-[1000px] flex-col gap-6 px-4 py-8" data-testid="assistant-page">
-      <header className="flex flex-col gap-3">
-        <h1 className="text-page-title font-bold">{t('title')}</h1>
-        <p className="text-cabinet-title font-bold text-[var(--text-muted)]">{t('subtitle')}</p>
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={start} data-testid="assistant-start">
+    <section className="mx-auto flex max-w-[1060px] flex-col gap-8 px-4 py-10" data-testid="assistant-page">
+      <header className="flex flex-col gap-4">
+        <h1 className="text-[clamp(2.5rem,1.75rem+2.5vw,3.75rem)] font-bold leading-tight tracking-tight">
+          {t('title')}
+        </h1>
+        <p className="text-[clamp(1.5rem,1.1rem+1.4vw,2.375rem)] font-bold leading-tight text-[var(--text-muted)]">
+          {t('subtitle')}
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Button
+            onClick={start}
+            className="min-h-12 px-8 text-base font-semibold"
+            data-testid="assistant-start"
+          >
             {t('start')}
           </Button>
           <Modal
@@ -41,7 +49,7 @@ export function AssistantPage() {
             title={t('how')}
             closeLabel={tc('close')}
             trigger={
-              <Button variant="secondary" data-testid="assistant-how">
+              <Button variant="secondary" className="min-h-12 px-8 text-base" data-testid="assistant-how">
                 {t('how')}
               </Button>
             }

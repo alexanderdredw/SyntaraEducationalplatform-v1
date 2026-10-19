@@ -10,19 +10,24 @@
 :root,
 [data-theme='dark'] {
   /* ---- Цвета (3.1) ---- */
-  --bg: #070707; /* фон страницы, диапазон #050505–#090909 */
-  --surface: #141518; /* карточки, диапазон #101010–#1B1D22 */
+  /* Значения сверены с эталонами T04–T10, U01–U13 пипеткой (docs/UX_AUDIT.md). */
+  --bg: #050505; /* фон страницы, диапазон #050505–#090909 */
+  --surface: #0e0e0f; /* карточки: на эталонах #0C0C0C–#0F0F0F */
   --surface-teacher: #0d0d0d;
-  --field: #1c1f25; /* поля ввода, #181818–#20242B */
+  --field: #141416; /* поля ввода: на эталонах #131313–#17191C */
   --text: #f1f2f4;
   --text-muted: #9a9ea7; /* #92969F–#A5A8B1 */
   --accent: #2f7df0; /* #1E63E4–#4A9CFA; кабинет: #1765E8 */
   --accent-teacher: #1765e8;
   /* Заливка кнопок с белым текстом: контраст ≥ 4.5:1 (REQ-NFR-A11Y-01); в пределах диапазона --accent из 3.1. */
   --accent-strong: #1e63e4;
-  --border: #292b30;
+  --border: #222225; /* рамки карточек и полей: на эталонах #1C1C1C–#262A2D */
   /* Рамка при наведении на поле, карточку-ссылку, контурную кнопку: на ступень светлее --border. */
-  --border-strong: #3b3e45;
+  --border-strong: #34363c;
+  /* Светлый акцент: третья строка заголовка главной, выбранный язык в меню (U01, U09). */
+  --accent-bright: #4a9cfa;
+  /* Подложка активного значка боковой панели и выделенных блоков (U08, «Начни отсюда»). */
+  --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
   --success: #22a45d; /* правильный ответ */
   /* Текст «Верно»/«Тема освоена!»: --success на тёмной поверхности даёт < 4.5:1 (REQ-NFR-A11Y-01). */
   --success-text: #4ade80;
@@ -33,7 +38,18 @@
   --ai-gradient: linear-gradient(90deg, #8b5cf6, #ec4899);
   /* Тонкие линии декоративного фона страниц входа, регистрации и /join (эталон student-auth.png). */
   --backdrop-line: rgb(255 255 255 / 0.07);
-  --sidebar: var(--surface-teacher);
+  /* «Плавающие» панели хедера и боковой панели кабинетов (эталоны U01–U13, T04–T10). */
+  --chrome: #0c0c0e;
+  --chrome-border: #1d1d20;
+  /* Капсула-группа настроек хедера и вложенные капсулы. */
+  --capsule: #151517;
+  --capsule-border: #232326;
+  --sidebar: #0b0b0d;
+  /* Чат с ИИ (U02, U06, U07): тёмно-синяя карточка и панель ленты. */
+  --chat-surface: linear-gradient(180deg, #1e232c, #0f131b);
+  --chat-panel: #1b2738;
+  --chat-panel-border: #2a3a52;
+  --chat-bubble: #1e222b;
 
   /* ---- Радиусы (3.1: карточки 16–24) ---- */
   --radius-card: 20px; /* карточки, модальные окна, всплывающие панели */
@@ -52,9 +68,9 @@
   --space-7: 64px;
 
   /* ---- Размеры элементов ---- */
-  --header-h: 64px;
+  --header-h: 68px; /* плавающий хедер 58 px + отступ сверху 10 px */
   --control-h: 44px; /* кнопки, вкладки, переключатели: зона нажатия ≥ 44×44 (REQ-GEN-SHELL-07) */
-  --field-h: 48px; /* поля ввода (эталон student-auth.png) */
+  --field-h: 44px; /* поля ввода (эталон student-auth.png: 44 px) */
   --sidebar-w: 70px; /* REQ-GEN-SHELL-03 */
   --illustration-w: 336px; /* иллюстрация раздела урока на десктопе; на мобильном — во всю ширину (решение владельца 2026-10-17) */
 
@@ -74,7 +90,8 @@
   --text-cabinet-note: 0.75rem;
 
   /* ---- Тени ---- */
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-card: none; /* карточки на эталонах без тени */
+  --shadow-chrome: 0 8px 24px rgb(0 0 0 / 0.35);
   --shadow-popover: 0 12px 32px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
   --shadow-fab: 0 6px 16px rgb(0 0 0 / 0.45);
   --shadow-accent: 0 2px 8px color-mix(in srgb, var(--accent-strong) 25%, transparent);
@@ -108,7 +125,17 @@
   --danger-text: #d13438;
   --success-text: #15803d;
   --backdrop-line: rgb(24 24 24 / 0.08);
+  --accent-bright: #1765e8;
+  --chrome: #ffffff;
+  --chrome-border: #e4e4e8;
+  --capsule: #f4f4f6;
+  --capsule-border: #e2e3e7;
+  --chat-surface: linear-gradient(180deg, #f3f6fb, #e9eef7);
+  --chat-panel: #ffffff;
+  --chat-panel-border: #d6deea;
+  --chat-bubble: #eef2f8;
   --shadow-card: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-chrome: 0 6px 20px rgb(16 24 40 / 0.08);
   --shadow-popover: 0 12px 32px rgb(16 24 40 / 0.12), 0 2px 6px rgb(16 24 40 / 0.08);
   --shadow-fab: 0 6px 16px rgb(16 24 40 / 0.16);
   color-scheme: light;

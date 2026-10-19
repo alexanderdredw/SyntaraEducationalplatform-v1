@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Award, Check, X } from 'lucide-react';
+import { Award, Check, X, Ellipsis } from 'lucide-react';
 import { Button, Card, cn, fieldClass, Pill, Skeleton } from '@syntara/ui';
 import { MASTERY_THRESHOLD } from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
@@ -199,7 +199,7 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
 
   return (
     <section className="flex flex-col gap-5" data-testid="student-quiz">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-6 pt-4">
         <div className="flex flex-wrap items-center gap-3">
           <ol aria-label={t('progressLabel')} className="flex items-center gap-1.5">
             {questions.map((q, i) => {
@@ -228,14 +228,17 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
               );
             })}
           </ol>
-          <Pill data-testid="quiz-difficulty">{t(`difficulty.${question.difficulty}`)}</Pill>
+          <Pill data-testid="quiz-difficulty" className="text-[var(--text-muted)]">
+            <Ellipsis aria-hidden="true" className="size-3.5" />
+            {t(`difficulty.${question.difficulty}`)}
+          </Pill>
         </div>
-        <Pill data-testid="quiz-progress">
+        <Pill data-testid="quiz-progress" className="text-[var(--text-muted)]">
           {t('progress', { index: index + 1, count: questions.length })}
         </Pill>
       </div>
 
-      <h2 className="text-cabinet-block font-semibold" id={`q-${question.id}`}>
+      <h2 className="pt-2 text-xl font-bold" id={`q-${question.id}`}>
         {question.text}
       </h2>
 
@@ -290,7 +293,7 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
                 }}
                 data-state={result ? (correct ? 'correct' : chosen ? 'wrong' : 'idle') : 'idle'}
                 className={cn(
-                  'flex min-h-12 items-center gap-3 rounded-[var(--radius-field)] border bg-[var(--surface)] px-4 py-2 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--accent)]',
+                  'flex min-h-[46px] items-center gap-3 rounded-[14px] border bg-[var(--surface)] px-4 py-2 text-[15px] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--accent)]',
                   result
                     ? correct
                       ? 'border-[var(--success)]'
@@ -323,7 +326,7 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
                 />
                 <span
                   aria-hidden="true"
-                  className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-[var(--border-strong)] text-xs text-[var(--text-muted)]"
+                  className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-[10px] text-[var(--text-muted)]"
                 >
                   {LETTERS[i]}
                 </span>

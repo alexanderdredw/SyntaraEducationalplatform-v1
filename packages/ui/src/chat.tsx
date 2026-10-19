@@ -36,11 +36,13 @@ export function ChatMessage({
       <ChatAvatar letter={author.slice(0, 1)} accent={mine} />
       <div
         className={cn(
-          'flex max-w-[85%] flex-col gap-1 rounded-[var(--radius-field)] px-4 py-3 text-sm',
-          mine ? 'items-end bg-[var(--accent-strong)] text-white' : 'bg-[var(--field)] text-[var(--text)]',
+          'flex max-w-[min(85%,464px)] flex-col gap-1 rounded-[var(--radius-field)] px-4 py-3 text-sm leading-relaxed',
+          mine
+            ? 'items-end bg-[var(--accent-strong)] text-white'
+            : 'bg-[var(--chat-bubble)] text-[var(--text)]',
         )}
       >
-        <span className={cn('text-xs', mine ? 'text-white' : 'text-[var(--text-muted)]')}>{author}</span>
+        <span className={cn('text-[11px]', mine ? 'text-white' : 'text-[var(--text-muted)]')}>{author}</span>
         <div className="flex flex-col gap-2 break-words">{children}</div>
         {note ? <p className="text-xs text-[var(--text-muted)]">{note}</p> : null}
       </div>
@@ -48,12 +50,22 @@ export function ChatMessage({
   );
 }
 
-export function ChatAvatar({ letter, accent = false }: { letter: string; accent?: boolean }) {
+export function ChatAvatar({
+  letter,
+  accent = false,
+  size = 'md',
+}: {
+  letter: string;
+  accent?: boolean;
+  /** `lg` — аватар в шапке страницы помощника (U02). */
+  size?: 'md' | 'lg';
+}) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        'inline-flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-pill)] text-xs font-semibold uppercase',
+        'inline-flex shrink-0 items-center justify-center rounded-[var(--radius-pill)] font-semibold uppercase',
+        size === 'lg' ? 'size-10 text-base' : 'size-7 text-xs',
         accent ? 'bg-[var(--accent-strong)] text-white' : 'border border-[var(--border)] bg-[var(--field)]',
       )}
     >
@@ -72,5 +84,39 @@ export function StatusDot({ children, className, ...props }: HTMLAttributes<HTML
       <span aria-hidden="true" className="size-2 rounded-[var(--radius-pill)] bg-[var(--success)]" />
       {children}
     </span>
+  );
+}
+
+/**
+ * Карточка чата (U02, U06–U07): тёмно-синий фон `--chat-surface`; `inset` — без внутренних отступов
+ * (страница помощника с зонами шапки, ленты и поля).
+ */
+export function ChatCard({
+  className,
+  inset = false,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & { inset?: boolean }) {
+  return (
+    <div
+      className={cn(
+        'flex flex-col rounded-[var(--radius-card)] border border-[var(--chat-panel-border)] bg-[image:var(--chat-surface)]',
+        inset ? 'overflow-hidden' : 'gap-4 p-4',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+/** Панель ленты сообщений внутри карточки чата (U06–U07). */
+export function ChatPanel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        'rounded-[14px] border border-[var(--chat-panel-border)] bg-[var(--chat-panel)] p-4',
+        className,
+      )}
+      {...props}
+    />
   );
 }

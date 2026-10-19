@@ -20,7 +20,7 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & 
         ref={ref}
         data-tone={tone === 'default' ? undefined : tone}
         className={cn(
-          'rounded-[var(--radius-card)] border bg-[var(--surface)] p-6 shadow-card',
+          'rounded-[var(--radius-card)] border bg-[var(--surface)] p-5 shadow-card',
           cardTones[tone],
           className,
         )}
@@ -35,7 +35,7 @@ export function Pill({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--border)] px-3 py-1 text-xs',
+        'inline-flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--border-strong)] px-2.5 py-0.5 text-xs',
         className,
       )}
       {...props}

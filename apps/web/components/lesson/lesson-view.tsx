@@ -2,7 +2,7 @@
 
 import { type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
-import { BookOpen, FileText, Lightbulb, PencilLine } from 'lucide-react';
+import { ArrowRight, BookOpen, FileText, Lightbulb, PencilLine } from 'lucide-react';
 import { Accordion, Card } from '@syntara/ui';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
@@ -36,12 +36,14 @@ export function LessonHeader({
         ) : (
           <span>← {lesson.subject.title}</span>
         )}
-        <span aria-hidden="true"> / </span>
+        <span aria-hidden="true" className="px-2">
+          /
+        </span>
         <span aria-current="page" className="text-[var(--text)]">
           {lesson.title}
         </span>
       </nav>
-      <Heading className="text-cabinet-title font-bold">{lesson.title}</Heading>
+      <Heading className="mt-1 text-[2.25rem] font-bold leading-tight tracking-tight">{lesson.title}</Heading>
       <p className="flex flex-wrap items-center gap-2 text-sm text-[var(--text-muted)]">
         <span className="inline-flex items-center gap-1">
           <BookOpen aria-hidden="true" className="size-4" />
@@ -67,9 +69,10 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
   return (
     <div className="@container flex flex-col gap-5" data-testid="lesson-overview">
       {/* Ширина колонок — по ширине самого урока (окно предпросмотра, страница ученика). */}
-      <div className="grid gap-5 @2xl:grid-cols-[1fr_auto]">
+      <div className="grid items-start gap-x-12 gap-y-5 @2xl:grid-cols-[1fr_auto]">
+        {/* Разделы аккордеона — в левой колонке, рядом с иллюстрацией (эталоны U04, U09, U12). */}
         <div className="flex min-w-0 flex-col gap-4">
-          {lesson.summary ? <p className="text-lg text-[var(--text-muted)]">{lesson.summary}</p> : null}
+          {lesson.summary ? <p className="text-lg">{lesson.summary}</p> : null}
           {lesson.funFact ? (
             <Card className="flex flex-col gap-1 p-4" data-testid="lesson-fun-fact">
               <h3 className="flex items-center gap-2 font-semibold">
@@ -80,44 +83,47 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
             </Card>
           ) : null}
           {lesson.bodyMd ? <SafeMarkdown>{lesson.bodyMd}</SafeMarkdown> : null}
+          {lesson.sections.length ? (
+            <Accordion
+              items={lesson.sections.map((s) => ({
+                value: s.id,
+                title: (
+                  <span className="flex items-baseline gap-4 font-semibold">
+                    <span className="text-sm text-[var(--accent-bright)]">
+                      {String(s.number).padStart(2, '0')}
+                    </span>
+                    <span className="text-[17px] text-[var(--text)]">{s.title}</span>
+                  </span>
+                ),
+                // Иллюстрация раздела базового урока — из нашего хранилища, с подписью из файла (REQ-ST-LES-07).
+                content:
+                  s.body || s.illustrationUrl ? (
+                    <div className="flex flex-col gap-3">
+                      {s.illustrationUrl ? (
+                        <img
+                          src={s.illustrationUrl}
+                          alt={s.illustrationAlt ?? ''}
+                          loading="lazy"
+                          className="w-full rounded-[var(--radius-field)] md:w-[var(--illustration-w)]"
+                          data-testid="section-illustration"
+                        />
+                      ) : null}
+                      {s.body ? <SafeMarkdown>{s.body}</SafeMarkdown> : null}
+                    </div>
+                  ) : null,
+              }))}
+            />
+          ) : null}
         </div>
         {lesson.illustrationUrl ? (
           // Обложка темы — только из нашего хранилища (BR-FILE-04, BR-FILE-06).
           <img
             src={lesson.illustrationUrl}
             alt={lesson.illustrationAlt ?? ''}
-            className="h-[190px] w-full rounded-[var(--radius-field)] object-cover @2xl:w-[336px]"
+            className="h-[190px] w-full rounded-[var(--radius-field)] border border-[var(--border)] object-cover shadow-popover @2xl:w-[336px]"
           />
         ) : null}
       </div>
-      {lesson.sections.length ? (
-        <Accordion
-          items={lesson.sections.map((s) => ({
-            value: s.id,
-            title: (
-              <span className="font-semibold">
-                <span className="text-[var(--accent)]">{String(s.number).padStart(2, '0')}</span> {s.title}
-              </span>
-            ),
-            // Иллюстрация раздела базового урока — из нашего хранилища, с подписью из файла (REQ-ST-LES-07).
-            content:
-              s.body || s.illustrationUrl ? (
-                <div className="flex flex-col gap-3">
-                  {s.illustrationUrl ? (
-                    <img
-                      src={s.illustrationUrl}
-                      alt={s.illustrationAlt ?? ''}
-                      loading="lazy"
-                      className="w-full rounded-[var(--radius-field)] md:w-[var(--illustration-w)]"
-                      data-testid="section-illustration"
-                    />
-                  ) : null}
-                  {s.body ? <SafeMarkdown>{s.body}</SafeMarkdown> : null}
-                </div>
-              ) : null,
-          }))}
-        />
-      ) : null}
       {lesson.materials.length ? (
         <section className="flex flex-col gap-2" data-testid="lesson-materials">
           <h3 className="font-semibold">{t('materials')}</h3>
@@ -142,21 +148,38 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
   );
 }
 
-/** «СЛЕДУЮЩАЯ — {Тема} →» (REQ-ST-LES-03, PH-35): у ученика — ссылка; переход не засчитывает текущую тему. */
+/**
+ * «СЛЕДУЮЩАЯ — {Тема} →» (REQ-ST-LES-03, PH-35): карточка справа — надпись «Следующая» мелко над названием
+ * и стрелка (эталоны U05–U07); доступное имя — полный текст. У ученика — ссылка; переход не засчитывает тему.
+ */
 export function NextTopicCard({ lesson, href }: { lesson: Lesson; href?: string }) {
   const t = useTranslations('teacher.lesson');
   if (!lesson.next) return null;
-  const body: ReactNode = <span className="font-semibold">{t('next', { title: lesson.next.title })}</span>;
+  const full = t('next', { title: lesson.next.title });
+  const body: ReactNode = (
+    <span className="flex items-center justify-end gap-4 text-right">
+      <span className="flex flex-col">
+        <span className="text-xs uppercase tracking-[0.08em] text-[var(--text-muted)]">{t('nextLabel')}</span>
+        <span className="text-[15px]">{lesson.next.title}</span>
+      </span>
+      <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-[var(--text-muted)]" />
+    </span>
+  );
+  const box =
+    'ml-auto block w-full rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-6 py-3.5 sm:max-w-[484px]';
   return href ? (
     <AppLink
       href={href}
+      aria-label={full}
       data-testid="lesson-next"
-      className="block rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card hover:border-[var(--border-strong)]"
+      className={`${box} hover:border-[var(--border-strong)]`}
     >
       {body}
     </AppLink>
   ) : (
-    <Card className="p-4">{body}</Card>
+    <div className={box} aria-label={full} role="group">
+      {body}
+    </div>
   );
 }
 
