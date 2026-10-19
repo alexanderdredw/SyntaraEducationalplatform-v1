@@ -11,6 +11,9 @@ export {
   ProgressBar,
   type ProgressTone,
   progressTextTones,
+  Eyebrow,
+  IconTile,
+  Avatar,
 } from './display';
 export {
   Tabs,

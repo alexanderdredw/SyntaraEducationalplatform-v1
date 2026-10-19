@@ -13,7 +13,7 @@ import { cn } from './cn';
 export function Header({ children, className, ...props }: HTMLAttributes<HTMLElement>) {
   return (
     <header className={cn('sticky top-0 z-30 px-2 pt-2.5 sm:px-4', className)} {...props}>
-      <div className="flex min-h-[58px] flex-wrap items-center gap-2 rounded-[18px] border border-[var(--chrome-border)] bg-[var(--chrome)] px-3 py-1.5 shadow-chrome">
+      <div className="flex min-h-[60px] flex-wrap items-center gap-2 rounded-[18px] border border-[var(--chrome-border)] bg-[var(--chrome)] px-3 py-1.5 shadow-chrome">
         {children}
       </div>
     </header>
@@ -130,7 +130,7 @@ export function Capsule({ className, children }: { className?: string; children:
   return (
     <div
       className={cn(
-        'flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--capsule)] p-1',
+        'flex items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--capsule)] p-0.5',
         className,
       )}
     >

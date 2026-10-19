@@ -937,6 +937,21 @@
     "shell.dataSaver.label": "needs_review",
     "shell.dataSaver.stateOff": "needs_review",
     "shell.dataSaver.stateOn": "needs_review",
-    "teacher.lesson.nextLabel": "needs_review"
+    "teacher.lesson.nextLabel": "needs_review",
+    "subjects.badgeOpen": "needs_review",
+    "auth.choice.eyebrow": "needs_review",
+    "auth.choice.title": "needs_review",
+    "auth.choice.student": "needs_review",
+    "auth.choice.studentText": "needs_review",
+    "auth.choice.or": "needs_review",
+    "auth.choice.teacher": "needs_review",
+    "auth.choice.teacherText": "needs_review",
+    "auth.choice.guest": "needs_review",
+    "auth.choice.guestNote": "needs_review",
+    "auth.choice.back": "needs_review",
+    "about.card.brand": "needs_review",
+    "about.card.badge": "needs_review",
+    "about.card.subtitle": "needs_review",
+    "about.origins.newTab": "needs_review"
   }
 }

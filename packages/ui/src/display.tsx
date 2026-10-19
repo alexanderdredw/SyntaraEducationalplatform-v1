@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { Progress } from 'radix-ui';
 import { cn } from './cn';
 
@@ -150,5 +150,79 @@ export function ProgressBar({
         style={{ width: `${clamped}%` }}
       />
     </Progress.Root>
+  );
+}
+
+/**
+ * Eyebrow — метка секции с короткой линией слева (UX-03, UX-05, UX-09): капслок, разрядка.
+ * `tone`: приглушённая (UX-03) или фирменная (UX-05, UX-09).
+ */
+export function Eyebrow({
+  children,
+  tone = 'muted',
+  className,
+}: {
+  children: ReactNode;
+  tone?: 'muted' | 'accent';
+  className?: string;
+}) {
+  return (
+    <p
+      className={cn(
+        'flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em]',
+        tone === 'accent' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]',
+        className,
+      )}
+    >
+      <span aria-hidden="true" className="h-px w-6 shrink-0 bg-current" />
+      {children}
+    </p>
+  );
+}
+
+/** IconTile — значок в квадратной плитке с подложкой фирменного цвета (UX-03, UX-05, UX-07, UX-08). */
+export function IconTile({ children, size = 'md' }: { children: ReactNode; size?: 'sm' | 'md' }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'inline-flex shrink-0 items-center justify-center border border-[color-mix(in_srgb,var(--accent)_30%,var(--border))] bg-[var(--accent-soft)] text-[var(--accent-bright)]',
+        size === 'md' ? 'size-12 rounded-[12px] [&_svg]:size-6' : 'size-9 rounded-[10px] [&_svg]:size-[18px]',
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+
+/**
+ * Avatar — фото участника или запасной вариант с инициалами на цветной подложке (UX-08): при отсутствии
+ * фото или ошибке загрузки не показывается значок битой картинки. `alt` — имя человека.
+ */
+export function Avatar({
+  src,
+  name,
+  initials,
+  tone = 'accent',
+}: {
+  src?: string | null;
+  name: string;
+  initials: string;
+  tone?: 'accent' | 'warning' | 'success';
+}) {
+  const [failed, setFailed] = useState(false);
+  const box = 'inline-flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[14px]';
+  if (src && !failed) {
+    return <img src={src} alt={name} className={cn(box, 'object-cover')} onError={() => setFailed(true)} />;
+  }
+  const tones = {
+    accent: 'bg-[var(--accent-soft)] text-[var(--accent-bright)]',
+    warning: 'bg-[color-mix(in_srgb,var(--warning)_12%,transparent)] text-[var(--warning-text)]',
+    success: 'bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success-text)]',
+  };
+  return (
+    <span role="img" aria-label={name} className={cn(box, 'text-lg font-bold', tones[tone])}>
+      {initials}
+    </span>
   );
 }

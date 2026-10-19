@@ -81,7 +81,7 @@ test.describe('Публичные страницы', () => {
     await expect(panel).toHaveText(panels[0]!);
   });
 
-  test('REQ-PUB-HOME-06 subjects on home: open first, at most 6 cards, «Все предметы →», status only when open', async ({
+  test('REQ-PUB-HOME-06 subjects on home: open first, at most 6 cards, «Все предметы →», status badge on every card (UX-03)', async ({
     page,
   }) => {
     await page.goto('/ru');
@@ -94,7 +94,16 @@ test.describe('Публичные страницы', () => {
     const all = page.getByTestId('subjects-all');
     await expect(all).toHaveText(ru.home.subjects.all);
     await expect(all).toHaveAttribute('href', '/ru/subjects');
-    await expect(page.getByTestId('home-subjects').getByTestId('subject-status')).toHaveCount(1);
+    // UX-03: бейдж у каждой карточки — «Доступно» у открытых, «Скоро» у остальных; «Открыть →» — только у открытых.
+    await expect(page.getByTestId('home-subjects').getByTestId('subject-status')).toHaveCount(6);
+    await expect(cards.first().getByTestId('subject-status')).toHaveText(ru.subjects.badgeOpen);
+    const soonCard = page
+      .getByTestId('home-subjects')
+      .locator('[data-testid="subject-card"][data-status="soon"]');
+    if (await soonCard.count()) {
+      await expect(soonCard.first().getByTestId('subject-status')).toHaveText(ru.subjects.status.soon);
+      await expect(soonCard.first()).not.toContainText(ru.subjects.open);
+    }
     await expect(cards.first()).toContainText(ru.subjects.open);
     await expect(page.getByTestId('home-subjects').getByText(ru.home.subjects.subtitle)).toBeVisible();
   });

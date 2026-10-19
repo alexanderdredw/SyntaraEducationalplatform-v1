@@ -66,7 +66,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
             {student ? (
-              <LinkButton href={continueHref} testId="hero-continue" size="lg">
+              <LinkButton href={continueHref} testId="hero-continue" size="lg" variant="white">
                 {t('hero.continue')}
               </LinkButton>
             ) : (
@@ -112,6 +112,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
       {/* REQ-PUB-HOME-06 */}
       <Section
         testId="home-subjects"
+        eyebrow="muted"
+        titleSize="display"
         label={t('subjects.label')}
         title={t('subjects.title')}
         text={t('subjects.subtitle')}

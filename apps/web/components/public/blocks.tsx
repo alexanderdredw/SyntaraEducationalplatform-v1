@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { cn } from '@syntara/ui';
+import { cn, Eyebrow } from '@syntara/ui';
 import { AppLink } from '../app-link';
 
 /** Секция публичной страницы: ширина контента 1120–1240 px (3.1), якоря учитывают высоту хедера. */
@@ -13,6 +13,8 @@ export function Section({
   className,
   headingLevel = 2,
   width = 'default',
+  eyebrow,
+  titleSize = 'default',
 }: {
   id?: string;
   testId?: string;
@@ -24,18 +26,49 @@ export function Section({
   headingLevel?: 1 | 2;
   /** Ширина контента (3.1): секции 1120–1240, «Школам» 640–760. */
   width?: 'default' | 'schools';
+  /** Метка как Eyebrow — линия слева (UX-03, UX-09); без пропа — прежняя синяя метка. */
+  eyebrow?: 'muted' | 'accent';
+  /** `display` — крупный заголовок 80–96 px в две строки (UX-03); `compact` — 24–28 px (UX-09). */
+  titleSize?: 'default' | 'display' | 'compact';
 }) {
   const Heading = headingLevel === 1 ? 'h1' : 'h2';
   return (
-    <section id={id} data-testid={testId} className={cn('px-4 py-12 md:py-16', className)}>
+    <section
+      id={id}
+      data-testid={testId}
+      className={cn('px-4', titleSize === 'compact' ? 'py-6 md:py-8' : 'py-12 md:py-16', className)}
+    >
       <div className={cn('mx-auto', width === 'schools' ? 'max-w-[760px]' : 'max-w-[1240px]')}>
         {label ? (
-          <p className="text-xs font-semibold tracking-[0.2em] text-[var(--accent)]">{label}</p>
+          eyebrow ? (
+            <Eyebrow tone={eyebrow}>{label}</Eyebrow>
+          ) : (
+            <p className="text-xs font-semibold tracking-[0.2em] text-[var(--accent)]">{label}</p>
+          )
         ) : null}
         {title ? (
-          <Heading className="mt-2 text-3xl font-bold tracking-tight md:text-5xl">{title}</Heading>
+          <Heading
+            className={cn(
+              'font-bold tracking-tight',
+              titleSize === 'display' &&
+                'mt-4 max-w-[760px] text-[clamp(2.5rem,1rem+6vw,6rem)] leading-[0.98] [overflow-wrap:normal] [hyphens:manual]',
+              titleSize === 'compact' && 'mt-2 text-2xl md:text-[28px]',
+              titleSize === 'default' && 'mt-2 text-3xl md:text-5xl',
+            )}
+          >
+            {title}
+          </Heading>
         ) : null}
-        {text ? <p className="mt-4 max-w-2xl text-lg text-[var(--text-muted)]">{text}</p> : null}
+        {text ? (
+          <p
+            className={cn(
+              'mt-4 text-lg text-[var(--text-muted)]',
+              titleSize === 'display' ? 'max-w-[520px] md:text-xl' : 'max-w-2xl',
+            )}
+          >
+            {text}
+          </p>
+        ) : null}
         {children ? <div className={cn(title || text ? 'mt-8' : undefined)}>{children}</div> : null}
       </div>
     </section>
@@ -83,11 +116,14 @@ const buttonSizes = {
   lg: 'min-h-[60px] px-7 text-lg font-bold',
 };
 
-/** Ссылка-кнопка: белая (primary-white) или вторичная (3.2). */
+/**
+ * Ссылка-кнопка (3.2). Главная кнопка публичных страниц — синяя, как «Войти» (UX-02); белая — «Продолжить
+ * учёбу →» ученика (REQ-ST-HOME-01, «светлая»); вторичная — с рамкой.
+ */
 export function LinkButton({
   href,
   children,
-  variant = 'white',
+  variant = 'blue',
   testId,
   size = 'md',
 }: {

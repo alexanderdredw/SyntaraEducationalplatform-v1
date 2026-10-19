@@ -35,6 +35,8 @@
   /* Текст ошибок: --danger на --bg даёт 4.3:1 < 4.5:1 (REQ-NFR-A11Y-01); оттенок подтверждён владельцем 2026-10-14. */
   --danger-text: #f0686c;
   --warning: #f5b301; /* значки роли, серии, «лампочки» и баннера email в эталонах */
+  /* Текст цвета --warning (роль участника команды, UX-08): контраст ≥ 4.5:1 в обеих темах. */
+  --warning-text: #f5b301;
   --ai-gradient: linear-gradient(90deg, #8b5cf6, #ec4899);
   /* Тонкие линии декоративного фона страниц входа, регистрации и /join (эталон student-auth.png). */
   --backdrop-line: rgb(255 255 255 / 0.07);
@@ -68,7 +70,7 @@
   --space-7: 64px;
 
   /* ---- Размеры элементов ---- */
-  --header-h: 68px; /* плавающий хедер 58 px + отступ сверху 10 px */
+  --header-h: 70px; /* плавающий хедер 60 px + отступ сверху 10 px */
   --control-h: 44px; /* кнопки, вкладки, переключатели: зона нажатия ≥ 44×44 (REQ-GEN-SHELL-07) */
   --field-h: 44px; /* поля ввода (эталон student-auth.png: 44 px) */
   --sidebar-w: 70px; /* REQ-GEN-SHELL-03 */
@@ -123,7 +125,8 @@
   --accent-strong: #1765e8;
   /* Текст ошибок на светлом фоне: контраст ≥ 4.5:1. */
   --danger-text: #d13438;
-  --success-text: #15803d;
+  --success-text: #166534;
+  --warning-text: #854d0e;
   --backdrop-line: rgb(24 24 24 / 0.08);
   --accent-bright: #1765e8;
   --chrome: #ffffff;

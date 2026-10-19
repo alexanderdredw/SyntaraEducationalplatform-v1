@@ -42,7 +42,7 @@ export function PublicHeader({
               className={cn(
                 vertical
                   ? 'inline-flex min-h-[var(--control-h)] w-full items-center rounded-[var(--radius-pill)] px-4 text-base'
-                  : "relative inline-flex min-h-9 items-center rounded-[var(--radius-pill)] px-4 text-sm after:absolute after:inset-x-0 after:-inset-y-1 after:content-['']",
+                  : 'inline-flex min-h-11 items-center rounded-[var(--radius-pill)] px-4 text-sm',
                 active
                   ? 'bg-[var(--text)] text-[var(--bg)]'
                   : 'text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
@@ -58,7 +58,8 @@ export function PublicHeader({
 
   const loginButton = (
     <AppLink
-      href={cabinetHref ?? '/auth/login'}
+      // UX-04: «Войти» открывает выбор «Как продолжить?»; форма входа — по прямой ссылке и с экранов ролей.
+      href={cabinetHref ?? '/auth/start'}
       data-testid={cabinetHref ? 'header-cabinet' : 'header-login'}
       className="inline-flex min-h-[var(--control-h)] items-center rounded-[var(--radius-pill)] bg-[var(--accent-strong)] px-5 text-sm font-semibold text-white hover:brightness-110 active:scale-[0.98]"
     >
@@ -74,7 +75,8 @@ export function PublicHeader({
         className="inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-[var(--radius-field)] text-xl"
       >
         <BrandMark />
-        <Wordmark />
+        {/* < 400 px — только знак: «Войти» и «Меню» помещаются в одну строку (REQ-GEN-SHELL-06). */}
+        <Wordmark className="hidden min-[400px]:inline" />
       </AppLink>
 
       <nav aria-label={t('navLabel')} className="hidden flex-1 justify-center lg:flex">

@@ -86,7 +86,8 @@ export function CabinetHeader({
         className="inline-flex min-h-11 shrink-0 items-center gap-2.5 rounded-[var(--radius-field)] text-xl"
       >
         <BrandMark />
-        <Wordmark />
+        {/* < 400 px — только знак: «Войти» и «Меню» помещаются в одну строку (REQ-GEN-SHELL-06). */}
+        <Wordmark className="hidden min-[400px]:inline" />
       </AppLink>
       <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
         <Capsule className="flex-wrap">
@@ -94,7 +95,7 @@ export function CabinetHeader({
             // Видимо — числа (эталоны U01–U13: «🔥 1 │ ⚡ 20 XP»), доступное имя — «Серия: N дн.», «N XP».
             <span
               data-testid="cabinet-stats"
-              className="inline-flex min-h-9 items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--chrome)] px-3 text-xs"
+              className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--chrome)] px-3 text-xs"
             >
               <span className="inline-flex items-center gap-1.5">
                 <Flame aria-hidden="true" className="size-3.5 text-[var(--text-muted)]" />

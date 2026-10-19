@@ -92,7 +92,7 @@ export function SchoolRequestForm() {
         </AppLink>
         <Button
           type="submit"
-          variant="primary-white"
+          variant="primary-blue"
           disabled={status === 'submitting'}
           aria-busy={status === 'submitting'}
         >

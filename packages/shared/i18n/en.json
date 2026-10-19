@@ -235,7 +235,8 @@
     },
     "open": "Open →",
     "soonGroup": "Coming soon",
-    "empty": "Subjects are coming soon"
+    "empty": "Subjects are coming soon",
+    "badgeOpen": "Available"
   },
   "about": {
     "hero": {
@@ -260,7 +261,10 @@
       "teacher": "Teacher",
       "teacherText": "Your own courses, assignments and class analytics.",
       "school": "School",
-      "schoolText": "Gradebook, diary and homework in one system."
+      "schoolText": "Gradebook, diary and homework in one system.",
+      "brand": "Syntara Education",
+      "badge": "Open to everyone",
+      "subtitle": "One product for daily study, the class and the school."
     },
     "mission": {
       "title": "Our mission",
@@ -327,7 +331,8 @@
       "anatomyName": "Anatomy Atlas",
       "anatomyText": "An anatomy atlas",
       "open": "Open website ↗",
-      "soon": "The link is coming soon"
+      "soon": "The link is coming soon",
+      "newTab": "opens in a new tab"
     },
     "team": {
       "title": "Team",
@@ -560,6 +565,18 @@
     "verify": {
       "done": "Email confirmed.",
       "invalid": "The confirmation link is invalid or has expired."
+    },
+    "choice": {
+      "eyebrow": "CONTINUE",
+      "title": "How do you want to continue?",
+      "student": "I'm a student",
+      "studentText": "Log in or create an account",
+      "or": "or",
+      "teacher": "I'm a teacher",
+      "teacherText": "Log in with email",
+      "guest": "Study without an account",
+      "guestNote": "Progress won't be saved",
+      "back": "← Back to home"
     }
   },
   "staff": {

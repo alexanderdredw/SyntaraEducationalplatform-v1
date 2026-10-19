@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
 import { ChevronDown, Globe, Moon, Sun, Wifi } from 'lucide-react';
 import { LOCALES, type Locale } from '@syntara/shared';
-import { cn } from '@syntara/ui';
+import { cn, SegmentedControl } from '@syntara/ui';
 import { COOKIE, writeCookie } from '@/lib/preferences';
 import { syncPreferences } from '@/lib/sync-preferences';
 import { usePreferences } from '../preferences/preferences-provider';
@@ -26,31 +26,54 @@ function useCurrentTheme(): 'light' | 'dark' {
 }
 
 /**
- * Капсула внутри общей группы хедера (UX-01, эталоны U01–T10): 36 px с невидимой зоной нажатия 44 px
- * (REQ-GEN-SHELL-07), своя тонкая рамка на фоне группы.
+ * Капсула внутри общей группы хедера (UX-01, эталоны U01–T10): своя тонкая рамка на фоне группы;
+ * 44 × 44 px (REQ-GEN-SHELL-07) — на эталонах ≈ 34 px, применён ближайший допустимый размер.
  */
 export const capsuleControlClass =
-  "relative inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--chrome)] px-3 text-[13px] text-[var(--text)] after:absolute after:inset-x-0 after:-inset-y-1 after:content-[''] hover:border-[var(--border-strong)] hover:bg-[var(--field)]";
+  'inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--chrome)] px-3 text-[13px] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]';
 const controlClass = capsuleControlClass;
 
 /**
  * Переключатель языка (REQ-GEN-PREF-01/-02): клиентская навигация на тот же путь с другим префиксом,
  * без перезагрузки; query и якорь сохраняются. Языки вне PH-04 показываются недоступными с «скоро».
  */
-export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly Locale[] }) {
-  const t = useTranslations('locale');
-  const ts = useTranslations('shell');
+function useSwitchLocale() {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const router = useRouter();
-
-  const switchTo = (next: Locale) => {
+  return (next: Locale) => {
     if (next === locale) return;
     writeCookie(COOKIE.locale, next);
     syncPreferences({ locale: next });
     const rest = pathname.replace(/^\/(ru|kk|en)(?=\/|$)/, '');
     router.replace(`/${next}${rest}${window.location.search}${window.location.hash}`, { scroll: false });
   };
+}
+
+/** Языки сегментами RU / KK / EN (экран «Как продолжить?», UX-04); логика — как у LanguageSwitcher. */
+export function LanguageSegments({ enabledLocales }: { enabledLocales: readonly Locale[] }) {
+  const ts = useTranslations('shell');
+  const locale = useLocale() as Locale;
+  const switchTo = useSwitchLocale();
+  return (
+    <SegmentedControl
+      label={ts('language')}
+      value={locale}
+      onValueChange={(v) => switchTo(v as Locale)}
+      options={LOCALES.map((code) => ({
+        value: code,
+        label: code.toUpperCase(),
+        disabled: !enabledLocales.includes(code),
+      }))}
+    />
+  );
+}
+
+export function LanguageSwitcher({ enabledLocales }: { enabledLocales: readonly Locale[] }) {
+  const t = useTranslations('locale');
+  const ts = useTranslations('shell');
+  const locale = useLocale() as Locale;
+  const switchTo = useSwitchLocale();
 
   return (
     <DropdownMenu.Root>

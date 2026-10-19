@@ -19,7 +19,8 @@ test('REQ-GEN-DS-01 tokens: colors, radii, spacing, text sizes, shadows and moti
 }) => {
   await context.addCookies([{ name: 'theme', value: 'dark', url: baseURL! }]);
   await page.goto('/ru/auth/start?role=student');
-  expect(await cssVar(page, '--bg')).toBe('#070707');
+  // Значение сверено с эталонами пипеткой (docs/UX_AUDIT.md, G-14).
+  expect(await cssVar(page, '--bg')).toBe('#050505');
   expect(await cssVar(page, '--radius-card')).toBe('20px');
   expect(await cssVar(page, '--radius-field')).toBe('12px');
   expect(await cssVar(page, '--space-4')).toBe('24px');
@@ -29,14 +30,14 @@ test('REQ-GEN-DS-01 tokens: colors, radii, spacing, text sizes, shadows and moti
   expect(parseFloat(fast) * (fast.endsWith('ms') ? 1 : 1000)).toBe(150);
   expect(await cssVar(page, '--shadow-card')).not.toBe('');
 
-  // Поля и карточка формы ученика используют токены: высота 48 px, радиусы поля и карточки.
+  // Поля и карточка формы ученика используют токены: высота 44 px (эталон student-auth.png), радиусы.
   const name = page.locator('#student-displayName');
   const field = await name.evaluate((el) => {
     const s = getComputedStyle(el);
     return { radius: s.borderTopLeftRadius, height: el.getBoundingClientRect().height };
   });
   expect(field.radius).toBe('12px');
-  expect(field.height).toBeGreaterThanOrEqual(48);
+  expect(field.height).toBeGreaterThanOrEqual(44);
 });
 
 test('REQ-GEN-DS-01 field states: hover lightens the border, error shows --danger', async ({ page }) => {
