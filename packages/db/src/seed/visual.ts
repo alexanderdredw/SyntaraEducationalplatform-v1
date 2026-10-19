@@ -80,8 +80,15 @@ export async function seedVisual(db: Database): Promise<void> {
     const passwordHash = await hashPassword(process.env.SEED_DEV_PASSWORD ?? 'syntara-dev-password');
     await tx
       .insert(users)
-      .values({ id: I.alexandr, email: 'alexandr@example.com', displayName: 'Alexandr', passwordHash })
-      .onConflictDoNothing();
+      .values({
+        id: I.alexandr,
+        email: 'alexandr@example.com',
+        displayName: 'Alexandr',
+        passwordHash,
+        // Эталоны T04–T10 сняты без баннера «Подтвердите email».
+        emailVerifiedAt: at('2026-09-01T09:00:00'),
+      })
+      .onConflictDoUpdate({ target: users.id, set: { emailVerifiedAt: at('2026-09-01T09:00:00') } });
     for (const role of ['teacher', 'student'] as const) {
       await tx
         .insert(userRoles)
