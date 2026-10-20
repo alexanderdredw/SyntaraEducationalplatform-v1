@@ -331,12 +331,7 @@ function QuestionView({
           className="max-h-64 w-full rounded-[var(--radius-card)] object-contain"
         />
       ) : null}
-      <div
-        ref={grid}
-        role="group"
-        aria-label={t('question.options')}
-        className="grid gap-3 sm:grid-cols-2"
-      >
+      <div ref={grid} role="group" aria-label={t('question.options')} className="grid gap-3 sm:grid-cols-2">
         {question.options.map((o) => (
           <AnswerTile
             key={o.position}

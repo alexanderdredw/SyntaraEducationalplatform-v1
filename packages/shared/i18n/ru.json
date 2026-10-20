@@ -1268,7 +1268,8 @@
         "emptyArchive": "В архиве пусто",
         "duplicated": "Копия создана",
         "archivedDone": "Тест перенесён в архив",
-        "restoredDone": "Тест возвращён из архива"
+        "restoredDone": "Тест возвращён из архива",
+        "launch": "Запустить"
       },
       "create": {
         "title": "Новый Battle",
@@ -1326,6 +1327,40 @@
         "empty": "Нет тем с подходящими вопросами (выбор варианта или «Верно/Неверно», до 4 вариантов)",
         "done": "Импортировано вопросов: {count}",
         "official": "Базовый"
+      },
+      "history": {
+        "classLink": "Battle этого класса",
+        "filtered": "Показаны игры одного класса.",
+        "all": "Все игры",
+        "empty": "Игр пока не было",
+        "participants": "участников: {count}",
+        "status": {
+          "lobby": "лобби",
+          "in_progress": "идёт",
+          "finished": "завершена",
+          "cancelled": "отменена"
+        },
+        "open": "Открыть игру",
+        "results": "Результаты",
+        "more": "Показать ещё"
+      },
+      "results": {
+        "title": "Результаты игры",
+        "back": "← К истории игр",
+        "participants": "участников: {count}",
+        "csv": "Экспорт CSV",
+        "byQuestion": "По вопросам",
+        "hard": "Сложные вопросы",
+        "question": "Вопрос {number}",
+        "correctShare": "Правильно ответили {percent} %",
+        "noAnswers": "Никто не ответил",
+        "correct": "верно",
+        "wrong": "неверно",
+        "noAnswer": "без ответа",
+        "answered": "ответили: {count}",
+        "avgTime": "среднее время {time}",
+        "byStudent": "По ученикам",
+        "studentScore": "правильных {correct} из {total}"
       }
     },
     "csv": {
@@ -1419,6 +1454,78 @@
         "yourAnswer": "Твой ответ:",
         "noAnswer": "без ответа",
         "correctAnswer": "Правильный:"
+      }
+    },
+    "host": {
+      "launch": {
+        "title": "Новая игра",
+        "class": "Класс",
+        "choose": "Выберите класс",
+        "classOption": "{name} · учеников: {count}",
+        "noClasses": "Сначала создайте класс и пригласите учеников",
+        "settings": "Настройки",
+        "leaderboard": "Промежуточный рейтинг после каждого вопроса",
+        "shuffleQuestions": "Перемешать вопросы",
+        "shuffleOptions": "Перемешать варианты",
+        "autoAdvance": "Автопереход через 5 секунд",
+        "lateJoin": "Позднее подключение",
+        "maxParticipants": "Максимум участников",
+        "maxHint": "От 1 до 100",
+        "submit": "Создать игру"
+      },
+      "errors": {
+        "noQuestions": "В тесте нет вопросов",
+        "noCorrectOption": "У каждого вопроса должен быть правильный вариант",
+        "tooManyActiveSessions": "Уже идут 3 игры — завершите одну из них",
+        "noParticipants": "Пока никто не подключился",
+        "invalidTransition": "Состояние игры уже изменилось — экран обновлён",
+        "network": "Нет соединения. Повторите действие",
+        "unknown": "Не удалось выполнить действие. Повторите попытку"
+      },
+      "projector": "Во весь экран",
+      "projectorExit": "Выйти из полноэкранного режима",
+      "connection": "Нет соединения, переподключаемся…",
+      "cancelled": "Игра отменена",
+      "back": "← К моим Battle",
+      "finish": "Завершить игру",
+      "lobby": {
+        "copy": "Копировать",
+        "copied": "Скопировано",
+        "hint": "Ученики: кабинет → Battle → ввести код",
+        "count": "Подключились: {count}",
+        "participants": "Участники",
+        "kick": "Удалить {name} из игры",
+        "start": "Начать",
+        "cancel": "Отменить"
+      },
+      "kick": {
+        "title": "Удалить {name} из игры?",
+        "text": "Ученик не сможет вернуться в эту игру и не попадёт в рейтинг.",
+        "confirm": "Удалить",
+        "cancel": "Отмена"
+      },
+      "question": {
+        "counter": "Вопрос {index} из {total}",
+        "timer": "Осталось {seconds} с",
+        "answered": "Ответили {answered} из {total}",
+        "close": "Завершить вопрос"
+      },
+      "reveal": {
+        "next": "Далее",
+        "distribution": "Ответы по вариантам",
+        "bar": "Вариант {letter}: {count}",
+        "avgTime": "Среднее время ответа: {time}",
+        "noAnswers": "Никто не ответил"
+      },
+      "leaderboard": {
+        "title": "Топ-5",
+        "next": "Следующий вопрос"
+      },
+      "final": {
+        "title": "Итог игры",
+        "again": "Сыграть ещё раз",
+        "details": "Подробные результаты",
+        "csv": "Экспорт CSV"
       }
     }
   }

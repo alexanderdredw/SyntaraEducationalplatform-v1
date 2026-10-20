@@ -24,6 +24,7 @@ import { formatDateTime } from '@/lib/datetime';
 import { AppLink } from '../app-link';
 import { useErrorText } from '../forms/form-parts';
 import { PageHeader } from '../teacher/parts';
+import { LaunchDialog } from './launch-dialog';
 
 type BattleItem = components['schemas']['BattleQuizListItemDto'];
 
@@ -138,7 +139,13 @@ function BattleTests({ timeZone }: { timeZone: string }) {
                     : t('neverPlayed')}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {!item.archived && item.questionsCount > 0 ? (
+                  <LaunchDialog
+                    battleId={item.id}
+                    trigger={<Button variant="primary-blue">{t('launch')}</Button>}
+                  />
+                ) : null}
                 <AppLink
                   href={`/teacher/battles/${item.id}`}
                   className="inline-flex min-h-[var(--control-h)] items-center rounded-[var(--radius-pill)] border border-[var(--border)] px-4 text-sm font-semibold hover:border-[var(--border-strong)] hover:bg-[var(--field)]"

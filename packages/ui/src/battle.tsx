@@ -19,6 +19,15 @@ export const answerToneClass = (position: number) =>
     'bg-[var(--answer-4)] text-[var(--answer-4-text)]',
   ][(position - 1) % 4]!;
 
+/** Рамка цвета варианта — для приглушённой плитки. */
+const answerBorderClass = (position: number) =>
+  [
+    'border-[var(--answer-1)]',
+    'border-[var(--answer-2)]',
+    'border-[var(--answer-3)]',
+    'border-[var(--answer-4)]',
+  ][(position - 1) % 4]!;
+
 /** Фигура варианта (декоративная: буква и текст передают смысл). */
 export function AnswerShape({ position, className }: { position: number; className?: string }) {
   const Icon = SHAPES[(position - 1) % 4]!;
@@ -69,7 +78,10 @@ export function AnswerTile({
     <>
       <span
         aria-hidden="true"
-        className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-item)] bg-black/15"
+        className={cn(
+          'inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-item)]',
+          state === 'dimmed' || state === 'wrong' ? answerToneClass(position) : 'bg-black/15',
+        )}
       >
         <AnswerShape position={position} className="size-5" />
       </span>
@@ -86,12 +98,15 @@ export function AnswerTile({
       </span>
     </>
   );
+  const dimmed = state === 'dimmed' || state === 'wrong';
+  // Приглушённый вариант — нейтральный фон и рамка цвета варианта (не прозрачность: текст остаётся читаемым, 4,5:1).
   const className = cn(
-    'flex min-h-[72px] w-full items-center gap-3 rounded-[var(--radius-control)] px-4 py-3 outline-offset-4',
-    answerToneClass(position),
+    'flex min-h-[72px] w-full items-center gap-3 rounded-[var(--radius-control)] border-2 px-4 py-3 outline-offset-4',
+    dimmed
+      ? cn('bg-[var(--capsule)] text-[var(--text-muted)]', answerBorderClass(position))
+      : cn('border-transparent', answerToneClass(position)),
     state === 'selected' && 'ring-4 ring-[var(--text)]',
     state === 'correct' && 'ring-4 ring-[var(--success)]',
-    (state === 'dimmed' || state === 'wrong') && 'opacity-45',
   );
   if (!onSelect) {
     return (
