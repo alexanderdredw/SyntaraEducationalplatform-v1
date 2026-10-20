@@ -29,7 +29,7 @@ import { BattleRealtime } from './battle-realtime.gateway';
 export class BattleEngine implements OnModuleDestroy {
   private readonly logger = new Logger(BattleEngine.name);
   private readonly queueConnection: Redis;
-  private readonly queue: Queue;
+  private queueInstance?: Queue;
 
   constructor(
     @Inject(DB) private readonly db: Database,
@@ -39,11 +39,22 @@ export class BattleEngine implements OnModuleDestroy {
     // BullMQ: отдельное соединение с maxRetriesPerRequest = null.
     this.queueConnection = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null, lazyConnect: true });
     this.queueConnection.on('error', () => undefined);
-    this.queue = new Queue(BATTLE_QUEUE, { connection: this.queueConnection });
+  }
+
+  /**
+   * Очередь создаётся при первом таймере: процесс, который не ставит таймеры (например, `pnpm openapi` с фиктивным
+   * Redis), не открывает соединение — иначе отказ подключения после close() падает необработанным 'error'.
+   */
+  private get queue(): Queue {
+    if (!this.queueInstance) {
+      this.queueInstance = new Queue(BATTLE_QUEUE, { connection: this.queueConnection });
+      this.queueInstance.on('error', () => undefined);
+    }
+    return this.queueInstance;
   }
 
   async onModuleDestroy(): Promise<void> {
-    await this.queue.close().catch(() => undefined);
+    await this.queueInstance?.close().catch(() => undefined);
     await this.queueConnection.quit().catch(() => undefined);
   }
 
