@@ -58,24 +58,29 @@ test.describe('Battle: ведущий (B4)', () => {
     const setup = await teacherWithBattle(page);
     const students: Page[] = [];
     const names = ['Асель Каримова', 'Ержан Сейтов', 'Дана Ахметова', 'Лишний Ученик'];
-    for (const name of names) {
+    // Q-BTL-01: двое — ученики класса учителя, двое — не из класса (без кода класса); входят все.
+    for (const [i, name] of names.entries()) {
       const s = await newPage(browser, baseURL!);
       const res = await s.request.post('/api/auth/register-student', {
-        data: { displayName: name, login: `btl.${uid()}`, password: 'student-pass-1', code: setup.classCode },
+        data: {
+          displayName: name,
+          login: `btl.${uid()}`,
+          password: 'student-pass-1',
+          ...(i < 2 ? { code: setup.classCode } : {}),
+        },
       });
       expect(res.status()).toBe(201);
       students.push(s);
     }
 
-    // BT-T03: «Запустить» → класс и настройки → «Создать игру» → лобби.
+    // BT-T03: «Запустить» → настройки (класс не выбирается) → «Создать игру» → лобби.
     await page.goto('/ru/teacher/battles');
     await page
       .getByTestId('battle-card')
       .getByRole('button', { name: ru.battle.teacher.list.launch })
       .click();
     const launch = page.getByTestId('battle-launch');
-    await launch.getByRole('combobox', { name: th.launch.class }).click();
-    await page.getByRole('option', { name: new RegExp(setup.className) }).click();
+    await expect(launch.getByRole('combobox')).toHaveCount(0);
     await expect(launch.getByRole('checkbox', { name: th.launch.leaderboard })).toBeChecked();
     await launch.getByRole('button', { name: th.launch.submit }).click();
     await expect(page).toHaveURL(/\/ru\/teacher\/battle-sessions\/[0-9a-f-]+$/);

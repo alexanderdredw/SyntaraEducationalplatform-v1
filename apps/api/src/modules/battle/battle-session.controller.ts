@@ -71,7 +71,6 @@ export class BattleSessionController {
   /** API-BTL-29 (объявлен до `:sid`). */
   @Get('battle-sessions')
   @ApiQuery({ name: 'battleId', required: false })
-  @ApiQuery({ name: 'classId', required: false })
   @ApiQuery({ name: 'cursor', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiOkResponse({ type: BattleHistoryDto })

@@ -19,7 +19,7 @@ import { answeredKey, BattleEngine } from './battle-engine.service';
 import { battleError } from './battle-session.service';
 import { BattleStateService } from './battle-state.service';
 
-const { battleSessions, battleParticipants, battleAnswers, battleQuizzes, classMemberships, users } = schema;
+const { battleSessions, battleParticipants, battleAnswers, battleQuizzes, users } = schema;
 
 /** BR-BTL-03: не чаще 1 ответа в 200 мс на участника. */
 const ANSWER_INTERVAL_MS = 200;
@@ -27,8 +27,8 @@ const ANSWER_INTERVAL_MS = 200;
 const PROGRESS_INTERVAL_MS = 250;
 
 /**
- * Участие ученика в Battle (SPEC 6.8 API-BTL-40…46, BR-BTL-02/03/07). Вход — только в сессию своего класса;
- * ответ «код не найден» одинаков для несуществующего и чужого кода. Правильность до раскрытия не сообщается.
+ * Участие ученика в Battle (SPEC 6.8 API-BTL-40…46, BR-BTL-02/03/07). Войти может любой вошедший ученик платформы
+ * с действующим кодом — класс не проверяется (Q-BTL-01). Правильность до раскрытия не сообщается.
  */
 @Injectable()
 export class StudentBattleService {
@@ -59,16 +59,8 @@ export class StudentBattleService {
         version: battleSessions.stateVersion,
       })
       .from(battleSessions)
-      .innerJoin(
-        classMemberships,
-        and(
-          eq(classMemberships.classId, battleSessions.classId),
-          eq(classMemberships.studentId, studentId),
-          eq(classMemberships.status, 'active'),
-        ),
-      )
       .where(and(eq(battleSessions.code, code), inArray(battleSessions.status, ['lobby', 'in_progress'])));
-    // BR-BTL-02: код чужого класса — как несуществующий.
+    // BR-BTL-02 (Q-BTL-01): войти может любой вошедший ученик с действующим кодом — без проверки класса.
     if (!session)
       throw battleError(
         HttpStatus.NOT_FOUND,

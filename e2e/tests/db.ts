@@ -31,3 +31,13 @@ export async function insertLegacyClassCode(classId: string, code: string): Prom
     await sql.end();
   }
 }
+
+/** Имитация сессии Battle, запущенной до решения Q-BTL-01 (тогда класс выбирался при запуске). */
+export async function setBattleSessionClass(sessionId: string, classId: string): Promise<void> {
+  const sql = postgres(env('DATABASE_URL'), { max: 1 });
+  try {
+    await sql`UPDATE battle_sessions SET class_id = ${classId} WHERE id = ${sessionId}`;
+  } finally {
+    await sql.end();
+  }
+}

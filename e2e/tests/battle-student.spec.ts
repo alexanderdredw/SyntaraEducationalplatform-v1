@@ -182,7 +182,7 @@ test.describe('Battle: ученик (B3)', () => {
     await teacher.api.dispose();
   });
 
-  test('BR-BTL-07 kicked student sees the message and cannot return; another class gets «код не найден»', async ({
+  test('BR-BTL-07 kicked student sees the message and cannot return; a student of another class joins (Q-BTL-01)', async ({
     page,
     baseURL,
     browser,
@@ -207,7 +207,7 @@ test.describe('Battle: ученик (B3)', () => {
     await join.getByRole('button', { name: ts.join.submit }).click();
     await expect(join.getByRole('alert')).toHaveText(ts.errors.kicked);
 
-    // Ученик другого класса (AC-BTL-04).
+    // Ученик другого класса входит по коду (BR-BTL-02, Q-BTL-01).
     const otherGame = await prepareGame(teacher, 1);
     const ctx = await browser.newContext({ baseURL });
     await acceptCookies(ctx, baseURL);
@@ -217,7 +217,7 @@ test.describe('Battle: ученик (B3)', () => {
     await other.getByTestId('battle-join').getByLabel(ts.join.cell.replace('{n}', '1')).click();
     await other.keyboard.type(game.code);
     await other.getByTestId('battle-join').getByRole('button', { name: ts.join.submit }).click();
-    await expect(other.getByTestId('battle-join').getByRole('alert')).toHaveText(ts.errors.codeNotFound);
+    await expect(other.getByTestId('battle-lobby')).toBeVisible();
     await ctx.close();
     await teacher.api.dispose();
   });

@@ -38,10 +38,12 @@ export class BattleStateService {
   private async context(session: SessionRow) {
     const [row] = await this.db
       .select({ title: battleQuizzes.title, className: classes.name, teacherName: users.displayName })
-      .from(battleQuizzes)
-      .innerJoin(classes, eq(classes.id, session.classId))
-      .innerJoin(users, eq(users.id, session.hostId))
-      .where(eq(battleQuizzes.id, session.battleQuizId));
+      .from(battleSessions)
+      .innerJoin(battleQuizzes, eq(battleQuizzes.id, battleSessions.battleQuizId))
+      // Класс — только у сессий, запущенных до решения Q-BTL-01.
+      .leftJoin(classes, eq(classes.id, battleSessions.classId))
+      .innerJoin(users, eq(users.id, battleSessions.hostId))
+      .where(eq(battleSessions.id, session.id));
     return row!;
   }
 

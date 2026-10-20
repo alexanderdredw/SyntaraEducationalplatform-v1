@@ -24,6 +24,7 @@ import { BattleEngine } from './battle-engine.service';
 import { BattleStateService } from './battle-state.service';
 
 const { battleQuizzes, battleQuestions, battleOptions, battleSessions, battleParticipants, classes } = schema;
+// classes — только чтение названия класса прошедших сессий для истории (BR-CODE-01).
 const BUNDLES: Record<Locale, Messages> = { ru, kk, en };
 
 /** BR-BTL-05: не больше 3 активных сессий у учителя. */
@@ -67,17 +68,12 @@ export class BattleSessionService {
     private readonly classCodes: ClassCodesService,
   ) {}
 
-  /** API-BTL-20: снимок вопросов замораживается при запуске (BR-BTL-05). */
+  /** API-BTL-20: снимок вопросов замораживается при запуске (BR-BTL-05); класс не выбирается (BR-BTL-02). */
   async create(
     hostId: string,
     quizId: string,
     dto: BattleSessionCreateDto,
   ): Promise<{ sessionId: string; code: string }> {
-    const [cls] = await this.db
-      .select({ id: classes.id, schoolId: classes.schoolId })
-      .from(classes)
-      .where(and(eq(classes.id, dto.classId), eq(classes.teacherId, hostId), isNull(classes.archivedAt)));
-    if (!cls) throw battleError(HttpStatus.NOT_FOUND, 'classNotFound');
     const questions = await this.db
       .select()
       .from(battleQuestions)
@@ -137,7 +133,6 @@ export class BattleSessionService {
               .values({
                 battleQuizId: quizId,
                 hostId,
-                classId: cls.id,
                 code,
                 settings,
                 questionsSnapshot: snapshot,
@@ -146,11 +141,10 @@ export class BattleSessionService {
             await this.audit.record(
               {
                 actorId: hostId,
-                schoolId: cls.schoolId,
                 entityType: 'battle_session',
                 entityId: row!.id,
                 action: 'battle_session.created',
-                after: { battleQuizId: quizId, classId: cls.id, questions: snapshot.length },
+                after: { battleQuizId: quizId, questions: snapshot.length },
               },
               tx,
             );
@@ -260,12 +254,11 @@ export class BattleSessionService {
       })
       .from(battleSessions)
       .innerJoin(battleQuizzes, eq(battleQuizzes.id, battleSessions.battleQuizId))
-      .innerJoin(classes, eq(classes.id, battleSessions.classId))
+      .leftJoin(classes, eq(classes.id, battleSessions.classId))
       .where(
         and(
           eq(battleSessions.hostId, hostId),
           query.battleId ? eq(battleSessions.battleQuizId, query.battleId) : undefined,
-          query.classId ? eq(battleSessions.classId, query.classId) : undefined,
           cursorCondition(query.cursor, battleSessions.createdAt, battleSessions.id),
         ),
       )

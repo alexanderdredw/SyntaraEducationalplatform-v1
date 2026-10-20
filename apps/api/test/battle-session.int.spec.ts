@@ -23,7 +23,7 @@ const { battleAnswers, battleParticipants, battleSessions, auditLog } = schema;
 /**
  * Итерация 10.5, этап B2 — движок и реальное время (SM-BTL, BR-BTL-01…08, API-BTL-20…31, 40…46, 6.9):
  * «1 ведущий + 30 ботов» проходят полную игру через SSE; рейтинг совпадает с эталонным расчётом по battle_answers;
- * идемпотентность, поздние ответы, staleState, kicked / full / alreadyStarted, чужой класс, таймер worker.
+ * идемпотентность, поздние ответы, staleState, kicked / full / alreadyStarted, ученик другого класса, таймер worker.
  */
 describe('Battle engine and realtime (integration)', () => {
   let stack: TestStack;
@@ -358,7 +358,7 @@ describe('Battle engine and realtime (integration)', () => {
     expect(row!.status).toBe('finished');
   });
 
-  it('BR-BTL-02, AC-BTL-04, AC-BTL-15 other class → «код не найден»; kicked cannot return; full; alreadyStarted; leave and re-join', async () => {
+  it('BR-BTL-02, AC-BTL-04, AC-BTL-15 another class joins too (Q-BTL-01); kicked cannot return; full; alreadyStarted; leave and re-join', async () => {
     const cls = await newClass(teacher, '9 «В»');
     const otherCls = await newClass(teacher, '10 «Г»');
     const [a, b, c] = [
@@ -377,10 +377,12 @@ describe('Battle engine and realtime (integration)', () => {
         .expect(201)
     ).body;
 
-    const notFound = await as(outsider).post('/api/student/battles/join', { code }).expect(404);
-    expect(notFound.body.fieldErrors.battle).toBe('codeNotFound');
+    // Q-BTL-01: ученик другого класса входит по коду; после выхода место освобождается.
+    await as(outsider).post('/api/student/battles/join', { code }).expect(200);
+    await as(outsider).post(`/api/student/battle-sessions/${sid}/leave`).expect(204);
     const unknown = await as(outsider).post('/api/student/battles/join', { code: 'ZZZ999' }).expect(404);
-    expect(unknown.body.fieldErrors).toEqual(notFound.body.fieldErrors);
+    expect(unknown.body.fieldErrors.battle).toBe('codeNotFound');
+    const stranger = await newStudent(undefined, 'Посторонний');
 
     await as(a).post('/api/student/battles/join', { code }).expect(200);
     await as(b).post('/api/student/battles/join', { code }).expect(200);
@@ -412,9 +414,9 @@ describe('Battle engine and realtime (integration)', () => {
     const d = await newStudent(cls.code, 'Поздний');
     const late = await as(d).post('/api/student/battles/join', { code }).expect(409);
     expect(late.body.fieldErrors.battle).toBe('alreadyStarted');
-    // Выгнанный и чужой не отвечают.
+    // Выгнанный и не участник не отвечают.
     await answer(a, sid, 0, 1).expect(409);
-    await answer(outsider, sid, 0, 1).expect(404);
+    await answer(stranger, sid, 0, 1).expect(404);
     await await goOk(sid, 'finish');
     const [kickedRow] = await stack.db
       .select()
@@ -465,7 +467,7 @@ describe('Battle engine and realtime (integration)', () => {
     const cls = await newClass(teacher, '6 «А»');
     await newStudent(cls.code, 'Один');
     const battleId = await newBattle(teacher, 1);
-    // Тест без вопросов — 422; чужой класс — 404.
+    // Тест без вопросов — 422; класс больше не выбирается — переданный classId игнорируется (Q-BTL-01).
     const empty = (
       await as(teacher).post('/api/teacher/battles', { title: 'Пусто', locale: 'ru' }).expect(201)
     ).body.id;
@@ -474,9 +476,12 @@ describe('Battle engine and realtime (integration)', () => {
       .expect(422);
     expect(noQ.body.fieldErrors.battle).toBe('noQuestions');
     const foreignClass = await newClass(other, 'Чужой');
-    await as(teacher)
-      .post(`/api/teacher/battles/${battleId}/sessions`, { classId: foreignClass.id })
-      .expect(404);
+    const ignored = (
+      await as(teacher)
+        .post(`/api/teacher/battles/${battleId}/sessions`, { classId: foreignClass.id })
+        .expect(201)
+    ).body.sessionId;
+    await go(ignored, 'cancel');
     // Без участников «Начать» — 422.
     const lonely = (
       await as(teacher).post(`/api/teacher/battles/${battleId}/sessions`, { classId: cls.id }).expect(201)

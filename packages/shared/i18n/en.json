@@ -1332,9 +1332,6 @@
         "official": "Platform"
       },
       "history": {
-        "classLink": "This class's Battles",
-        "filtered": "Showing games of one class.",
-        "all": "All games",
         "empty": "No games yet",
         "participants": "players: {count}",
         "status": {
@@ -1465,10 +1462,6 @@
     "host": {
       "launch": {
         "title": "New game",
-        "class": "Class",
-        "choose": "Choose a class",
-        "classOption": "{name} · students: {count}",
-        "noClasses": "Create a class and invite students first",
         "settings": "Settings",
         "leaderboard": "Leaderboard after each question",
         "shuffleQuestions": "Shuffle questions",

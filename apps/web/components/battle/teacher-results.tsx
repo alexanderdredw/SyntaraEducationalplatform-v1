@@ -29,16 +29,15 @@ const tone = (percent: number): ProgressTone =>
 const linkClass =
   'inline-flex min-h-11 items-center rounded-[var(--radius-pill)] border border-[var(--border)] px-4 text-sm font-semibold hover:border-[var(--border-strong)] hover:bg-[var(--field)]';
 
-/** Вкладка «История игр» (BT-T01, API-BTL-29): `classId` — фильтр «Battle этого класса» (REQ-BTL-T11). */
-export function TeacherBattleHistory({ classId, timeZone }: { classId?: string; timeZone: string }) {
+/** Вкладка «История игр» (BT-T01, API-BTL-29); класс показывается только у старых сессий, где он был выбран. */
+export function TeacherBattleHistory({ timeZone }: { timeZone: string }) {
   const t = useTranslations('battle.teacher.history');
   const locale = useLocale();
   const history = useInfiniteQuery({
-    queryKey: ['teacher', 'battle-history', classId ?? null],
+    queryKey: ['teacher', 'battle-history'],
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams({ limit: '20' });
-      if (classId) params.set('classId', classId);
       if (pageParam) params.set('cursor', pageParam);
       const res = await apiRequest<History>(`/api/teacher/battle-sessions?${params}`, { locale });
       if (res.kind !== 'ok') throw new Error('history');
@@ -49,14 +48,6 @@ export function TeacherBattleHistory({ classId, timeZone }: { classId?: string; 
   const items = history.data?.pages.flatMap((p) => p.items) ?? [];
   return (
     <div className="flex flex-col gap-3" data-testid="battle-history">
-      {classId ? (
-        <p className="flex flex-wrap items-center gap-3 text-sm">
-          {t('filtered')}
-          <AppLink href="/teacher/battles?tab=history" className="underline">
-            {t('all')}
-          </AppLink>
-        </p>
-      ) : null}
       {history.isPending ? <Skeleton className="h-24" /> : null}
       {!history.isPending && items.length === 0 ? <EmptyState title={t('empty')} /> : null}
       <ul className="flex flex-col gap-3">
@@ -68,9 +59,14 @@ export function TeacherBattleHistory({ classId, timeZone }: { classId?: string; 
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="font-semibold [overflow-wrap:anywhere]">{item.battleTitle}</span>
                   <span className="text-sm text-[var(--text-muted)]">
-                    {item.className}
-                    {item.startedAt ? ` · ${formatDateTime(item.startedAt, timeZone)}` : ''} ·{' '}
-                    {t('participants', { count: item.participantsCount })} · {t(`status.${item.status}`)}
+                    {[
+                      item.className,
+                      item.startedAt ? formatDateTime(item.startedAt, timeZone) : null,
+                      t('participants', { count: item.participantsCount }),
+                      t(`status.${item.status}`),
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
                   </span>
                 </div>
                 <AppLink
@@ -140,10 +136,13 @@ export function TeacherBattleResults({ sessionId, timeZone }: { sessionId: strin
                 {data.session.battleTitle}
               </span>
               <span className="text-sm text-[var(--text-muted)]">
-                {data.session.className}
-                {data.session.startedAt
-                  ? ` · ${formatDateTime(data.session.startedAt, timeZone)}`
-                  : ''} · {t('participants', { count: data.session.participantsCount })}
+                {[
+                  data.session.className,
+                  data.session.startedAt ? formatDateTime(data.session.startedAt, timeZone) : null,
+                  t('participants', { count: data.session.participantsCount }),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
               </span>
             </div>
             <a href={`/api/teacher/battle-sessions/${sessionId}/results.csv`} className={linkClass}>

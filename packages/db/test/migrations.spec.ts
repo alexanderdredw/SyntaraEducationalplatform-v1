@@ -41,6 +41,7 @@ describe('migrations (integration)', () => {
       '0005_base_content',
       '0006_subject_position',
       '0007_battle',
+      '0008_battle_class_optional',
     ]);
     expect(await tables()).toBe(61);
     expect(await enums()).toBe(18);
@@ -48,6 +49,7 @@ describe('migrations (integration)', () => {
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0008_battle_class_optional',
       '0007_battle',
       '0006_subject_position',
       '0005_base_content',
@@ -71,6 +73,15 @@ describe('migrations (integration)', () => {
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
     expect(await tables()).toBe(61);
+    // 0008: класс сессии Battle необязателен (Q-BTL-01); откат возвращает NOT NULL.
+    const classNullable = () =>
+      count(
+        db,
+        sql`select count(*) as n from information_schema.columns where table_name = 'battle_sessions' and column_name = 'class_id' and is_nullable = 'YES'`,
+      );
+    expect(await classNullable()).toBe(1);
+    expect(await rollback(db, 1)).toEqual(['0008_battle_class_optional']);
+    expect(await classNullable()).toBe(0);
     // 0007: таблицы, функции RLS и перечисления Battle (5.9).
     expect(await rollback(db, 1)).toEqual(['0007_battle']);
     expect(await tables()).toBe(55);
@@ -107,6 +118,6 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(8);
+    expect(await appliedMigrations(db)).toHaveLength(9);
   });
 });

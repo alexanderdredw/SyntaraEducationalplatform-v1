@@ -3096,8 +3096,6 @@ export interface components {
             maxParticipants: number;
         };
         BattleSessionCreateBody: {
-            /** Format: uuid */
-            classId: string;
             settings?: components["schemas"]["BattleSettingsBody"];
         };
         BattleSessionCreatedDto: {
@@ -3110,7 +3108,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             battleTitle: string;
-            className: string;
+            /** @description Класс прошедшей сессии (до Q-BTL-01) */
+            className: string | null;
             /** @enum {string} */
             status: "lobby" | "in_progress" | "finished" | "cancelled";
             participantsCount: number;
@@ -7290,7 +7289,6 @@ export interface operations {
             query?: {
                 limit?: unknown;
                 cursor?: unknown;
-                classId?: unknown;
                 battleId?: unknown;
             };
             header?: never;

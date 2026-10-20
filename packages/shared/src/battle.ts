@@ -27,9 +27,12 @@ export const BATTLE_DEFAULT_TIME_LIMIT: BattleTimeLimit = 20;
 export const BattleQuestionType = z.enum(['single_choice', 'true_false']);
 export type BattleQuestionType = z.infer<typeof BattleQuestionType>;
 
-/** PH-45 `battle` — значения по умолчанию вопросов владельца (TODO(OWNER) Q-BTL-01…10, SPEC 7.12). */
+/**
+ * PH-45 `battle` — значения по умолчанию вопросов владельца (Q-BTL-02…10 — TODO(OWNER), SPEC 7.12).
+ * Q-BTL-01 решён: войти может любой вошедший ученик платформы с действующим кодом (`join_scope = 'platform'`).
+ */
 export interface BattleConfig {
-  join_scope: 'class';
+  join_scope: 'platform';
   default_time_limit_sec: number;
   time_limits_sec: number[];
   late_join_default: boolean;
@@ -135,9 +138,8 @@ export const BattleSettings = z.object({
 });
 export type BattleSettings = z.infer<typeof BattleSettings>;
 
-/** API-BTL-20 */
+/** API-BTL-20: класс не выбирается — Battle не зависит от классов (BR-BTL-02, Q-BTL-01). */
 export const BattleSessionCreateDto = z.object({
-  classId: z.uuid('required'),
   settings: BattleSettings.default(BattleSettings.parse({})),
 });
 export type BattleSessionCreateDto = z.infer<typeof BattleSessionCreateDto>;
@@ -313,8 +315,9 @@ interface BattleSnapshotBase {
 /** API-BTL-21 */
 export interface BattleHostSnapshot extends BattleSnapshotBase {
   code: string;
-  classId: string;
-  className: string;
+  /** Класс есть только у сессий, запущенных до решения Q-BTL-01. */
+  classId: string | null;
+  className: string | null;
   battleQuizId: string;
   settings: BattleSettings;
   participants: BattleParticipantView[];
@@ -336,7 +339,6 @@ export interface BattleStudentSnapshot extends BattleSnapshotBase {
 /** API-BTL-29 / API-BTL-45: история игр (курсорная пагинация API-GEN-07). */
 export const BattleHistoryQuery = z.object({
   battleId: z.uuid('required').optional(),
-  classId: z.uuid('required').optional(),
   cursor: z.string().max(200).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
@@ -367,7 +369,8 @@ export interface BattleResults {
   session: {
     id: string;
     battleTitle: string;
-    className: string;
+    /** Класс прошедшей сессии, если был выбран при запуске (до Q-BTL-01). */
+    className: string | null;
     teacherName: string;
     status: BattleStatusName;
     startedAt: string | null;

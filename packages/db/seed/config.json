@@ -407,7 +407,7 @@
       "key": "battle",
       "note": "PH-45",
       "value": {
-        "join_scope": "class",
+        "join_scope": "platform",
         "default_time_limit_sec": 20,
         "time_limits_sec": [5, 10, 20, 30, 60, 90],
         "late_join_default": false,

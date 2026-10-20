@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { type APIRequestContext, expect, request, test, type Page } from '@playwright/test';
+import { setBattleSessionClass } from './db';
 import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
 
 const ru = bundles.ru;
@@ -36,14 +37,18 @@ async function playedGame(page: Page, baseURL: string) {
       options: ['A', 'B'].map((l, p) => ({ text: `Вариант ${l}${i}`, isCorrect: p === 0 })),
     });
   }
-  const { sessionId, code } = await post(page, `/api/teacher/battles/${battle.id}/sessions`, {
-    classId: cls.id,
-  });
+  const { sessionId, code } = await post(page, `/api/teacher/battles/${battle.id}/sessions`, {});
   const students: Array<{ api: APIRequestContext; token: string }> = [];
-  for (const name of ['Асель Каримова', 'Ержан Сейтов']) {
+  // Q-BTL-01: один ученик из класса, второй — без класса.
+  for (const [i, name] of ['Асель Каримова', 'Ержан Сейтов'].entries()) {
     const api = await request.newContext({ baseURL });
     await api.post('/api/auth/register-student', {
-      data: { displayName: name, login: `btl.r.${uid()}`, password: 'student-pass-1', code: invite.code },
+      data: {
+        displayName: name,
+        login: `btl.r.${uid()}`,
+        password: 'student-pass-1',
+        ...(i === 0 ? { code: invite.code } : {}),
+      },
     });
     const token = (await api.storageState()).cookies.find((c) => c.name === 'csrf')!.value;
     await api.post('/api/student/battles/join', { data: { code }, headers: { 'X-CSRF-Token': token } });
@@ -69,23 +74,26 @@ async function playedGame(page: Page, baseURL: string) {
   await answer(1, 1, 1);
   await step('next'); // последний: reveal → finished
   for (const s of students) await s.api.dispose();
-  return { sessionId, classId: cls.id as string };
+  return { sessionId, classId: cls.id as string, className: cls.name as string };
 }
 
 /** Итерация 10.5, этап B5: история и результаты (REQ-BTL-T01, REQ-BTL-T09, REQ-BTL-T11; AC-BTL-14). */
 test.describe('Battle: история и результаты (B5)', () => {
   test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
 
-  test('AC-BTL-14 history → results: podium, by question, hard questions, by student, CSV; class link filters', async ({
+  test('AC-BTL-14 history → results: podium, by question, hard questions, by student, CSV; no class link or filter', async ({
     page,
     baseURL,
   }) => {
     const game = await playedGame(page, baseURL!);
 
-    // «Battle этого класса» из карточки класса → история, отфильтрованная по классу.
+    // Q-BTL-01: в карточке класса больше нет ссылки «Battle этого класса».
     await page.goto(`/ru/teacher/classes/${game.classId}/analytics`);
-    await page.getByRole('link', { name: th.classLink }).click();
-    await expect(page).toHaveURL(new RegExp(`tab=history&classId=${game.classId}`));
+    await expect(page.getByTestId('class-name')).toHaveText(game.className);
+    // Текст ссылки из удалённого ключа i18n battle.teacher.history.classLink.
+    await expect(page.getByText('Battle этого класса')).toHaveCount(0);
+
+    await page.goto('/ru/teacher/battles?tab=history');
     const item = page.getByTestId('battle-history-item');
     await expect(item).toHaveCount(1);
     await expect(item).toContainText(th.status.finished);
@@ -117,5 +125,14 @@ test.describe('Battle: история и результаты (B5)', () => {
     expect(lines).toHaveLength(3);
     expect(lines[0]).toContain(`${ru.battle.csv.rank};${ru.battle.csv.student}`);
     expect(lines[1]).toContain('Асель К.');
+
+    // Сессия без класса — класса в строке истории нет; старая сессия с классом показывает его.
+    await page.goto('/ru/teacher/battles?tab=history');
+    await expect(page.getByTestId('battle-history-item')).not.toContainText(game.className);
+    await setBattleSessionClass(game.sessionId, game.classId);
+    await page.reload();
+    await expect(page.getByTestId('battle-history-item')).toContainText(game.className);
+    await page.goto(`/ru/teacher/battle-sessions/${game.sessionId}/results`);
+    await expect(page.getByText(game.className)).toBeVisible();
   });
 });

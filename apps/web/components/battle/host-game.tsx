@@ -215,11 +215,7 @@ export function HostGame({ sessionId }: { sessionId: string }) {
 
   async function playAgain() {
     if (!snap) return;
-    const res = await createSession(
-      snap.battleQuizId,
-      { classId: snap.classId, settings: snap.settings },
-      locale,
-    );
+    const res = await createSession(snap.battleQuizId, { settings: snap.settings }, locale);
     if (res.ok) router.push(`/teacher/battle-sessions/${res.sessionId}`);
     else setError(t.has(`errors.${res.error}`) ? t(`errors.${res.error}`) : t('errors.unknown'));
   }
@@ -273,7 +269,7 @@ export function HostGame({ sessionId }: { sessionId: string }) {
               >
                 {snap.battleTitle}
               </h1>
-              <p className="text-sm text-[var(--text-muted)]">{snap.className}</p>
+              {snap.className ? <p className="text-sm text-[var(--text-muted)]">{snap.className}</p> : null}
             </div>
             {snap.status !== 'finished' && snap.status !== 'cancelled' ? (
               <Button variant="secondary" onClick={toggleProjector} aria-pressed={projector}>

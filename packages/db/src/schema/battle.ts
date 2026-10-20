@@ -111,9 +111,8 @@ export const battleSessions = pgTable(
     hostId: uuid('host_id')
       .notNull()
       .references(() => users.id),
-    classId: uuid('class_id')
-      .notNull()
-      .references(() => classes.id),
+    // Q-BTL-01 решён (2026-10-20): Battle не зависит от классов; у прошедших сессий класс сохраняется.
+    classId: uuid('class_id').references(() => classes.id),
     code: char('code', { length: 6 }).notNull(),
     status: battleSessionStatusEnum('status').notNull().default('lobby'),
     phase: battlePhaseEnum('phase').notNull().default('lobby'),

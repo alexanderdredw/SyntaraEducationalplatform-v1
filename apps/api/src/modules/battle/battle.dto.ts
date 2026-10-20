@@ -137,9 +137,8 @@ class BattleSettingsBody {
   @ApiProperty({ default: 100, minimum: 1, maximum: 100 }) maxParticipants: number;
 }
 
-/** API-BTL-20 */
+/** API-BTL-20: класс не выбирается (BR-BTL-02, Q-BTL-01). */
 export class BattleSessionCreateBody {
-  @ApiProperty({ format: 'uuid' }) classId: string;
   @ApiProperty({ type: BattleSettingsBody, required: false }) settings?: BattleSettingsBody;
 }
 
@@ -175,7 +174,8 @@ export class BattleResultsDto {
 class BattleHistoryItemDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() battleTitle: string;
-  @ApiProperty() className: string;
+  @ApiProperty({ type: String, nullable: true, description: 'Класс прошедшей сессии (до Q-BTL-01)' })
+  className: string | null;
   @ApiProperty({ enum: ['lobby', 'in_progress', 'finished', 'cancelled'] }) status: string;
   @ApiProperty() participantsCount: number;
   @ApiProperty() questionsCount: number;

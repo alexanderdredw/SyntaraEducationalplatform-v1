@@ -1332,9 +1332,6 @@
         "official": "Базовый"
       },
       "history": {
-        "classLink": "Battle этого класса",
-        "filtered": "Показаны игры одного класса.",
-        "all": "Все игры",
         "empty": "Игр пока не было",
         "participants": "участников: {count}",
         "status": {
@@ -1465,10 +1462,6 @@
     "host": {
       "launch": {
         "title": "Новая игра",
-        "class": "Класс",
-        "choose": "Выберите класс",
-        "classOption": "{name} · учеников: {count}",
-        "noClasses": "Сначала создайте класс и пригласите учеников",
         "settings": "Настройки",
         "leaderboard": "Промежуточный рейтинг после каждого вопроса",
         "shuffleQuestions": "Перемешать вопросы",

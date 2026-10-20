@@ -4447,12 +4447,6 @@
             "schema": {}
           },
           {
-            "name": "classId",
-            "required": false,
-            "in": "query",
-            "schema": {}
-          },
-          {
             "name": "battleId",
             "required": false,
             "in": "query",
@@ -9907,17 +9901,10 @@
       "BattleSessionCreateBody": {
         "type": "object",
         "properties": {
-          "classId": {
-            "type": "string",
-            "format": "uuid"
-          },
           "settings": {
             "$ref": "#/components/schemas/BattleSettingsBody"
           }
-        },
-        "required": [
-          "classId"
-        ]
+        }
       },
       "BattleSessionCreatedDto": {
         "type": "object",
@@ -9948,7 +9935,9 @@
             "type": "string"
           },
           "className": {
-            "type": "string"
+            "type": "string",
+            "nullable": true,
+            "description": "Класс прошедшей сессии (до Q-BTL-01)"
           },
           "status": {
             "type": "string",
