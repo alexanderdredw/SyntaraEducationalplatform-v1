@@ -27,6 +27,26 @@ export async function acceptCookies(context: BrowserContext, baseURL: string | u
 
 export const isMobile = (page: Page) => (page.viewportSize()?.width ?? 1440) < 1024;
 
+/**
+ * Смена языка интерфейса из хедера: ≥ 1024 px — выпадающий список, < 1024 px — сегменты RU/KK/EN
+ * в мобильном меню (UX-10; меню остаётся открытым — закрываем Escape).
+ */
+export async function switchLocale(page: Page, code: 'ru' | 'kk' | 'en') {
+  if (isMobile(page)) {
+    await page.getByRole('button', { name: ru.shell.menu }).click();
+    const dialog = page.getByRole('dialog', { name: ru.shell.menu });
+    await dialog.getByRole('radio', { name: code.toUpperCase() }).click();
+    await expect(page).toHaveURL(new RegExp(`/${code}(/|\\?|#|$)`));
+    await page.keyboard.press('Escape');
+    return;
+  }
+  await page
+    .getByTestId('public-header')
+    .getByRole('button', { name: new RegExp(ru.shell.language) })
+    .click();
+  await page.getByRole('menuitem', { name: new RegExp(code.toUpperCase()) }).click();
+}
+
 /** DoD 5 / REQ-NFR-A11Y-01: axe без нарушений уровня serious и critical. */
 export async function expectNoSeriousA11yViolations(page: Page) {
   // После клиентского перехода Next.js заново выставляет <title> (метаданные корневого layout) — ждём его.

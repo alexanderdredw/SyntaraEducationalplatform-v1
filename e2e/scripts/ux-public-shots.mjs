@@ -1,5 +1,5 @@
 /* global document -- код внутри page.evaluate выполняется в браузере */
-// Скриншоты «после» части B (docs/UX_TZ.md, UX-01…UX-09): docs/media/ux/after/UX-NN-*.png.
+// Скриншоты «после» части B (docs/UX_TZ.md, UX-01…UX-10): docs/media/ux/after/UX-NN-*.png.
 // Запуск: node e2e/scripts/ux-public-shots.mjs [baseURL]. Нужны web, api и seed `demo`. Гость, тёмная тема, RU.
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -16,7 +16,7 @@ const browser = await chromium.launch();
 async function shot(
   name,
   path,
-  { width = 1440, height = 900, theme = 'dark', fullPage = false, testId } = {},
+  { width = 1440, height = 900, theme = 'dark', fullPage = false, testId, openMenu = false } = {},
 ) {
   const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
   await context.addCookies([
@@ -27,6 +27,8 @@ async function shot(
   await page.goto(`${base}${path}`, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: NO_MOTION });
   await page.evaluate(() => document.fonts.ready);
+  // UX-10: мобильное меню в открытом состоянии.
+  if (openMenu) await page.getByRole('button', { name: 'Меню', exact: true }).click();
   const target = testId ? page.getByTestId(testId) : page;
   // Снимок блока: закреплённый хедер не перекрывает верх секции.
   if (testId) await page.addStyleTag({ content: 'header{position:static!important}' });
@@ -58,4 +60,9 @@ await shot('UX-08-about-team', '/ru/about', { testId: 'about-team' });
 await shot('UX-09-schools-full', '/ru/schools', { fullPage: true });
 await shot('UX-09-schools-full-390', '/ru/schools', { width: 390, fullPage: true });
 await shot('UX-09-schools-full-light', '/ru/schools', { fullPage: true, theme: 'light' });
+await shot('UX-10-closed-390', '/ru/support', { width: 390, height: 844 });
+await shot('UX-10-open-390', '/ru/support', { width: 390, height: 844, openMenu: true });
+await shot('UX-10-open-320', '/ru/support', { width: 320, height: 640, openMenu: true });
+await shot('UX-10-open-light-390', '/ru/support', { width: 390, height: 844, theme: 'light', openMenu: true });
+
 await browser.close();

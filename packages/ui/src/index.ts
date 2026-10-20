@@ -49,4 +49,5 @@ export {
   BrandMark,
   Wordmark,
   Capsule,
+  HeaderBar,
 } from './layout';

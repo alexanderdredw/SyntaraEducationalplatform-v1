@@ -13,10 +13,22 @@ import { cn } from './cn';
 export function Header({ children, className, ...props }: HTMLAttributes<HTMLElement>) {
   return (
     <header className={cn('sticky top-0 z-30 px-2 pt-2.5 sm:px-4', className)} {...props}>
-      <div className="flex min-h-[60px] flex-wrap items-center gap-2 rounded-[18px] border border-[var(--chrome-border)] bg-[var(--chrome)] px-3 py-1.5 shadow-chrome">
-        {children}
-      </div>
+      <HeaderBar>{children}</HeaderBar>
     </header>
+  );
+}
+
+/** Панель-капсула хедера; повторяется вверху открытого мобильного меню (UX-10), чтобы панель не «прыгала». */
+export function HeaderBar({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'flex min-h-[60px] flex-wrap items-center gap-2 rounded-[18px] border border-[var(--chrome-border)] bg-[var(--chrome)] px-3 py-1.5 shadow-chrome',
+        className,
+      )}
+    >
+      {children}
+    </div>
   );
 }
 

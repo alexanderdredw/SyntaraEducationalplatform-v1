@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, isMobile } from './support';
+import { acceptCookies, bundles, expectNoSeriousA11yViolations, switchLocale } from './support';
 
 const ru = bundles.ru;
 const d = ru.home.demo;
@@ -188,19 +188,7 @@ test.describe('Публичный помощник /ai', () => {
     await page.goto('/ru/ai');
     await page.getByRole('button', { name: ru.ai.quick.language.question }).click();
     await expect(lastAnswer(page)).toHaveAttribute('data-status', 'complete');
-    if (isMobile(page)) {
-      await page.getByRole('button', { name: ru.shell.menu }).click();
-      await page
-        .getByRole('dialog', { name: ru.shell.menu })
-        .getByRole('button', { name: new RegExp(ru.shell.language) })
-        .click();
-    } else {
-      await page
-        .getByTestId('public-header')
-        .getByRole('button', { name: new RegExp(ru.shell.language) })
-        .click();
-    }
-    await page.getByRole('menuitem', { name: /EN/ }).click();
+    await switchLocale(page, 'en');
     await expect(page).toHaveURL(/\/en\/ai$/);
     await expect(page.getByTestId('ai-user-message')).toHaveCount(1);
     await page.getByRole('button', { name: bundles.en.ai.chat.clear }).click();

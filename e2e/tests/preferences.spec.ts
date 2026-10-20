@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { acceptCookies, bundles, isMobile } from './support';
+import { acceptCookies, bundles, isMobile, switchLocale } from './support';
 
 const ru = bundles.ru;
 
@@ -65,9 +65,7 @@ test.describe('Язык, тема, трафик, cookie', () => {
         (window as unknown as { __noReload: boolean }).__noReload = true;
       });
 
-      const area = await controls(page);
-      await area.getByRole('button', { name: new RegExp(ru.shell.language) }).click();
-      await page.getByRole('menuitem', { name: /KK/ }).click();
+      await switchLocale(page, 'kk');
 
       await expect(page).toHaveURL(/\/kk$/);
       await expect(page.locator('html')).toHaveAttribute('lang', 'kk');
@@ -88,9 +86,7 @@ test.describe('Язык, тема, трафик, cookie', () => {
 
     test('REQ-GEN-PREF-01 language switch keeps the current page, query and anchor', async ({ page }) => {
       await page.goto('/ru/about?x=1#teacher');
-      const area = await controls(page);
-      await area.getByRole('button', { name: new RegExp(ru.shell.language) }).click();
-      await page.getByRole('menuitem', { name: /EN/ }).click();
+      await switchLocale(page, 'en');
       await expect(page).toHaveURL(/\/en\/about\?x=1#teacher$/);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(bundles.en.about.hero.title);
     });
@@ -139,10 +135,13 @@ test.describe('Язык, тема, трафик, cookie', () => {
       const area = await controls(page);
       const toggle = area.locator('[data-testid="data-saver-toggle"]:visible');
       await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-      await expect(toggle).toHaveAccessibleName(ru.shell.dataSaver.off);
+      // В мобильном меню (UX-10) имя кнопки — «Экономия трафика», состояние — aria-pressed и подсказка.
+      const mobile = isMobile(page);
+      await expect(toggle).toHaveAccessibleName(mobile ? ru.shell.dataSaver.label : ru.shell.dataSaver.off);
       await toggle.click();
       await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-      await expect(toggle).toHaveAccessibleName(ru.shell.dataSaver.on);
+      if (mobile) await expect(toggle).toHaveAttribute('title', ru.shell.dataSaver.on);
+      else await expect(toggle).toHaveAccessibleName(ru.shell.dataSaver.on);
       await expect(page.locator('html')).toHaveAttribute('data-data-saver', 'true');
       if (isMobile(page)) await page.keyboard.press('Escape');
       await expect(page.locator('[data-decorative]')).toBeHidden();
@@ -153,6 +152,14 @@ test.describe('Язык, тема, трафик, cookie', () => {
     test('REQ-GEN-PREF-02 all three languages are available (PH-04)', async ({ page }) => {
       await page.goto('/ru');
       const area = await controls(page);
+      if (isMobile(page)) {
+        // UX-10: сегменты RU / KK / EN в мобильном меню.
+        for (const code of ['RU', 'KK', 'EN']) {
+          await expect(area.getByRole('radio', { name: code })).toBeEnabled();
+        }
+        await expect(area.getByText(ru.locale.soon)).toHaveCount(0);
+        return;
+      }
       await area.getByRole('button', { name: new RegExp(ru.shell.language) }).click();
       for (const code of ['RU', 'KK', 'EN']) {
         const item = page.getByRole('menuitem', { name: new RegExp(code) });

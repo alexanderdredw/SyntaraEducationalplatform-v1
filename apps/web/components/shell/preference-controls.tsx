@@ -51,15 +51,30 @@ function useSwitchLocale() {
 }
 
 /** Языки сегментами RU / KK / EN (экран «Как продолжить?», UX-04); логика — как у LanguageSwitcher. */
-export function LanguageSegments({ enabledLocales }: { enabledLocales: readonly Locale[] }) {
+export function LanguageSegments({
+  enabledLocales,
+  stretch = false,
+  onBeforeSwitch,
+}: {
+  enabledLocales: readonly Locale[];
+  /** На всю ширину (мобильное меню, UX-10). */
+  stretch?: boolean;
+  /** Вызывается перед сменой языка (мобильное меню запоминает, что его нужно снова открыть). */
+  onBeforeSwitch?: () => void;
+}) {
   const ts = useTranslations('shell');
   const locale = useLocale() as Locale;
   const switchTo = useSwitchLocale();
   return (
     <SegmentedControl
       label={ts('language')}
+      stretch={stretch}
       value={locale}
-      onValueChange={(v) => switchTo(v as Locale)}
+      onValueChange={(v) => {
+        if (v === locale) return;
+        onBeforeSwitch?.();
+        switchTo(v as Locale);
+      }}
       options={LOCALES.map((code) => ({
         value: code,
         label: code.toUpperCase(),
@@ -177,6 +192,53 @@ export function DataSaverToggle({ compact = false }: { compact?: boolean }) {
           </span>
         </span>
       )}
+    </button>
+  );
+}
+
+/** Круглая кнопка-значок блока «Настройки» мобильного меню (UX-10): 48 × 48 px, рамка. */
+const roundControlClass =
+  'inline-flex size-12 items-center justify-center rounded-full border border-[var(--capsule-border)] bg-[var(--capsule)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]';
+
+/** Тема в мобильном меню (UX-10): «Тёмная тема» с aria-pressed; подсказка — текущее состояние. */
+export function MenuThemeButton() {
+  const t = useTranslations('shell.theme');
+  const { setTheme } = usePreferences();
+  const current = useCurrentTheme();
+  const dark = current === 'dark';
+  return (
+    <button
+      type="button"
+      className={roundControlClass}
+      onClick={() => setTheme(dark ? 'light' : 'dark')}
+      aria-label={t('dark')}
+      aria-pressed={dark}
+      title={dark ? t('darkOn') : t('darkOff')}
+      data-testid="theme-toggle"
+    >
+      {dark ? <Sun aria-hidden="true" className="size-5" /> : <Moon aria-hidden="true" className="size-5" />}
+    </button>
+  );
+}
+
+/** Экономия трафика в мобильном меню (UX-10): включённый режим — синяя рамка и значок. */
+export function MenuDataSaverButton() {
+  const t = useTranslations('shell.dataSaver');
+  const { dataSaver, setDataSaver } = usePreferences();
+  return (
+    <button
+      type="button"
+      className={cn(
+        roundControlClass,
+        dataSaver && 'border-[var(--accent)] text-[var(--accent-bright)] hover:border-[var(--accent)]',
+      )}
+      onClick={() => setDataSaver(!dataSaver)}
+      aria-label={t('label')}
+      aria-pressed={dataSaver}
+      title={dataSaver ? t('on') : t('off')}
+      data-testid="data-saver-toggle"
+    >
+      <Wifi aria-hidden="true" className="size-5" />
     </button>
   );
 }

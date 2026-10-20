@@ -83,12 +83,15 @@ export function SegmentedControl({
   onValueChange,
   label,
   className,
+  stretch = false,
 }: {
   options: SegmentOption[];
   value: string;
   onValueChange: (value: string) => void;
   label: string;
   className?: string;
+  /** На всю ширину, сегменты равной ширины, выбранный — синий градиент (мобильное меню, UX-10). */
+  stretch?: boolean;
 }) {
   return (
     <ToggleGroup.Root
@@ -100,6 +103,7 @@ export function SegmentedControl({
       aria-label={label}
       className={cn(
         'inline-flex w-fit max-w-full flex-wrap gap-1 rounded-[var(--radius-pill)] border border-[var(--capsule-border)] bg-[var(--capsule)] p-1',
+        stretch && 'flex w-full flex-nowrap',
         className,
       )}
     >
@@ -108,7 +112,12 @@ export function SegmentedControl({
           key={o.value}
           value={o.value}
           disabled={o.disabled}
-          className="min-h-[var(--control-h)] rounded-[var(--radius-pill)] px-3.5 text-sm text-[var(--text-muted)] not-disabled:hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=on]:bg-[var(--accent-strong)] data-[state=on]:text-white"
+          className={cn(
+            'min-h-[var(--control-h)] rounded-[var(--radius-pill)] px-3.5 text-sm text-[var(--text-muted)] not-disabled:hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=on]:bg-[var(--accent-strong)] data-[state=on]:text-white',
+            // Градиент к более светлому синему (референс UX-10), белый текст остаётся читаемым.
+            stretch &&
+              'flex-1 text-[15px] font-semibold data-[state=on]:bg-[linear-gradient(90deg,var(--accent-strong),var(--accent))]',
+          )}
         >
           {o.label}
           {o.hint ? <span className="ml-1 text-xs">{o.hint}</span> : null}

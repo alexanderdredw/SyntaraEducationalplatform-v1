@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Request } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, isMobile } from './support';
+import { acceptCookies, bundles, expectNoSeriousA11yViolations, isMobile, switchLocale } from './support';
 
 const ru = bundles.ru;
 const sr = ru.schoolRequest;
@@ -200,19 +200,7 @@ test.describe('Формы (SM-FORM)', () => {
   test('AC-GEN-02 a half-filled form survives a language switch', async ({ page }) => {
     await page.goto('/ru/schools/request');
     await page.getByLabel(sr.fields.schoolName).fill('Школа №5');
-    if (isMobile(page)) {
-      await page.getByRole('button', { name: ru.shell.menu }).click();
-      await page
-        .getByRole('dialog', { name: ru.shell.menu })
-        .getByRole('button', { name: new RegExp(ru.shell.language) })
-        .click();
-    } else {
-      await page
-        .getByTestId('public-header')
-        .getByRole('button', { name: new RegExp(ru.shell.language) })
-        .click();
-    }
-    await page.getByRole('menuitem', { name: /KK/ }).click();
+    await switchLocale(page, 'kk');
     await expect(page).toHaveURL(/\/kk\/schools\/request$/);
     await expect(page.getByLabel(bundles.kk.schoolRequest.fields.schoolName)).toHaveValue('Школа №5');
   });

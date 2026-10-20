@@ -73,7 +73,10 @@
     "language": "Language",
     "theme": {
       "toLight": "Switch to light theme",
-      "toDark": "Switch to dark theme"
+      "toDark": "Switch to dark theme",
+      "dark": "Dark theme",
+      "darkOn": "Dark theme is on",
+      "darkOff": "Dark theme is off"
     },
     "dataSaver": {
       "off": "Data saver is off",
@@ -81,7 +84,8 @@
       "label": "Data saver",
       "stateOff": "off",
       "stateOn": "on"
-    }
+    },
+    "settings": "Settings"
   },
   "footer": {
     "tagline": "Learn at your own pace — in Kazakh and Russian",

@@ -9,7 +9,7 @@ import {
 
 const ru = bundles.ru;
 
-/** Вёрстка публичных страниц по docs/UX_TZ.md (UX-01…UX-09); логика страниц не меняется. */
+/** Вёрстка публичных страниц по docs/UX_TZ.md (UX-01…UX-10); логика страниц не меняется. */
 test.describe('UX публичных страниц', () => {
   test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
 
@@ -102,5 +102,72 @@ test.describe('UX публичных страниц', () => {
     ).toHaveAttribute('href', '/ru/schools/request');
     expect(await hasHorizontalScroll(page)).toBe(false);
     await expectNoSeriousA11yViolations(page);
+  });
+  test('UX-10 REQ-GEN-SHELL-06 mobile menu: panel, active item, language, settings, closing and focus', async ({
+    page,
+  }) => {
+    if (!isMobile(page)) {
+      // ≥ 1024 px — десктопная шапка UX-01, кнопки мобильного меню нет.
+      await page.goto('/ru/about');
+      await expect(page.getByRole('button', { name: ru.shell.menu, exact: true })).toBeHidden();
+      return;
+    }
+    await page.goto('/ru/about');
+    const menuButton = page.getByRole('button', { name: ru.shell.menu, exact: true });
+    await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+    await menuButton.click();
+    const dialog = page.getByRole('dialog', { name: ru.shell.menu });
+    const nav = dialog.getByRole('navigation', { name: ru.shell.navLabel });
+    // Фокус — на первом пункте; текущая страница — aria-current.
+    await expect(nav.getByRole('link', { name: ru.shell.nav.home })).toBeFocused();
+    await expect(nav.getByRole('link', { name: ru.shell.nav.about })).toHaveAttribute('aria-current', 'page');
+    for (const link of await nav.getByRole('link').all()) {
+      const box = await link.boundingBox();
+      expect(box!.height).toBeGreaterThanOrEqual(48);
+    }
+    for (const button of await dialog.getByRole('button').all()) {
+      const box = await button.boundingBox();
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+      expect(box!.width).toBeGreaterThanOrEqual(44);
+    }
+    await expect(dialog.getByRole('button', { name: ru.shell.theme.dark })).toHaveAttribute(
+      'aria-pressed',
+      /true|false/,
+    );
+    await expect(dialog.getByRole('button', { name: ru.shell.dataSaver.label })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+    expect(await hasHorizontalScroll(page)).toBe(false);
+    await expectNoSeriousA11yViolations(page);
+
+    // Переход закрывает меню, новый раздел активен.
+    await nav.getByRole('link', { name: ru.shell.nav.schools }).click();
+    await expect(page).toHaveURL(/\/ru\/schools$/);
+    await expect(dialog).toBeHidden();
+    await menuButton.click();
+    await expect(nav.getByRole('link', { name: ru.shell.nav.schools })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+
+    // Язык меняется сразу, меню остаётся открытым на той же странице.
+    await dialog.getByRole('radio', { name: 'KK' }).click();
+    await expect(page).toHaveURL(/\/kk\/schools$/);
+    const kkDialog = page.getByRole('dialog', { name: bundles.kk.shell.menu });
+    await expect(kkDialog.getByRole('radio', { name: 'KK' })).toHaveAttribute('aria-checked', 'true');
+
+    // Esc закрывает, фокус возвращается на кнопку меню.
+    await page.keyboard.press('Escape');
+    await expect(kkDialog).toBeHidden();
+    const kkMenuButton = page.getByRole('button', { name: bundles.kk.shell.menu, exact: true });
+    await expect(kkMenuButton).toBeFocused();
+
+    // Нажатие вне панели закрывает меню.
+    await kkMenuButton.click();
+    await expect(kkDialog).toBeVisible();
+    const viewport = page.viewportSize()!;
+    await page.mouse.click(viewport.width / 2, viewport.height - 4);
+    await expect(kkDialog).toBeHidden();
   });
 });

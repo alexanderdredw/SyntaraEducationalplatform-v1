@@ -162,3 +162,42 @@ h3 {
   padding-left: var(--space-2);
   color: var(--text-muted);
 }
+
+/*
+ * Мобильное меню (UX-10, п. 11): плавное появление и сдвиг сверху, 200 мс. При prefers-reduced-motion
+ * и «Экономии трафика» анимации отключает tokens.css — меню появляется сразу.
+ */
+@keyframes mobile-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@keyframes mobile-menu-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@keyframes mobile-menu-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes mobile-menu-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+[data-state='open'] > .mobile-menu-panel {
+  animation: mobile-menu-in var(--duration-base) var(--ease-standard);
+}
+[data-state='closed'] > .mobile-menu-panel {
+  animation: mobile-menu-out var(--duration-base) var(--ease-standard);
+}
+.mobile-menu-overlay[data-state='open'] {
+  animation: mobile-menu-fade-in var(--duration-base) var(--ease-standard);
+}
+.mobile-menu-overlay[data-state='closed'] {
+  animation: mobile-menu-fade-out var(--duration-base) var(--ease-standard);
+}
