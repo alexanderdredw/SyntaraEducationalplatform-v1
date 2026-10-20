@@ -1327,6 +1327,14 @@
         "done": "Questions imported: {count}",
         "official": "Platform"
       }
+    },
+    "csv": {
+      "rank": "Place",
+      "student": "Student",
+      "correct": "Correct",
+      "answered": "Answered",
+      "time": "Correct answers time, s",
+      "question": "Question {number}"
     }
   }
 }

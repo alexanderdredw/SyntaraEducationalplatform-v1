@@ -13,6 +13,8 @@ const logger = pino({ name: 'worker' });
 // BullMQ требует maxRetriesPerRequest: null для блокирующих команд.
 const connection = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
 const db = createDb(env.DATABASE_URL, { max: 5 });
+// События Battle — отдельным соединением (на соединении BullMQ идут блокирующие команды).
+const publisher = new Redis(env.REDIS_URL, { maxRetriesPerRequest: 3 });
 const transport = nodemailer.createTransport(env.SMTP_URL);
 
 const { workers, close } = createWorkers(connection, logger, {
@@ -23,6 +25,7 @@ const { workers, close } = createWorkers(connection, logger, {
   appBaseUrl: env.APP_BASE_URL,
   storage: createS3Storage(env),
   scanners: createScanners(env.CLAMD_HOST, env.OLEVBA_URL),
+  publish: (channel, message) => publisher.publish(channel, message),
 });
 void scheduleJobs(connection).catch((err: Error) => logger.error({ err: err.message }, 'scheduling failed'));
 logger.info({ queues: workers.map((w) => w.name) }, 'worker started');
@@ -30,7 +33,7 @@ logger.info({ queues: workers.map((w) => w.name) }, 'worker started');
 async function shutdown(signal: string): Promise<void> {
   logger.info({ signal }, 'worker stopping');
   await close();
-  await Promise.allSettled([connection.quit(), db.$client.end({ timeout: 5 })]);
+  await Promise.allSettled([connection.quit(), publisher.quit(), db.$client.end({ timeout: 5 })]);
   process.exit(0);
 }
 process.once('SIGINT', () => void shutdown('SIGINT'));

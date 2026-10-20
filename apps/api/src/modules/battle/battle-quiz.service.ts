@@ -240,16 +240,14 @@ export class BattleQuizService {
           .returning({ id: battleQuestions.id });
         const own = options.filter((o) => o.battleQuestionId === q.id);
         if (own.length)
-          await tx
-            .insert(battleOptions)
-            .values(
-              own.map((o) => ({
-                battleQuestionId: row!.id,
-                position: o.position,
-                text: o.text,
-                isCorrect: o.isCorrect,
-              })),
-            );
+          await tx.insert(battleOptions).values(
+            own.map((o) => ({
+              battleQuestionId: row!.id,
+              position: o.position,
+              text: o.text,
+              isCorrect: o.isCorrect,
+            })),
+          );
       }
       return { id: copy!.id };
     });

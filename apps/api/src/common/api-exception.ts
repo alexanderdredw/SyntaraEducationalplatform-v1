@@ -9,6 +9,8 @@ export class ApiException extends HttpException {
     message: string,
     readonly fieldErrors?: Record<string, string>,
     readonly retryAfterSeconds?: number,
+    /** Battle: свежий снимок при 409 staleState (SPEC 6.8). */
+    readonly snapshot?: unknown,
   ) {
     super(message, status);
   }

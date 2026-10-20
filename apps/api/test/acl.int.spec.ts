@@ -31,6 +31,7 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
   let foreignTopicId: string;
   let foreignQuestionId: string;
   let foreignBattleId: string;
+  let foreignSessionId: string;
   const http = () => request(stack.app.getHttpServer());
 
   const call = (op: Operation, path: string, s?: Session) => {
@@ -103,12 +104,25 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
     ).body.id;
     // Battle-тест учителя A (итерация 10.5, BR-BTL-12).
     foreignBattleId = (await asA('/api/teacher/battles', { title: 'ACL', locale: 'ru' }).expect(201)).body.id;
+    await asA(`/api/teacher/battles/${foreignBattleId}/questions`, {
+      type: 'true_false',
+      text: 'ACL?',
+      timeLimitSec: 20,
+      options: [
+        { text: '', isCorrect: true },
+        { text: '', isCorrect: false },
+      ],
+    }).expect(201);
+    foreignSessionId = (
+      await asA(`/api/teacher/battles/${foreignBattleId}/sessions`, { classId: foreignClassId }).expect(201)
+    ).body.sessionId;
     foreign.push(
       { prefix: '/api/teacher/classes/', id: () => foreignClassId },
       { prefix: '/api/teacher/subjects/', id: () => foreignSubjectId },
       { prefix: '/api/teacher/topics/', id: () => foreignTopicId },
       { prefix: '/api/teacher/questions/', id: () => foreignQuestionId },
       { prefix: '/api/teacher/battles/', id: () => foreignBattleId },
+      { prefix: '/api/teacher/battle-sessions/', id: () => foreignSessionId },
     );
   });
 
@@ -136,6 +150,10 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
         'GET /api/teacher/battles/{id}',
         'PATCH /api/teacher/battles/{id}/questions/{qid}',
         'POST /api/teacher/battles/{id}/import',
+        'GET /api/teacher/battle-sessions/{sid}',
+        'POST /api/teacher/battle-sessions/{sid}/start',
+        'POST /api/student/battles/join',
+        'POST /api/student/battle-sessions/{sid}/answers',
       ]),
     );
   });

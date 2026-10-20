@@ -868,7 +868,7 @@ export const QuestionDto = z.object({
 | API-BTL-45 | GET /api/student/battle-sessions | `?cursor=&limit=` → `{ items: [{ id, battleTitle, teacherName, finishedAt, rank, participantsCount, correctCount, questionsCount }], nextCursor }` — мои прошедшие Battle |
 | API-BTL-46 | GET /api/student/battle-sessions/:sid/results | После `finished`: пьедестал, полная таблица, мои ответы по вопросам с правильными вариантами; до `finished` → 409 `notFinished` |
 
-Чужая сессия или сессия, где ученик не участник, → 404. Выгнанный ученик получает в снимке `kicked: true` и не может отвечать (409 `kicked`).
+Чужая сессия или сессия, где ученик не участник, → 404. Выгнанный ученик получает в снимке `kicked: true` и не может отвечать (409 `kicked`); вышедший из игры — 409 `notInGame` до повторного входа по коду. Прочие коды: чужой класс при запуске — 404 `classNotFound`, чужой участник при выгоне — 404 `participantNotFound`, недопустимый переход — 409 `INVALID_TRANSITION` (`invalidTransition`) со снимком, код не удалось подобрать за 10 попыток — 503 `codeUnavailable`, ответ чаще 1 в 200 мс — 429.
 
 ## 6.9 События Battle (SSE)
 

@@ -30,6 +30,9 @@ export const RATE_LIMITS = {
   forms: { limit: 5, ttl: 60_000 },
   login: { limit: 10, ttl: 15 * 60_000 },
   join: { limit: 10, ttl: 15 * 60_000 },
+  // BR-BTL-01: ввод кода Battle — 10 за 10 минут на ученика и 30 на IP.
+  battleJoinStudent: { limit: 10, ttl: 10 * 60_000 },
+  battleJoinIp: { limit: 30, ttl: 10 * 60_000 },
 } as const;
 
 /** Группа лимитов маршрута → имена счётчиков (у ИИ — два окна). */
@@ -39,6 +42,7 @@ export const RATE_LIMIT_GROUPS = {
   join: ['join'],
   ai: ['ai_minute', 'ai_day'],
   aiStudent: ['ai_student_minute', 'ai_student_day'],
+  battleJoin: ['battle_join_student', 'battle_join_ip'],
 } as const;
 export type RateLimitName = keyof typeof RATE_LIMIT_GROUPS;
 const ALL_THROTTLERS = Object.values(RATE_LIMIT_GROUPS).flat();
@@ -121,6 +125,13 @@ export function throttlerOptions(
         },
       },
       { name: 'join', ...RATE_LIMITS.join, getTracker: ip, generateKey: sharedKey },
+      {
+        name: 'battle_join_student',
+        ...RATE_LIMITS.battleJoinStudent,
+        getTracker: student,
+        generateKey: sharedKey,
+      },
+      { name: 'battle_join_ip', ...RATE_LIMITS.battleJoinIp, getTracker: ip, generateKey: sharedKey },
       {
         name: 'ai_minute',
         ttl: 60_000,

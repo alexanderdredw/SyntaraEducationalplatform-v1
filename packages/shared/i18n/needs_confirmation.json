@@ -555,7 +555,13 @@
     "battle.teacher.import.submit": "BT-T02: окно импорта",
     "battle.teacher.import.empty": "BT-T02: окно импорта (BR-BTL-10)",
     "battle.teacher.import.done": "BT-T02: сообщение",
-    "battle.teacher.import.official": "BT-T02: пометка базового предмета платформы"
+    "battle.teacher.import.official": "BT-T02: пометка базового предмета платформы",
+    "battle.csv.rank": "Battle: API-BTL-31 — заголовок CSV",
+    "battle.csv.student": "Battle: API-BTL-31 — заголовок CSV",
+    "battle.csv.correct": "Battle: API-BTL-31 — заголовок CSV",
+    "battle.csv.answered": "Battle: API-BTL-31 — заголовок CSV",
+    "battle.csv.time": "Battle: API-BTL-31 — заголовок CSV (BR-BTL-04)",
+    "battle.csv.question": "Battle: API-BTL-31 — заголовок CSV"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

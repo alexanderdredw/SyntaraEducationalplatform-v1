@@ -17,6 +17,7 @@ describe('worker queues', () => {
     appBaseUrl: 'http://localhost:3000',
     storage: { read: async () => Buffer.alloc(0), remove: async () => undefined },
     scanners: { antivirus: async () => ({ infected: false }), macros: async () => ({ macros: false }) },
+    publish: async () => 0,
   };
 
   beforeAll(async () => {
@@ -29,8 +30,8 @@ describe('worker queues', () => {
     await redis?.stop();
   });
 
-  it('registers exactly the queues outbox, email, file-scan, cleanup (recalc removed, Q-17)', () => {
-    expect(QUEUE_NAMES).toEqual(['outbox', 'email', 'file-scan', 'cleanup']);
+  it('registers exactly the queues outbox, email, file-scan, cleanup, battle (recalc removed, Q-17; BR-BTL-08)', () => {
+    expect(QUEUE_NAMES).toEqual(['outbox', 'email', 'file-scan', 'cleanup', 'battle']);
   });
 
   it('REQ-NFR-SEC-07 processes an unknown job without logging its payload', async () => {

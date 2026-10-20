@@ -144,10 +144,16 @@ describe('Battle tests (integration)', () => {
       false,
     ]);
     // «Верно» / «Неверно» на языке теста (KK); при смене языка — переписываются.
-    expect(got.questions[1].options.map((o: { text: string }) => o.text)).toEqual([kk.teacher.quiz.optionTrue, kk.teacher.quiz.optionFalse]);
+    expect(got.questions[1].options.map((o: { text: string }) => o.text)).toEqual([
+      kk.teacher.quiz.optionTrue,
+      kk.teacher.quiz.optionFalse,
+    ]);
     await as(teacher).patch(`/api/teacher/battles/${id}`, { locale: 'ru' }).expect(204);
     const ruBattle = (await as(teacher).get(`/api/teacher/battles/${id}`).expect(200)).body;
-    expect(ruBattle.questions[1].options.map((o: { text: string }) => o.text)).toEqual([ru.teacher.quiz.optionTrue, ru.teacher.quiz.optionFalse]);
+    expect(ruBattle.questions[1].options.map((o: { text: string }) => o.text)).toEqual([
+      ru.teacher.quiz.optionTrue,
+      ru.teacher.quiz.optionFalse,
+    ]);
   });
 
   it('API-BTL-07..09 edit, reorder and archive questions', async () => {

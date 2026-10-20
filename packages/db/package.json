@@ -17,6 +17,10 @@
     "./seed": {
       "types": "./dist/seed/index.d.ts",
       "default": "./dist/seed/index.js"
+    },
+    "./battle": {
+      "types": "./dist/battle/index.d.ts",
+      "default": "./dist/battle/index.js"
     }
   },
   "scripts": {
@@ -59,6 +63,9 @@
       ],
       "seed": [
         "dist/seed/index.d.ts"
+      ],
+      "battle": [
+        "dist/battle/index.d.ts"
       ]
     }
   }

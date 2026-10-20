@@ -10,12 +10,14 @@ import {
   cleanupIdempotencyKeys,
   cleanupStaleUploads,
 } from './processors/maintenance';
+import { processBattleJob } from './processors/battle';
 import { processOutbox } from './processors/outbox';
 import { type Scanners } from './processors/scanners';
 
 /** Очереди worker (раздел 2.2 SPEC). */
 // Очередь recalc удалена (решение владельца 2026-10-16, Q-17): XP, уровень, серия и бейджи начисляются синхронно в api.
-export const QUEUE_NAMES = ['outbox', 'email', 'file-scan', 'cleanup'] as const;
+// battle — таймеры игр Battle (итерация 10.5, BR-BTL-08).
+export const QUEUE_NAMES = ['outbox', 'email', 'file-scan', 'cleanup', 'battle'] as const;
 export type QueueName = (typeof QUEUE_NAMES)[number];
 
 export interface WorkerDeps {
@@ -27,6 +29,8 @@ export interface WorkerDeps {
   /** Проверка файлов (BR-FILE-03). */
   storage: ObjectStorage;
   scanners: Scanners;
+  /** Redis PUBLISH для событий Battle (отдельное соединение, не блокирующее). */
+  publish: (channel: string, message: string) => Promise<unknown>;
 }
 
 /** Периодические задачи (BullMQ job schedulers): опрос outbox, автозакрытие обращений, очистка ключей. */
@@ -38,6 +42,8 @@ export const SCHEDULES = [
   { queue: 'cleanup', id: 'stale-uploads', name: 'stale-uploads', every: 24 * 60 * 60_000 },
   // SM-ATTEMPT: брошенные попытки — раз в сутки.
   { queue: 'cleanup', id: 'abandon-attempts', name: 'abandon-attempts', every: 24 * 60 * 60_000 },
+  // BR-BTL-06: истечение сессий Battle — раз в минуту.
+  { queue: 'battle', id: 'battle-expire', name: 'expire', every: 60_000 },
 ] as const satisfies ReadonlyArray<{ queue: QueueName; id: string; name: string; every: number }>;
 
 export function createProcessors(
@@ -47,6 +53,7 @@ export function createProcessors(
 ): { processors: Record<QueueName, Processor>; close: () => Promise<void> } {
   const emailQueue = new Queue('email', { connection });
   const fileScanQueue = new Queue('file-scan', { connection });
+  const battleQueue = new Queue('battle', { connection });
   const processors: Record<QueueName, Processor> = {
     // BR-FRM-01: события outbox → очередь email.
     outbox: async () => ({
@@ -65,11 +72,13 @@ export function createProcessors(
       if (job.name === 'stale-uploads') return { deleted: await cleanupStaleUploads(deps.db, deps.storage) };
       return { handled: false };
     },
+    battle: async (job: Job) =>
+      processBattleJob(job, { db: deps.db, publish: deps.publish, queue: battleQueue, logger }),
   };
   return {
     processors,
     close: async () => {
-      await Promise.allSettled([emailQueue.close(), fileScanQueue.close()]);
+      await Promise.allSettled([emailQueue.close(), fileScanQueue.close(), battleQueue.close()]);
     },
   };
 }

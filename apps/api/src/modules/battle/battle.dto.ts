@@ -125,3 +125,103 @@ export class BattleImportSourceDto {
   @ApiProperty() official: boolean;
   @ApiProperty({ type: BattleImportTopicDto, isArray: true }) topics: BattleImportTopicDto[];
 }
+
+/* ---- Сессии и участие (API-BTL-20…46) ---- */
+
+class BattleSettingsBody {
+  @ApiProperty({ default: false }) shuffleQuestions: boolean;
+  @ApiProperty({ default: false }) shuffleOptions: boolean;
+  @ApiProperty({ default: true, description: 'Промежуточный рейтинг (топ-5)' }) leaderboard: boolean;
+  @ApiProperty({ default: false, description: 'Автопереход через 5 с' }) autoAdvance: boolean;
+  @ApiProperty({ default: false, description: 'Позднее подключение' }) lateJoin: boolean;
+  @ApiProperty({ default: 100, minimum: 1, maximum: 100 }) maxParticipants: number;
+}
+
+/** API-BTL-20 */
+export class BattleSessionCreateBody {
+  @ApiProperty({ format: 'uuid' }) classId: string;
+  @ApiProperty({ type: BattleSettingsBody, required: false }) settings?: BattleSettingsBody;
+}
+
+export class BattleSessionCreatedDto {
+  @ApiProperty({ format: 'uuid' }) sessionId: string;
+  @ApiProperty({ pattern: '^[A-Z]{3}[1-9]{3}$', example: 'KTR583' }) code: string;
+}
+
+/** API-BTL-23…27 */
+export class BattleTransitionBody {
+  @ApiProperty({ minimum: 0, description: 'state_version снимка (BR-BTL-08)' }) expectedVersion: number;
+}
+
+/** Снимок API-BTL-21 / API-BTL-41 — типы BattleHostSnapshot / BattleStudentSnapshot (packages/shared). */
+export class BattleSnapshotDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ enum: ['lobby', 'in_progress', 'finished', 'cancelled'] }) status: string;
+  @ApiProperty({ enum: ['lobby', 'question', 'reveal', 'leaderboard', 'finished'] }) phase: string;
+  @ApiProperty() version: number;
+  @ApiProperty({ type: String, format: 'date-time' }) serverNow: string;
+}
+
+/** Итоги API-BTL-30 / API-BTL-46 — тип BattleResults (packages/shared). */
+export class BattleResultsDto {
+  @ApiProperty({ type: 'object', additionalProperties: true }) session: Record<string, unknown>;
+  @ApiProperty({ type: 'array', items: { type: 'object', additionalProperties: true } }) podium: unknown[];
+  @ApiProperty({ type: 'array', items: { type: 'object', additionalProperties: true } }) table: unknown[];
+  @ApiProperty({ type: 'array', items: { type: 'object', additionalProperties: true } }) questions: unknown[];
+  @ApiProperty({ type: 'array', items: { type: 'integer' } }) hardQuestions: number[];
+  @ApiProperty({ type: 'array', items: { type: 'object', additionalProperties: true } }) students: unknown[];
+}
+
+class BattleHistoryItemDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() battleTitle: string;
+  @ApiProperty() className: string;
+  @ApiProperty({ enum: ['lobby', 'in_progress', 'finished', 'cancelled'] }) status: string;
+  @ApiProperty() participantsCount: number;
+  @ApiProperty() questionsCount: number;
+  @ApiProperty({ type: String, format: 'date-time', nullable: true }) startedAt: string | null;
+  @ApiProperty({ type: String, format: 'date-time', nullable: true }) finishedAt: string | null;
+}
+
+/** API-BTL-29 */
+export class BattleHistoryDto {
+  @ApiProperty({ type: BattleHistoryItemDto, isArray: true }) items: BattleHistoryItemDto[];
+  @ApiProperty({ type: String, nullable: true }) nextCursor: string | null;
+}
+
+class BattleStudentHistoryItemDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() battleTitle: string;
+  @ApiProperty() teacherName: string;
+  @ApiProperty({ type: String, format: 'date-time' }) finishedAt: string;
+  @ApiProperty({ type: Number, nullable: true }) rank: number | null;
+  @ApiProperty() participantsCount: number;
+  @ApiProperty({ type: Number, nullable: true }) correctCount: number | null;
+  @ApiProperty() questionsCount: number;
+}
+
+/** API-BTL-45 */
+export class BattleStudentHistoryDto {
+  @ApiProperty({ type: BattleStudentHistoryItemDto, isArray: true }) items: BattleStudentHistoryItemDto[];
+  @ApiProperty({ type: String, nullable: true }) nextCursor: string | null;
+}
+
+/** API-BTL-40 */
+export class BattleJoinBody {
+  @ApiProperty({ example: 'ktr 583', description: 'Регистр и пробелы не важны (BR-BTL-01)' }) code: string;
+}
+
+export class BattleJoinedDto {
+  @ApiProperty({ format: 'uuid' }) sessionId: string;
+}
+
+/** API-BTL-43 */
+export class BattleAnswerBody {
+  @ApiProperty({ minimum: 0 }) questionIndex: number;
+  @ApiProperty({ minimum: 1, maximum: 4 }) optionPosition: number;
+  @ApiProperty({ format: 'uuid', description: 'Идемпотентность повтора (BR-BTL-03)' }) clientAnswerId: string;
+}
+
+export class BattleAcceptedDto {
+  @ApiProperty({ enum: [true] }) accepted: true;
+}

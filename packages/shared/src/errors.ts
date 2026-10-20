@@ -6,6 +6,8 @@ export interface ApiErrorBody {
   requestId: string;
   /** Только для 429 (API-GEN-06). */
   retryAfterSeconds?: number;
+  /** Battle: свежий снимок при 409 staleState (SPEC 6.8). */
+  snapshot?: unknown;
 }
 
 export const API_ERROR_CODES = [

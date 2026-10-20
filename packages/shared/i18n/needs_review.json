@@ -1035,6 +1035,12 @@
     "battle.teacher.import.submit": "needs_review",
     "battle.teacher.import.empty": "needs_review",
     "battle.teacher.import.done": "needs_review",
-    "battle.teacher.import.official": "needs_review"
+    "battle.teacher.import.official": "needs_review",
+    "battle.csv.rank": "needs_review",
+    "battle.csv.student": "needs_review",
+    "battle.csv.correct": "needs_review",
+    "battle.csv.answered": "needs_review",
+    "battle.csv.time": "needs_review",
+    "battle.csv.question": "needs_review"
   }
 }

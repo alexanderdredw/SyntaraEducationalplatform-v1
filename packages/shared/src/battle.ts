@@ -226,3 +226,164 @@ export const BATTLE_PODIUM_MAX_RANK = 3;
 
 /** BR-BTL-03: запас на сеть после дедлайна. */
 export const BATTLE_ANSWER_GRACE_MS = 500;
+
+/* ---- Снимки и события для клиентов (SPEC 6.8 API-BTL-21/41, 6.9) ---- */
+
+export type BattlePhaseName = 'lobby' | 'question' | 'reveal' | 'leaderboard' | 'finished';
+export type BattleStatusName = 'lobby' | 'in_progress' | 'finished' | 'cancelled';
+
+export interface BattleOptionView {
+  position: number;
+  text: string;
+}
+
+/** Текущий вопрос; правильный вариант (`correctPosition`) — только у ведущего. */
+export interface BattleQuestionView {
+  index: number;
+  total: number;
+  type: BattleQuestionType;
+  text: string;
+  imageUrl: string | null;
+  timeLimitSec: number;
+  options: BattleOptionView[];
+  startedAt: string;
+  deadlineAt: string;
+  correctPosition?: number;
+}
+
+export interface BattleRow {
+  rank: number;
+  displayName: string;
+  correctCount: number;
+  correctTimeMs: number;
+  answeredCount: number;
+  /** Своя строка ученика (у ведущего — всегда false). */
+  me?: boolean;
+}
+
+export interface BattleParticipantView {
+  id: string;
+  displayName: string;
+  joinedAt: string;
+  left: boolean;
+}
+
+export interface BattleHostReveal {
+  index: number;
+  correctPosition: number;
+  distribution: Array<{ position: number; count: number }>;
+  avgResponseMs: number | null;
+}
+
+export interface BattleStudentReveal {
+  index: number;
+  correctPosition: number;
+  myPosition: number | null;
+  isCorrect: boolean;
+  myCorrectCount: number;
+  myRank: number | null;
+  participantsCount: number;
+}
+
+export interface BattleLeaderboardView {
+  index: number;
+  top: Array<{ rank: number; displayName: string; correctCount: number }>;
+  me?: { rank: number; correctCount: number } | null;
+}
+
+export interface BattleFinalView {
+  podium: BattleRow[];
+  table: BattleRow[];
+  questionsCount: number;
+  me?: BattleRow | null;
+}
+
+interface BattleSnapshotBase {
+  id: string;
+  status: BattleStatusName;
+  phase: BattlePhaseName;
+  version: number;
+  battleTitle: string;
+  participantsCount: number;
+  questionsCount: number;
+  question: BattleQuestionView | null;
+  leaderboard: BattleLeaderboardView | null;
+  final: BattleFinalView | null;
+  cancelReason: 'host' | 'expired' | null;
+  serverNow: string;
+}
+
+/** API-BTL-21 */
+export interface BattleHostSnapshot extends BattleSnapshotBase {
+  code: string;
+  classId: string;
+  className: string;
+  battleQuizId: string;
+  settings: BattleSettings;
+  participants: BattleParticipantView[];
+  answered: number;
+  active: number;
+  reveal: BattleHostReveal | null;
+}
+
+/** API-BTL-41 */
+export interface BattleStudentSnapshot extends BattleSnapshotBase {
+  teacherName: string;
+  myName: string;
+  kicked: boolean;
+  myAnswer: { questionIndex: number; optionPosition: number } | null;
+  myCorrectCount: number;
+  reveal: BattleStudentReveal | null;
+}
+
+/** API-BTL-29 / API-BTL-45: история игр (курсорная пагинация API-GEN-07). */
+export const BattleHistoryQuery = z.object({
+  battleId: z.uuid('required').optional(),
+  classId: z.uuid('required').optional(),
+  cursor: z.string().max(200).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type BattleHistoryQuery = z.infer<typeof BattleHistoryQuery>;
+
+/** API-BTL-30 / API-BTL-46: итоги игры. */
+export interface BattleQuestionStat {
+  index: number;
+  text: string;
+  type: BattleQuestionType;
+  options: Array<{ position: number; text: string; isCorrect: boolean }>;
+  correctPosition: number;
+  /** Доля правильных среди ответивших, целые проценты; null — никто не ответил. */
+  correctPercent: number | null;
+  answered: number;
+  distribution: Array<{ position: number; count: number }>;
+  avgResponseMs: number | null;
+}
+
+export interface BattleAnswerView {
+  index: number;
+  optionPosition: number | null;
+  isCorrect: boolean;
+  responseMs: number | null;
+}
+
+export interface BattleResults {
+  session: {
+    id: string;
+    battleTitle: string;
+    className: string;
+    teacherName: string;
+    status: BattleStatusName;
+    startedAt: string | null;
+    finishedAt: string | null;
+    participantsCount: number;
+    questionsCount: number;
+  };
+  podium: BattleRow[];
+  table: BattleRow[];
+  me?: BattleRow | null;
+  questions: BattleQuestionStat[];
+  /** «Сложные вопросы» (BT-T09): доля правильных ниже порога аналитики PH-30, по возрастанию. */
+  hardQuestions: number[];
+  /** Ведущему — все ученики; ученику — только он сам («Мои ответы»). */
+  students: Array<{ displayName: string; rank: number; answers: BattleAnswerView[] }>;
+}
