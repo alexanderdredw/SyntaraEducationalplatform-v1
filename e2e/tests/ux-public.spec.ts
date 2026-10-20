@@ -167,7 +167,8 @@ test.describe('UX публичных страниц', () => {
     await kkMenuButton.click();
     await expect(kkDialog).toBeVisible();
     const viewport = page.viewportSize()!;
-    await page.mouse.click(viewport.width / 2, viewport.height - 4);
+    // Левый отступ 8 px — всегда вне панели (у нижнего края на 640 px зазор всего 12 px).
+    await page.mouse.click(3, viewport.height / 2);
     await expect(kkDialog).toBeHidden();
   });
 });

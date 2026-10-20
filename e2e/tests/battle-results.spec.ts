@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { expect, request, test, type Page } from '@playwright/test';
+import { type APIRequestContext, expect, request, test, type Page } from '@playwright/test';
 import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
 
 const ru = bundles.ru;
@@ -39,7 +39,7 @@ async function playedGame(page: Page, baseURL: string) {
   const { sessionId, code } = await post(page, `/api/teacher/battles/${battle.id}/sessions`, {
     classId: cls.id,
   });
-  const students = [];
+  const students: Array<{ api: APIRequestContext; token: string }> = [];
   for (const name of ['Асель Каримова', 'Ержан Сейтов']) {
     const api = await request.newContext({ baseURL });
     await api.post('/api/auth/register-student', {
