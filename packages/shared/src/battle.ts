@@ -149,17 +149,14 @@ export type BattleTransitionDto = z.infer<typeof BattleTransitionDto>;
 /** BR-BTL-01: формат кода сессии (CHECK в 5.9). */
 export const BATTLE_CODE_RE = /^[A-Z]{3}[1-9]{3}$/;
 
-/** BR-BTL-01: trim, удаление пробелов, верхний регистр («ktr 583» → «KTR583»). */
+/** BR-BTL-01, BR-CODE-02: trim, удаление пробелов и дефисов, верхний регистр («ktr 583» → «KTR583»). */
 export function normalizeBattleCode(raw: string): string {
-  return raw.replace(/\s+/g, '').toUpperCase();
+  return raw.replace(/[\s-]+/g, '').toUpperCase();
 }
 
-/** API-BTL-40 */
+/** API-BTL-40: формат кода проверяет сервер до запроса в БД — 422 `invalidBattleCode` (BR-CODE-02). */
 export const BattleJoinDto = z.object({
-  code: z
-    .string()
-    .transform(normalizeBattleCode)
-    .refine((v) => BATTLE_CODE_RE.test(v), 'codeNotFound'),
+  code: z.string().max(64, 'tooLong').transform(normalizeBattleCode),
 });
 export type BattleJoinDto = z.infer<typeof BattleJoinDto>;
 

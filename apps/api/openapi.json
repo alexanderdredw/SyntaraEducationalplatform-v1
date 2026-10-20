@@ -1914,7 +1914,7 @@
             "description": "Нет роли или неверный X-CSRF-Token"
           },
           "404": {
-            "description": "Код не найден или истёк"
+            "description": "Код не найден или истёк (invalidCode); код активной сессии Battle — isBattleCode (BR-CODE-04)"
           },
           "429": {
             "description": "Превышен лимит; retryAfterSeconds в теле"
@@ -2020,6 +2020,9 @@
               }
             }
           },
+          "404": {
+            "description": "Код активной сессии Battle — fieldErrors.code = isBattleCode (BR-CODE-04)"
+          },
           "429": {
             "description": "Превышен лимит; retryAfterSeconds в теле"
           }
@@ -2055,7 +2058,7 @@
             }
           },
           "400": {
-            "description": "Ошибки полей; неверный код — fieldErrors.code = invalidCode"
+            "description": "Ошибки полей; неверный код — fieldErrors.code = invalidCode, код Battle — isBattleCode (BR-CODE-04)"
           },
           "409": {
             "description": "Логин или email заняты"
@@ -5018,10 +5021,13 @@
             "description": "Нет роли или неверный X-CSRF-Token"
           },
           "404": {
-            "description": "codeNotFound — в том числе код чужого класса"
+            "description": "codeNotFound — в том числе код чужого класса; isClassCode — это действующий код класса (BR-CODE-04)"
           },
           "409": {
             "description": "kicked / full / alreadyStarted"
+          },
+          "422": {
+            "description": "invalidBattleCode — не формат ^[A-Z]{3}[1-9]{3}$ (BR-CODE-02)"
           },
           "429": {
             "description": "Превышен лимит; retryAfterSeconds в теле"

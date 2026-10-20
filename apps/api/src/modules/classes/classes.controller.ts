@@ -105,7 +105,10 @@ export class StudentClassController {
   @RateLimit('join')
   @ApiBody({ type: ClassCodeBody })
   @ApiOkResponse({ type: StudentClassDto })
-  @ApiNotFoundResponse({ description: 'Код не найден или истёк' })
+  @ApiNotFoundResponse({
+    description:
+      'Код не найден или истёк (invalidCode); код активной сессии Battle — isBattleCode (BR-CODE-04)',
+  })
   join(
     @Body(new ZodValidationPipe(ClassCodeDto)) dto: Dto<typeof ClassCodeDto>,
     @Req() req: AuthRequest,
@@ -143,6 +146,9 @@ export class JoinController {
   @RateLimit('join')
   @ApiBody({ type: ClassCodeBody })
   @ApiOkResponse({ type: CodeCheckDto })
+  @ApiNotFoundResponse({
+    description: 'Код активной сессии Battle — fieldErrors.code = isBattleCode (BR-CODE-04)',
+  })
   check(@Body(new ZodValidationPipe(ClassCodeDto)) dto: Dto<typeof ClassCodeDto>): Promise<CodeCheckDto> {
     return this.classes.check(dto.code);
   }
@@ -154,7 +160,10 @@ export class JoinController {
   @ApiTags('auth')
   @ApiBody({ type: RegisterStudentBody })
   @ApiCreatedResponse({ type: LoginResponse })
-  @ApiBadRequestResponse({ description: 'Ошибки полей; неверный код — fieldErrors.code = invalidCode' })
+  @ApiBadRequestResponse({
+    description:
+      'Ошибки полей; неверный код — fieldErrors.code = invalidCode, код Battle — isBattleCode (BR-CODE-04)',
+  })
   @ApiConflictResponse({ description: 'Логин или email заняты' })
   async registerStudent(
     @Body(new ZodValidationPipe(RegisterStudentDto)) dto: Dto<typeof RegisterStudentDto>,

@@ -18,7 +18,15 @@ describe('Battle (SPEC 7.12)', () => {
     expect(BATTLE_CODE_RE.test('KTR083')).toBe(false); // цифры 1–9
     expect(BATTLE_CODE_RE.test('KT5833')).toBe(false);
     expect(BattleJoinDto.parse({ code: 'ktr 583' }).code).toBe('KTR583');
-    expect(BattleJoinDto.safeParse({ code: 'abc' }).success).toBe(false);
+  });
+
+  it('BR-CODE-02 Battle code normalization: trim, upper case, spaces and hyphens removed', () => {
+    expect(normalizeBattleCode('  ktr-583 ')).toBe('KTR583');
+    expect(normalizeBattleCode('k t r - 5 8 3')).toBe('KTR583');
+    expect(BattleJoinDto.parse({ code: 'ktr-583' }).code).toBe('KTR583');
+    // Формат проверяет сервер (422 invalidBattleCode), DTO только нормализует.
+    expect(BattleJoinDto.parse({ code: 'abc' }).code).toBe('ABC');
+    expect(BATTLE_CODE_RE.test(normalizeBattleCode('7kq2mp'))).toBe(false);
   });
 
   it('BR-BTL-10 single_choice: 2–4 options, exactly one correct, option text required', () => {

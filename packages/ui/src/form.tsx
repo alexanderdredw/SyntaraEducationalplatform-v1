@@ -7,6 +7,7 @@ import {
   useId,
   type InputHTMLAttributes,
   type ReactElement,
+  type ReactNode,
   type TextareaHTMLAttributes,
 } from 'react';
 import { Checkbox as CheckboxPrimitive, RadioGroup, Select as SelectPrimitive } from 'radix-ui';
@@ -40,12 +41,15 @@ export function Field({
   hint,
   error,
   required,
+  icon,
   children,
 }: {
   /** Явный id поля — для ссылок из сводки ошибок; иначе генерируется. */
   id?: string;
   label: string;
   hint?: string;
+  /** Иконка перед подписью (декоративная, aria-hidden) — например, «люди» у кода класса (BR-CODE-07). */
+  icon?: ReactNode;
   error?: string;
   required?: boolean;
   children: ReactElement<ControlA11yProps>;
@@ -65,7 +69,14 @@ export function Field({
     : children;
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[13px] text-[var(--text-muted)]">
+      <label
+        htmlFor={id}
+        className={cn(
+          'text-[13px] text-[var(--text-muted)]',
+          icon ? 'inline-flex items-center gap-1.5' : null,
+        )}
+      >
+        {icon}
         {label}
         {required ? <span aria-hidden="true"> *</span> : null}
       </label>

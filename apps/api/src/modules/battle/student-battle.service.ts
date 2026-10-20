@@ -3,6 +3,7 @@ import { and, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 import Redis from 'ioredis';
 import {
   BATTLE_ANSWER_GRACE_MS,
+  BATTLE_CODE_RE,
   type BattleAnswerDto,
   battleDisplayName,
   type BattleHistoryQuery,
@@ -12,6 +13,7 @@ import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { ENV, type Env } from '../../config/env';
 import { DB, REDIS } from '../../infra/tokens';
+import { ClassCodesService } from '../classes/class-codes.service';
 import { cursorCondition, newestFirst, page } from '../support/pagination';
 import { answeredKey, BattleEngine } from './battle-engine.service';
 import { battleError } from './battle-session.service';
@@ -38,10 +40,17 @@ export class StudentBattleService {
     @Inject(ENV) private readonly env: Env,
     private readonly engine: BattleEngine,
     private readonly state: BattleStateService,
+    private readonly classCodes: ClassCodesService,
   ) {}
 
-  /** API-BTL-40 */
+  /**
+   * API-BTL-40: код ищется только среди активных сессий Battle (BR-CODE-02). Формат проверяется до запроса в БД —
+   * 422 `invalidBattleCode`; активный код класса — 404 `isClassCode` без данных класса (BR-CODE-04).
+   */
   async join(studentId: string, code: string): Promise<{ sessionId: string }> {
+    // TODO(OWNER): обычный код класса (не вида LLLDDD) получает 422 invalidBattleCode, а не подсказку isClassCode —
+    // BR-CODE-02 запрещает запрос в БД до проверки формата. Нужна ли подсказка и для таких кодов?
+    if (!BATTLE_CODE_RE.test(code)) throw battleError(HttpStatus.UNPROCESSABLE_ENTITY, 'invalidBattleCode');
     const [session] = await this.db
       .select({
         id: battleSessions.id,
@@ -60,7 +69,11 @@ export class StudentBattleService {
       )
       .where(and(eq(battleSessions.code, code), inArray(battleSessions.status, ['lobby', 'in_progress'])));
     // BR-BTL-02: код чужого класса — как несуществующий.
-    if (!session) throw battleError(HttpStatus.NOT_FOUND, 'codeNotFound');
+    if (!session)
+      throw battleError(
+        HttpStatus.NOT_FOUND,
+        (await this.classCodes.isActiveCode(code)) ? 'isClassCode' : 'codeNotFound',
+      );
     const settings = session.settings as BattleSettings;
 
     const outcome = await this.db.transaction(async (tx) => {

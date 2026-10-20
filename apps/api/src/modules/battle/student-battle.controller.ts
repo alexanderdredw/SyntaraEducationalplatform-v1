@@ -8,6 +8,7 @@ import {
   ApiProduces,
   ApiQuery,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { type Response } from 'express';
 import {
@@ -51,13 +52,22 @@ export class StudentBattleController {
     private readonly realtime: BattleRealtime,
   ) {}
 
-  /** API-BTL-40: ввод кода — 10 за 10 минут на ученика и 30 на IP (BR-BTL-01). */
+  /**
+   * API-BTL-40: ввод кода — 10 за 10 минут на ученика и 30 на IP (BR-BTL-01); ключи лимита отдельные от ввода кода
+   * класса (BR-CODE-06), подсказка `isClassCode` тоже учитывается в лимите (BR-CODE-04).
+   */
   @Post('battles/join')
   @HttpCode(200)
   @RateLimit('battleJoin')
   @ApiBody({ type: BattleJoinBody })
   @ApiOkResponse({ type: BattleJoinedDto })
-  @ApiNotFoundResponse({ description: 'codeNotFound — в том числе код чужого класса' })
+  @ApiNotFoundResponse({
+    description:
+      'codeNotFound — в том числе код чужого класса; isClassCode — это действующий код класса (BR-CODE-04)',
+  })
+  @ApiUnprocessableEntityResponse({
+    description: 'invalidBattleCode — не формат ^[A-Z]{3}[1-9]{3}$ (BR-CODE-02)',
+  })
   @ApiConflictResponse({ description: 'kicked / full / alreadyStarted' })
   join(@Body(new ZodValidationPipe(BattleJoinDto)) dto: Dto<typeof BattleJoinDto>, @Req() req: AuthRequest) {
     return this.battles.join(req.user!.id, dto.code);

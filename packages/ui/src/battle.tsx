@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react';
 import { Circle, Diamond, Square, Triangle, WifiOff, X } from 'lucide-react';
 import { cn } from './cn';
 
@@ -144,6 +144,7 @@ export function CodeInput({
   invalid,
   describedBy,
   onComplete,
+  placeholder,
   large = false,
 }: {
   value: string;
@@ -154,6 +155,8 @@ export function CodeInput({
   invalid?: boolean;
   describedBy?: string;
   onComplete?: (value: string) => void;
+  /** Пример кода по ячейкам, например «KTR583» (BR-CODE-07). */
+  placeholder?: string;
   large?: boolean;
 }) {
   const refs = useRef<Array<HTMLInputElement | null>>([]);
@@ -173,45 +176,53 @@ export function CodeInput({
   return (
     <div role="group" aria-label={label} className="flex items-center gap-2">
       {chars.map((c, i) => (
-        <input
-          key={i}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          value={c}
-          aria-label={cellLabel(i)}
-          aria-invalid={invalid || undefined}
-          aria-describedby={describedBy}
-          inputMode={i < 3 ? 'text' : 'numeric'}
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          maxLength={6}
-          onFocus={(e) => e.currentTarget.select()}
-          onChange={(e) => {
-            const typed = clean(e.target.value);
-            if (!typed) return set(value.slice(0, i) + value.slice(i + 1), i);
-            set(value.slice(0, i) + typed + value.slice(i + typed.length), i + typed.length);
-          }}
-          onPaste={(e) => {
-            e.preventDefault();
-            const pasted = clean(e.clipboardData.getData('text'));
-            set(value.slice(0, i) + pasted, i + pasted.length);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Backspace' && !c && i > 0) {
+        <Fragment key={i}>
+          {/* BR-CODE-07: визуальный разделитель между буквами и цифрами. */}
+          {i === 3 ? (
+            <span aria-hidden="true" className="font-bold text-[var(--text-muted)]">
+              –
+            </span>
+          ) : null}
+          <input
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            value={c}
+            placeholder={placeholder?.[i]}
+            aria-label={cellLabel(i)}
+            aria-invalid={invalid || undefined}
+            aria-describedby={describedBy}
+            inputMode={i < 3 ? 'text' : 'numeric'}
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
+            maxLength={6}
+            onFocus={(e) => e.currentTarget.select()}
+            onChange={(e) => {
+              const typed = clean(e.target.value);
+              if (!typed) return set(value.slice(0, i) + value.slice(i + 1), i);
+              set(value.slice(0, i) + typed + value.slice(i + typed.length), i + typed.length);
+            }}
+            onPaste={(e) => {
               e.preventDefault();
-              set(value.slice(0, i - 1) + value.slice(i), i - 1);
-            } else if (e.key === 'ArrowLeft') focus(i - 1);
-            else if (e.key === 'ArrowRight') focus(i + 1);
-          }}
-          className={cn(
-            'w-full min-w-0 rounded-[var(--radius-field)] border bg-[var(--field)] text-center font-bold uppercase text-[var(--text)] outline-none focus:border-[var(--accent)]',
-            large ? 'h-16 max-w-14 text-3xl' : 'h-12 max-w-11 text-xl',
-            i === 3 && 'ml-2',
-            invalid ? 'border-[var(--danger)]' : 'border-[var(--border)]',
-          )}
-        />
+              const pasted = clean(e.clipboardData.getData('text'));
+              set(value.slice(0, i) + pasted, i + pasted.length);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Backspace' && !c && i > 0) {
+                e.preventDefault();
+                set(value.slice(0, i - 1) + value.slice(i), i - 1);
+              } else if (e.key === 'ArrowLeft') focus(i - 1);
+              else if (e.key === 'ArrowRight') focus(i + 1);
+            }}
+            className={cn(
+              'w-full min-w-0 rounded-[var(--radius-field)] border bg-[var(--field)] text-center font-bold uppercase text-[var(--text)] outline-none focus:border-[var(--accent)]',
+              large ? 'h-16 max-w-14 text-3xl' : 'h-12 max-w-11 text-xl',
+              'placeholder:text-[var(--text-muted)] placeholder:opacity-50',
+              invalid ? 'border-[var(--danger)]' : 'border-[var(--border)]',
+            )}
+          />
+        </Fragment>
       ))}
     </div>
   );

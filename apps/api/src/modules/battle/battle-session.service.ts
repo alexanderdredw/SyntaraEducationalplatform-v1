@@ -18,7 +18,8 @@ import { AppConfigService } from '../../config/app-config.service';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
 import { cursorCondition, newestFirst, page } from '../support/pagination';
-import { generateBattleCode, shuffled } from './battle-code';
+import { ClassCodesService } from '../classes/class-codes.service';
+import { allocateBattleCode, generateBattleCode, shuffled } from './battle-code';
 import { BattleEngine } from './battle-engine.service';
 import { BattleStateService } from './battle-state.service';
 
@@ -27,8 +28,6 @@ const BUNDLES: Record<Locale, Messages> = { ru, kk, en };
 
 /** BR-BTL-05: не больше 3 активных сессий у учителя. */
 export const BATTLE_MAX_ACTIVE_SESSIONS = 3;
-/** BR-BTL-01: повторы генерации кода при коллизии. */
-const CODE_ATTEMPTS = 10;
 
 export const battleError = (status: number, key: string, snapshot?: unknown) =>
   new ApiException(
@@ -65,6 +64,7 @@ export class BattleSessionService {
     private readonly state: BattleStateService,
     private readonly audit: AuditService,
     private readonly config: AppConfigService,
+    private readonly classCodes: ClassCodesService,
   ) {}
 
   /** API-BTL-20: снимок вопросов замораживается при запуске (BR-BTL-05). */
@@ -125,39 +125,45 @@ export class BattleSessionService {
       };
     });
 
-    for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt++) {
-      const code = generateBattleCode(battle.code);
-      try {
-        return await this.db.transaction(async (tx) => {
-          const [row] = await tx
-            .insert(battleSessions)
-            .values({
-              battleQuizId: quizId,
-              hostId,
-              classId: cls.id,
-              code,
-              settings,
-              questionsSnapshot: snapshot,
-            })
-            .returning({ id: battleSessions.id });
-          await this.audit.record(
-            {
-              actorId: hostId,
-              schoolId: cls.schoolId,
-              entityType: 'battle_session',
-              entityId: row!.id,
-              action: 'battle_session.created',
-              after: { battleQuizId: quizId, classId: cls.id, questions: snapshot.length },
-            },
-            tx,
-          );
-          return { sessionId: row!.id, code };
-        });
-      } catch (err) {
-        if (!isUniqueViolation(err)) throw err;
-      }
-    }
-    throw battleError(HttpStatus.SERVICE_UNAVAILABLE, 'codeUnavailable');
+    // BR-CODE-03: код, совпадающий с активным кодом класса, отбрасывается (проверка только для чтения).
+    const created = await allocateBattleCode(
+      () => generateBattleCode(battle.code),
+      (code) => this.classCodes.isActiveCode(code),
+      async (code) => {
+        try {
+          return await this.db.transaction(async (tx) => {
+            const [row] = await tx
+              .insert(battleSessions)
+              .values({
+                battleQuizId: quizId,
+                hostId,
+                classId: cls.id,
+                code,
+                settings,
+                questionsSnapshot: snapshot,
+              })
+              .returning({ id: battleSessions.id });
+            await this.audit.record(
+              {
+                actorId: hostId,
+                schoolId: cls.schoolId,
+                entityType: 'battle_session',
+                entityId: row!.id,
+                action: 'battle_session.created',
+                after: { battleQuizId: quizId, classId: cls.id, questions: snapshot.length },
+              },
+              tx,
+            );
+            return { sessionId: row!.id, code };
+          });
+        } catch (err) {
+          if (!isUniqueViolation(err)) throw err;
+          return null;
+        }
+      },
+    );
+    if (!created) throw battleError(HttpStatus.SERVICE_UNAVAILABLE, 'codeUnavailable');
+    return created;
   }
 
   /** API-BTL-23…27: переход; версия не совпала — 409 staleState со свежим снимком. */

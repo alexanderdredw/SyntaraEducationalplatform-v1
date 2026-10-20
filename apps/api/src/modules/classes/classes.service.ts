@@ -15,6 +15,7 @@ import { type AuthUser } from '../auth/auth.types';
 import { SessionService } from '../auth/session.service';
 import { type MeDto } from '../users/me.dto';
 import { MeService } from '../users/me.service';
+import { BattleCodes } from '../battle/battle-codes.service';
 import { ClassCodesService } from './class-codes.service';
 import {
   type IssuedCodeDto,
@@ -37,6 +38,15 @@ export const invalidCodeField = () =>
 export const codeNotFound = () =>
   new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Code not found or expired', { code: 'invalidCode' });
 
+/** BR-CODE-04: введён код активной сессии Battle — подсказка без данных о сессии; вступления нет. */
+export const isBattleCode = (status: HttpStatus.NOT_FOUND | HttpStatus.BAD_REQUEST = HttpStatus.NOT_FOUND) =>
+  new ApiException(
+    status,
+    status === HttpStatus.NOT_FOUND ? 'NOT_FOUND' : 'VALIDATION_FAILED',
+    'This is a Battle code',
+    { code: 'isBattleCode' },
+  );
+
 /**
  * Классы и членство (7.7, SM-MEMBERSHIP): учитель работает только со своими классами (BR-ACL-02, чужой → 404);
  * вступление — после входа и подтверждения, без второй активной записи (BR-CLS-02); выход сохраняет результаты
@@ -47,6 +57,7 @@ export class ClassesService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly codes: ClassCodesService,
+    private readonly battleCodes: BattleCodes,
     private readonly audit: AuditService,
     private readonly sessions: SessionService,
     private readonly me: MeService,
@@ -94,16 +105,22 @@ export class ClassesService {
     return { code, expiresAt: expiresAt.toISOString() };
   }
 
-  /** API-PUB-08: только признак годности — без данных класса (BR-CLS-02). */
+  /**
+   * API-PUB-08: только признак годности — без данных класса (BR-CLS-02). Код ищется только среди кодов классов
+   * (BR-CODE-02); код активной сессии Battle — 404 `isBattleCode` (BR-CODE-04).
+   */
   async check(code: string): Promise<{ valid: boolean }> {
-    return { valid: (await this.codes.findActive(code)) !== null };
+    if (await this.codes.findActive(code)) return { valid: true };
+    if (await this.battleCodes.isActiveCode(code)) throw isBattleCode();
+    return { valid: false };
   }
 
   /** API-S-01: повторное вступление в тот же класс не создаёт второй записи (ux_membership_active). */
   async join(student: AuthUser, code: string): Promise<StudentClassDto> {
     const classId = await this.db.transaction(async (tx) => {
       const active = await this.codes.findActive(code, tx);
-      if (!active) throw codeNotFound();
+      // BR-CODE-02/04: код Battle никогда не приводит к вступлению — только подсказка.
+      if (!active) throw (await this.battleCodes.isActiveCode(code)) ? isBattleCode() : codeNotFound();
       await this.addMember(tx, active.classId, student.id, student.id);
       return active.classId;
     });
@@ -170,7 +187,10 @@ export class ClassesService {
     const userId = await this.db.transaction(async (tx) => {
       // Неверный код — ошибка поля без создания аккаунта; данных класса ответ не раскрывает.
       const active = code ? await this.codes.findActive(code, tx) : null;
-      if (code && !active) throw invalidCodeField();
+      if (code && !active)
+        throw (await this.battleCodes.isActiveCode(code))
+          ? isBattleCode(HttpStatus.BAD_REQUEST)
+          : invalidCodeField();
       const schoolId = await this.schoolFor(tx, active?.schoolId ?? null, dto);
       const id = await createAccount(tx, {
         email: dto.email ? dto.email : null,

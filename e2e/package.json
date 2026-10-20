@@ -13,6 +13,7 @@
     "@playwright/test": "^1.56.1",
     "@syntara/shared": "workspace:*",
     "@types/node": "^22.20.5",
+    "postgres": "^3.4.9",
     "typescript": "^5.9.3"
   }
 }

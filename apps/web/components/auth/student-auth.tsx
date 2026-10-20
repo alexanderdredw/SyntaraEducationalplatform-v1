@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Eye, EyeOff, GraduationCap } from 'lucide-react';
+import { Eye, EyeOff, GraduationCap, Users } from 'lucide-react';
 import { LOGIN_PATTERN, type UserRole } from '@syntara/shared';
 import { cn, fieldClass } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
@@ -25,17 +25,24 @@ function FieldRow({
   label,
   hint,
   error,
+  icon,
   children,
 }: {
   id: string;
   label: string;
   hint?: string;
-  error?: string;
+  error?: ReactNode;
+  /** Декоративная иконка перед подписью (BR-CODE-07: «люди» у кода класса). */
+  icon?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm text-[var(--text-muted)]">
+      <label
+        htmlFor={id}
+        className={cn('text-sm text-[var(--text-muted)]', icon ? 'inline-flex items-center gap-1.5' : null)}
+      >
+        {icon}
         {label}
       </label>
       {children}
@@ -115,6 +122,7 @@ export function StudentAuth({
   onLoggedIn?: (me: Me, via: 'register' | 'login') => void;
 }) {
   const t = useTranslations('studentAuth');
+  const tj = useTranslations('join');
   const tAuth = useTranslations('auth.login');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
@@ -341,7 +349,24 @@ export function StudentAuth({
                 </p>
               ) : null}
             </div>
-            <FieldRow id="student-code" label={t('code')} hint={t('codeHint')} error={err('code')}>
+            <FieldRow
+              id="student-code"
+              label={t('code')}
+              hint={t('codeHint')}
+              icon={<Users aria-hidden="true" className="size-4" />}
+              error={
+                // BR-CODE-04: код Battle в поле «Код класса» — подсказка со ссылкой на вход ученика.
+                errors.code === 'isBattleCode'
+                  ? tj.rich('isBattleCode', {
+                      link: (chunks) => (
+                        <AppLink href="/auth/start?role=student" className="font-semibold underline">
+                          {chunks}
+                        </AppLink>
+                      ),
+                    })
+                  : err('code')
+              }
+            >
               <input
                 id="student-code"
                 className={cn(inputClass, 'text-center tracking-[0.3em] uppercase')}

@@ -1,19 +1,28 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Module } from '@nestjs/common';
 import { createHmac, randomInt } from 'node:crypto';
 import { and, eq, gt, isNull, sql } from 'drizzle-orm';
-import { type ClassCodeConfig, isWellFormedClassCode, normalizeClassCode } from '@syntara/shared';
+import {
+  BATTLE_CODE_RE,
+  type ClassCodeConfig,
+  isWellFormedClassCode,
+  normalizeClassCode,
+} from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { isUniqueViolation, type Tx } from '../../common/idempotency';
 import { AppConfigService } from '../../config/app-config.service';
 import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
+import { BattleCodes, BattleCodesModule } from '../battle/battle-codes.service';
 
 export interface ActiveCode {
   classId: string;
   className: string;
   schoolId: string | null;
 }
+
+/** Повторы генерации кода при коллизии (BR-CODE-03 — в пределах тех же 10 попыток). */
+const CODE_ATTEMPTS = 10;
 
 /**
  * Коды классов (BR-CLS-01, PH-07): 6 символов из алфавита PH-07, срок 30 дней; в БД — только хеш
@@ -26,20 +35,26 @@ export class ClassCodesService {
     @Inject(DB) private readonly db: Database,
     @Inject(ENV) private readonly env: Env,
     private readonly config: AppConfigService,
+    private readonly battleCodes: BattleCodes,
   ) {}
 
   hash(code: string): Buffer {
     return createHmac('sha256', this.env.SESSION_SECRET).update(`class-code:${code}`).digest();
   }
 
+  /**
+   * BR-CODE-03: новый код класса никогда не имеет вид кода Battle (`^[A-Z]{3}[1-9]{3}$`) и не совпадает с кодом
+   * активной сессии Battle — такой код отбрасывается и генерируется заново; после 10 попыток — 503.
+   */
   async issue(classId: string, createdBy: string): Promise<{ code: string; expiresAt: Date }> {
     const cfg = await this.config.get<ClassCodeConfig>('class.code');
     const expiresAt = new Date(Date.now() + cfg.ttl_days * 24 * 60 * 60 * 1000);
-    for (let attempt = 0; attempt < 10; attempt++) {
+    for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt++) {
       const code = Array.from(
         { length: cfg.length },
         () => cfg.alphabet[randomInt(0, cfg.alphabet.length)],
       ).join('');
+      if (BATTLE_CODE_RE.test(code) || (await this.battleCodes.isActiveCode(code))) continue;
       try {
         await this.db
           .insert(schema.classInviteCodes)
@@ -72,4 +87,20 @@ export class ClassCodesService {
       );
     return row ?? null;
   }
+
+  /**
+   * BR-CODE-01/03: проверка «код занят» для подсистемы Battle — только чтение, сравнение HMAC-хеша.
+   * Отвечает лишь, действует ли такой код класса; данных класса не возвращает.
+   */
+  async isActiveCode(raw: string): Promise<boolean> {
+    return (await this.findActive(raw)) !== null;
+  }
 }
+
+/** Коды классов — отдельный модуль: его импортируют classes и battle (проверка «код занят»). */
+@Module({
+  imports: [BattleCodesModule],
+  providers: [ClassCodesService],
+  exports: [ClassCodesService],
+})
+export class ClassCodesModule {}

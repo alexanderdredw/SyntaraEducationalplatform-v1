@@ -4,7 +4,7 @@ import { useId, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { Zap } from 'lucide-react';
-import { BATTLE_CODE_RE } from '@syntara/shared';
+import { BATTLE_CODE_RE, normalizeBattleCode } from '@syntara/shared';
 import { Button, Card, CodeInput, EmptyState, Skeleton } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
@@ -17,21 +17,28 @@ type History = components['schemas']['BattleStudentHistoryDto'];
 /** Ширина страниц Battle ученика. */
 export const STUDENT_BATTLE_WIDTH = 'max-w-[760px]';
 
+type JoinError = { key: string; seconds?: number };
+const KNOWN_ERRORS = ['alreadyStarted', 'kicked', 'full', 'isClassCode'];
+
 /**
  * Ввод кода Battle (BT-S01 и карточка на главной ученика): `CodeInput` и «Войти в игру» → API-BTL-40 → лобби.
- * Ошибки: «Код не найден — проверь буквы и цифры», «Игра уже началась», «Учитель удалил тебя из этой игры».
+ * Ошибки: «Код не найден — проверь буквы и цифры», «Игра уже началась», «Учитель удалил тебя из этой игры»;
+ * код класса — подсказка со ссылкой на «Подключиться к классу» (BR-CODE-04). Подпись, пример, подсказка и иконка
+ * «молния» отличают поле от поля «Код класса» (BR-CODE-07).
  */
 export function BattleJoinForm({ large = false }: { large?: boolean }) {
   const t = useTranslations('battle.student');
   const locale = useLocale();
   const router = useRouter();
   const errorId = useId();
+  const hintId = useId();
   const [code, setCode] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<JoinError | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function join(value = code) {
-    if (!BATTLE_CODE_RE.test(value)) return setError(t('errors.codeNotFound'));
+    // BR-CODE-02: не формат кода Battle — сервер ответил бы 422 invalidBattleCode, запрос не нужен.
+    if (!BATTLE_CODE_RE.test(normalizeBattleCode(value))) return setError({ key: 'codeNotFound' });
     setBusy(true);
     setError(null);
     const res = await apiRequest<{ sessionId: string }>('/api/student/battles/join', {
@@ -41,18 +48,24 @@ export function BattleJoinForm({ large = false }: { large?: boolean }) {
     });
     setBusy(false);
     if (res.kind === 'ok') return router.push(`/learn/battles/${res.data.sessionId}`);
-    if (res.kind !== 'http') return setError(t('errors.network'));
+    if (res.kind !== 'http') return setError({ key: 'network' });
     if (res.status === 429)
-      return setError(t('errors.rateLimited', { seconds: res.error.retryAfterSeconds ?? 60 }));
+      return setError({ key: 'rateLimited', seconds: res.error.retryAfterSeconds ?? 60 });
     const key = res.error.fieldErrors?.battle;
-    setError(
-      t(
-        key === 'alreadyStarted' || key === 'kicked' || key === 'full'
-          ? `errors.${key}`
-          : 'errors.codeNotFound',
-      ),
-    );
+    setError({ key: key && KNOWN_ERRORS.includes(key) ? key : 'codeNotFound' });
   }
+
+  const errorText = !error
+    ? null
+    : error.key === 'isClassCode'
+      ? t.rich('errors.isClassCode', {
+          link: (chunks) => (
+            <AppLink href="/join" className="font-semibold underline">
+              {chunks}
+            </AppLink>
+          ),
+        })
+      : t(`errors.${error.key}`, { seconds: error.seconds ?? 60 });
 
   return (
     <form
@@ -63,6 +76,10 @@ export function BattleJoinForm({ large = false }: { large?: boolean }) {
         void join();
       }}
     >
+      <p className="inline-flex items-center gap-1.5 text-[13px] text-[var(--text-muted)]" aria-hidden="true">
+        <Zap className="size-4" />
+        {t('join.codeLabel')}
+      </p>
       <CodeInput
         value={code}
         onChange={(v) => {
@@ -71,13 +88,17 @@ export function BattleJoinForm({ large = false }: { large?: boolean }) {
         }}
         label={t('join.codeLabel')}
         cellLabel={(i) => t('join.cell', { n: i + 1 })}
+        placeholder={t('join.placeholder')}
         invalid={Boolean(error)}
-        describedBy={error ? errorId : undefined}
+        describedBy={[error ? errorId : null, hintId].filter(Boolean).join(' ')}
         large={large}
       />
+      <p id={hintId} className="text-xs text-[var(--text-muted)]">
+        {t('join.hint')}
+      </p>
       {error ? (
         <p id={errorId} role="alert" className="text-sm text-[var(--danger-text)]">
-          {error}
+          {errorText}
         </p>
       ) : null}
       <Button type="submit" variant="primary-blue" disabled={busy} className="self-start">

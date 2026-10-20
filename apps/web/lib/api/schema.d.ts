@@ -5065,7 +5065,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Код не найден или истёк */
+            /** @description Код не найден или истёк (invalidCode); код активной сессии Battle — isBattleCode (BR-CODE-04) */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -5173,6 +5173,13 @@ export interface operations {
                     "application/json": components["schemas"]["CodeCheckDto"];
                 };
             };
+            /** @description Код активной сессии Battle — fieldErrors.code = isBattleCode (BR-CODE-04) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             /** @description Превышен лимит; retryAfterSeconds в теле */
             429: {
                 headers: {
@@ -5203,7 +5210,7 @@ export interface operations {
                     "application/json": components["schemas"]["LoginResponse"];
                 };
             };
-            /** @description Ошибки полей; неверный код — fieldErrors.code = invalidCode */
+            /** @description Ошибки полей; неверный код — fieldErrors.code = invalidCode, код Battle — isBattleCode (BR-CODE-04) */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -7832,7 +7839,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description codeNotFound — в том числе код чужого класса */
+            /** @description codeNotFound — в том числе код чужого класса; isClassCode — это действующий код класса (BR-CODE-04) */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -7841,6 +7848,13 @@ export interface operations {
             };
             /** @description kicked / full / alreadyStarted */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description invalidBattleCode — не формат ^[A-Z]{3}[1-9]{3}$ (BR-CODE-02) */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -325,7 +325,7 @@
     "studentAuth.schoolManualPlaceholder": "Самостоятельная регистрация ученика (2026-10-14) — текст не задан в SPEC/эталоне",
     "studentAuth.schoolUnverified": "Самостоятельная регистрация ученика (2026-10-14) — текст не задан в SPEC/эталоне",
     "studentAuth.schoolNoResults": "Самостоятельная регистрация ученика (2026-10-14) — текст не задан в SPEC/эталоне",
-    "studentAuth.codeHint": "Эталон: «Если учитель дал код — впишите, и мы сразу добавим вас в класс» (переведено на «ты»)",
+    "studentAuth.codeHint": "CODES_TZ BR-CODE-07: подсказка под полем «Код класса» (заменяет текст эталона student-auth.png)",
     "studentAuth.consent": "Эталон: «Продолжая регистрацию, вы принимаете Пользовательское соглашение · Политика конфиденциальности» (переведено на «ты»)",
     "studentAuth.forgotNote": "Эталон: «Забыли пароль? Если регистрировались с email — сбросьте его по почте. Для школьного аккаунта без email попросите классного руководителя или завуча.» (переведено на «ты»)",
     "studentAuth.forgotLink": "Эталон: «Забыли пароль?» (переведено на «ты»)",
@@ -575,7 +575,7 @@
     "battle.common.cols.time": "Battle: столбец таблицы",
     "battle.student.home.title": "8.6.2: карточка на главной ученика (BATTLE_TZ 7.3)",
     "battle.student.join.title": "BT-S01: заголовок",
-    "battle.student.join.codeLabel": "BT-S01: подпись поля кода",
+    "battle.student.join.codeLabel": "CODES_TZ BR-CODE-07: подпись поля «Код Battle»",
     "battle.student.join.cell": "BT-S01: доступное имя ячейки CodeInput",
     "battle.student.join.submit": "BT-S01: кнопка (BATTLE_TZ 7.3)",
     "battle.student.errors.codeNotFound": "BT-S01: ошибка (BATTLE_TZ 7.3)",
@@ -703,7 +703,14 @@
     "battle.teacher.results.answered": "BT-T09",
     "battle.teacher.results.avgTime": "BT-T09",
     "battle.teacher.results.byStudent": "BT-T09 (BATTLE_TZ 7.2)",
-    "battle.teacher.results.studentScore": "BT-T09"
+    "battle.teacher.results.studentScore": "BT-T09",
+    "join.codePlaceholder": "CODES_TZ BR-CODE-07: пример кода класса (замена ABC123)",
+    "join.codeHint": "CODES_TZ BR-CODE-07: подсказка под полем «Код класса»",
+    "join.isBattleCode": "CODES_TZ BR-CODE-04: код Battle введён в поле класса; ссылка — на раздел «Battle» (гостю — вход ученика)",
+    "studentAuth.codePlaceholder": "CODES_TZ BR-CODE-07: пример кода класса (замена ABC123)",
+    "battle.student.join.placeholder": "CODES_TZ BR-CODE-07: пример кода Battle",
+    "battle.student.join.hint": "CODES_TZ BR-CODE-07: подсказка под полем «Код Battle»",
+    "battle.student.errors.isClassCode": "CODES_TZ BR-CODE-04: код класса введён в поле Battle; ссылка — на «Подключиться к классу» (/join)"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

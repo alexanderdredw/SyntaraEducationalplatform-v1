@@ -658,7 +658,7 @@ CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_
 | API-GEN-03 | Локаль запроса — заголовок `Accept-Language` (ru, kk, en); ответы с переводами содержат поле `locale` — фактически отданный язык. |
 | API-GEN-04 | Формат ошибки: `{ "code": "VALIDATION_FAILED", "message": "…", "fieldErrors": { "email": "…" }, "requestId": "…" }`. HTTP-коды: 400, 401, 403, 404, 409, 413, 422, 429, 500, 503. |
 | API-GEN-05 | Все POST публичных форм требуют заголовок `Idempotency-Key` (UUID). Тот же ключ и то же тело → прежний ответ; тот же ключ и другое тело → 409 `IDEMPOTENCY_MISMATCH`. Срок хранения ключа — 24 ч. |
-| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20; Battle — ввод кода 10 за 10 минут на ученика и 30 на IP, ответы — 1 в 200 мс на участника (BR-BTL-01/03). Ответ 429 содержит `retryAfterSeconds`. |
+| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20; Battle — ввод кода 10 за 10 минут на ученика и 30 на IP, ответы — 1 в 200 мс на участника (BR-BTL-01/03). Ключи лимитов ввода кода класса и кода Battle разные (BR-CODE-06). Ответ 429 содержит `retryAfterSeconds`. |
 | API-GEN-07 | Списки — курсорная пагинация: `?cursor=&limit=` (limit ≤ 100), ответ `{ items, nextCursor }`. |
 | API-GEN-08 | Все обращения к данным проверяют владение/членство (BR-ACL-*). Нарушение → 404 (не раскрывать существование объекта). |
 
@@ -673,7 +673,7 @@ CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_
 | API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
 | API-PUB-06 | POST /api/public/assistant | `{ message (≤2000), history: [{role, content}] (≤20) }` | SSE: `event: delta {text}` … `event: done {}` / `event: error {code}` |
 | API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
-| API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса |
+| API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса; код активной сессии Battle — 404 `isBattleCode` (BR-CODE-04) |
 | API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
 | API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
 | API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
@@ -687,7 +687,7 @@ CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_
 | API-AUTH-01 | POST /api/auth/login | `{ email, password }` | 200 `{ user: MeDto }` + cookie `sid` |
 | API-AUTH-02 | POST /api/auth/logout | — | 204 |
 | API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06) | 201 `{ user }` и вход; письмо со ссылкой подтверждения email (API-AUTH-06) |
-| API-AUTH-03S | POST /api/auth/register-student | `{ displayName, login, password, email?, schoolId?, schoolName?, code? }` (PH-06, PH-17, PH-44) | 201 `{ user }` и вход; верный код — сразу членство в классе и школа класса; неверный код — 400 без создания аккаунта |
+| API-AUTH-03S | POST /api/auth/register-student | `{ displayName, login, password, email?, schoolId?, schoolName?, code? }` (PH-06, PH-17, PH-44) | 201 `{ user }` и вход; верный код — сразу членство в классе и школа класса; неверный код — 400 без создания аккаунта; код активной сессии Battle — 400 `fieldErrors.code = isBattleCode` без создания аккаунта (BR-CODE-04) |
 | API-AUTH-04 | POST /api/auth/password/forgot, /reset | `{ email }`, `{ token, password }` | 204 |
 | API-AUTH-05 | POST /api/auth/password/change | `{ currentPassword?, password }` | 204; при `mustChangePassword` (временный пароль) текущий пароль не нужен |
 | API-AUTH-06 | POST /api/auth/email/verify, /email/resend | `{ token }`, — | 204; повторная отправка — только вошедшему с неподтверждённым email |
@@ -735,7 +735,7 @@ CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_
 
 | **ID** | **Метод и путь** | **Назначение** |
 |---|------------|-----------------------------|
-| API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02) |
+| API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02); код ищется только среди кодов классов; код активной сессии Battle — 404 `isBattleCode`, вступления нет (BR-CODE-02/04) |
 | API-S-02 | GET /api/student/class | `{ classId, className, teacherName, schoolName } | null` |
 | API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
 | API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
@@ -860,7 +860,869 @@ export const QuestionDto = z.object({
 
 | **ID** | **Метод и путь** | **Назначение** |
 |---|------------|-----------------------------|
-| API-BTL-40 | POST /api/student/battles/join | `{ code }` → `{ sessionId }`; 404 `codeNotFound` (в том числе код чужого класса — без подробностей), 409 `kicked`, 409 `full`, 409 `alreadyStarted` (позднее подключение выключено); лимит — BR-BTL-01 |
+| API-BTL-40 | POST /api/student/battles/join | `{ code }` → `{ sessionId }`; не формат `^[A-Z]{3}[1-9]{3}# 0. Инструкция для ИИ-агента
+
+## 0.1 Назначение документа
+
+Этот документ — спецификация Syntara Education Platform для реализации ИИ-агентом (Claude Code, Cursor, Copilot и аналоги). Он эквивалентен ТЗ «Syntara_ТЗ_краткое.docx» ред. 5.1 по функциональности, архитектуре и требованиям, но изложен как машинно-однозначный контракт: идентификаторы требований, схемы данных, API, правила в псевдокоде, конечные автоматы и проверяемые критерии.
+
+## 0.2 Правила работы агента
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| AG-01 | Реализуй только то, что описано в документе. Не добавляй страницы, поля, кнопки, тарифы, бейджи и правила, которых здесь нет. |
+| AG-02 | Если поведение не описано — используй значение из раздела 11 (конфигурация заглушек). Если и там нет — оставь `TODO(OWNER): <вопрос>` в коде и выключи функцию флагом; не придумывай значение. |
+| AG-03 | Все видимые тексты бери из этого документа дословно (в кавычках «…»). Тексты хранятся в файлах локализации, не в коде компонентов. |
+| AG-04 | Права доступа проверяются только на сервере. Скрытие кнопки в интерфейсе не считается защитой. |
+| AG-05 | Работай итерациями плана из раздела 12. После каждой итерации прогоняй тесты и проверки DoD этой итерации. |
+| AG-06 | Каждое требование имеет ID. Указывай ID в названии теста и в описании коммита: `feat(quiz): REQ-ST-QZ-03 one correct option`. |
+| AG-07 | Скриншоты-эталоны (S01–S26, T04–T10, U01–U13) — источник визуального соответствия. При расхождении скриншота и текста приоритет у текста. |
+| AG-08 | Демонстрационные данные со скриншотов (имена, классы, числа, даты) не хранить как константы. Они допустимы только в seed-данных для визуальных тестов. |
+| AG-09 | Не меняй схему БД без миграции. Не удаляй ограничения целостности из раздела 5. |
+| AG-10 | Секреты (ключи ИИ, SMTP, S3) — только в переменных окружения сервера. Никогда не передавай их в клиент. |
+
+## 0.3 Уровни обязательности
+
+| **Слово** | **Значение** |
+|------|-----------------------------|
+| MUST / ДОЛЖЕН | Обязательно; невыполнение — дефект, блокирующий приёмку |
+| MUST NOT / НЕ ДОЛЖЕН | Запрещено |
+| SHOULD / СЛЕДУЕТ | Рекомендуется; отклонение допустимо с комментарием в коде |
+| PLACEHOLDER | Временное значение из раздела 11; хранится в конфигурации, помечено `needs_confirmation=true` |
+
+## 0.4 Схема идентификаторов
+
+| **Префикс** | **Область** |
+|------|-----------------------------|
+| REQ-GEN-* | Общие требования (оболочка, дизайн, языки, формы, безопасность) |
+| REQ-PUB-* | Гостевой режим (публичные страницы) |
+| REQ-TCH-* | Кабинет учителя |
+| REQ-ST-* | Интерфейс ученика |
+| REQ-SUP-* | Служебная поддержка |
+| REQ-NFR-* | Нефункциональные требования |
+| BR-* | Бизнес-правила (раздел 7) |
+| SM-* | Конечные автоматы (раздел 9) |
+| API-* | Операции API (раздел 6) |
+| AC-* | Критерии приёмки (раздел 13) |
+| PH-* | Заглушки (раздел 11), соответствуют ЗГ-* исходного ТЗ |
+
+## 0.5 Определение готовности (Definition of Done) для любой задачи
+
+1.  Код проходит `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+2.  Для каждого затронутого REQ есть минимум один автоматический тест.
+3.  Все видимые строки — в `packages/shared/i18n/ru.json` (и ключи в kk.json, en.json).
+4.  Новые эндпоинты описаны в OpenAPI и покрыты тестом прав доступа (положительный и отрицательный случай).
+5.  Интерактивные элементы доступны с клавиатуры; axe-core без нарушений уровня serious/critical.
+6.  Миграции БД применяются и откатываются на чистой базе.
+
+# 1. Контекст продукта
+
+## 1.1 Что строим
+
+Syntara Education Platform — адаптивная веб-платформа для школ Республики Казахстан на языках KK, RU, EN. Три режима в одном приложении с общей моделью данных:
+
+| **Режим** | **Роль** | **Объём** |
+|-------|------|-----------------------------|
+| Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы; каталог и «Обзор» базовых уроков платформы (BR-VIS-04) |
+| Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса; Battle — живые викторины для класса (7.12) |
+| Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс; участие в Battle по коду (7.12) |
+| Служебная поддержка | support_agent, onboarding_agent | Очереди обращений и школьных заявок |
+
+## 1.2 Матрица доступа (REQ-GEN-ACL)
+
+| **Ресурс / действие** | **guest** | **student** | **teacher** | **support_agent** | **onboarding_agent** |
+|-------------|---|---|---|---|---|
+| Публичные страницы, помощник, пробный вопрос, формы, правовые | R | R | R | R | R |
+| Подключение к классу по коду | → login | W | — | — | — |
+| Каталог, тема, квиз (только опубликованное, BR-VIS-01) | — | R | R (предпросмотр) | — | — |
+| Каталог и «Обзор» базовых уроков платформы (BR-VIS-04) | R | R | R | R | R |
+| Квиз, Syntara AI, XP и прогресс по базовым урокам | → login | R/W (свои) | — | — | — |
+| Базовые предметы, темы, вопросы, картинки (BR-ACL-05) | — | — | — | — | — |
+| Учебный ИИ, личные показатели, достижения | — | R/W (свои) | — | — | — |
+| Предметы, темы, вопросы, материалы | — | — | R/W (свои) | — | — |
+| Выдача предмета классу, задания, аналитика | — | — | R/W (свои классы) | — | — |
+| Battle-тесты, игровые сессии (ведущий), итоги и история своих игр (7.12) | — | — | R/W (свои) | — | — |
+| Участие в Battle по коду: лобби, ответы, свои итоги и история (BR-BTL-02) | → login | R/W (свои; только сессии своего класса) | — | — | — |
+| Очередь обращений | — | — | — | R/W | — |
+| Очередь школьных заявок | — | — | — | — | R/W |
+
+R — чтение, W — изменение, «→ login» — перенаправление на вход с сохранением цели. Базовые уроки платформы через сайт и API не изменяет никто: они создаются и меняются только файлами `content/` и командой импорта (BR-CNT-01, решение владельца 2026-10-16). Служебные роли MUST NOT иметь доступ к учебным данным. Роли teacher/student MUST NOT иметь доступ к очередям поддержки.
+
+## 1.3 Вне объёма (MUST NOT реализовывать)
+
+Кабинеты школы и родителя; программа по классам (годам обучения); новые атласы; оплата и тарифы; офлайн-обучение. Для непоказанных экранов (история версий, уведомления, меню роли, профиль, «Ростер», «Карта освоения», «Мои курсы», «Мои задания», проверка работы) реализуется минимальная версия из раздела 11; точки входа (кнопки и ссылки) сохраняются всегда.
+
+## 1.4 Команда на старте
+
+| **Роль** | **Технологии** |
+|------|-----------------------------|
+| Фронтенд-разработчик (1–2) | Next.js, React, TypeScript, Tailwind, Radix UI |
+| Бэкенд-разработчик (1–2) | NestJS, PostgreSQL, Drizzle, Redis, BullMQ |
+| DevOps (частичная занятость) | Docker, Nginx, CI/CD, мониторинг, резервное копирование |
+| QA-инженер (1) | Playwright, axe-core, k6 |
+| Дизайнер (частичная занятость) | Figma, токены дизайна 3.1 |
+
+## 1.5 Эталонные изображения
+
+| **Набор** | **Файлы** | **Размер** | **Назначение** |
+|------|-------------|------|-------------|
+| S01–S26 | Передаются отдельно | — | Публичная часть |
+| T04–T10 | 04_teacher_class_access.jpg … 10_teacher_class_results.jpg | 1348 × 926 | Кабинет учителя |
+| U01–U13 | 01_opening_syntara_platform.jpg … student subjects .jpeg | 1348 × 926 (U03 — 1363 × 936) | Интерфейс ученика |
+
+Изображения T и U вставлены в разделы 8.3 и 8.4. Визуальные тесты сравнивают экран на эталонном размере с соответствующим файлом.
+
+# 2. Стек и структура репозитория
+
+## 2.1 Стек (фиксированный)
+
+| **Слой** | **Технология** |
+|------|-----------------------------|
+| Язык | TypeScript 5 (strict) везде |
+| Монорепозиторий | pnpm workspaces + Turborepo |
+| Web | Next.js 15+ (App Router), React 19, Tailwind CSS 4, Radix UI, Lucide, next-intl, React Hook Form + Zod, TanStack Query, react-markdown + rehype-sanitize, Serwist (manifest; офлайн-кеш выключен) |
+| API | Node.js 22 LTS+, NestJS 11, Drizzle ORM + drizzle-kit, Zod, @nestjs/swagger, argon2, @nestjs/throttler (Redis), AWS SDK v3 (S3), Vercel AI SDK за интерфейсом LLMProvider, SSE |
+| Worker | BullMQ, nodemailer, clamd-клиент, olevba (контейнер на Python) |
+| Данные | PostgreSQL 16+, PgBouncer, Redis 7 / Valkey, S3-совместимое хранилище (MinIO локально) |
+| Наблюдаемость | OpenTelemetry, Prometheus, Grafana, Loki, Sentry |
+| Тесты | Vitest, Testcontainers, Playwright, @axe-core/playwright, k6 |
+| Инфраструктура | Docker, Docker Compose на 2+ серверах (при росте — Kubernetes), Nginx, Let's Encrypt, CI (GitHub Actions или GitLab CI) |
+| Принципы | Модульный монолит (api) + отдельный worker; события и письма — через transactional outbox; пароли — Argon2id (допустим bcrypt); права — guards NestJS + RLS |
+
+![Архитектура системы и основные компоненты](media/arch.png)
+
+## 2.2 Структура репозитория
+
+```text
+syntara/
+├─ apps/
+│  ├─ web/                 # Next.js: публичные страницы, кабинеты, служебная поддержка
+│  │  ├─ app/[locale]/(public)/...   # /, /subjects, /about, /ai, /schools, /support, правовые
+│  │  ├─ app/[locale]/(auth)/...     # /auth/login, /auth/start, /join
+│  │  ├─ app/[locale]/(teacher)/...  # /teacher/...
+│  │  ├─ app/[locale]/(student)/...  # /learn/...
+│  │  ├─ app/[locale]/(staff)/...    # /staff/tickets, /staff/requests
+│  │  └─ components/        # компоненты страниц
+│  ├─ api/                 # NestJS
+│  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit,battle}
+│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, cleanup, battle (таймеры игр, 7.12)
+├─ packages/
+│  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
+│  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
+│  └─ db/                  # Drizzle schema, миграции, seed (demo, visual), импорт базовой программы
+├─ content/                # базовая программа платформы: файлы уроков (BR-CNT-02, docs/CONTENT_GUIDE.md)
+├─ infra/                  # docker-compose.yml, nginx.conf, grafana dashboards
+└─ e2e/                    # Playwright: сценарии, визуальные эталоны, axe
+```
+
+## 2.3 Переменные окружения
+
+| **Переменная** | **Пример** | **Где** |
+|---------|----------|----|
+| DATABASE_URL | postgres://syntara:***@pgbouncer:6432/syntara | api, worker |
+| REDIS_URL | redis://redis:6379 | api, worker |
+| S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY | http://minio:9000, syntara-files | api, worker |
+| S3_PUBLIC_ENDPOINT | https://files.syntara-edu.me — адрес хранилища для браузера: подписанные ссылки на загрузку и чтение, CSP web; пусто — как S3_ENDPOINT | api, web |
+| SESSION_SECRET | 64 случайных байта | api |
+| APP_BASE_URL | https://syntara-edu.me | web, api |
+| API_INTERNAL_URL | http://api:3001 | web (SSR) |
+| LLM_PROVIDER | mock / openai-compatible / anthropic | api |
+| LLM_API_KEY, LLM_MODEL | — (обязательны, если LLM_PROVIDER ≠ mock; ключ — секрет, в журналы не попадает) | api |
+| LLM_BASE_URL | адрес API поставщика: обязателен для openai-compatible (…/v1), для anthropic — необязателен | api |
+| SMTP_URL, MAIL_FROM | smtp://..., noreply@syntara-edu.me | worker |
+| SUPPORT_EMAIL | PH-09 | api, web (через API config) |
+| CLAMD_HOST, OLEVBA_URL | clamav:3310, http://olevba:8080 | worker |
+| PLATFORM_TZ | Asia/Almaty (UTC+5) — PH-42 | api, worker |
+| SENTRY_DSN, OTEL_EXPORTER_OTLP_ENDPOINT | — | все |
+
+## 2.4 Команды
+
+```bash
+pnpm i                      # установка
+pnpm dev                    # web :3000, api :3001, worker; инфраструктура через docker compose
+pnpm db:migrate             # применить миграции
+pnpm db:seed --set=demo     # демо-данные (эталоны скриншотов) и импорт базовой программы из content/
+pnpm content:check          # проверка файлов content/ без записи в БД (в CI)
+pnpm content:import         # импорт content/ в БД (BR-CNT-*); --dry-run — только проверка и план изменений
+pnpm test                   # unit + integration (Vitest + Testcontainers)
+pnpm e2e                    # Playwright: сценарии, визуальные и axe-проверки
+pnpm lint && pnpm typecheck
+```
+
+# 3. Дизайн-система
+
+## 3.1 Токены (REQ-GEN-DS-01)
+
+Токены MUST быть объявлены как CSS-переменные в `packages/ui/tokens.css` и подключены в Tailwind. Значения — стартовые; критерий — совпадение с эталонами.
+
+```css
+:root, [data-theme="dark"] {
+  --bg: #070707;            /* фон страницы, диапазон #050505–#090909 */
+  --surface: #141518;       /* карточки, диапазон #101010–#1B1D22 */
+  --surface-teacher: #0D0D0D;
+  --field: #1C1F25;         /* поля ввода, #181818–#20242B */
+  --text: #F1F2F4;
+  --text-muted: #9A9EA7;    /* #92969F–#A5A8B1 */
+  --accent: #2F7DF0;        /* #1E63E4–#4A9CFA; кабинет: #1765E8 */
+  --accent-teacher: #1765E8;
+  --border: #292B30;
+  --success: #22A45D;       /* правильный ответ */
+  --danger: #E5484D;        /* низкий результат, «требуют внимания» */
+  --ai-gradient: linear-gradient(90deg, #8B5CF6, #EC4899);
+  --radius-card: 20px;      /* 16–24 */
+  --radius-pill: 999px;
+}
+[data-theme="light"] {
+  --bg: #FAFAFC; --surface: #FFFFFF; --sidebar: #F2F2F4; --text: #181818;
+}
+```
+
+| **Параметр** | **Значение** |
+|---------|-----------------------------|
+| Сетка отступов | 8, 12, 16, 24, 32, 48, 64 px |
+| Ширина контента | секции 1120–1240; хедер 1440–1600; формы 560–640; «Школам» 640–760; правовые 780–900; кабинет: формы ~664, задания и аналитика ~760; урок ~982 |
+| Шрифт | Inter или Manrope, self-hosted, `font-display: swap`; полная кириллица и казахские буквы (Ә Ғ Қ Ң Ө Ұ Ү Һ І) |
+| Размеры (публичные) | H1 главной 72–112; заголовки секций 28–64; текст 16–20; подписи 12–14 |
+| Размеры (кабинеты) | заголовок 28; блок 18; текст 14; пояснение 12 |
+| Иконки | Lucide, линейные, цвет `--accent` |
+| Спецсостояния | «Опубликовать» — светлая кнопка; ИИ-кнопка — `--ai-gradient`; правильный ответ — рамка `--success`; низкий результат — `--danger`; фокус поля — синий контур со свечением |
+
+## 3.2 Базовые компоненты (packages/ui)
+
+`Button` (variant: primary-blue, primary-white, secondary, text, publish, ai), `Card`, `Pill`, `Tabs` (капсульные), `SegmentedControl` (RU/KK/EN, тип, сложность, период), `Field` (label + input + error + hint), `Select`, `Textarea`, `Checkbox`, `Radio`, `Modal`, `Accordion`, `ProgressBar`, `Badge`, `EmptyState`, `Toast`, `Skeleton`, `Sidebar`, `Header`, `Footer`, `FloatingHelp`. Все компоненты MUST поддерживать клавиатуру и видимый фокус (Radix UI).
+
+## 3.3 Оболочка (REQ-GEN-SHELL)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-SHELL-01 | Публичный хедер: логотип Syntara; меню «Главная», «Предметы», «О проекте», «Syntara AI», «Школам», «Помощь» (активный пункт — светлая капсула); справа язык, «Экономия трафика выключена», переключатель темы, кнопка «Войти» (у вошедшего пользователя — «Кабинет»: главная страница его активной роли). Хедер закреплён сверху; якоря учитывают его высоту (`scroll-margin-top`). |
+| REQ-GEN-SHELL-02 | Хедер кабинетов: вместо меню — выбор роли («Учитель»/«Ученик»), язык, трафик, тема, уведомления, профиль (буква аватара + имя из аккаунта; роль показывается один раз — в выборе роли), «Выйти». У ученика дополнительно индикаторы серии (пламя) и XP из `GET /me/stats`. |
+| REQ-GEN-SHELL-03 | Боковая панель кабинетов ~70 px со значками; активный — синяя подложка и полоса слева. Значки без страницы ведут на заглушку «Раздел в разработке» (PH-24). |
+| REQ-GEN-SHELL-04 | Плавающие кнопки справа внизу: «?» — краткая справка по странице и ссылки поддержки; синяя кнопка диалога — публичный помощник. В кабинетах между ними жёлтая «лампочка» (PH-32). Кнопки не перекрывают поля ввода, cookie-баннер и чат. |
+| REQ-GEN-SHELL-05 | Футер (синий градиент): колонка бренда — «Учись в своём темпе — на казахском и русском», email поддержки (PH-09), «KK · RU · EN»; ПРОДУКТ — Главная, Предметы, О проекте, Syntara AI; ШКОЛАМ — Школам, Оставить заявку, Помощь, Войти, Подключиться к классу (в кабинетах последние две → «Кабинет»); ПРАВОВОЕ — три документа. Низ: «© 2026 Syntara Education Platform. Образовательный продукт.» |
+| REQ-GEN-SHELL-06 | Мобильная версия (< 1024 px): логотип, «Войти», кнопка «Меню». В меню: 6 разделов, язык, тема, трафик. Закрытие кнопкой, Escape, переходом; фокус возвращается на кнопку «Меню». |
+| REQ-GEN-SHELL-07 | 320–430 px: без горизонтальной прокрутки; одна колонка; зоны нажатия ≥ 44×44 px; размер шрифта полей ≥ 16 px; экранная клавиатура не перекрывает поле и кнопку отправки. Есть ссылка «К содержимому». |
+
+## 3.4 Язык, тема, трафик (REQ-GEN-PREF)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-PREF-01 | Локаль в URL-префиксе `/{ru|kk|en}/...`. Смена языка MUST NOT перезагружать страницу и терять введённые данные, выбранную тему урока и вкладку. Выбор сохраняется в cookie `locale` и в `user_preferences`. |
+| REQ-GEN-PREF-02 | Язык без готового перевода показывается в меню недоступным с подписью «скоро» (PH-04). Контент без перевода показывается на доступном языке; машинный перевод MUST NOT использоваться. Заранее подготовленные переводы текстов интерфейса в `kk.json` и `en.json` машинным переводом во время работы не являются и допустимы; KK-переводы помечаются `needs_review` до проверки носителем языка (решение владельца, ред. 2026-10-13). |
+| REQ-GEN-PREF-03 | Тема: при первом визите — `prefers-color-scheme`; ручной выбор сохраняется (cookie `theme` + `user_preferences`). Атрибут `data-theme` на `<html>` выставляется до отрисовки (без мигания). |
+| REQ-GEN-PREF-04 | Экономия трафика (`data_saver`): отключает анимации, автозагрузку изображений вне первого экрана и prefetch. Подпись кнопки: «Экономия трафика выключена» / «Экономия трафика включена». |
+| REQ-GEN-PREF-05 | Глобальный язык интерфейса и вкладки RU/KK/EN в редакторах — независимые состояния. |
+
+
+# 4. Маршруты
+
+Все маршруты имеют префикс локали `/{locale}`. Доступ проверяется middleware Next.js (перенаправление) и, обязательно, API (данные).
+
+| **Маршрут** | **Страница** | **Доступ** | **Эталон** | **Раздел** |
+|-----------|---------|-----|----|----|
+| / | Главная (гость) / главная ученика | все | S01–S07, U01 | 8.1.1, 8.4.1 |
+| /subjects | Предметы | все | S08 | 8.1.2 |
+| /about | О проекте | все | S09–S14 | 8.1.3 |
+| /ai | Syntara AI — помощник по платформе | все | S15 | 8.1.4 |
+| /schools | Школам | все | S16–S17 | 8.1.5 |
+| /schools/request | Заявка школы | все | S18 | 8.1.6 |
+| /support | Поддержка | все | S19 | 8.1.7 |
+| /terms, /privacy, /cookies | Правовые документы (PH-43) | все | S20–S26 | 8.1.8 |
+| /auth/login | Вход | guest | — | 8.2.1 |
+| /auth/start | Выбор роли и регистрация | guest | — | 8.2.1 |
+| /join | Подключение к классу | guest → login, student | — | 8.2.2 |
+| /account/privacy | Мои данные | авторизованные | — | 8.2.3 |
+| /teacher/courses | Мои курсы | teacher | — | 8.3 |
+| /teacher/subjects/new | Новый предмет | teacher | T05 | 8.3.1 |
+| /teacher/subjects/:id | Предмет: доступ классу и темы | teacher (владелец) | T04 | 8.3.2 |
+| /teacher/subjects/:id/topics/new, /teacher/topics/:id | Редактор темы (`/topics/new` — переход на страницу предмета: тема создаётся кнопкой «+ Добавить тему», REQ-TCH-ACC-02) | teacher (владелец) | T06–T07 | 8.3.3 |
+| /teacher/topics/:id/quiz | Квиз темы | teacher (владелец) | T08 | 8.3.5 |
+| /teacher/assignments | Задания | teacher | T09 | 8.3.6 |
+| /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
+| /learn/subjects | Каталог и класс | student; гость — каталог базовых уроков (BR-VIS-04) | U13 | 8.4.2 |
+| /learn/sections/:id | Раздел каталога | student; гость (BR-VIS-04) | U03 | 8.4.2 |
+| /learn/subjects/:id | Предмет: темы и их статусы | student; гость — базовый предмет, без статусов (BR-VIS-04) | — | 8.4.2 |
+| /learn/topics/:id?tab=overview|quiz|ai | Урок | student; гость — «Обзор» базового урока, на «Квиз» и «Syntara AI» — приглашение войти (REQ-ST-LES-06) | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
+| /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
+| /learn/progress | Мои показатели | student | U08 | 8.4.6 |
+| /learn/achievements | Достижения | student | U10 | 8.4.7 |
+| /learn/assignments | Мои задания (PH-33) | student | — | 8.4.8 |
+| /teacher/battles | Мои Battle: вкладки «Тесты» и «История игр» (`?tab=history&classId=`) | teacher | — | 8.6.1 |
+| /teacher/battles/:id | Редактор Battle-теста | teacher (владелец) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid | Игра ведущего: лобби, вопрос, раскрытие, рейтинг, итог | teacher (ведущий сессии) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid/results | Результаты игры | teacher (ведущий сессии) | — | 8.6.1 |
+| /learn/battles | Вход в Battle по коду и «Мои Battle» | student | — | 8.6.2 |
+| /learn/battles/:sid | Игра ученика: лобби, вопрос, раскрытие, рейтинг, итог | student (участник) | — | 8.6.2 |
+| /learn/battles/:sid/results | Итоги игры ученика | student (участник) | — | 8.6.2 |
+| /staff/tickets, /staff/requests | Служебные очереди | support_agent / onboarding_agent | — | 8.5 |
+
+Правила: внешние ссылки атласов — из конфигурации (PH-10). `returnTo` — только относительный внутренний путь, проверенный по белому списку префиксов; иначе `/`. Прямой заход по URL отдаёт ту же страницу, что и навигация (SSR).
+
+# 5. База данных
+
+## 5.1 Соглашения
+
+- PostgreSQL 16+. Все PK — `uuid` (UUIDv7, генерация в приложении). Время — `timestamptz` (UTC).
+- Каждая таблица, кроме связующих, имеет `created_at timestamptz NOT NULL DEFAULT now()` и `updated_at timestamptz NOT NULL DEFAULT now()` (в DDL ниже опущены).
+- Переводы — таблицы `*_translations` с PK `(entity_id, locale)`.
+- Учебные сущности не удаляются физически: `archived_at timestamptz NULL`.
+- Миграции — drizzle-kit; ручные изменения схемы запрещены (AG-09).
+- Row-Level Security SHOULD быть включена для таблиц со `school_id` как второй уровень защиты.
+
+![Схема БД: пользователи, классы и учебный контент](media/er1a.png)
+
+![Схема БД: квизы и задания](media/er1b.png)
+
+![Схема БД: результаты, геймификация, ИИ, поддержка и служебные таблицы](media/er2.png)
+
+## 5.2 Перечисления
+
+```sql
+CREATE TYPE locale            AS ENUM ('ru','kk','en');
+CREATE TYPE user_role         AS ENUM ('student','teacher','support_agent','onboarding_agent');
+CREATE TYPE topic_status      AS ENUM ('draft','published');
+CREATE TYPE question_type     AS ENUM ('single_choice','true_false','text_input');
+CREATE TYPE difficulty        AS ENUM ('easy','medium','hard');
+CREATE TYPE membership_status AS ENUM ('active','left');
+CREATE TYPE submission_status AS ENUM ('submitted','in_review','graded');
+CREATE TYPE attempt_status    AS ENUM ('in_progress','finished','abandoned');
+CREATE TYPE ticket_status     AS ENUM ('new','in_progress','waiting_user','waiting_internal','resolved','closed','reopened');
+CREATE TYPE support_category  AS ENUM ('technical','school_onboarding','learning','account_access','data_privacy','other');
+CREATE TYPE request_status    AS ENUM ('new','in_progress','contacted','onboarded','rejected');
+CREATE TYPE media_kind        AS ENUM ('cover','material','illustration','brand');
+CREATE TYPE scan_status       AS ENUM ('pending','clean','rejected');
+CREATE TYPE ai_context        AS ENUM ('topic_tutor','general_tutor');
+CREATE TYPE ai_role           AS ENUM ('user','assistant');
+CREATE TYPE ai_msg_status     AS ENUM ('complete','partial','failed');
+CREATE TYPE battle_session_status AS ENUM ('lobby','in_progress','finished','cancelled');   -- 5.9
+CREATE TYPE battle_phase          AS ENUM ('lobby','question','reveal','leaderboard','finished');
+```
+
+## 5.3 Пользователи, доступ, классы
+
+```sql
+CREATE TABLE schools (id uuid PRIMARY KEY, name text NOT NULL CHECK (length(name) <= 200),
+  region text, city text, status text NOT NULL DEFAULT 'active');   -- 'unverified' — школа, введённая учеником вручную
+
+CREATE TABLE users (id uuid PRIMARY KEY, email citext UNIQUE, display_name text NOT NULL,
+  login citext UNIQUE,                  -- логин ученика (PH-44: 3–32 символа a-z 0-9 . _ -)
+  password_hash text, is_child_safe boolean NOT NULL DEFAULT false, status text NOT NULL DEFAULT 'active',
+  last_login_at timestamptz,
+  email_verified_at timestamptz,        -- подтверждение email (API-AUTH-06; вход до подтверждения разрешён)
+  must_change_password boolean NOT NULL DEFAULT false,  -- временный пароль от учителя (API-T-27)
+  CHECK (email IS NOT NULL OR is_child_safe));
+
+-- Решение владельца (ред. 2026-10-13): столбцы PK в PostgreSQL не могут быть NULL, поэтому вместо
+-- PRIMARY KEY (user_id, role, school_id) — суррогатный id и уникальность с NULLS NOT DISTINCT (PG 15+).
+CREATE TABLE user_roles (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, role user_role NOT NULL,
+  school_id uuid REFERENCES schools, UNIQUE NULLS NOT DISTINCT (user_id, role, school_id));
+
+CREATE TABLE user_preferences (user_id uuid PRIMARY KEY REFERENCES users,
+  locale locale NOT NULL DEFAULT 'ru', theme text NOT NULL DEFAULT 'system', data_saver boolean NOT NULL DEFAULT false);
+
+CREATE TABLE auth_sessions (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  token_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, revoked_at timestamptz, user_agent text);
+
+CREATE TABLE consents (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, consent_type text NOT NULL,
+  granted boolean NOT NULL, granted_by uuid REFERENCES users, granted_at timestamptz NOT NULL, revoked_at timestamptz);
+
+CREATE TABLE data_subject_requests (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('export','rectify','delete','revoke_consent')),
+  status text NOT NULL DEFAULT 'new', completed_at timestamptz);
+
+CREATE TABLE classes (id uuid PRIMARY KEY, school_id uuid REFERENCES schools, teacher_id uuid NOT NULL REFERENCES users,
+  name text NOT NULL CHECK (length(name) <= 50), archived_at timestamptz);
+
+CREATE TABLE class_memberships (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  student_id uuid NOT NULL REFERENCES users, status membership_status NOT NULL DEFAULT 'active',
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz);
+CREATE UNIQUE INDEX ux_membership_active ON class_memberships (class_id, student_id) WHERE status = 'active';
+CREATE INDEX ix_membership_student ON class_memberships (student_id) WHERE status = 'active';
+
+CREATE TABLE class_invite_codes (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  code_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, is_active boolean NOT NULL DEFAULT true,
+  created_by uuid NOT NULL REFERENCES users);
+```
+
+## 5.4 Учебный контент
+
+```sql
+CREATE TABLE catalog_sections (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, position int NOT NULL);
+CREATE TABLE catalog_section_translations (section_id uuid REFERENCES catalog_sections, locale locale,
+  title text NOT NULL, description text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE subjects (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, section_id uuid REFERENCES catalog_sections,
+  is_official boolean NOT NULL DEFAULT false, in_public_catalog boolean NOT NULL DEFAULT false, archived_at timestamptz,
+  CHECK (is_official OR owner_id IS NOT NULL));
+CREATE TABLE subject_translations (subject_id uuid REFERENCES subjects, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  PRIMARY KEY (subject_id, locale));
+
+CREATE TABLE class_subject_access (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, granted_by uuid NOT NULL REFERENCES users,
+  granted_at timestamptz NOT NULL DEFAULT now(), revoked_at timestamptz);
+CREATE UNIQUE INDEX ux_csa_active ON class_subject_access (class_id, subject_id) WHERE revoked_at IS NULL;
+
+CREATE TABLE media_files (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, kind media_kind NOT NULL,
+  original_name text NOT NULL, mime text NOT NULL, size_bytes bigint NOT NULL, sha256 bytea,
+  storage_key text NOT NULL UNIQUE, scan_status scan_status NOT NULL DEFAULT 'pending');
+
+CREATE TABLE topics (id uuid PRIMARY KEY, subject_id uuid NOT NULL REFERENCES subjects, position int NOT NULL,
+  status topic_status NOT NULL DEFAULT 'draft', cover_media_id uuid REFERENCES media_files, cover_url text,
+  published_at timestamptz, published_version_id uuid, archived_at timestamptz,
+  UNIQUE (subject_id, position) DEFERRABLE INITIALLY DEFERRED);
+CREATE TABLE topic_translations (topic_id uuid REFERENCES topics, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  fun_fact text CHECK (length(fun_fact) <= 500), body_md text CHECK (length(body_md) <= 50000), summary text,
+  PRIMARY KEY (topic_id, locale));
+
+CREATE TABLE topic_sections (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, position int NOT NULL,
+  illustration_media_id uuid REFERENCES media_files);
+CREATE TABLE topic_section_translations (section_id uuid REFERENCES topic_sections, locale locale,
+  title text NOT NULL, body text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE topic_versions (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, version_no int NOT NULL,
+  snapshot jsonb NOT NULL, change_note text CHECK (length(change_note) <= 500), created_by uuid NOT NULL REFERENCES users,
+  UNIQUE (topic_id, version_no));
+ALTER TABLE topics ADD FOREIGN KEY (published_version_id) REFERENCES topic_versions;
+
+CREATE TABLE topic_materials (topic_id uuid REFERENCES topics, media_id uuid REFERENCES media_files,
+  position int NOT NULL, PRIMARY KEY (topic_id, media_id));
+CREATE INDEX ix_topics_subject ON topics (subject_id, position);
+
+-- Базовая программа (этап 8.6, решение владельца 2026-10-16): постоянные коды строк, созданных импортом content/
+-- (BR-CNT-04). У контента учителей code = NULL. Базовый контент — subjects.is_official = true (owner_id NULL).
+ALTER TABLE subjects ADD COLUMN code text UNIQUE, ADD CONSTRAINT subjects_code_official CHECK (code IS NULL OR is_official);
+ALTER TABLE topics ADD COLUMN code text UNIQUE;
+ALTER TABLE topic_sections ADD COLUMN code text UNIQUE;
+ALTER TABLE questions ADD COLUMN code text UNIQUE;
+-- Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05); ученик видит пометку «На проверке».
+ALTER TABLE topic_translations ADD COLUMN needs_review boolean NOT NULL DEFAULT false;
+-- Порядок базовых предметов в каталоге — position из subject.yaml (решение владельца 2026-10-17); у предметов учителей NULL.
+ALTER TABLE subjects ADD COLUMN position int,
+  ADD CONSTRAINT subjects_position_official CHECK (position IS NULL OR (is_official AND position >= 1));
+```
+
+## 5.5 Квизы и задания
+
+```sql
+CREATE TABLE quizzes (id uuid PRIMARY KEY, topic_id uuid NOT NULL UNIQUE REFERENCES topics);
+
+CREATE TABLE questions (id uuid PRIMARY KEY, quiz_id uuid NOT NULL REFERENCES quizzes, type question_type NOT NULL,
+  difficulty difficulty NOT NULL, position int NOT NULL, is_demo boolean NOT NULL DEFAULT false,
+  text_answer text,                     -- только для type = text_input
+  archived_at timestamptz);
+CREATE TABLE question_translations (question_id uuid REFERENCES questions, locale locale,
+  text text NOT NULL CHECK (length(text) <= 1000), explanation text CHECK (length(explanation) <= 2000),
+  PRIMARY KEY (question_id, locale));
+
+CREATE TABLE answer_options (id uuid PRIMARY KEY, question_id uuid NOT NULL REFERENCES questions,
+  position int NOT NULL, is_correct boolean NOT NULL DEFAULT false);
+CREATE UNIQUE INDEX ux_one_correct ON answer_options (question_id) WHERE is_correct;
+CREATE TABLE answer_option_translations (option_id uuid REFERENCES answer_options, locale locale,
+  text text NOT NULL CHECK (length(text) <= 300), PRIMARY KEY (option_id, locale));
+
+CREATE TABLE assignments (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, topic_id uuid NOT NULL REFERENCES topics,
+  due_at timestamptz NOT NULL, created_by uuid NOT NULL REFERENCES users);
+CREATE INDEX ix_assignments_class ON assignments (class_id, due_at);
+
+CREATE TABLE submissions (id uuid PRIMARY KEY, assignment_id uuid NOT NULL REFERENCES assignments,
+  student_id uuid NOT NULL REFERENCES users, status submission_status NOT NULL,
+  grade numeric(5,2), submitted_at timestamptz, graded_at timestamptz, graded_by uuid REFERENCES users,
+  UNIQUE (assignment_id, student_id));
+CREATE INDEX ix_submissions_status ON submissions (assignment_id, status);
+```
+
+Правило «тема принадлежит предмету» для `assignments` проверяется в сервисе и триггером `check_assignment_topic()`.
+
+## 5.6 Результаты и геймификация
+
+```sql
+CREATE TABLE quiz_attempts (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  quiz_id uuid NOT NULL REFERENCES quizzes, topic_version_id uuid REFERENCES topic_versions,
+  assignment_id uuid REFERENCES assignments, status attempt_status NOT NULL DEFAULT 'in_progress',
+  score_percent numeric(5,2), started_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz);
+CREATE INDEX ix_attempts_student ON quiz_attempts (student_id, finished_at);
+CREATE INDEX ix_attempts_quiz ON quiz_attempts (quiz_id);
+
+CREATE TABLE attempt_answers (attempt_id uuid REFERENCES quiz_attempts, question_id uuid REFERENCES questions,
+  option_id uuid REFERENCES answer_options, text_answer text, is_correct boolean NOT NULL,
+  answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
+
+CREATE TABLE learning_events (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question')),
+  subject_id uuid REFERENCES subjects, topic_id uuid REFERENCES topics, occurred_at timestamptz NOT NULL,
+  idempotency_key text NOT NULL, UNIQUE (student_id, idempotency_key));
+CREATE INDEX ix_events_student_time ON learning_events (student_id, occurred_at);
+
+CREATE TABLE topic_mastery (student_id uuid REFERENCES users, topic_id uuid REFERENCES topics,
+  best_percent numeric(5,2) NOT NULL, attempts_count int NOT NULL, mastered_at timestamptz,
+  PRIMARY KEY (student_id, topic_id));
+CREATE INDEX ix_mastery_topic ON topic_mastery (topic_id);
+
+CREATE TABLE student_stats (student_id uuid PRIMARY KEY REFERENCES users, xp_total int NOT NULL DEFAULT 0,
+  level int NOT NULL DEFAULT 1, streak_current int NOT NULL DEFAULT 0, streak_best int NOT NULL DEFAULT 0,
+  last_activity_date date);
+
+CREATE TABLE levels (level int PRIMARY KEY, xp_threshold int NOT NULL UNIQUE);
+CREATE TABLE level_translations (level int REFERENCES levels, locale locale, title text NOT NULL,
+  PRIMARY KEY (level, locale));
+
+CREATE TABLE badges (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, image_media_id uuid REFERENCES media_files,
+  rule jsonb NOT NULL, position int NOT NULL, is_active boolean NOT NULL DEFAULT true);
+CREATE TABLE badge_translations (badge_id uuid REFERENCES badges, locale locale, title text NOT NULL,
+  condition_text text NOT NULL, PRIMARY KEY (badge_id, locale));
+CREATE TABLE student_badges (student_id uuid REFERENCES users, badge_id uuid REFERENCES badges,
+  awarded_at timestamptz NOT NULL DEFAULT now(), source_event_id uuid REFERENCES learning_events,
+  PRIMARY KEY (student_id, badge_id));
+
+CREATE TABLE xp_ledger (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users, amount int NOT NULL,
+  reason text NOT NULL, source_event_id uuid NOT NULL REFERENCES learning_events,
+  UNIQUE (student_id, source_event_id, reason));
+```
+
+## 5.7 ИИ, поддержка, служебные таблицы
+
+```sql
+CREATE TABLE ai_conversations (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, context ai_context NOT NULL,
+  topic_id uuid REFERENCES topics, explain_level text NOT NULL DEFAULT 'beginner', archived_at timestamptz,
+  CHECK (context <> 'topic_tutor' OR topic_id IS NOT NULL));
+CREATE TABLE ai_messages (id uuid PRIMARY KEY, conversation_id uuid NOT NULL REFERENCES ai_conversations,
+  role ai_role NOT NULL, content text NOT NULL, status ai_msg_status NOT NULL DEFAULT 'complete',
+  quick_action text CHECK (quick_action IN ('simpler','more_detail','check_me')),
+  tokens_in int, tokens_out int, created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_ai_messages_conv ON ai_messages (conversation_id, created_at);
+
+CREATE TABLE school_requests (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL,
+  school_name text NOT NULL CHECK (length(school_name) <= 200), region text CHECK (length(region) <= 120),
+  city text CHECK (length(city) <= 120), contact_person text NOT NULL CHECK (length(contact_person) <= 200),
+  phone text, email citext NOT NULL, message text CHECK (length(message) <= 5000),
+  status request_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users);
+
+CREATE TABLE support_tickets (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL, category support_category NOT NULL,
+  subject text NOT NULL CHECK (length(subject) <= 200), name text CHECK (length(name) <= 200), email citext NOT NULL,
+  phone text, description text NOT NULL CHECK (length(description) <= 10000), user_id uuid REFERENCES users,
+  status ticket_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users, tech_context jsonb,
+  resolved_at timestamptz, closed_at timestamptz);
+CREATE INDEX ix_tickets_queue ON support_tickets (status, assignee_id);
+CREATE INDEX ix_tickets_email ON support_tickets (email);
+
+CREATE TABLE ticket_messages (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  direction text NOT NULL CHECK (direction IN ('in','out','note')), author_id uuid REFERENCES users,
+  body text NOT NULL, is_internal boolean NOT NULL DEFAULT false, sent_at timestamptz);
+CREATE TABLE ticket_status_history (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  from_status ticket_status, to_status ticket_status NOT NULL, changed_by uuid REFERENCES users,
+  changed_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE ticket_reply_tokens (ticket_id uuid REFERENCES support_tickets, token_hash bytea PRIMARY KEY,
+  expires_at timestamptz NOT NULL);
+CREATE TABLE response_templates (code text, locale locale, body text NOT NULL, PRIMARY KEY (code, locale));
+
+CREATE TABLE idempotency_keys (scope text, key text, request_hash bytea NOT NULL, response jsonb,
+  expires_at timestamptz NOT NULL, PRIMARY KEY (scope, key));
+CREATE TABLE outbox_events (id uuid PRIMARY KEY, type text NOT NULL, payload jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), processed_at timestamptz, attempts int NOT NULL DEFAULT 0, last_error text);
+CREATE TABLE email_queue (id uuid PRIMARY KEY, to_email citext NOT NULL, template text NOT NULL, payload jsonb NOT NULL,
+  status text NOT NULL DEFAULT 'pending', attempts int NOT NULL DEFAULT 0, sent_at timestamptz);
+CREATE TABLE notifications (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, type text NOT NULL,
+  payload jsonb NOT NULL, read_at timestamptz);
+CREATE TABLE audit_log (id bigserial PRIMARY KEY, actor_id uuid REFERENCES users, school_id uuid,
+  entity_type text NOT NULL, entity_id uuid, action text NOT NULL, before jsonb, after jsonb,
+  created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_audit_entity ON audit_log (entity_type, entity_id, created_at);
+REVOKE UPDATE, DELETE ON audit_log FROM app_user;
+
+CREATE TABLE feature_flags (key text PRIMARY KEY, enabled boolean NOT NULL, note text);
+CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confirmation boolean NOT NULL DEFAULT true,
+  confirmed_at timestamptz, confirmed_by text,
+  note text);                           -- PH-ID заглушки раздела 11 (решение владельца, ред. 2026-10-13)
+```
+
+Таблицы `feature_flags` и `app_config` хранят флаги функций и значения заглушек раздела 11.
+
+## 5.8 Роли БД
+
+| **Роль** | **Права** |
+|------|-----------------------------|
+| app_user | SELECT/INSERT/UPDATE на рабочие таблицы; только INSERT в audit_log; без DDL; без DELETE |
+| app_maintenance | Только для фоновых задач worker: SELECT и DELETE на таблицы с ограниченным сроком хранения и технические таблицы — support_tickets, ticket_messages, ticket_status_history, ticket_reply_tokens, school_requests, ai_conversations, ai_messages (очистка по срокам PH-18), media_files, topic_materials (удаление отклонённых и откреплённых файлов, BR-FILE-03), idempotency_keys, outbox_events, email_queue, auth_sessions (истёкшие записи); без INSERT/UPDATE, без DDL; к audit_log доступа нет (решение владельца, ред. 2026-10-13) |
+| migrator | DDL; используется только CI при миграции |
+| analytics_ro | SELECT на реплике |
+
+## 5.9 Battle (итерация 10.5)
+
+Миграция `0007_battle.sql` (+ откат), схема Drizzle `packages/db/src/schema/battle.ts`. Правила — 7.12, автомат — SM-BTL (раздел 9).
+
+```sql
+CREATE TABLE battle_quizzes (id uuid PRIMARY KEY, owner_id uuid NOT NULL REFERENCES users,
+  title text NOT NULL CHECK (length(title) BETWEEN 1 AND 120), description text CHECK (length(description) <= 500),
+  locale locale NOT NULL,                -- язык содержания теста; перевода нет
+  archived_at timestamptz);
+CREATE INDEX ix_battle_quizzes_owner ON battle_quizzes (owner_id, created_at DESC);
+
+CREATE TABLE battle_questions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  position int NOT NULL, type question_type NOT NULL CHECK (type IN ('single_choice','true_false')),
+  text text NOT NULL CHECK (length(text) BETWEEN 1 AND 300),
+  image_media_id uuid REFERENCES media_files,   -- файл галереи учителя (media_files kind = 'cover', BR-BTL-10)
+  time_limit_sec int NOT NULL DEFAULT 20 CHECK (time_limit_sec IN (5,10,20,30,60,90)),
+  source_question_id uuid REFERENCES questions, -- если вопрос импортирован из квиза темы (копия, BR-BTL-10)
+  archived_at timestamptz,
+  UNIQUE (battle_quiz_id, position) DEFERRABLE INITIALLY DEFERRED);
+
+CREATE TABLE battle_options (id uuid PRIMARY KEY, battle_question_id uuid NOT NULL REFERENCES battle_questions,
+  position int NOT NULL CHECK (position BETWEEN 1 AND 4), text text NOT NULL CHECK (length(text) BETWEEN 1 AND 150),
+  is_correct boolean NOT NULL DEFAULT false, UNIQUE (battle_question_id, position));
+CREATE UNIQUE INDEX ux_battle_one_correct ON battle_options (battle_question_id) WHERE is_correct;
+
+CREATE TABLE battle_sessions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  host_id uuid NOT NULL REFERENCES users, class_id uuid NOT NULL REFERENCES classes,
+  code char(6) NOT NULL CHECK (code ~ '^[A-Z]{3}[1-9]{3}$'),
+  status battle_session_status NOT NULL DEFAULT 'lobby', phase battle_phase NOT NULL DEFAULT 'lobby',
+  settings jsonb NOT NULL,                 -- 7.12, таблица настроек
+  questions_snapshot jsonb NOT NULL,       -- снимок вопросов при запуске (BR-BTL-05)
+  current_index int, question_started_at timestamptz, deadline_at timestamptz,
+  state_version int NOT NULL DEFAULT 0, cancel_reason text CHECK (cancel_reason IN ('host','expired')),
+  started_at timestamptz, finished_at timestamptz, last_activity_at timestamptz NOT NULL DEFAULT now());
+CREATE UNIQUE INDEX ux_battle_active_code ON battle_sessions (code) WHERE status IN ('lobby','in_progress');
+CREATE INDEX ix_battle_sessions_host ON battle_sessions (host_id, created_at DESC);
+CREATE INDEX ix_battle_sessions_class ON battle_sessions (class_id, created_at DESC);
+
+CREATE TABLE battle_participants (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  student_id uuid NOT NULL REFERENCES users, display_name text NOT NULL CHECK (length(display_name) <= 80),
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz, kicked_at timestamptz,
+  last_seen_at timestamptz NOT NULL DEFAULT now(),
+  correct_count int, answered_count int, correct_time_ms int, final_rank int,   -- итоги, пишутся при finished
+  UNIQUE (session_id, student_id));
+
+CREATE TABLE battle_answers (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  participant_id uuid NOT NULL REFERENCES battle_participants, question_index int NOT NULL CHECK (question_index >= 0),
+  option_position int NOT NULL CHECK (option_position BETWEEN 1 AND 4), is_correct boolean NOT NULL,
+  response_ms int NOT NULL CHECK (response_ms >= 0), answered_at timestamptz NOT NULL, client_answer_id uuid NOT NULL,
+  UNIQUE (participant_id, question_index), UNIQUE (participant_id, client_answer_id));
+CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_index);
+```
+
+- `questions_snapshot`: `[{ index, type, text, imageMediaId, timeLimitSec, options: [{ position, text, isCorrect }] }]`; порядок — с учётом настройки «Перемешать вопросы/варианты» (один порядок для всех). Правильные варианты из снимка MUST NOT отдаваться ученику до `reveal` (BR-BTL-03).
+- У всех таблиц Battle есть `created_at` и `updated_at` (5.1); в DDL опущены.
+- RLS (SHOULD, второй уровень, как в миграции 0002): при заданном `app.user_id` учитель видит только свои тесты и сессии, ученик — только сессии, где он участник, и только свои ответы; без контекста — не ограничивает (основная защита — guards и сервисы).
+- Аудит (REQ-NFR-SEC-05): создание и запуск сессии, выгон участника, досрочное завершение, отмена (`entity_type = 'battle_session'`).
+- Права ролей БД (5.8): `app_user` — SELECT/INSERT/UPDATE на таблицы Battle; DELETE — только `app_maintenance` для `battle_answers` (обезличивание по запросу на удаление, BR-BTL-11).
+
+
+# 6. API
+
+## 6.1 Общие правила
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| API-GEN-01 | Базовый путь `/api`. Формат — JSON, UTF-8. Описание — OpenAPI 3, генерируется из декораторов NestJS; клиент для web генерируется из OpenAPI. |
+| API-GEN-02 | Аутентификация — cookie `sid` (HttpOnly, Secure, SameSite=Lax, срок до 14 дней с продлением). Изменяющие запросы требуют заголовок `X-CSRF-Token` (double-submit cookie `csrf`). |
+| API-GEN-03 | Локаль запроса — заголовок `Accept-Language` (ru, kk, en); ответы с переводами содержат поле `locale` — фактически отданный язык. |
+| API-GEN-04 | Формат ошибки: `{ "code": "VALIDATION_FAILED", "message": "…", "fieldErrors": { "email": "…" }, "requestId": "…" }`. HTTP-коды: 400, 401, 403, 404, 409, 413, 422, 429, 500, 503. |
+| API-GEN-05 | Все POST публичных форм требуют заголовок `Idempotency-Key` (UUID). Тот же ключ и то же тело → прежний ответ; тот же ключ и другое тело → 409 `IDEMPOTENCY_MISMATCH`. Срок хранения ключа — 24 ч. |
+| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20; Battle — ввод кода 10 за 10 минут на ученика и 30 на IP, ответы — 1 в 200 мс на участника (BR-BTL-01/03). Ключи лимитов ввода кода класса и кода Battle разные (BR-CODE-06). Ответ 429 содержит `retryAfterSeconds`. |
+| API-GEN-07 | Списки — курсорная пагинация: `?cursor=&limit=` (limit ≤ 100), ответ `{ items, nextCursor }`. |
+| API-GEN-08 | Все обращения к данным проверяют владение/членство (BR-ACL-*). Нарушение → 404 (не раскрывать существование объекта). |
+
+## 6.2 Публичные операции (без входа)
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` — элементы по кодам PH-01 (код раздела каталога или базового предмета); `open` — есть опубликованные базовые темы, `href` — `/learn/sections/:id` или `/learn/subjects/:id`; иначе `soon` без ссылки (BR-CNT-08). Порядок: `open` первыми, затем `soon`; внутри группы — порядок content/ (позиция раздела, затем предмета в разделе, BR-CNT-02) |
+| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, subjectId, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `subjectId` — предмет вопроса («Перейти к предмету» для ученика); `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
+| API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
+| API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-06 | POST /api/public/assistant | `{ message (≤2000), history: [{role, content}] (≤20) }` | SSE: `event: delta {text}` … `event: done {}` / `event: error {code}` |
+| API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
+| API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса; код активной сессии Battle — 404 `isBattleCode` (BR-CODE-04) |
+| API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
+| API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
+| API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }] }` — без статусов; не базовый → 404 |
+| API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
+
+## 6.3 Аутентификация и профиль
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-AUTH-01 | POST /api/auth/login | `{ email, password }` | 200 `{ user: MeDto }` + cookie `sid` |
+| API-AUTH-02 | POST /api/auth/logout | — | 204 |
+| API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06) | 201 `{ user }` и вход; письмо со ссылкой подтверждения email (API-AUTH-06) |
+| API-AUTH-03S | POST /api/auth/register-student | `{ displayName, login, password, email?, schoolId?, schoolName?, code? }` (PH-06, PH-17, PH-44) | 201 `{ user }` и вход; верный код — сразу членство в классе и школа класса; неверный код — 400 без создания аккаунта; код активной сессии Battle — 400 `fieldErrors.code = isBattleCode` без создания аккаунта (BR-CODE-04) |
+| API-AUTH-04 | POST /api/auth/password/forgot, /reset | `{ email }`, `{ token, password }` | 204 |
+| API-AUTH-05 | POST /api/auth/password/change | `{ currentPassword?, password }` | 204; при `mustChangePassword` (временный пароль) текущий пароль не нужен |
+| API-AUTH-06 | POST /api/auth/email/verify, /email/resend | `{ token }`, — | 204; повторная отправка — только вошедшему с неподтверждённым email |
+| API-ME-01 | GET /api/me | — | `MeDto { id, displayName, initials, roles[], activeRole, preferences, emailVerified, mustChangePassword }`; `emailVerified` = null без email |
+| API-ME-02 | PATCH /api/me/preferences | `{ locale?, theme?, dataSaver? }` | 200 |
+| API-ME-03 | POST /api/me/active-role | `{ role }` | 200 |
+| API-ME-04 | GET /api/me/notifications | — | список (PH-32) |
+| API-ME-05 | POST /api/me/data-requests | `{ type: 'export'|'delete' }` | 201; создаёт обращение категории data_privacy (PH-08) |
+
+## 6.4 Учитель
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-T-01 | GET /api/teacher/subjects | Мои курсы (PH-24) |
+| API-T-02 | POST /api/teacher/subjects | Создать предмет: `{ translations: {ru?, kk?, en?: {title, description}}, inPublicCatalog }` — минимум один язык с title |
+| API-T-03 | GET / PATCH /api/teacher/subjects/:id | Получить / изменить предмет |
+| API-T-04 | GET /api/teacher/classes | Классы учителя: `[{ id, name, studentsCount }]` |
+| API-T-05 | POST /api/teacher/classes | Создать класс `{ name }` (PH-07) |
+| API-T-06 | POST /api/teacher/classes/:id/invite-codes | Выпустить код `{ code, expiresAt }` (код показывается один раз) |
+| API-T-07 | POST /api/teacher/subjects/:id/access | Выдать предмет классу `{ classId }`; повтор → 200 без дубля |
+| API-T-08 | DELETE /api/teacher/subjects/:id/access/:classId | Отозвать выдачу |
+| API-T-09 | POST /api/teacher/subjects/:id/topics | Создать тему (черновик) |
+| API-T-10 | GET / PUT /api/teacher/topics/:id | Получить / сохранить тему: `{ translations, coverMediaId?, coverUrl?, materialIds[] }`; `coverUrl` (http/https) сервер скачивает в своё хранилище и проверяет как загруженную обложку (BR-FILE-06); не удалось — 422 `fieldErrors.coverUrl` |
+| API-T-11 | POST /api/teacher/topics/:id/ai-draft | ИИ-черновик: ответ `{ ru: {title, description, funFact, bodyMd}, kk: {...} }` — название на языке черновика; ничего не сохраняет |
+| API-T-12 | POST /api/teacher/topics/:id/publish | `{ changeNote? }` → создаёт topic_version, status = published |
+| API-T-13 | POST /api/teacher/topics/:id/unpublish | Снять с публикации (PH-27) |
+| API-T-14 | GET /api/teacher/topics/:id/versions | История версий (PH-25) |
+| API-T-15 | GET /api/teacher/topics/:id/preview | Представление темы глазами ученика (без публикации) |
+| API-T-16 | POST /api/files/upload-url | `{ kind: 'cover'|'material', topicId?, fileName, mime, size }` → `{ mediaId, uploadUrl, headers }` после проверки лимитов BR-FILE-* |
+| API-T-17 | POST /api/files/:mediaId/complete | Подтвердить загрузку → постановка в очередь проверки (scan_status = pending) |
+| API-T-18 | GET /api/teacher/gallery | Обложки пользователя |
+| API-T-19 | GET /api/teacher/topics/:id/quiz | Квиз и вопросы |
+| API-T-20 | POST /api/teacher/topics/:id/quiz/questions | Создать вопрос `QuestionDto` (6.7) |
+| API-T-21 | PUT / DELETE /api/teacher/questions/:id | Изменить / архивировать вопрос |
+| API-T-22 | POST /api/teacher/assignments | `{ classId, subjectId, topicId, dueAt }` → `{ id }`. Класс — свой (иначе 404); предмет — базовый (общий каталог) или свой, выданный этому классу (чужой — 404, не выдан — 422 `subjectNotGranted`); тема — опубликованная тема этого предмета (422 `topicNotInSubject` / `topicNotPublished`); `dueAt` — ISO 8601 с часовым поясом. Аудит `assignment.created`. |
+| API-T-23 | GET /api/teacher/assignments | `[{ id, topicTitle, className, dueAt, counts: { submitted, inReview, graded } }]` Задания всех своих классов, поздний срок — первым. |
+| API-T-24 | GET /api/teacher/review-queue | Работы на проверку (PH-29 — пустой список) |
+| API-T-25 | GET /api/teacher/classes/:id/analytics | `{ avgPercent, engagement: { active, total, windowDays: 7 }, weakTopics: [{ topicId, title, students, percent, color }], attention: [{ studentId, name, lastActivityAt, reason: 'inactive' }] }` Учитываются и базовые уроки платформы, и личные уроки учителя (решение владельца 2026-10-17, см. BR-AN-02). |
+| API-T-28 | GET /api/teacher/classes/:id/assignment-options | `{ subjects: [{ id, title, official, topics: [{ id, title }] }] }` — что можно назначить классу (BR-ASG-01/02): базовые предметы и свои предметы, выданные классу; только опубликованные темы. Чужой класс → 404 (итерация 10) |
+| API-T-29 | GET /api/teacher/classes/:id/mastery | `?subjectId` (необязательно; по умолчанию — первый предмет API-T-28) → `{ subjects: [{ id, title, official }], subjectId, topics: [{ id, title }], students: [{ id, name }], cells: [{ studentId, topicId, status: 'mastered'|'started'|'not_started', percent }] }` — «Карта освоения»; чужой класс или недоступный предмет → 404 |
+| API-T-26 | GET /api/teacher/classes/:id/roster | Ростер: минимальная версия — `[{ id, displayName, login, hasEmail }]` активных учеников (страница «Ростер» — PH-24) |
+| API-T-27 | POST /api/teacher/classes/:id/students/:studentId/temporary-password | Временный пароль ученику своего класса без email → `{ temporaryPassword }` (показывается один раз); ученик меняет его при входе (API-AUTH-05) |
+
+## 6.5 Ученик
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02); код ищется только среди кодов классов; код активной сессии Battle — 404 `isBattleCode`, вступления нет (BR-CODE-02/04) |
+| API-S-02 | GET /api/student/class | `{ classId, className, teacherName, schoolName } | null` |
+| API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
+| API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
+| API-S-05 | GET /api/student/sections/:id | Предметы раздела (`status: 'available'|'soon'`, BR-CNT-08) |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05) |
+| API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` Тело (необязательно): `{ assignmentId }` — попытка из задания (решение по Q-18): назначение действующего класса ученика по этой теме, иначе 404; незавершённая попытка продолжается и связывается с заданием. |
+| API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
+| API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
+| API-S-10 | GET /api/student/assignments | Мои задания (PH-33) `[{ id, topicId, topicTitle, subjectTitle, dueAt, status: 'not_started'|'submitted'|'graded', grade, overdue }]` — назначения действующих классов ученика по видимым ему темам, ближайший срок — первым; `overdue` — срок прошёл, а работа не сдана. `late` — сдано после срока (BR-ASG-03). |
+| API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }`; `topic_tutor` — только по видимой теме (BR-VIS-01, иначе 404). У ученика один действующий диалог на тему и один общий: повторный вызов возвращает его (история после перезагрузки) |
+| API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content ≤ 2000, quickAction?: 'simpler'|'more_detail'|'check_me' }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial). Вопрос сохраняется сразу вместе с событием `ai_question` (без XP, BR-XP-01; не входит в серию, BR-ST-02), ответ — по завершении: complete / partial / failed (SM-AI-MESSAGE). Пока поставщик mock или недоступен — `event: error {code: 'AI_UNAVAILABLE'}`, ответ failed, клиент показывает PH-19 «Учебный ИИ скоро будет доступен». Лимиты PH-20 — на ученика (не на IP). Чужой диалог → 404 (BR-ACL-03) |
+| API-S-13 | GET /api/student/ai/conversations/:id | `{ id, context, topic: { id, title } | null, messages: [{ id, role, content, status, quickAction, createdAt }] }` — история сообщений; чужой диалог → 404 (BR-ACL-03) |
+| API-S-14 | GET /api/student/progress | `?period=today|7d|30d|90d|quarter|year` → `{ range: {from, to}, compareRange, nextStep: {action, reason, href}, progress: { mastered, total, percent, deltaPercent }, streak: { days, lastActivityDate, delta } }` Плюс `period`, `availablePeriods` (четверть — только если заданы четверти, Q-23; иначе `period=quarter` → 422 `periodUnavailable`); `nextStep` — `{ action: 'assignment'|'improve_topic'|'next_topic'|'catalog', reason, href, topicTitle, dueAt, percent }`, тексты — в интерфейсе. По умолчанию `period=30d`. |
+| API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
+| API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
+| API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }] }` — опубликованные темы по position; предмет не виден (BR-VIS-01) → 404 |
+
+## 6.6 Служебная поддержка
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-SUP-01 | GET /api/staff/tickets | Фильтры: `status, assigneeId, category, dueBefore, q` (номер или email) |
+| API-SUP-02 | GET /api/staff/tickets/:id | Обращение, tech_context, сообщения, заметки, история статусов |
+| API-SUP-03 | POST /api/staff/tickets/:id/assign | `{ assigneeId }` |
+| API-SUP-04 | POST /api/staff/tickets/:id/reply | `{ body, templateCode? }` → email_queue; статус по SM-TICKET: шаблон «Уточнение» → waiting_user, «Решение» → resolved (если переход допустим); остальные ответы статус не меняют |
+| API-SUP-05 | POST /api/staff/tickets/:id/notes | Внутренняя заметка (не отправляется клиенту) |
+| API-SUP-06 | POST /api/staff/tickets/:id/status | `{ to }` — только разрешённые переходы SM-TICKET |
+| API-SUP-07 | GET / POST … /api/staff/requests | Аналогично для школьных заявок (роль onboarding_agent) |
+| API-SUP-08 | POST /api/inbound/email | Вебхук входящих писем; связь по токену из ticket_reply_tokens; ответ после resolved/closed → reopened |
+
+## 6.7 Схемы DTO (Zod, packages/shared)
+
+```ts
+export const Locale = z.enum(['ru', 'kk', 'en']);
+const email = z.string().trim().email().max(254);
+const phone = z.string().trim().regex(/^\+?[0-9 ()-]{6,20}$/).optional().or(z.literal(''));
+
+export const SchoolRequestDto = z.object({
+  schoolName: z.string().trim().min(1).max(200),
+  region: z.string().trim().max(120).optional(),
+  city: z.string().trim().max(120).optional(),
+  contactPerson: z.string().trim().min(1).max(200),
+  phone,
+  email,
+  message: z.string().trim().max(5000).optional(),
+});
+
+export const SupportCategory = z.enum(['technical', 'school_onboarding', 'learning', 'account_access', 'data_privacy', 'other']);
+export const SupportTicketDto = z.object({
+  category: SupportCategory,
+  subject: z.string().trim().min(1).max(200),
+  name: z.string().trim().max(200).optional(),
+  email,
+  phone,
+  description: z.string().trim().min(1).max(10000),
+  techContext: z.object({ route: z.string(), appVersion: z.string(), locale: Locale,
+    dataSaver: z.boolean(), userAgent: z.string().max(300) }).optional(),
+});
+
+const LangText = z.object({ text: z.string().trim().min(1).max(1000), explanation: z.string().max(2000).optional() });
+export const QuestionDto = z.object({
+  type: z.enum(['single_choice', 'true_false', 'text_input']),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  translations: z.record(Locale, LangText).refine(t => Object.keys(t).length >= 1),
+  options: z.array(z.object({ translations: z.record(Locale, z.string().trim().min(1).max(300)),
+    isCorrect: z.boolean() })).optional(),
+  textAnswer: z.string().trim().max(300).optional(),
+}).superRefine((q, ctx) => {
+  if (q.type !== 'text_input') {
+    const n = q.options?.length ?? 0, correct = q.options?.filter(o => o.isCorrect).length ?? 0;
+    if (n < 2) ctx.addIssue({ code: 'custom', path: ['options'], message: 'min2' });
+    if (correct !== 1) ctx.addIssue({ code: 'custom', path: ['options'], message: 'exactlyOneCorrect' });
+  } else if (!q.textAnswer) ctx.addIssue({ code: 'custom', path: ['textAnswer'], message: 'required' });
+});
+```
+
+Тексты ошибок валидации — ключи i18n; пример RU для email: «Введите email, например name@example.com».
+
+## 6.8 Battle (итерация 10.5)
+
+Общие правила — 6.1: Zod-схемы в `packages/shared`, формат ошибок API-GEN-04, CSRF для изменяющих запросов, OpenAPI. Уточняющий код ошибки Battle передаётся в `fieldErrors` (как `subjectNotGranted` в API-T-22): `{ "code": "CONFLICT", "fieldErrors": { "battle": "questionClosed" } }`. Чужой тест или сессия → 404 (API-GEN-08).
+
+**Учитель — тесты** (`teacher`, только владелец — BR-BTL-12)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-01 | GET /api/teacher/battles | `?archived=false` → `[{ id, title, locale, questionsCount, gamesCount, lastPlayedAt, archived }]` — мои тесты |
+| API-BTL-02 | POST /api/teacher/battles | `{ title, description?, locale }` → 201 `{ id }` |
+| API-BTL-03 | GET /api/teacher/battles/:id | Тест с вопросами и вариантами (с правильными — это владелец) |
+| API-BTL-04 | PATCH /api/teacher/battles/:id | `{ title?, description?, locale?, archived? }` |
+| API-BTL-05 | POST /api/teacher/battles/:id/duplicate | Копия теста (неархивные вопросы) → 201 `{ id }` |
+| API-BTL-06 | POST /api/teacher/battles/:id/questions | `BattleQuestionDto` → 201 `{ id }`; больше 50 вопросов → 422 `tooManyQuestions` |
+| API-BTL-07 | PATCH /api/teacher/battles/:id/questions/:qid | `BattleQuestionDto` — вопрос и варианты целиком |
+| API-BTL-08 | DELETE /api/teacher/battles/:id/questions/:qid | Удалить вопрос (архивирование, `archived_at`) → 204 |
+| API-BTL-09 | POST /api/teacher/battles/:id/questions/reorder | `{ questionIds: [...] }` — все неархивные вопросы теста в новом порядке |
+| API-BTL-10 | GET /api/teacher/battles/import-sources | `[{ subjectId, subjectTitle, official, topics: [{ id, title, eligibleCount, questions: [{ id, text, type }] }] }]` — свои темы и базовые темы платформы с подходящими вопросами (BR-BTL-10; вопросы — для выбора чекбоксами в BT-T02) |
+| API-BTL-11 | POST /api/teacher/battles/:id/import | `{ topicId, questionIds? }` → `{ imported }` — копии вопросов (время по умолчанию, PH-45) |
+
+`BattleQuestionDto` (6.7): `{ type: 'single_choice'|'true_false', text (1–300), imageMediaId?, timeLimitSec ∈ {5,10,20,30,60,90}, options: [{ text (1–150), isCorrect }] }` — `single_choice`: 2–4 варианта, ровно один правильный; `true_false`: ровно два варианта, тексты «Верно» / «Неверно» задаёт сервер на языке теста, правильный — один.
+
+**Учитель — сессии** (ведущий — `battle_sessions.host_id = me`)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-20 | POST /api/teacher/battles/:id/sessions | `{ classId, settings }` → 201 `{ sessionId, code }`; класс свой (иначе 404); тест без вопросов → 422 `noQuestions`; у вопроса нет правильного варианта → 422 `noCorrectOption`; больше 3 активных сессий → 409 `tooManyActiveSessions` (BR-BTL-05) |
+| API-BTL-21 | GET /api/teacher/battle-sessions/:sid | Снимок ведущего: фаза, версия, участники, текущий вопрос с правильным вариантом, счётчики, `serverNow` |
+| API-BTL-22 | GET /api/teacher/battle-sessions/:sid/events | SSE-поток ведущего (6.9) |
+| API-BTL-23 | POST /api/teacher/battle-sessions/:sid/start | `lobby → question(0)`; без участников → 422 `noParticipants` |
+| API-BTL-24 | POST /api/teacher/battle-sessions/:sid/close-question | Досрочно закрыть вопрос → `reveal` |
+| API-BTL-25 | POST /api/teacher/battle-sessions/:sid/next | `reveal → leaderboard → question(i+1)`; на последнем вопросе → `finished` |
+| API-BTL-26 | POST /api/teacher/battle-sessions/:sid/finish | Досрочно завершить игру (итог по отвеченным вопросам) |
+| API-BTL-27 | POST /api/teacher/battle-sessions/:sid/cancel | Отменить (только из `lobby`) |
+| API-BTL-28 | POST /api/teacher/battle-sessions/:sid/participants/:pid/kick | Выгнать участника |
+| API-BTL-29 | GET /api/teacher/battle-sessions | `?battleId=&classId=&cursor=&limit=` (API-GEN-07) → `{ items: [{ id, battleTitle, className, status, participantsCount, questionsCount, startedAt, finishedAt }], nextCursor }` — история игр |
+| API-BTL-30 | GET /api/teacher/battle-sessions/:sid/results | Итоги: пьедестал, таблица, по вопросам (доля правильных, распределение вариантов, среднее время), ответы по участникам |
+| API-BTL-31 | GET /api/teacher/battle-sessions/:sid/results.csv | Экспорт итогов: UTF-8 с BOM, разделитель `;` |
+
+Переходы API-BTL-23…28 принимают `{ expectedVersion }`; версия не совпала → 409 `staleState`, в теле ошибки — поле `snapshot` (свежий снимок API-BTL-21). Повтор уже выполненного перехода ничего не меняет (SM-BTL).
+
+**Ученик** (`student`; участник — BR-BTL-02)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+ после нормализации — 422 `invalidBattleCode` без запроса в БД (BR-CODE-02); 404 `codeNotFound` (в том числе код чужого класса — без подробностей), 404 `isClassCode` (действующий код класса, BR-CODE-04), 409 `kicked`, 409 `full`, 409 `alreadyStarted` (позднее подключение выключено); лимит — BR-BTL-01 |
 | API-BTL-41 | GET /api/student/battle-sessions/:sid | Снимок ученика: фаза, версия, вопрос **без правильного ответа**, мой ответ, мой счёт и место (после `reveal`), число участников, `serverNow` |
 | API-BTL-42 | GET /api/student/battle-sessions/:sid/events | SSE-поток ученика (6.9) |
 | API-BTL-43 | POST /api/student/battle-sessions/:sid/answers | `{ questionIndex, optionPosition, clientAnswerId }` → `{ accepted: true }` — без правильности (BR-BTL-03); 409 `questionClosed`, 409 `alreadyAnswered` |
@@ -1025,7 +1887,8 @@ BR-ASG-03 Сдача (PH-29, решение владельца 2026-10-17): за
 
 ```text
 BR-CLS-01 Код класса: 6 символов из алфавита 23456789ABCDEFGHJKLMNPQRSTUVWXYZ; хранится только hash (SHA-256 с солью);
-          срок 30 дней; ввод нормализуется: trim, upper-case, удаление пробелов (PH-07).
+          срок 30 дней; ввод нормализуется: trim, upper-case, удаление пробелов (PH-07). Новый код никогда не имеет вид
+          кода Battle и не совпадает с кодом активной сессии Battle (BR-CODE-03).
 BR-CLS-02 До входа — только проверка годности кода (API-PUB-08) без данных класса. Вступление — после входа
           и подтверждения; повторное вступление в тот же класс не создаёт второй записи (ux_membership_active).
 BR-CLS-03 Leave: membership.status = 'left', left_at = now(); доступ к предметам класса закрывается (BR-VIS-01);
@@ -1134,7 +1997,8 @@ Battle — живая викторина для класса: учитель с�
 BR-BTL-01 Код сессии: 3 латинские буквы A–Z и 3 цифры 1–9 (`^[A-Z]{3}[1-9]{3}$`, например KTR583; PH-45, Q-BTL-10);
           генерация crypto.randomInt; уникален среди активных сессий (lobby, in_progress — частичный индекс
           ux_battle_active_code), после завершения или отмены освобождается; при коллизии до 10 повторов, затем 503.
-          Ввод: trim, удаление пробелов, upper-case («ktr 583» → KTR583). Хранится открыто (короткоживущий, показывается
+          Не совпадает с действующим кодом класса (BR-CODE-03). Ввод: trim, удаление пробелов и дефисов, upper-case
+          («ktr 583» → KTR583). Хранится открыто (короткоживущий, показывается
           на проекторе). Лимит ввода: 10 попыток за 10 минут на ученика и 30 на IP (API-GEN-06); ответ «код не найден»
           одинаков для несуществующего и чужого кода.
 BR-BTL-02 Вход по коду (PH-45 battle.join_scope = 'class', Q-BTL-01): только ученик с активным членством в классе сессии.
@@ -1214,6 +2078,2145 @@ BR-BTL-12 Права: тесты и сессии видит и меняет то
 | Q-BTL-09 | Промежуточный рейтинг после каждого вопроса | Включён |
 | Q-BTL-10 | Код: исключить похожие буквы O и I | Не исключать — ровно A–Z |
 
+
+## 7.13 Коды доступа (docs/CODES_TZ.md)
+
+Код класса и код Battle — две независимые системы; они не пересекаются и не влияют друг на друга.
+
+| | **Код класса** | **Код Battle** |
+|---|---|---|
+| Назначение | Только вступление ученика в класс учителя | Только подключение к конкретной игровой сессии |
+| К чему привязан | К классу | К одной игровой сессии |
+| Формат | PH-07 `class.code`: 6 символов из `23456789ABCDEFGHJKLMNPQRSTUVWXYZ` | `^[A-Z]{3}[1-9]{3}# 0. Инструкция для ИИ-агента
+
+## 0.1 Назначение документа
+
+Этот документ — спецификация Syntara Education Platform для реализации ИИ-агентом (Claude Code, Cursor, Copilot и аналоги). Он эквивалентен ТЗ «Syntara_ТЗ_краткое.docx» ред. 5.1 по функциональности, архитектуре и требованиям, но изложен как машинно-однозначный контракт: идентификаторы требований, схемы данных, API, правила в псевдокоде, конечные автоматы и проверяемые критерии.
+
+## 0.2 Правила работы агента
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| AG-01 | Реализуй только то, что описано в документе. Не добавляй страницы, поля, кнопки, тарифы, бейджи и правила, которых здесь нет. |
+| AG-02 | Если поведение не описано — используй значение из раздела 11 (конфигурация заглушек). Если и там нет — оставь `TODO(OWNER): <вопрос>` в коде и выключи функцию флагом; не придумывай значение. |
+| AG-03 | Все видимые тексты бери из этого документа дословно (в кавычках «…»). Тексты хранятся в файлах локализации, не в коде компонентов. |
+| AG-04 | Права доступа проверяются только на сервере. Скрытие кнопки в интерфейсе не считается защитой. |
+| AG-05 | Работай итерациями плана из раздела 12. После каждой итерации прогоняй тесты и проверки DoD этой итерации. |
+| AG-06 | Каждое требование имеет ID. Указывай ID в названии теста и в описании коммита: `feat(quiz): REQ-ST-QZ-03 one correct option`. |
+| AG-07 | Скриншоты-эталоны (S01–S26, T04–T10, U01–U13) — источник визуального соответствия. При расхождении скриншота и текста приоритет у текста. |
+| AG-08 | Демонстрационные данные со скриншотов (имена, классы, числа, даты) не хранить как константы. Они допустимы только в seed-данных для визуальных тестов. |
+| AG-09 | Не меняй схему БД без миграции. Не удаляй ограничения целостности из раздела 5. |
+| AG-10 | Секреты (ключи ИИ, SMTP, S3) — только в переменных окружения сервера. Никогда не передавай их в клиент. |
+
+## 0.3 Уровни обязательности
+
+| **Слово** | **Значение** |
+|------|-----------------------------|
+| MUST / ДОЛЖЕН | Обязательно; невыполнение — дефект, блокирующий приёмку |
+| MUST NOT / НЕ ДОЛЖЕН | Запрещено |
+| SHOULD / СЛЕДУЕТ | Рекомендуется; отклонение допустимо с комментарием в коде |
+| PLACEHOLDER | Временное значение из раздела 11; хранится в конфигурации, помечено `needs_confirmation=true` |
+
+## 0.4 Схема идентификаторов
+
+| **Префикс** | **Область** |
+|------|-----------------------------|
+| REQ-GEN-* | Общие требования (оболочка, дизайн, языки, формы, безопасность) |
+| REQ-PUB-* | Гостевой режим (публичные страницы) |
+| REQ-TCH-* | Кабинет учителя |
+| REQ-ST-* | Интерфейс ученика |
+| REQ-SUP-* | Служебная поддержка |
+| REQ-NFR-* | Нефункциональные требования |
+| BR-* | Бизнес-правила (раздел 7) |
+| SM-* | Конечные автоматы (раздел 9) |
+| API-* | Операции API (раздел 6) |
+| AC-* | Критерии приёмки (раздел 13) |
+| PH-* | Заглушки (раздел 11), соответствуют ЗГ-* исходного ТЗ |
+
+## 0.5 Определение готовности (Definition of Done) для любой задачи
+
+1.  Код проходит `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+2.  Для каждого затронутого REQ есть минимум один автоматический тест.
+3.  Все видимые строки — в `packages/shared/i18n/ru.json` (и ключи в kk.json, en.json).
+4.  Новые эндпоинты описаны в OpenAPI и покрыты тестом прав доступа (положительный и отрицательный случай).
+5.  Интерактивные элементы доступны с клавиатуры; axe-core без нарушений уровня serious/critical.
+6.  Миграции БД применяются и откатываются на чистой базе.
+
+# 1. Контекст продукта
+
+## 1.1 Что строим
+
+Syntara Education Platform — адаптивная веб-платформа для школ Республики Казахстан на языках KK, RU, EN. Три режима в одном приложении с общей моделью данных:
+
+| **Режим** | **Роль** | **Объём** |
+|-------|------|-----------------------------|
+| Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы; каталог и «Обзор» базовых уроков платформы (BR-VIS-04) |
+| Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса; Battle — живые викторины для класса (7.12) |
+| Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс; участие в Battle по коду (7.12) |
+| Служебная поддержка | support_agent, onboarding_agent | Очереди обращений и школьных заявок |
+
+## 1.2 Матрица доступа (REQ-GEN-ACL)
+
+| **Ресурс / действие** | **guest** | **student** | **teacher** | **support_agent** | **onboarding_agent** |
+|-------------|---|---|---|---|---|
+| Публичные страницы, помощник, пробный вопрос, формы, правовые | R | R | R | R | R |
+| Подключение к классу по коду | → login | W | — | — | — |
+| Каталог, тема, квиз (только опубликованное, BR-VIS-01) | — | R | R (предпросмотр) | — | — |
+| Каталог и «Обзор» базовых уроков платформы (BR-VIS-04) | R | R | R | R | R |
+| Квиз, Syntara AI, XP и прогресс по базовым урокам | → login | R/W (свои) | — | — | — |
+| Базовые предметы, темы, вопросы, картинки (BR-ACL-05) | — | — | — | — | — |
+| Учебный ИИ, личные показатели, достижения | — | R/W (свои) | — | — | — |
+| Предметы, темы, вопросы, материалы | — | — | R/W (свои) | — | — |
+| Выдача предмета классу, задания, аналитика | — | — | R/W (свои классы) | — | — |
+| Battle-тесты, игровые сессии (ведущий), итоги и история своих игр (7.12) | — | — | R/W (свои) | — | — |
+| Участие в Battle по коду: лобби, ответы, свои итоги и история (BR-BTL-02) | → login | R/W (свои; только сессии своего класса) | — | — | — |
+| Очередь обращений | — | — | — | R/W | — |
+| Очередь школьных заявок | — | — | — | — | R/W |
+
+R — чтение, W — изменение, «→ login» — перенаправление на вход с сохранением цели. Базовые уроки платформы через сайт и API не изменяет никто: они создаются и меняются только файлами `content/` и командой импорта (BR-CNT-01, решение владельца 2026-10-16). Служебные роли MUST NOT иметь доступ к учебным данным. Роли teacher/student MUST NOT иметь доступ к очередям поддержки.
+
+## 1.3 Вне объёма (MUST NOT реализовывать)
+
+Кабинеты школы и родителя; программа по классам (годам обучения); новые атласы; оплата и тарифы; офлайн-обучение. Для непоказанных экранов (история версий, уведомления, меню роли, профиль, «Ростер», «Карта освоения», «Мои курсы», «Мои задания», проверка работы) реализуется минимальная версия из раздела 11; точки входа (кнопки и ссылки) сохраняются всегда.
+
+## 1.4 Команда на старте
+
+| **Роль** | **Технологии** |
+|------|-----------------------------|
+| Фронтенд-разработчик (1–2) | Next.js, React, TypeScript, Tailwind, Radix UI |
+| Бэкенд-разработчик (1–2) | NestJS, PostgreSQL, Drizzle, Redis, BullMQ |
+| DevOps (частичная занятость) | Docker, Nginx, CI/CD, мониторинг, резервное копирование |
+| QA-инженер (1) | Playwright, axe-core, k6 |
+| Дизайнер (частичная занятость) | Figma, токены дизайна 3.1 |
+
+## 1.5 Эталонные изображения
+
+| **Набор** | **Файлы** | **Размер** | **Назначение** |
+|------|-------------|------|-------------|
+| S01–S26 | Передаются отдельно | — | Публичная часть |
+| T04–T10 | 04_teacher_class_access.jpg … 10_teacher_class_results.jpg | 1348 × 926 | Кабинет учителя |
+| U01–U13 | 01_opening_syntara_platform.jpg … student subjects .jpeg | 1348 × 926 (U03 — 1363 × 936) | Интерфейс ученика |
+
+Изображения T и U вставлены в разделы 8.3 и 8.4. Визуальные тесты сравнивают экран на эталонном размере с соответствующим файлом.
+
+# 2. Стек и структура репозитория
+
+## 2.1 Стек (фиксированный)
+
+| **Слой** | **Технология** |
+|------|-----------------------------|
+| Язык | TypeScript 5 (strict) везде |
+| Монорепозиторий | pnpm workspaces + Turborepo |
+| Web | Next.js 15+ (App Router), React 19, Tailwind CSS 4, Radix UI, Lucide, next-intl, React Hook Form + Zod, TanStack Query, react-markdown + rehype-sanitize, Serwist (manifest; офлайн-кеш выключен) |
+| API | Node.js 22 LTS+, NestJS 11, Drizzle ORM + drizzle-kit, Zod, @nestjs/swagger, argon2, @nestjs/throttler (Redis), AWS SDK v3 (S3), Vercel AI SDK за интерфейсом LLMProvider, SSE |
+| Worker | BullMQ, nodemailer, clamd-клиент, olevba (контейнер на Python) |
+| Данные | PostgreSQL 16+, PgBouncer, Redis 7 / Valkey, S3-совместимое хранилище (MinIO локально) |
+| Наблюдаемость | OpenTelemetry, Prometheus, Grafana, Loki, Sentry |
+| Тесты | Vitest, Testcontainers, Playwright, @axe-core/playwright, k6 |
+| Инфраструктура | Docker, Docker Compose на 2+ серверах (при росте — Kubernetes), Nginx, Let's Encrypt, CI (GitHub Actions или GitLab CI) |
+| Принципы | Модульный монолит (api) + отдельный worker; события и письма — через transactional outbox; пароли — Argon2id (допустим bcrypt); права — guards NestJS + RLS |
+
+![Архитектура системы и основные компоненты](media/arch.png)
+
+## 2.2 Структура репозитория
+
+```text
+syntara/
+├─ apps/
+│  ├─ web/                 # Next.js: публичные страницы, кабинеты, служебная поддержка
+│  │  ├─ app/[locale]/(public)/...   # /, /subjects, /about, /ai, /schools, /support, правовые
+│  │  ├─ app/[locale]/(auth)/...     # /auth/login, /auth/start, /join
+│  │  ├─ app/[locale]/(teacher)/...  # /teacher/...
+│  │  ├─ app/[locale]/(student)/...  # /learn/...
+│  │  ├─ app/[locale]/(staff)/...    # /staff/tickets, /staff/requests
+│  │  └─ components/        # компоненты страниц
+│  ├─ api/                 # NestJS
+│  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit,battle}
+│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, cleanup, battle (таймеры игр, 7.12)
+├─ packages/
+│  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
+│  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
+│  └─ db/                  # Drizzle schema, миграции, seed (demo, visual), импорт базовой программы
+├─ content/                # базовая программа платформы: файлы уроков (BR-CNT-02, docs/CONTENT_GUIDE.md)
+├─ infra/                  # docker-compose.yml, nginx.conf, grafana dashboards
+└─ e2e/                    # Playwright: сценарии, визуальные эталоны, axe
+```
+
+## 2.3 Переменные окружения
+
+| **Переменная** | **Пример** | **Где** |
+|---------|----------|----|
+| DATABASE_URL | postgres://syntara:***@pgbouncer:6432/syntara | api, worker |
+| REDIS_URL | redis://redis:6379 | api, worker |
+| S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY | http://minio:9000, syntara-files | api, worker |
+| S3_PUBLIC_ENDPOINT | https://files.syntara-edu.me — адрес хранилища для браузера: подписанные ссылки на загрузку и чтение, CSP web; пусто — как S3_ENDPOINT | api, web |
+| SESSION_SECRET | 64 случайных байта | api |
+| APP_BASE_URL | https://syntara-edu.me | web, api |
+| API_INTERNAL_URL | http://api:3001 | web (SSR) |
+| LLM_PROVIDER | mock / openai-compatible / anthropic | api |
+| LLM_API_KEY, LLM_MODEL | — (обязательны, если LLM_PROVIDER ≠ mock; ключ — секрет, в журналы не попадает) | api |
+| LLM_BASE_URL | адрес API поставщика: обязателен для openai-compatible (…/v1), для anthropic — необязателен | api |
+| SMTP_URL, MAIL_FROM | smtp://..., noreply@syntara-edu.me | worker |
+| SUPPORT_EMAIL | PH-09 | api, web (через API config) |
+| CLAMD_HOST, OLEVBA_URL | clamav:3310, http://olevba:8080 | worker |
+| PLATFORM_TZ | Asia/Almaty (UTC+5) — PH-42 | api, worker |
+| SENTRY_DSN, OTEL_EXPORTER_OTLP_ENDPOINT | — | все |
+
+## 2.4 Команды
+
+```bash
+pnpm i                      # установка
+pnpm dev                    # web :3000, api :3001, worker; инфраструктура через docker compose
+pnpm db:migrate             # применить миграции
+pnpm db:seed --set=demo     # демо-данные (эталоны скриншотов) и импорт базовой программы из content/
+pnpm content:check          # проверка файлов content/ без записи в БД (в CI)
+pnpm content:import         # импорт content/ в БД (BR-CNT-*); --dry-run — только проверка и план изменений
+pnpm test                   # unit + integration (Vitest + Testcontainers)
+pnpm e2e                    # Playwright: сценарии, визуальные и axe-проверки
+pnpm lint && pnpm typecheck
+```
+
+# 3. Дизайн-система
+
+## 3.1 Токены (REQ-GEN-DS-01)
+
+Токены MUST быть объявлены как CSS-переменные в `packages/ui/tokens.css` и подключены в Tailwind. Значения — стартовые; критерий — совпадение с эталонами.
+
+```css
+:root, [data-theme="dark"] {
+  --bg: #070707;            /* фон страницы, диапазон #050505–#090909 */
+  --surface: #141518;       /* карточки, диапазон #101010–#1B1D22 */
+  --surface-teacher: #0D0D0D;
+  --field: #1C1F25;         /* поля ввода, #181818–#20242B */
+  --text: #F1F2F4;
+  --text-muted: #9A9EA7;    /* #92969F–#A5A8B1 */
+  --accent: #2F7DF0;        /* #1E63E4–#4A9CFA; кабинет: #1765E8 */
+  --accent-teacher: #1765E8;
+  --border: #292B30;
+  --success: #22A45D;       /* правильный ответ */
+  --danger: #E5484D;        /* низкий результат, «требуют внимания» */
+  --ai-gradient: linear-gradient(90deg, #8B5CF6, #EC4899);
+  --radius-card: 20px;      /* 16–24 */
+  --radius-pill: 999px;
+}
+[data-theme="light"] {
+  --bg: #FAFAFC; --surface: #FFFFFF; --sidebar: #F2F2F4; --text: #181818;
+}
+```
+
+| **Параметр** | **Значение** |
+|---------|-----------------------------|
+| Сетка отступов | 8, 12, 16, 24, 32, 48, 64 px |
+| Ширина контента | секции 1120–1240; хедер 1440–1600; формы 560–640; «Школам» 640–760; правовые 780–900; кабинет: формы ~664, задания и аналитика ~760; урок ~982 |
+| Шрифт | Inter или Manrope, self-hosted, `font-display: swap`; полная кириллица и казахские буквы (Ә Ғ Қ Ң Ө Ұ Ү Һ І) |
+| Размеры (публичные) | H1 главной 72–112; заголовки секций 28–64; текст 16–20; подписи 12–14 |
+| Размеры (кабинеты) | заголовок 28; блок 18; текст 14; пояснение 12 |
+| Иконки | Lucide, линейные, цвет `--accent` |
+| Спецсостояния | «Опубликовать» — светлая кнопка; ИИ-кнопка — `--ai-gradient`; правильный ответ — рамка `--success`; низкий результат — `--danger`; фокус поля — синий контур со свечением |
+
+## 3.2 Базовые компоненты (packages/ui)
+
+`Button` (variant: primary-blue, primary-white, secondary, text, publish, ai), `Card`, `Pill`, `Tabs` (капсульные), `SegmentedControl` (RU/KK/EN, тип, сложность, период), `Field` (label + input + error + hint), `Select`, `Textarea`, `Checkbox`, `Radio`, `Modal`, `Accordion`, `ProgressBar`, `Badge`, `EmptyState`, `Toast`, `Skeleton`, `Sidebar`, `Header`, `Footer`, `FloatingHelp`. Все компоненты MUST поддерживать клавиатуру и видимый фокус (Radix UI).
+
+## 3.3 Оболочка (REQ-GEN-SHELL)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-SHELL-01 | Публичный хедер: логотип Syntara; меню «Главная», «Предметы», «О проекте», «Syntara AI», «Школам», «Помощь» (активный пункт — светлая капсула); справа язык, «Экономия трафика выключена», переключатель темы, кнопка «Войти» (у вошедшего пользователя — «Кабинет»: главная страница его активной роли). Хедер закреплён сверху; якоря учитывают его высоту (`scroll-margin-top`). |
+| REQ-GEN-SHELL-02 | Хедер кабинетов: вместо меню — выбор роли («Учитель»/«Ученик»), язык, трафик, тема, уведомления, профиль (буква аватара + имя из аккаунта; роль показывается один раз — в выборе роли), «Выйти». У ученика дополнительно индикаторы серии (пламя) и XP из `GET /me/stats`. |
+| REQ-GEN-SHELL-03 | Боковая панель кабинетов ~70 px со значками; активный — синяя подложка и полоса слева. Значки без страницы ведут на заглушку «Раздел в разработке» (PH-24). |
+| REQ-GEN-SHELL-04 | Плавающие кнопки справа внизу: «?» — краткая справка по странице и ссылки поддержки; синяя кнопка диалога — публичный помощник. В кабинетах между ними жёлтая «лампочка» (PH-32). Кнопки не перекрывают поля ввода, cookie-баннер и чат. |
+| REQ-GEN-SHELL-05 | Футер (синий градиент): колонка бренда — «Учись в своём темпе — на казахском и русском», email поддержки (PH-09), «KK · RU · EN»; ПРОДУКТ — Главная, Предметы, О проекте, Syntara AI; ШКОЛАМ — Школам, Оставить заявку, Помощь, Войти, Подключиться к классу (в кабинетах последние две → «Кабинет»); ПРАВОВОЕ — три документа. Низ: «© 2026 Syntara Education Platform. Образовательный продукт.» |
+| REQ-GEN-SHELL-06 | Мобильная версия (< 1024 px): логотип, «Войти», кнопка «Меню». В меню: 6 разделов, язык, тема, трафик. Закрытие кнопкой, Escape, переходом; фокус возвращается на кнопку «Меню». |
+| REQ-GEN-SHELL-07 | 320–430 px: без горизонтальной прокрутки; одна колонка; зоны нажатия ≥ 44×44 px; размер шрифта полей ≥ 16 px; экранная клавиатура не перекрывает поле и кнопку отправки. Есть ссылка «К содержимому». |
+
+## 3.4 Язык, тема, трафик (REQ-GEN-PREF)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-PREF-01 | Локаль в URL-префиксе `/{ru|kk|en}/...`. Смена языка MUST NOT перезагружать страницу и терять введённые данные, выбранную тему урока и вкладку. Выбор сохраняется в cookie `locale` и в `user_preferences`. |
+| REQ-GEN-PREF-02 | Язык без готового перевода показывается в меню недоступным с подписью «скоро» (PH-04). Контент без перевода показывается на доступном языке; машинный перевод MUST NOT использоваться. Заранее подготовленные переводы текстов интерфейса в `kk.json` и `en.json` машинным переводом во время работы не являются и допустимы; KK-переводы помечаются `needs_review` до проверки носителем языка (решение владельца, ред. 2026-10-13). |
+| REQ-GEN-PREF-03 | Тема: при первом визите — `prefers-color-scheme`; ручной выбор сохраняется (cookie `theme` + `user_preferences`). Атрибут `data-theme` на `<html>` выставляется до отрисовки (без мигания). |
+| REQ-GEN-PREF-04 | Экономия трафика (`data_saver`): отключает анимации, автозагрузку изображений вне первого экрана и prefetch. Подпись кнопки: «Экономия трафика выключена» / «Экономия трафика включена». |
+| REQ-GEN-PREF-05 | Глобальный язык интерфейса и вкладки RU/KK/EN в редакторах — независимые состояния. |
+
+
+# 4. Маршруты
+
+Все маршруты имеют префикс локали `/{locale}`. Доступ проверяется middleware Next.js (перенаправление) и, обязательно, API (данные).
+
+| **Маршрут** | **Страница** | **Доступ** | **Эталон** | **Раздел** |
+|-----------|---------|-----|----|----|
+| / | Главная (гость) / главная ученика | все | S01–S07, U01 | 8.1.1, 8.4.1 |
+| /subjects | Предметы | все | S08 | 8.1.2 |
+| /about | О проекте | все | S09–S14 | 8.1.3 |
+| /ai | Syntara AI — помощник по платформе | все | S15 | 8.1.4 |
+| /schools | Школам | все | S16–S17 | 8.1.5 |
+| /schools/request | Заявка школы | все | S18 | 8.1.6 |
+| /support | Поддержка | все | S19 | 8.1.7 |
+| /terms, /privacy, /cookies | Правовые документы (PH-43) | все | S20–S26 | 8.1.8 |
+| /auth/login | Вход | guest | — | 8.2.1 |
+| /auth/start | Выбор роли и регистрация | guest | — | 8.2.1 |
+| /join | Подключение к классу | guest → login, student | — | 8.2.2 |
+| /account/privacy | Мои данные | авторизованные | — | 8.2.3 |
+| /teacher/courses | Мои курсы | teacher | — | 8.3 |
+| /teacher/subjects/new | Новый предмет | teacher | T05 | 8.3.1 |
+| /teacher/subjects/:id | Предмет: доступ классу и темы | teacher (владелец) | T04 | 8.3.2 |
+| /teacher/subjects/:id/topics/new, /teacher/topics/:id | Редактор темы (`/topics/new` — переход на страницу предмета: тема создаётся кнопкой «+ Добавить тему», REQ-TCH-ACC-02) | teacher (владелец) | T06–T07 | 8.3.3 |
+| /teacher/topics/:id/quiz | Квиз темы | teacher (владелец) | T08 | 8.3.5 |
+| /teacher/assignments | Задания | teacher | T09 | 8.3.6 |
+| /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
+| /learn/subjects | Каталог и класс | student; гость — каталог базовых уроков (BR-VIS-04) | U13 | 8.4.2 |
+| /learn/sections/:id | Раздел каталога | student; гость (BR-VIS-04) | U03 | 8.4.2 |
+| /learn/subjects/:id | Предмет: темы и их статусы | student; гость — базовый предмет, без статусов (BR-VIS-04) | — | 8.4.2 |
+| /learn/topics/:id?tab=overview|quiz|ai | Урок | student; гость — «Обзор» базового урока, на «Квиз» и «Syntara AI» — приглашение войти (REQ-ST-LES-06) | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
+| /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
+| /learn/progress | Мои показатели | student | U08 | 8.4.6 |
+| /learn/achievements | Достижения | student | U10 | 8.4.7 |
+| /learn/assignments | Мои задания (PH-33) | student | — | 8.4.8 |
+| /teacher/battles | Мои Battle: вкладки «Тесты» и «История игр» (`?tab=history&classId=`) | teacher | — | 8.6.1 |
+| /teacher/battles/:id | Редактор Battle-теста | teacher (владелец) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid | Игра ведущего: лобби, вопрос, раскрытие, рейтинг, итог | teacher (ведущий сессии) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid/results | Результаты игры | teacher (ведущий сессии) | — | 8.6.1 |
+| /learn/battles | Вход в Battle по коду и «Мои Battle» | student | — | 8.6.2 |
+| /learn/battles/:sid | Игра ученика: лобби, вопрос, раскрытие, рейтинг, итог | student (участник) | — | 8.6.2 |
+| /learn/battles/:sid/results | Итоги игры ученика | student (участник) | — | 8.6.2 |
+| /staff/tickets, /staff/requests | Служебные очереди | support_agent / onboarding_agent | — | 8.5 |
+
+Правила: внешние ссылки атласов — из конфигурации (PH-10). `returnTo` — только относительный внутренний путь, проверенный по белому списку префиксов; иначе `/`. Прямой заход по URL отдаёт ту же страницу, что и навигация (SSR).
+
+# 5. База данных
+
+## 5.1 Соглашения
+
+- PostgreSQL 16+. Все PK — `uuid` (UUIDv7, генерация в приложении). Время — `timestamptz` (UTC).
+- Каждая таблица, кроме связующих, имеет `created_at timestamptz NOT NULL DEFAULT now()` и `updated_at timestamptz NOT NULL DEFAULT now()` (в DDL ниже опущены).
+- Переводы — таблицы `*_translations` с PK `(entity_id, locale)`.
+- Учебные сущности не удаляются физически: `archived_at timestamptz NULL`.
+- Миграции — drizzle-kit; ручные изменения схемы запрещены (AG-09).
+- Row-Level Security SHOULD быть включена для таблиц со `school_id` как второй уровень защиты.
+
+![Схема БД: пользователи, классы и учебный контент](media/er1a.png)
+
+![Схема БД: квизы и задания](media/er1b.png)
+
+![Схема БД: результаты, геймификация, ИИ, поддержка и служебные таблицы](media/er2.png)
+
+## 5.2 Перечисления
+
+```sql
+CREATE TYPE locale            AS ENUM ('ru','kk','en');
+CREATE TYPE user_role         AS ENUM ('student','teacher','support_agent','onboarding_agent');
+CREATE TYPE topic_status      AS ENUM ('draft','published');
+CREATE TYPE question_type     AS ENUM ('single_choice','true_false','text_input');
+CREATE TYPE difficulty        AS ENUM ('easy','medium','hard');
+CREATE TYPE membership_status AS ENUM ('active','left');
+CREATE TYPE submission_status AS ENUM ('submitted','in_review','graded');
+CREATE TYPE attempt_status    AS ENUM ('in_progress','finished','abandoned');
+CREATE TYPE ticket_status     AS ENUM ('new','in_progress','waiting_user','waiting_internal','resolved','closed','reopened');
+CREATE TYPE support_category  AS ENUM ('technical','school_onboarding','learning','account_access','data_privacy','other');
+CREATE TYPE request_status    AS ENUM ('new','in_progress','contacted','onboarded','rejected');
+CREATE TYPE media_kind        AS ENUM ('cover','material','illustration','brand');
+CREATE TYPE scan_status       AS ENUM ('pending','clean','rejected');
+CREATE TYPE ai_context        AS ENUM ('topic_tutor','general_tutor');
+CREATE TYPE ai_role           AS ENUM ('user','assistant');
+CREATE TYPE ai_msg_status     AS ENUM ('complete','partial','failed');
+CREATE TYPE battle_session_status AS ENUM ('lobby','in_progress','finished','cancelled');   -- 5.9
+CREATE TYPE battle_phase          AS ENUM ('lobby','question','reveal','leaderboard','finished');
+```
+
+## 5.3 Пользователи, доступ, классы
+
+```sql
+CREATE TABLE schools (id uuid PRIMARY KEY, name text NOT NULL CHECK (length(name) <= 200),
+  region text, city text, status text NOT NULL DEFAULT 'active');   -- 'unverified' — школа, введённая учеником вручную
+
+CREATE TABLE users (id uuid PRIMARY KEY, email citext UNIQUE, display_name text NOT NULL,
+  login citext UNIQUE,                  -- логин ученика (PH-44: 3–32 символа a-z 0-9 . _ -)
+  password_hash text, is_child_safe boolean NOT NULL DEFAULT false, status text NOT NULL DEFAULT 'active',
+  last_login_at timestamptz,
+  email_verified_at timestamptz,        -- подтверждение email (API-AUTH-06; вход до подтверждения разрешён)
+  must_change_password boolean NOT NULL DEFAULT false,  -- временный пароль от учителя (API-T-27)
+  CHECK (email IS NOT NULL OR is_child_safe));
+
+-- Решение владельца (ред. 2026-10-13): столбцы PK в PostgreSQL не могут быть NULL, поэтому вместо
+-- PRIMARY KEY (user_id, role, school_id) — суррогатный id и уникальность с NULLS NOT DISTINCT (PG 15+).
+CREATE TABLE user_roles (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, role user_role NOT NULL,
+  school_id uuid REFERENCES schools, UNIQUE NULLS NOT DISTINCT (user_id, role, school_id));
+
+CREATE TABLE user_preferences (user_id uuid PRIMARY KEY REFERENCES users,
+  locale locale NOT NULL DEFAULT 'ru', theme text NOT NULL DEFAULT 'system', data_saver boolean NOT NULL DEFAULT false);
+
+CREATE TABLE auth_sessions (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  token_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, revoked_at timestamptz, user_agent text);
+
+CREATE TABLE consents (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, consent_type text NOT NULL,
+  granted boolean NOT NULL, granted_by uuid REFERENCES users, granted_at timestamptz NOT NULL, revoked_at timestamptz);
+
+CREATE TABLE data_subject_requests (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('export','rectify','delete','revoke_consent')),
+  status text NOT NULL DEFAULT 'new', completed_at timestamptz);
+
+CREATE TABLE classes (id uuid PRIMARY KEY, school_id uuid REFERENCES schools, teacher_id uuid NOT NULL REFERENCES users,
+  name text NOT NULL CHECK (length(name) <= 50), archived_at timestamptz);
+
+CREATE TABLE class_memberships (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  student_id uuid NOT NULL REFERENCES users, status membership_status NOT NULL DEFAULT 'active',
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz);
+CREATE UNIQUE INDEX ux_membership_active ON class_memberships (class_id, student_id) WHERE status = 'active';
+CREATE INDEX ix_membership_student ON class_memberships (student_id) WHERE status = 'active';
+
+CREATE TABLE class_invite_codes (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  code_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, is_active boolean NOT NULL DEFAULT true,
+  created_by uuid NOT NULL REFERENCES users);
+```
+
+## 5.4 Учебный контент
+
+```sql
+CREATE TABLE catalog_sections (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, position int NOT NULL);
+CREATE TABLE catalog_section_translations (section_id uuid REFERENCES catalog_sections, locale locale,
+  title text NOT NULL, description text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE subjects (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, section_id uuid REFERENCES catalog_sections,
+  is_official boolean NOT NULL DEFAULT false, in_public_catalog boolean NOT NULL DEFAULT false, archived_at timestamptz,
+  CHECK (is_official OR owner_id IS NOT NULL));
+CREATE TABLE subject_translations (subject_id uuid REFERENCES subjects, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  PRIMARY KEY (subject_id, locale));
+
+CREATE TABLE class_subject_access (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, granted_by uuid NOT NULL REFERENCES users,
+  granted_at timestamptz NOT NULL DEFAULT now(), revoked_at timestamptz);
+CREATE UNIQUE INDEX ux_csa_active ON class_subject_access (class_id, subject_id) WHERE revoked_at IS NULL;
+
+CREATE TABLE media_files (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, kind media_kind NOT NULL,
+  original_name text NOT NULL, mime text NOT NULL, size_bytes bigint NOT NULL, sha256 bytea,
+  storage_key text NOT NULL UNIQUE, scan_status scan_status NOT NULL DEFAULT 'pending');
+
+CREATE TABLE topics (id uuid PRIMARY KEY, subject_id uuid NOT NULL REFERENCES subjects, position int NOT NULL,
+  status topic_status NOT NULL DEFAULT 'draft', cover_media_id uuid REFERENCES media_files, cover_url text,
+  published_at timestamptz, published_version_id uuid, archived_at timestamptz,
+  UNIQUE (subject_id, position) DEFERRABLE INITIALLY DEFERRED);
+CREATE TABLE topic_translations (topic_id uuid REFERENCES topics, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  fun_fact text CHECK (length(fun_fact) <= 500), body_md text CHECK (length(body_md) <= 50000), summary text,
+  PRIMARY KEY (topic_id, locale));
+
+CREATE TABLE topic_sections (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, position int NOT NULL,
+  illustration_media_id uuid REFERENCES media_files);
+CREATE TABLE topic_section_translations (section_id uuid REFERENCES topic_sections, locale locale,
+  title text NOT NULL, body text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE topic_versions (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, version_no int NOT NULL,
+  snapshot jsonb NOT NULL, change_note text CHECK (length(change_note) <= 500), created_by uuid NOT NULL REFERENCES users,
+  UNIQUE (topic_id, version_no));
+ALTER TABLE topics ADD FOREIGN KEY (published_version_id) REFERENCES topic_versions;
+
+CREATE TABLE topic_materials (topic_id uuid REFERENCES topics, media_id uuid REFERENCES media_files,
+  position int NOT NULL, PRIMARY KEY (topic_id, media_id));
+CREATE INDEX ix_topics_subject ON topics (subject_id, position);
+
+-- Базовая программа (этап 8.6, решение владельца 2026-10-16): постоянные коды строк, созданных импортом content/
+-- (BR-CNT-04). У контента учителей code = NULL. Базовый контент — subjects.is_official = true (owner_id NULL).
+ALTER TABLE subjects ADD COLUMN code text UNIQUE, ADD CONSTRAINT subjects_code_official CHECK (code IS NULL OR is_official);
+ALTER TABLE topics ADD COLUMN code text UNIQUE;
+ALTER TABLE topic_sections ADD COLUMN code text UNIQUE;
+ALTER TABLE questions ADD COLUMN code text UNIQUE;
+-- Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05); ученик видит пометку «На проверке».
+ALTER TABLE topic_translations ADD COLUMN needs_review boolean NOT NULL DEFAULT false;
+-- Порядок базовых предметов в каталоге — position из subject.yaml (решение владельца 2026-10-17); у предметов учителей NULL.
+ALTER TABLE subjects ADD COLUMN position int,
+  ADD CONSTRAINT subjects_position_official CHECK (position IS NULL OR (is_official AND position >= 1));
+```
+
+## 5.5 Квизы и задания
+
+```sql
+CREATE TABLE quizzes (id uuid PRIMARY KEY, topic_id uuid NOT NULL UNIQUE REFERENCES topics);
+
+CREATE TABLE questions (id uuid PRIMARY KEY, quiz_id uuid NOT NULL REFERENCES quizzes, type question_type NOT NULL,
+  difficulty difficulty NOT NULL, position int NOT NULL, is_demo boolean NOT NULL DEFAULT false,
+  text_answer text,                     -- только для type = text_input
+  archived_at timestamptz);
+CREATE TABLE question_translations (question_id uuid REFERENCES questions, locale locale,
+  text text NOT NULL CHECK (length(text) <= 1000), explanation text CHECK (length(explanation) <= 2000),
+  PRIMARY KEY (question_id, locale));
+
+CREATE TABLE answer_options (id uuid PRIMARY KEY, question_id uuid NOT NULL REFERENCES questions,
+  position int NOT NULL, is_correct boolean NOT NULL DEFAULT false);
+CREATE UNIQUE INDEX ux_one_correct ON answer_options (question_id) WHERE is_correct;
+CREATE TABLE answer_option_translations (option_id uuid REFERENCES answer_options, locale locale,
+  text text NOT NULL CHECK (length(text) <= 300), PRIMARY KEY (option_id, locale));
+
+CREATE TABLE assignments (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, topic_id uuid NOT NULL REFERENCES topics,
+  due_at timestamptz NOT NULL, created_by uuid NOT NULL REFERENCES users);
+CREATE INDEX ix_assignments_class ON assignments (class_id, due_at);
+
+CREATE TABLE submissions (id uuid PRIMARY KEY, assignment_id uuid NOT NULL REFERENCES assignments,
+  student_id uuid NOT NULL REFERENCES users, status submission_status NOT NULL,
+  grade numeric(5,2), submitted_at timestamptz, graded_at timestamptz, graded_by uuid REFERENCES users,
+  UNIQUE (assignment_id, student_id));
+CREATE INDEX ix_submissions_status ON submissions (assignment_id, status);
+```
+
+Правило «тема принадлежит предмету» для `assignments` проверяется в сервисе и триггером `check_assignment_topic()`.
+
+## 5.6 Результаты и геймификация
+
+```sql
+CREATE TABLE quiz_attempts (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  quiz_id uuid NOT NULL REFERENCES quizzes, topic_version_id uuid REFERENCES topic_versions,
+  assignment_id uuid REFERENCES assignments, status attempt_status NOT NULL DEFAULT 'in_progress',
+  score_percent numeric(5,2), started_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz);
+CREATE INDEX ix_attempts_student ON quiz_attempts (student_id, finished_at);
+CREATE INDEX ix_attempts_quiz ON quiz_attempts (quiz_id);
+
+CREATE TABLE attempt_answers (attempt_id uuid REFERENCES quiz_attempts, question_id uuid REFERENCES questions,
+  option_id uuid REFERENCES answer_options, text_answer text, is_correct boolean NOT NULL,
+  answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
+
+CREATE TABLE learning_events (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question')),
+  subject_id uuid REFERENCES subjects, topic_id uuid REFERENCES topics, occurred_at timestamptz NOT NULL,
+  idempotency_key text NOT NULL, UNIQUE (student_id, idempotency_key));
+CREATE INDEX ix_events_student_time ON learning_events (student_id, occurred_at);
+
+CREATE TABLE topic_mastery (student_id uuid REFERENCES users, topic_id uuid REFERENCES topics,
+  best_percent numeric(5,2) NOT NULL, attempts_count int NOT NULL, mastered_at timestamptz,
+  PRIMARY KEY (student_id, topic_id));
+CREATE INDEX ix_mastery_topic ON topic_mastery (topic_id);
+
+CREATE TABLE student_stats (student_id uuid PRIMARY KEY REFERENCES users, xp_total int NOT NULL DEFAULT 0,
+  level int NOT NULL DEFAULT 1, streak_current int NOT NULL DEFAULT 0, streak_best int NOT NULL DEFAULT 0,
+  last_activity_date date);
+
+CREATE TABLE levels (level int PRIMARY KEY, xp_threshold int NOT NULL UNIQUE);
+CREATE TABLE level_translations (level int REFERENCES levels, locale locale, title text NOT NULL,
+  PRIMARY KEY (level, locale));
+
+CREATE TABLE badges (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, image_media_id uuid REFERENCES media_files,
+  rule jsonb NOT NULL, position int NOT NULL, is_active boolean NOT NULL DEFAULT true);
+CREATE TABLE badge_translations (badge_id uuid REFERENCES badges, locale locale, title text NOT NULL,
+  condition_text text NOT NULL, PRIMARY KEY (badge_id, locale));
+CREATE TABLE student_badges (student_id uuid REFERENCES users, badge_id uuid REFERENCES badges,
+  awarded_at timestamptz NOT NULL DEFAULT now(), source_event_id uuid REFERENCES learning_events,
+  PRIMARY KEY (student_id, badge_id));
+
+CREATE TABLE xp_ledger (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users, amount int NOT NULL,
+  reason text NOT NULL, source_event_id uuid NOT NULL REFERENCES learning_events,
+  UNIQUE (student_id, source_event_id, reason));
+```
+
+## 5.7 ИИ, поддержка, служебные таблицы
+
+```sql
+CREATE TABLE ai_conversations (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, context ai_context NOT NULL,
+  topic_id uuid REFERENCES topics, explain_level text NOT NULL DEFAULT 'beginner', archived_at timestamptz,
+  CHECK (context <> 'topic_tutor' OR topic_id IS NOT NULL));
+CREATE TABLE ai_messages (id uuid PRIMARY KEY, conversation_id uuid NOT NULL REFERENCES ai_conversations,
+  role ai_role NOT NULL, content text NOT NULL, status ai_msg_status NOT NULL DEFAULT 'complete',
+  quick_action text CHECK (quick_action IN ('simpler','more_detail','check_me')),
+  tokens_in int, tokens_out int, created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_ai_messages_conv ON ai_messages (conversation_id, created_at);
+
+CREATE TABLE school_requests (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL,
+  school_name text NOT NULL CHECK (length(school_name) <= 200), region text CHECK (length(region) <= 120),
+  city text CHECK (length(city) <= 120), contact_person text NOT NULL CHECK (length(contact_person) <= 200),
+  phone text, email citext NOT NULL, message text CHECK (length(message) <= 5000),
+  status request_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users);
+
+CREATE TABLE support_tickets (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL, category support_category NOT NULL,
+  subject text NOT NULL CHECK (length(subject) <= 200), name text CHECK (length(name) <= 200), email citext NOT NULL,
+  phone text, description text NOT NULL CHECK (length(description) <= 10000), user_id uuid REFERENCES users,
+  status ticket_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users, tech_context jsonb,
+  resolved_at timestamptz, closed_at timestamptz);
+CREATE INDEX ix_tickets_queue ON support_tickets (status, assignee_id);
+CREATE INDEX ix_tickets_email ON support_tickets (email);
+
+CREATE TABLE ticket_messages (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  direction text NOT NULL CHECK (direction IN ('in','out','note')), author_id uuid REFERENCES users,
+  body text NOT NULL, is_internal boolean NOT NULL DEFAULT false, sent_at timestamptz);
+CREATE TABLE ticket_status_history (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  from_status ticket_status, to_status ticket_status NOT NULL, changed_by uuid REFERENCES users,
+  changed_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE ticket_reply_tokens (ticket_id uuid REFERENCES support_tickets, token_hash bytea PRIMARY KEY,
+  expires_at timestamptz NOT NULL);
+CREATE TABLE response_templates (code text, locale locale, body text NOT NULL, PRIMARY KEY (code, locale));
+
+CREATE TABLE idempotency_keys (scope text, key text, request_hash bytea NOT NULL, response jsonb,
+  expires_at timestamptz NOT NULL, PRIMARY KEY (scope, key));
+CREATE TABLE outbox_events (id uuid PRIMARY KEY, type text NOT NULL, payload jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), processed_at timestamptz, attempts int NOT NULL DEFAULT 0, last_error text);
+CREATE TABLE email_queue (id uuid PRIMARY KEY, to_email citext NOT NULL, template text NOT NULL, payload jsonb NOT NULL,
+  status text NOT NULL DEFAULT 'pending', attempts int NOT NULL DEFAULT 0, sent_at timestamptz);
+CREATE TABLE notifications (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, type text NOT NULL,
+  payload jsonb NOT NULL, read_at timestamptz);
+CREATE TABLE audit_log (id bigserial PRIMARY KEY, actor_id uuid REFERENCES users, school_id uuid,
+  entity_type text NOT NULL, entity_id uuid, action text NOT NULL, before jsonb, after jsonb,
+  created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_audit_entity ON audit_log (entity_type, entity_id, created_at);
+REVOKE UPDATE, DELETE ON audit_log FROM app_user;
+
+CREATE TABLE feature_flags (key text PRIMARY KEY, enabled boolean NOT NULL, note text);
+CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confirmation boolean NOT NULL DEFAULT true,
+  confirmed_at timestamptz, confirmed_by text,
+  note text);                           -- PH-ID заглушки раздела 11 (решение владельца, ред. 2026-10-13)
+```
+
+Таблицы `feature_flags` и `app_config` хранят флаги функций и значения заглушек раздела 11.
+
+## 5.8 Роли БД
+
+| **Роль** | **Права** |
+|------|-----------------------------|
+| app_user | SELECT/INSERT/UPDATE на рабочие таблицы; только INSERT в audit_log; без DDL; без DELETE |
+| app_maintenance | Только для фоновых задач worker: SELECT и DELETE на таблицы с ограниченным сроком хранения и технические таблицы — support_tickets, ticket_messages, ticket_status_history, ticket_reply_tokens, school_requests, ai_conversations, ai_messages (очистка по срокам PH-18), media_files, topic_materials (удаление отклонённых и откреплённых файлов, BR-FILE-03), idempotency_keys, outbox_events, email_queue, auth_sessions (истёкшие записи); без INSERT/UPDATE, без DDL; к audit_log доступа нет (решение владельца, ред. 2026-10-13) |
+| migrator | DDL; используется только CI при миграции |
+| analytics_ro | SELECT на реплике |
+
+## 5.9 Battle (итерация 10.5)
+
+Миграция `0007_battle.sql` (+ откат), схема Drizzle `packages/db/src/schema/battle.ts`. Правила — 7.12, автомат — SM-BTL (раздел 9).
+
+```sql
+CREATE TABLE battle_quizzes (id uuid PRIMARY KEY, owner_id uuid NOT NULL REFERENCES users,
+  title text NOT NULL CHECK (length(title) BETWEEN 1 AND 120), description text CHECK (length(description) <= 500),
+  locale locale NOT NULL,                -- язык содержания теста; перевода нет
+  archived_at timestamptz);
+CREATE INDEX ix_battle_quizzes_owner ON battle_quizzes (owner_id, created_at DESC);
+
+CREATE TABLE battle_questions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  position int NOT NULL, type question_type NOT NULL CHECK (type IN ('single_choice','true_false')),
+  text text NOT NULL CHECK (length(text) BETWEEN 1 AND 300),
+  image_media_id uuid REFERENCES media_files,   -- файл галереи учителя (media_files kind = 'cover', BR-BTL-10)
+  time_limit_sec int NOT NULL DEFAULT 20 CHECK (time_limit_sec IN (5,10,20,30,60,90)),
+  source_question_id uuid REFERENCES questions, -- если вопрос импортирован из квиза темы (копия, BR-BTL-10)
+  archived_at timestamptz,
+  UNIQUE (battle_quiz_id, position) DEFERRABLE INITIALLY DEFERRED);
+
+CREATE TABLE battle_options (id uuid PRIMARY KEY, battle_question_id uuid NOT NULL REFERENCES battle_questions,
+  position int NOT NULL CHECK (position BETWEEN 1 AND 4), text text NOT NULL CHECK (length(text) BETWEEN 1 AND 150),
+  is_correct boolean NOT NULL DEFAULT false, UNIQUE (battle_question_id, position));
+CREATE UNIQUE INDEX ux_battle_one_correct ON battle_options (battle_question_id) WHERE is_correct;
+
+CREATE TABLE battle_sessions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  host_id uuid NOT NULL REFERENCES users, class_id uuid NOT NULL REFERENCES classes,
+  code char(6) NOT NULL CHECK (code ~ '^[A-Z]{3}[1-9]{3}$'),
+  status battle_session_status NOT NULL DEFAULT 'lobby', phase battle_phase NOT NULL DEFAULT 'lobby',
+  settings jsonb NOT NULL,                 -- 7.12, таблица настроек
+  questions_snapshot jsonb NOT NULL,       -- снимок вопросов при запуске (BR-BTL-05)
+  current_index int, question_started_at timestamptz, deadline_at timestamptz,
+  state_version int NOT NULL DEFAULT 0, cancel_reason text CHECK (cancel_reason IN ('host','expired')),
+  started_at timestamptz, finished_at timestamptz, last_activity_at timestamptz NOT NULL DEFAULT now());
+CREATE UNIQUE INDEX ux_battle_active_code ON battle_sessions (code) WHERE status IN ('lobby','in_progress');
+CREATE INDEX ix_battle_sessions_host ON battle_sessions (host_id, created_at DESC);
+CREATE INDEX ix_battle_sessions_class ON battle_sessions (class_id, created_at DESC);
+
+CREATE TABLE battle_participants (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  student_id uuid NOT NULL REFERENCES users, display_name text NOT NULL CHECK (length(display_name) <= 80),
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz, kicked_at timestamptz,
+  last_seen_at timestamptz NOT NULL DEFAULT now(),
+  correct_count int, answered_count int, correct_time_ms int, final_rank int,   -- итоги, пишутся при finished
+  UNIQUE (session_id, student_id));
+
+CREATE TABLE battle_answers (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  participant_id uuid NOT NULL REFERENCES battle_participants, question_index int NOT NULL CHECK (question_index >= 0),
+  option_position int NOT NULL CHECK (option_position BETWEEN 1 AND 4), is_correct boolean NOT NULL,
+  response_ms int NOT NULL CHECK (response_ms >= 0), answered_at timestamptz NOT NULL, client_answer_id uuid NOT NULL,
+  UNIQUE (participant_id, question_index), UNIQUE (participant_id, client_answer_id));
+CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_index);
+```
+
+- `questions_snapshot`: `[{ index, type, text, imageMediaId, timeLimitSec, options: [{ position, text, isCorrect }] }]`; порядок — с учётом настройки «Перемешать вопросы/варианты» (один порядок для всех). Правильные варианты из снимка MUST NOT отдаваться ученику до `reveal` (BR-BTL-03).
+- У всех таблиц Battle есть `created_at` и `updated_at` (5.1); в DDL опущены.
+- RLS (SHOULD, второй уровень, как в миграции 0002): при заданном `app.user_id` учитель видит только свои тесты и сессии, ученик — только сессии, где он участник, и только свои ответы; без контекста — не ограничивает (основная защита — guards и сервисы).
+- Аудит (REQ-NFR-SEC-05): создание и запуск сессии, выгон участника, досрочное завершение, отмена (`entity_type = 'battle_session'`).
+- Права ролей БД (5.8): `app_user` — SELECT/INSERT/UPDATE на таблицы Battle; DELETE — только `app_maintenance` для `battle_answers` (обезличивание по запросу на удаление, BR-BTL-11).
+
+
+# 6. API
+
+## 6.1 Общие правила
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| API-GEN-01 | Базовый путь `/api`. Формат — JSON, UTF-8. Описание — OpenAPI 3, генерируется из декораторов NestJS; клиент для web генерируется из OpenAPI. |
+| API-GEN-02 | Аутентификация — cookie `sid` (HttpOnly, Secure, SameSite=Lax, срок до 14 дней с продлением). Изменяющие запросы требуют заголовок `X-CSRF-Token` (double-submit cookie `csrf`). |
+| API-GEN-03 | Локаль запроса — заголовок `Accept-Language` (ru, kk, en); ответы с переводами содержат поле `locale` — фактически отданный язык. |
+| API-GEN-04 | Формат ошибки: `{ "code": "VALIDATION_FAILED", "message": "…", "fieldErrors": { "email": "…" }, "requestId": "…" }`. HTTP-коды: 400, 401, 403, 404, 409, 413, 422, 429, 500, 503. |
+| API-GEN-05 | Все POST публичных форм требуют заголовок `Idempotency-Key` (UUID). Тот же ключ и то же тело → прежний ответ; тот же ключ и другое тело → 409 `IDEMPOTENCY_MISMATCH`. Срок хранения ключа — 24 ч. |
+| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20; Battle — ввод кода 10 за 10 минут на ученика и 30 на IP, ответы — 1 в 200 мс на участника (BR-BTL-01/03). Ключи лимитов ввода кода класса и кода Battle разные (BR-CODE-06). Ответ 429 содержит `retryAfterSeconds`. |
+| API-GEN-07 | Списки — курсорная пагинация: `?cursor=&limit=` (limit ≤ 100), ответ `{ items, nextCursor }`. |
+| API-GEN-08 | Все обращения к данным проверяют владение/членство (BR-ACL-*). Нарушение → 404 (не раскрывать существование объекта). |
+
+## 6.2 Публичные операции (без входа)
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` — элементы по кодам PH-01 (код раздела каталога или базового предмета); `open` — есть опубликованные базовые темы, `href` — `/learn/sections/:id` или `/learn/subjects/:id`; иначе `soon` без ссылки (BR-CNT-08). Порядок: `open` первыми, затем `soon`; внутри группы — порядок content/ (позиция раздела, затем предмета в разделе, BR-CNT-02) |
+| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, subjectId, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `subjectId` — предмет вопроса («Перейти к предмету» для ученика); `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
+| API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
+| API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-06 | POST /api/public/assistant | `{ message (≤2000), history: [{role, content}] (≤20) }` | SSE: `event: delta {text}` … `event: done {}` / `event: error {code}` |
+| API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
+| API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса; код активной сессии Battle — 404 `isBattleCode` (BR-CODE-04) |
+| API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
+| API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
+| API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }] }` — без статусов; не базовый → 404 |
+| API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
+
+## 6.3 Аутентификация и профиль
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-AUTH-01 | POST /api/auth/login | `{ email, password }` | 200 `{ user: MeDto }` + cookie `sid` |
+| API-AUTH-02 | POST /api/auth/logout | — | 204 |
+| API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06) | 201 `{ user }` и вход; письмо со ссылкой подтверждения email (API-AUTH-06) |
+| API-AUTH-03S | POST /api/auth/register-student | `{ displayName, login, password, email?, schoolId?, schoolName?, code? }` (PH-06, PH-17, PH-44) | 201 `{ user }` и вход; верный код — сразу членство в классе и школа класса; неверный код — 400 без создания аккаунта; код активной сессии Battle — 400 `fieldErrors.code = isBattleCode` без создания аккаунта (BR-CODE-04) |
+| API-AUTH-04 | POST /api/auth/password/forgot, /reset | `{ email }`, `{ token, password }` | 204 |
+| API-AUTH-05 | POST /api/auth/password/change | `{ currentPassword?, password }` | 204; при `mustChangePassword` (временный пароль) текущий пароль не нужен |
+| API-AUTH-06 | POST /api/auth/email/verify, /email/resend | `{ token }`, — | 204; повторная отправка — только вошедшему с неподтверждённым email |
+| API-ME-01 | GET /api/me | — | `MeDto { id, displayName, initials, roles[], activeRole, preferences, emailVerified, mustChangePassword }`; `emailVerified` = null без email |
+| API-ME-02 | PATCH /api/me/preferences | `{ locale?, theme?, dataSaver? }` | 200 |
+| API-ME-03 | POST /api/me/active-role | `{ role }` | 200 |
+| API-ME-04 | GET /api/me/notifications | — | список (PH-32) |
+| API-ME-05 | POST /api/me/data-requests | `{ type: 'export'|'delete' }` | 201; создаёт обращение категории data_privacy (PH-08) |
+
+## 6.4 Учитель
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-T-01 | GET /api/teacher/subjects | Мои курсы (PH-24) |
+| API-T-02 | POST /api/teacher/subjects | Создать предмет: `{ translations: {ru?, kk?, en?: {title, description}}, inPublicCatalog }` — минимум один язык с title |
+| API-T-03 | GET / PATCH /api/teacher/subjects/:id | Получить / изменить предмет |
+| API-T-04 | GET /api/teacher/classes | Классы учителя: `[{ id, name, studentsCount }]` |
+| API-T-05 | POST /api/teacher/classes | Создать класс `{ name }` (PH-07) |
+| API-T-06 | POST /api/teacher/classes/:id/invite-codes | Выпустить код `{ code, expiresAt }` (код показывается один раз) |
+| API-T-07 | POST /api/teacher/subjects/:id/access | Выдать предмет классу `{ classId }`; повтор → 200 без дубля |
+| API-T-08 | DELETE /api/teacher/subjects/:id/access/:classId | Отозвать выдачу |
+| API-T-09 | POST /api/teacher/subjects/:id/topics | Создать тему (черновик) |
+| API-T-10 | GET / PUT /api/teacher/topics/:id | Получить / сохранить тему: `{ translations, coverMediaId?, coverUrl?, materialIds[] }`; `coverUrl` (http/https) сервер скачивает в своё хранилище и проверяет как загруженную обложку (BR-FILE-06); не удалось — 422 `fieldErrors.coverUrl` |
+| API-T-11 | POST /api/teacher/topics/:id/ai-draft | ИИ-черновик: ответ `{ ru: {title, description, funFact, bodyMd}, kk: {...} }` — название на языке черновика; ничего не сохраняет |
+| API-T-12 | POST /api/teacher/topics/:id/publish | `{ changeNote? }` → создаёт topic_version, status = published |
+| API-T-13 | POST /api/teacher/topics/:id/unpublish | Снять с публикации (PH-27) |
+| API-T-14 | GET /api/teacher/topics/:id/versions | История версий (PH-25) |
+| API-T-15 | GET /api/teacher/topics/:id/preview | Представление темы глазами ученика (без публикации) |
+| API-T-16 | POST /api/files/upload-url | `{ kind: 'cover'|'material', topicId?, fileName, mime, size }` → `{ mediaId, uploadUrl, headers }` после проверки лимитов BR-FILE-* |
+| API-T-17 | POST /api/files/:mediaId/complete | Подтвердить загрузку → постановка в очередь проверки (scan_status = pending) |
+| API-T-18 | GET /api/teacher/gallery | Обложки пользователя |
+| API-T-19 | GET /api/teacher/topics/:id/quiz | Квиз и вопросы |
+| API-T-20 | POST /api/teacher/topics/:id/quiz/questions | Создать вопрос `QuestionDto` (6.7) |
+| API-T-21 | PUT / DELETE /api/teacher/questions/:id | Изменить / архивировать вопрос |
+| API-T-22 | POST /api/teacher/assignments | `{ classId, subjectId, topicId, dueAt }` → `{ id }`. Класс — свой (иначе 404); предмет — базовый (общий каталог) или свой, выданный этому классу (чужой — 404, не выдан — 422 `subjectNotGranted`); тема — опубликованная тема этого предмета (422 `topicNotInSubject` / `topicNotPublished`); `dueAt` — ISO 8601 с часовым поясом. Аудит `assignment.created`. |
+| API-T-23 | GET /api/teacher/assignments | `[{ id, topicTitle, className, dueAt, counts: { submitted, inReview, graded } }]` Задания всех своих классов, поздний срок — первым. |
+| API-T-24 | GET /api/teacher/review-queue | Работы на проверку (PH-29 — пустой список) |
+| API-T-25 | GET /api/teacher/classes/:id/analytics | `{ avgPercent, engagement: { active, total, windowDays: 7 }, weakTopics: [{ topicId, title, students, percent, color }], attention: [{ studentId, name, lastActivityAt, reason: 'inactive' }] }` Учитываются и базовые уроки платформы, и личные уроки учителя (решение владельца 2026-10-17, см. BR-AN-02). |
+| API-T-28 | GET /api/teacher/classes/:id/assignment-options | `{ subjects: [{ id, title, official, topics: [{ id, title }] }] }` — что можно назначить классу (BR-ASG-01/02): базовые предметы и свои предметы, выданные классу; только опубликованные темы. Чужой класс → 404 (итерация 10) |
+| API-T-29 | GET /api/teacher/classes/:id/mastery | `?subjectId` (необязательно; по умолчанию — первый предмет API-T-28) → `{ subjects: [{ id, title, official }], subjectId, topics: [{ id, title }], students: [{ id, name }], cells: [{ studentId, topicId, status: 'mastered'|'started'|'not_started', percent }] }` — «Карта освоения»; чужой класс или недоступный предмет → 404 |
+| API-T-26 | GET /api/teacher/classes/:id/roster | Ростер: минимальная версия — `[{ id, displayName, login, hasEmail }]` активных учеников (страница «Ростер» — PH-24) |
+| API-T-27 | POST /api/teacher/classes/:id/students/:studentId/temporary-password | Временный пароль ученику своего класса без email → `{ temporaryPassword }` (показывается один раз); ученик меняет его при входе (API-AUTH-05) |
+
+## 6.5 Ученик
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02); код ищется только среди кодов классов; код активной сессии Battle — 404 `isBattleCode`, вступления нет (BR-CODE-02/04) |
+| API-S-02 | GET /api/student/class | `{ classId, className, teacherName, schoolName } | null` |
+| API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
+| API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
+| API-S-05 | GET /api/student/sections/:id | Предметы раздела (`status: 'available'|'soon'`, BR-CNT-08) |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05) |
+| API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` Тело (необязательно): `{ assignmentId }` — попытка из задания (решение по Q-18): назначение действующего класса ученика по этой теме, иначе 404; незавершённая попытка продолжается и связывается с заданием. |
+| API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
+| API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
+| API-S-10 | GET /api/student/assignments | Мои задания (PH-33) `[{ id, topicId, topicTitle, subjectTitle, dueAt, status: 'not_started'|'submitted'|'graded', grade, overdue }]` — назначения действующих классов ученика по видимым ему темам, ближайший срок — первым; `overdue` — срок прошёл, а работа не сдана. `late` — сдано после срока (BR-ASG-03). |
+| API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }`; `topic_tutor` — только по видимой теме (BR-VIS-01, иначе 404). У ученика один действующий диалог на тему и один общий: повторный вызов возвращает его (история после перезагрузки) |
+| API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content ≤ 2000, quickAction?: 'simpler'|'more_detail'|'check_me' }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial). Вопрос сохраняется сразу вместе с событием `ai_question` (без XP, BR-XP-01; не входит в серию, BR-ST-02), ответ — по завершении: complete / partial / failed (SM-AI-MESSAGE). Пока поставщик mock или недоступен — `event: error {code: 'AI_UNAVAILABLE'}`, ответ failed, клиент показывает PH-19 «Учебный ИИ скоро будет доступен». Лимиты PH-20 — на ученика (не на IP). Чужой диалог → 404 (BR-ACL-03) |
+| API-S-13 | GET /api/student/ai/conversations/:id | `{ id, context, topic: { id, title } | null, messages: [{ id, role, content, status, quickAction, createdAt }] }` — история сообщений; чужой диалог → 404 (BR-ACL-03) |
+| API-S-14 | GET /api/student/progress | `?period=today|7d|30d|90d|quarter|year` → `{ range: {from, to}, compareRange, nextStep: {action, reason, href}, progress: { mastered, total, percent, deltaPercent }, streak: { days, lastActivityDate, delta } }` Плюс `period`, `availablePeriods` (четверть — только если заданы четверти, Q-23; иначе `period=quarter` → 422 `periodUnavailable`); `nextStep` — `{ action: 'assignment'|'improve_topic'|'next_topic'|'catalog', reason, href, topicTitle, dueAt, percent }`, тексты — в интерфейсе. По умолчанию `period=30d`. |
+| API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
+| API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
+| API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }] }` — опубликованные темы по position; предмет не виден (BR-VIS-01) → 404 |
+
+## 6.6 Служебная поддержка
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-SUP-01 | GET /api/staff/tickets | Фильтры: `status, assigneeId, category, dueBefore, q` (номер или email) |
+| API-SUP-02 | GET /api/staff/tickets/:id | Обращение, tech_context, сообщения, заметки, история статусов |
+| API-SUP-03 | POST /api/staff/tickets/:id/assign | `{ assigneeId }` |
+| API-SUP-04 | POST /api/staff/tickets/:id/reply | `{ body, templateCode? }` → email_queue; статус по SM-TICKET: шаблон «Уточнение» → waiting_user, «Решение» → resolved (если переход допустим); остальные ответы статус не меняют |
+| API-SUP-05 | POST /api/staff/tickets/:id/notes | Внутренняя заметка (не отправляется клиенту) |
+| API-SUP-06 | POST /api/staff/tickets/:id/status | `{ to }` — только разрешённые переходы SM-TICKET |
+| API-SUP-07 | GET / POST … /api/staff/requests | Аналогично для школьных заявок (роль onboarding_agent) |
+| API-SUP-08 | POST /api/inbound/email | Вебхук входящих писем; связь по токену из ticket_reply_tokens; ответ после resolved/closed → reopened |
+
+## 6.7 Схемы DTO (Zod, packages/shared)
+
+```ts
+export const Locale = z.enum(['ru', 'kk', 'en']);
+const email = z.string().trim().email().max(254);
+const phone = z.string().trim().regex(/^\+?[0-9 ()-]{6,20}$/).optional().or(z.literal(''));
+
+export const SchoolRequestDto = z.object({
+  schoolName: z.string().trim().min(1).max(200),
+  region: z.string().trim().max(120).optional(),
+  city: z.string().trim().max(120).optional(),
+  contactPerson: z.string().trim().min(1).max(200),
+  phone,
+  email,
+  message: z.string().trim().max(5000).optional(),
+});
+
+export const SupportCategory = z.enum(['technical', 'school_onboarding', 'learning', 'account_access', 'data_privacy', 'other']);
+export const SupportTicketDto = z.object({
+  category: SupportCategory,
+  subject: z.string().trim().min(1).max(200),
+  name: z.string().trim().max(200).optional(),
+  email,
+  phone,
+  description: z.string().trim().min(1).max(10000),
+  techContext: z.object({ route: z.string(), appVersion: z.string(), locale: Locale,
+    dataSaver: z.boolean(), userAgent: z.string().max(300) }).optional(),
+});
+
+const LangText = z.object({ text: z.string().trim().min(1).max(1000), explanation: z.string().max(2000).optional() });
+export const QuestionDto = z.object({
+  type: z.enum(['single_choice', 'true_false', 'text_input']),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  translations: z.record(Locale, LangText).refine(t => Object.keys(t).length >= 1),
+  options: z.array(z.object({ translations: z.record(Locale, z.string().trim().min(1).max(300)),
+    isCorrect: z.boolean() })).optional(),
+  textAnswer: z.string().trim().max(300).optional(),
+}).superRefine((q, ctx) => {
+  if (q.type !== 'text_input') {
+    const n = q.options?.length ?? 0, correct = q.options?.filter(o => o.isCorrect).length ?? 0;
+    if (n < 2) ctx.addIssue({ code: 'custom', path: ['options'], message: 'min2' });
+    if (correct !== 1) ctx.addIssue({ code: 'custom', path: ['options'], message: 'exactlyOneCorrect' });
+  } else if (!q.textAnswer) ctx.addIssue({ code: 'custom', path: ['textAnswer'], message: 'required' });
+});
+```
+
+Тексты ошибок валидации — ключи i18n; пример RU для email: «Введите email, например name@example.com».
+
+## 6.8 Battle (итерация 10.5)
+
+Общие правила — 6.1: Zod-схемы в `packages/shared`, формат ошибок API-GEN-04, CSRF для изменяющих запросов, OpenAPI. Уточняющий код ошибки Battle передаётся в `fieldErrors` (как `subjectNotGranted` в API-T-22): `{ "code": "CONFLICT", "fieldErrors": { "battle": "questionClosed" } }`. Чужой тест или сессия → 404 (API-GEN-08).
+
+**Учитель — тесты** (`teacher`, только владелец — BR-BTL-12)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-01 | GET /api/teacher/battles | `?archived=false` → `[{ id, title, locale, questionsCount, gamesCount, lastPlayedAt, archived }]` — мои тесты |
+| API-BTL-02 | POST /api/teacher/battles | `{ title, description?, locale }` → 201 `{ id }` |
+| API-BTL-03 | GET /api/teacher/battles/:id | Тест с вопросами и вариантами (с правильными — это владелец) |
+| API-BTL-04 | PATCH /api/teacher/battles/:id | `{ title?, description?, locale?, archived? }` |
+| API-BTL-05 | POST /api/teacher/battles/:id/duplicate | Копия теста (неархивные вопросы) → 201 `{ id }` |
+| API-BTL-06 | POST /api/teacher/battles/:id/questions | `BattleQuestionDto` → 201 `{ id }`; больше 50 вопросов → 422 `tooManyQuestions` |
+| API-BTL-07 | PATCH /api/teacher/battles/:id/questions/:qid | `BattleQuestionDto` — вопрос и варианты целиком |
+| API-BTL-08 | DELETE /api/teacher/battles/:id/questions/:qid | Удалить вопрос (архивирование, `archived_at`) → 204 |
+| API-BTL-09 | POST /api/teacher/battles/:id/questions/reorder | `{ questionIds: [...] }` — все неархивные вопросы теста в новом порядке |
+| API-BTL-10 | GET /api/teacher/battles/import-sources | `[{ subjectId, subjectTitle, official, topics: [{ id, title, eligibleCount, questions: [{ id, text, type }] }] }]` — свои темы и базовые темы платформы с подходящими вопросами (BR-BTL-10; вопросы — для выбора чекбоксами в BT-T02) |
+| API-BTL-11 | POST /api/teacher/battles/:id/import | `{ topicId, questionIds? }` → `{ imported }` — копии вопросов (время по умолчанию, PH-45) |
+
+`BattleQuestionDto` (6.7): `{ type: 'single_choice'|'true_false', text (1–300), imageMediaId?, timeLimitSec ∈ {5,10,20,30,60,90}, options: [{ text (1–150), isCorrect }] }` — `single_choice`: 2–4 варианта, ровно один правильный; `true_false`: ровно два варианта, тексты «Верно» / «Неверно» задаёт сервер на языке теста, правильный — один.
+
+**Учитель — сессии** (ведущий — `battle_sessions.host_id = me`)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-20 | POST /api/teacher/battles/:id/sessions | `{ classId, settings }` → 201 `{ sessionId, code }`; класс свой (иначе 404); тест без вопросов → 422 `noQuestions`; у вопроса нет правильного варианта → 422 `noCorrectOption`; больше 3 активных сессий → 409 `tooManyActiveSessions` (BR-BTL-05) |
+| API-BTL-21 | GET /api/teacher/battle-sessions/:sid | Снимок ведущего: фаза, версия, участники, текущий вопрос с правильным вариантом, счётчики, `serverNow` |
+| API-BTL-22 | GET /api/teacher/battle-sessions/:sid/events | SSE-поток ведущего (6.9) |
+| API-BTL-23 | POST /api/teacher/battle-sessions/:sid/start | `lobby → question(0)`; без участников → 422 `noParticipants` |
+| API-BTL-24 | POST /api/teacher/battle-sessions/:sid/close-question | Досрочно закрыть вопрос → `reveal` |
+| API-BTL-25 | POST /api/teacher/battle-sessions/:sid/next | `reveal → leaderboard → question(i+1)`; на последнем вопросе → `finished` |
+| API-BTL-26 | POST /api/teacher/battle-sessions/:sid/finish | Досрочно завершить игру (итог по отвеченным вопросам) |
+| API-BTL-27 | POST /api/teacher/battle-sessions/:sid/cancel | Отменить (только из `lobby`) |
+| API-BTL-28 | POST /api/teacher/battle-sessions/:sid/participants/:pid/kick | Выгнать участника |
+| API-BTL-29 | GET /api/teacher/battle-sessions | `?battleId=&classId=&cursor=&limit=` (API-GEN-07) → `{ items: [{ id, battleTitle, className, status, participantsCount, questionsCount, startedAt, finishedAt }], nextCursor }` — история игр |
+| API-BTL-30 | GET /api/teacher/battle-sessions/:sid/results | Итоги: пьедестал, таблица, по вопросам (доля правильных, распределение вариантов, среднее время), ответы по участникам |
+| API-BTL-31 | GET /api/teacher/battle-sessions/:sid/results.csv | Экспорт итогов: UTF-8 с BOM, разделитель `;` |
+
+Переходы API-BTL-23…28 принимают `{ expectedVersion }`; версия не совпала → 409 `staleState`, в теле ошибки — поле `snapshot` (свежий снимок API-BTL-21). Повтор уже выполненного перехода ничего не меняет (SM-BTL).
+
+**Ученик** (`student`; участник — BR-BTL-02)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-40 | POST /api/student/battles/join | `{ code }` → `{ sessionId }`; не формат `^[A-Z]{3}[1-9]{3}# 0. Инструкция для ИИ-агента
+
+## 0.1 Назначение документа
+
+Этот документ — спецификация Syntara Education Platform для реализации ИИ-агентом (Claude Code, Cursor, Copilot и аналоги). Он эквивалентен ТЗ «Syntara_ТЗ_краткое.docx» ред. 5.1 по функциональности, архитектуре и требованиям, но изложен как машинно-однозначный контракт: идентификаторы требований, схемы данных, API, правила в псевдокоде, конечные автоматы и проверяемые критерии.
+
+## 0.2 Правила работы агента
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| AG-01 | Реализуй только то, что описано в документе. Не добавляй страницы, поля, кнопки, тарифы, бейджи и правила, которых здесь нет. |
+| AG-02 | Если поведение не описано — используй значение из раздела 11 (конфигурация заглушек). Если и там нет — оставь `TODO(OWNER): <вопрос>` в коде и выключи функцию флагом; не придумывай значение. |
+| AG-03 | Все видимые тексты бери из этого документа дословно (в кавычках «…»). Тексты хранятся в файлах локализации, не в коде компонентов. |
+| AG-04 | Права доступа проверяются только на сервере. Скрытие кнопки в интерфейсе не считается защитой. |
+| AG-05 | Работай итерациями плана из раздела 12. После каждой итерации прогоняй тесты и проверки DoD этой итерации. |
+| AG-06 | Каждое требование имеет ID. Указывай ID в названии теста и в описании коммита: `feat(quiz): REQ-ST-QZ-03 one correct option`. |
+| AG-07 | Скриншоты-эталоны (S01–S26, T04–T10, U01–U13) — источник визуального соответствия. При расхождении скриншота и текста приоритет у текста. |
+| AG-08 | Демонстрационные данные со скриншотов (имена, классы, числа, даты) не хранить как константы. Они допустимы только в seed-данных для визуальных тестов. |
+| AG-09 | Не меняй схему БД без миграции. Не удаляй ограничения целостности из раздела 5. |
+| AG-10 | Секреты (ключи ИИ, SMTP, S3) — только в переменных окружения сервера. Никогда не передавай их в клиент. |
+
+## 0.3 Уровни обязательности
+
+| **Слово** | **Значение** |
+|------|-----------------------------|
+| MUST / ДОЛЖЕН | Обязательно; невыполнение — дефект, блокирующий приёмку |
+| MUST NOT / НЕ ДОЛЖЕН | Запрещено |
+| SHOULD / СЛЕДУЕТ | Рекомендуется; отклонение допустимо с комментарием в коде |
+| PLACEHOLDER | Временное значение из раздела 11; хранится в конфигурации, помечено `needs_confirmation=true` |
+
+## 0.4 Схема идентификаторов
+
+| **Префикс** | **Область** |
+|------|-----------------------------|
+| REQ-GEN-* | Общие требования (оболочка, дизайн, языки, формы, безопасность) |
+| REQ-PUB-* | Гостевой режим (публичные страницы) |
+| REQ-TCH-* | Кабинет учителя |
+| REQ-ST-* | Интерфейс ученика |
+| REQ-SUP-* | Служебная поддержка |
+| REQ-NFR-* | Нефункциональные требования |
+| BR-* | Бизнес-правила (раздел 7) |
+| SM-* | Конечные автоматы (раздел 9) |
+| API-* | Операции API (раздел 6) |
+| AC-* | Критерии приёмки (раздел 13) |
+| PH-* | Заглушки (раздел 11), соответствуют ЗГ-* исходного ТЗ |
+
+## 0.5 Определение готовности (Definition of Done) для любой задачи
+
+1.  Код проходит `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+2.  Для каждого затронутого REQ есть минимум один автоматический тест.
+3.  Все видимые строки — в `packages/shared/i18n/ru.json` (и ключи в kk.json, en.json).
+4.  Новые эндпоинты описаны в OpenAPI и покрыты тестом прав доступа (положительный и отрицательный случай).
+5.  Интерактивные элементы доступны с клавиатуры; axe-core без нарушений уровня serious/critical.
+6.  Миграции БД применяются и откатываются на чистой базе.
+
+# 1. Контекст продукта
+
+## 1.1 Что строим
+
+Syntara Education Platform — адаптивная веб-платформа для школ Республики Казахстан на языках KK, RU, EN. Три режима в одном приложении с общей моделью данных:
+
+| **Режим** | **Роль** | **Объём** |
+|-------|------|-----------------------------|
+| Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы; каталог и «Обзор» базовых уроков платформы (BR-VIS-04) |
+| Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса; Battle — живые викторины для класса (7.12) |
+| Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс; участие в Battle по коду (7.12) |
+| Служебная поддержка | support_agent, onboarding_agent | Очереди обращений и школьных заявок |
+
+## 1.2 Матрица доступа (REQ-GEN-ACL)
+
+| **Ресурс / действие** | **guest** | **student** | **teacher** | **support_agent** | **onboarding_agent** |
+|-------------|---|---|---|---|---|
+| Публичные страницы, помощник, пробный вопрос, формы, правовые | R | R | R | R | R |
+| Подключение к классу по коду | → login | W | — | — | — |
+| Каталог, тема, квиз (только опубликованное, BR-VIS-01) | — | R | R (предпросмотр) | — | — |
+| Каталог и «Обзор» базовых уроков платформы (BR-VIS-04) | R | R | R | R | R |
+| Квиз, Syntara AI, XP и прогресс по базовым урокам | → login | R/W (свои) | — | — | — |
+| Базовые предметы, темы, вопросы, картинки (BR-ACL-05) | — | — | — | — | — |
+| Учебный ИИ, личные показатели, достижения | — | R/W (свои) | — | — | — |
+| Предметы, темы, вопросы, материалы | — | — | R/W (свои) | — | — |
+| Выдача предмета классу, задания, аналитика | — | — | R/W (свои классы) | — | — |
+| Battle-тесты, игровые сессии (ведущий), итоги и история своих игр (7.12) | — | — | R/W (свои) | — | — |
+| Участие в Battle по коду: лобби, ответы, свои итоги и история (BR-BTL-02) | → login | R/W (свои; только сессии своего класса) | — | — | — |
+| Очередь обращений | — | — | — | R/W | — |
+| Очередь школьных заявок | — | — | — | — | R/W |
+
+R — чтение, W — изменение, «→ login» — перенаправление на вход с сохранением цели. Базовые уроки платформы через сайт и API не изменяет никто: они создаются и меняются только файлами `content/` и командой импорта (BR-CNT-01, решение владельца 2026-10-16). Служебные роли MUST NOT иметь доступ к учебным данным. Роли teacher/student MUST NOT иметь доступ к очередям поддержки.
+
+## 1.3 Вне объёма (MUST NOT реализовывать)
+
+Кабинеты школы и родителя; программа по классам (годам обучения); новые атласы; оплата и тарифы; офлайн-обучение. Для непоказанных экранов (история версий, уведомления, меню роли, профиль, «Ростер», «Карта освоения», «Мои курсы», «Мои задания», проверка работы) реализуется минимальная версия из раздела 11; точки входа (кнопки и ссылки) сохраняются всегда.
+
+## 1.4 Команда на старте
+
+| **Роль** | **Технологии** |
+|------|-----------------------------|
+| Фронтенд-разработчик (1–2) | Next.js, React, TypeScript, Tailwind, Radix UI |
+| Бэкенд-разработчик (1–2) | NestJS, PostgreSQL, Drizzle, Redis, BullMQ |
+| DevOps (частичная занятость) | Docker, Nginx, CI/CD, мониторинг, резервное копирование |
+| QA-инженер (1) | Playwright, axe-core, k6 |
+| Дизайнер (частичная занятость) | Figma, токены дизайна 3.1 |
+
+## 1.5 Эталонные изображения
+
+| **Набор** | **Файлы** | **Размер** | **Назначение** |
+|------|-------------|------|-------------|
+| S01–S26 | Передаются отдельно | — | Публичная часть |
+| T04–T10 | 04_teacher_class_access.jpg … 10_teacher_class_results.jpg | 1348 × 926 | Кабинет учителя |
+| U01–U13 | 01_opening_syntara_platform.jpg … student subjects .jpeg | 1348 × 926 (U03 — 1363 × 936) | Интерфейс ученика |
+
+Изображения T и U вставлены в разделы 8.3 и 8.4. Визуальные тесты сравнивают экран на эталонном размере с соответствующим файлом.
+
+# 2. Стек и структура репозитория
+
+## 2.1 Стек (фиксированный)
+
+| **Слой** | **Технология** |
+|------|-----------------------------|
+| Язык | TypeScript 5 (strict) везде |
+| Монорепозиторий | pnpm workspaces + Turborepo |
+| Web | Next.js 15+ (App Router), React 19, Tailwind CSS 4, Radix UI, Lucide, next-intl, React Hook Form + Zod, TanStack Query, react-markdown + rehype-sanitize, Serwist (manifest; офлайн-кеш выключен) |
+| API | Node.js 22 LTS+, NestJS 11, Drizzle ORM + drizzle-kit, Zod, @nestjs/swagger, argon2, @nestjs/throttler (Redis), AWS SDK v3 (S3), Vercel AI SDK за интерфейсом LLMProvider, SSE |
+| Worker | BullMQ, nodemailer, clamd-клиент, olevba (контейнер на Python) |
+| Данные | PostgreSQL 16+, PgBouncer, Redis 7 / Valkey, S3-совместимое хранилище (MinIO локально) |
+| Наблюдаемость | OpenTelemetry, Prometheus, Grafana, Loki, Sentry |
+| Тесты | Vitest, Testcontainers, Playwright, @axe-core/playwright, k6 |
+| Инфраструктура | Docker, Docker Compose на 2+ серверах (при росте — Kubernetes), Nginx, Let's Encrypt, CI (GitHub Actions или GitLab CI) |
+| Принципы | Модульный монолит (api) + отдельный worker; события и письма — через transactional outbox; пароли — Argon2id (допустим bcrypt); права — guards NestJS + RLS |
+
+![Архитектура системы и основные компоненты](media/arch.png)
+
+## 2.2 Структура репозитория
+
+```text
+syntara/
+├─ apps/
+│  ├─ web/                 # Next.js: публичные страницы, кабинеты, служебная поддержка
+│  │  ├─ app/[locale]/(public)/...   # /, /subjects, /about, /ai, /schools, /support, правовые
+│  │  ├─ app/[locale]/(auth)/...     # /auth/login, /auth/start, /join
+│  │  ├─ app/[locale]/(teacher)/...  # /teacher/...
+│  │  ├─ app/[locale]/(student)/...  # /learn/...
+│  │  ├─ app/[locale]/(staff)/...    # /staff/tickets, /staff/requests
+│  │  └─ components/        # компоненты страниц
+│  ├─ api/                 # NestJS
+│  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit,battle}
+│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, cleanup, battle (таймеры игр, 7.12)
+├─ packages/
+│  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
+│  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
+│  └─ db/                  # Drizzle schema, миграции, seed (demo, visual), импорт базовой программы
+├─ content/                # базовая программа платформы: файлы уроков (BR-CNT-02, docs/CONTENT_GUIDE.md)
+├─ infra/                  # docker-compose.yml, nginx.conf, grafana dashboards
+└─ e2e/                    # Playwright: сценарии, визуальные эталоны, axe
+```
+
+## 2.3 Переменные окружения
+
+| **Переменная** | **Пример** | **Где** |
+|---------|----------|----|
+| DATABASE_URL | postgres://syntara:***@pgbouncer:6432/syntara | api, worker |
+| REDIS_URL | redis://redis:6379 | api, worker |
+| S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY | http://minio:9000, syntara-files | api, worker |
+| S3_PUBLIC_ENDPOINT | https://files.syntara-edu.me — адрес хранилища для браузера: подписанные ссылки на загрузку и чтение, CSP web; пусто — как S3_ENDPOINT | api, web |
+| SESSION_SECRET | 64 случайных байта | api |
+| APP_BASE_URL | https://syntara-edu.me | web, api |
+| API_INTERNAL_URL | http://api:3001 | web (SSR) |
+| LLM_PROVIDER | mock / openai-compatible / anthropic | api |
+| LLM_API_KEY, LLM_MODEL | — (обязательны, если LLM_PROVIDER ≠ mock; ключ — секрет, в журналы не попадает) | api |
+| LLM_BASE_URL | адрес API поставщика: обязателен для openai-compatible (…/v1), для anthropic — необязателен | api |
+| SMTP_URL, MAIL_FROM | smtp://..., noreply@syntara-edu.me | worker |
+| SUPPORT_EMAIL | PH-09 | api, web (через API config) |
+| CLAMD_HOST, OLEVBA_URL | clamav:3310, http://olevba:8080 | worker |
+| PLATFORM_TZ | Asia/Almaty (UTC+5) — PH-42 | api, worker |
+| SENTRY_DSN, OTEL_EXPORTER_OTLP_ENDPOINT | — | все |
+
+## 2.4 Команды
+
+```bash
+pnpm i                      # установка
+pnpm dev                    # web :3000, api :3001, worker; инфраструктура через docker compose
+pnpm db:migrate             # применить миграции
+pnpm db:seed --set=demo     # демо-данные (эталоны скриншотов) и импорт базовой программы из content/
+pnpm content:check          # проверка файлов content/ без записи в БД (в CI)
+pnpm content:import         # импорт content/ в БД (BR-CNT-*); --dry-run — только проверка и план изменений
+pnpm test                   # unit + integration (Vitest + Testcontainers)
+pnpm e2e                    # Playwright: сценарии, визуальные и axe-проверки
+pnpm lint && pnpm typecheck
+```
+
+# 3. Дизайн-система
+
+## 3.1 Токены (REQ-GEN-DS-01)
+
+Токены MUST быть объявлены как CSS-переменные в `packages/ui/tokens.css` и подключены в Tailwind. Значения — стартовые; критерий — совпадение с эталонами.
+
+```css
+:root, [data-theme="dark"] {
+  --bg: #070707;            /* фон страницы, диапазон #050505–#090909 */
+  --surface: #141518;       /* карточки, диапазон #101010–#1B1D22 */
+  --surface-teacher: #0D0D0D;
+  --field: #1C1F25;         /* поля ввода, #181818–#20242B */
+  --text: #F1F2F4;
+  --text-muted: #9A9EA7;    /* #92969F–#A5A8B1 */
+  --accent: #2F7DF0;        /* #1E63E4–#4A9CFA; кабинет: #1765E8 */
+  --accent-teacher: #1765E8;
+  --border: #292B30;
+  --success: #22A45D;       /* правильный ответ */
+  --danger: #E5484D;        /* низкий результат, «требуют внимания» */
+  --ai-gradient: linear-gradient(90deg, #8B5CF6, #EC4899);
+  --radius-card: 20px;      /* 16–24 */
+  --radius-pill: 999px;
+}
+[data-theme="light"] {
+  --bg: #FAFAFC; --surface: #FFFFFF; --sidebar: #F2F2F4; --text: #181818;
+}
+```
+
+| **Параметр** | **Значение** |
+|---------|-----------------------------|
+| Сетка отступов | 8, 12, 16, 24, 32, 48, 64 px |
+| Ширина контента | секции 1120–1240; хедер 1440–1600; формы 560–640; «Школам» 640–760; правовые 780–900; кабинет: формы ~664, задания и аналитика ~760; урок ~982 |
+| Шрифт | Inter или Manrope, self-hosted, `font-display: swap`; полная кириллица и казахские буквы (Ә Ғ Қ Ң Ө Ұ Ү Һ І) |
+| Размеры (публичные) | H1 главной 72–112; заголовки секций 28–64; текст 16–20; подписи 12–14 |
+| Размеры (кабинеты) | заголовок 28; блок 18; текст 14; пояснение 12 |
+| Иконки | Lucide, линейные, цвет `--accent` |
+| Спецсостояния | «Опубликовать» — светлая кнопка; ИИ-кнопка — `--ai-gradient`; правильный ответ — рамка `--success`; низкий результат — `--danger`; фокус поля — синий контур со свечением |
+
+## 3.2 Базовые компоненты (packages/ui)
+
+`Button` (variant: primary-blue, primary-white, secondary, text, publish, ai), `Card`, `Pill`, `Tabs` (капсульные), `SegmentedControl` (RU/KK/EN, тип, сложность, период), `Field` (label + input + error + hint), `Select`, `Textarea`, `Checkbox`, `Radio`, `Modal`, `Accordion`, `ProgressBar`, `Badge`, `EmptyState`, `Toast`, `Skeleton`, `Sidebar`, `Header`, `Footer`, `FloatingHelp`. Все компоненты MUST поддерживать клавиатуру и видимый фокус (Radix UI).
+
+## 3.3 Оболочка (REQ-GEN-SHELL)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-SHELL-01 | Публичный хедер: логотип Syntara; меню «Главная», «Предметы», «О проекте», «Syntara AI», «Школам», «Помощь» (активный пункт — светлая капсула); справа язык, «Экономия трафика выключена», переключатель темы, кнопка «Войти» (у вошедшего пользователя — «Кабинет»: главная страница его активной роли). Хедер закреплён сверху; якоря учитывают его высоту (`scroll-margin-top`). |
+| REQ-GEN-SHELL-02 | Хедер кабинетов: вместо меню — выбор роли («Учитель»/«Ученик»), язык, трафик, тема, уведомления, профиль (буква аватара + имя из аккаунта; роль показывается один раз — в выборе роли), «Выйти». У ученика дополнительно индикаторы серии (пламя) и XP из `GET /me/stats`. |
+| REQ-GEN-SHELL-03 | Боковая панель кабинетов ~70 px со значками; активный — синяя подложка и полоса слева. Значки без страницы ведут на заглушку «Раздел в разработке» (PH-24). |
+| REQ-GEN-SHELL-04 | Плавающие кнопки справа внизу: «?» — краткая справка по странице и ссылки поддержки; синяя кнопка диалога — публичный помощник. В кабинетах между ними жёлтая «лампочка» (PH-32). Кнопки не перекрывают поля ввода, cookie-баннер и чат. |
+| REQ-GEN-SHELL-05 | Футер (синий градиент): колонка бренда — «Учись в своём темпе — на казахском и русском», email поддержки (PH-09), «KK · RU · EN»; ПРОДУКТ — Главная, Предметы, О проекте, Syntara AI; ШКОЛАМ — Школам, Оставить заявку, Помощь, Войти, Подключиться к классу (в кабинетах последние две → «Кабинет»); ПРАВОВОЕ — три документа. Низ: «© 2026 Syntara Education Platform. Образовательный продукт.» |
+| REQ-GEN-SHELL-06 | Мобильная версия (< 1024 px): логотип, «Войти», кнопка «Меню». В меню: 6 разделов, язык, тема, трафик. Закрытие кнопкой, Escape, переходом; фокус возвращается на кнопку «Меню». |
+| REQ-GEN-SHELL-07 | 320–430 px: без горизонтальной прокрутки; одна колонка; зоны нажатия ≥ 44×44 px; размер шрифта полей ≥ 16 px; экранная клавиатура не перекрывает поле и кнопку отправки. Есть ссылка «К содержимому». |
+
+## 3.4 Язык, тема, трафик (REQ-GEN-PREF)
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-GEN-PREF-01 | Локаль в URL-префиксе `/{ru|kk|en}/...`. Смена языка MUST NOT перезагружать страницу и терять введённые данные, выбранную тему урока и вкладку. Выбор сохраняется в cookie `locale` и в `user_preferences`. |
+| REQ-GEN-PREF-02 | Язык без готового перевода показывается в меню недоступным с подписью «скоро» (PH-04). Контент без перевода показывается на доступном языке; машинный перевод MUST NOT использоваться. Заранее подготовленные переводы текстов интерфейса в `kk.json` и `en.json` машинным переводом во время работы не являются и допустимы; KK-переводы помечаются `needs_review` до проверки носителем языка (решение владельца, ред. 2026-10-13). |
+| REQ-GEN-PREF-03 | Тема: при первом визите — `prefers-color-scheme`; ручной выбор сохраняется (cookie `theme` + `user_preferences`). Атрибут `data-theme` на `<html>` выставляется до отрисовки (без мигания). |
+| REQ-GEN-PREF-04 | Экономия трафика (`data_saver`): отключает анимации, автозагрузку изображений вне первого экрана и prefetch. Подпись кнопки: «Экономия трафика выключена» / «Экономия трафика включена». |
+| REQ-GEN-PREF-05 | Глобальный язык интерфейса и вкладки RU/KK/EN в редакторах — независимые состояния. |
+
+
+# 4. Маршруты
+
+Все маршруты имеют префикс локали `/{locale}`. Доступ проверяется middleware Next.js (перенаправление) и, обязательно, API (данные).
+
+| **Маршрут** | **Страница** | **Доступ** | **Эталон** | **Раздел** |
+|-----------|---------|-----|----|----|
+| / | Главная (гость) / главная ученика | все | S01–S07, U01 | 8.1.1, 8.4.1 |
+| /subjects | Предметы | все | S08 | 8.1.2 |
+| /about | О проекте | все | S09–S14 | 8.1.3 |
+| /ai | Syntara AI — помощник по платформе | все | S15 | 8.1.4 |
+| /schools | Школам | все | S16–S17 | 8.1.5 |
+| /schools/request | Заявка школы | все | S18 | 8.1.6 |
+| /support | Поддержка | все | S19 | 8.1.7 |
+| /terms, /privacy, /cookies | Правовые документы (PH-43) | все | S20–S26 | 8.1.8 |
+| /auth/login | Вход | guest | — | 8.2.1 |
+| /auth/start | Выбор роли и регистрация | guest | — | 8.2.1 |
+| /join | Подключение к классу | guest → login, student | — | 8.2.2 |
+| /account/privacy | Мои данные | авторизованные | — | 8.2.3 |
+| /teacher/courses | Мои курсы | teacher | — | 8.3 |
+| /teacher/subjects/new | Новый предмет | teacher | T05 | 8.3.1 |
+| /teacher/subjects/:id | Предмет: доступ классу и темы | teacher (владелец) | T04 | 8.3.2 |
+| /teacher/subjects/:id/topics/new, /teacher/topics/:id | Редактор темы (`/topics/new` — переход на страницу предмета: тема создаётся кнопкой «+ Добавить тему», REQ-TCH-ACC-02) | teacher (владелец) | T06–T07 | 8.3.3 |
+| /teacher/topics/:id/quiz | Квиз темы | teacher (владелец) | T08 | 8.3.5 |
+| /teacher/assignments | Задания | teacher | T09 | 8.3.6 |
+| /teacher/classes, /teacher/classes/:id/{roster,mastery,analytics} | Классы и аналитика | teacher (владелец класса) | T10 | 8.3.7 |
+| /learn/subjects | Каталог и класс | student; гость — каталог базовых уроков (BR-VIS-04) | U13 | 8.4.2 |
+| /learn/sections/:id | Раздел каталога | student; гость (BR-VIS-04) | U03 | 8.4.2 |
+| /learn/subjects/:id | Предмет: темы и их статусы | student; гость — базовый предмет, без статусов (BR-VIS-04) | — | 8.4.2 |
+| /learn/topics/:id?tab=overview|quiz|ai | Урок | student; гость — «Обзор» базового урока, на «Квиз» и «Syntara AI» — приглашение войти (REQ-ST-LES-06) | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
+| /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
+| /learn/progress | Мои показатели | student | U08 | 8.4.6 |
+| /learn/achievements | Достижения | student | U10 | 8.4.7 |
+| /learn/assignments | Мои задания (PH-33) | student | — | 8.4.8 |
+| /teacher/battles | Мои Battle: вкладки «Тесты» и «История игр» (`?tab=history&classId=`) | teacher | — | 8.6.1 |
+| /teacher/battles/:id | Редактор Battle-теста | teacher (владелец) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid | Игра ведущего: лобби, вопрос, раскрытие, рейтинг, итог | teacher (ведущий сессии) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid/results | Результаты игры | teacher (ведущий сессии) | — | 8.6.1 |
+| /learn/battles | Вход в Battle по коду и «Мои Battle» | student | — | 8.6.2 |
+| /learn/battles/:sid | Игра ученика: лобби, вопрос, раскрытие, рейтинг, итог | student (участник) | — | 8.6.2 |
+| /learn/battles/:sid/results | Итоги игры ученика | student (участник) | — | 8.6.2 |
+| /staff/tickets, /staff/requests | Служебные очереди | support_agent / onboarding_agent | — | 8.5 |
+
+Правила: внешние ссылки атласов — из конфигурации (PH-10). `returnTo` — только относительный внутренний путь, проверенный по белому списку префиксов; иначе `/`. Прямой заход по URL отдаёт ту же страницу, что и навигация (SSR).
+
+# 5. База данных
+
+## 5.1 Соглашения
+
+- PostgreSQL 16+. Все PK — `uuid` (UUIDv7, генерация в приложении). Время — `timestamptz` (UTC).
+- Каждая таблица, кроме связующих, имеет `created_at timestamptz NOT NULL DEFAULT now()` и `updated_at timestamptz NOT NULL DEFAULT now()` (в DDL ниже опущены).
+- Переводы — таблицы `*_translations` с PK `(entity_id, locale)`.
+- Учебные сущности не удаляются физически: `archived_at timestamptz NULL`.
+- Миграции — drizzle-kit; ручные изменения схемы запрещены (AG-09).
+- Row-Level Security SHOULD быть включена для таблиц со `school_id` как второй уровень защиты.
+
+![Схема БД: пользователи, классы и учебный контент](media/er1a.png)
+
+![Схема БД: квизы и задания](media/er1b.png)
+
+![Схема БД: результаты, геймификация, ИИ, поддержка и служебные таблицы](media/er2.png)
+
+## 5.2 Перечисления
+
+```sql
+CREATE TYPE locale            AS ENUM ('ru','kk','en');
+CREATE TYPE user_role         AS ENUM ('student','teacher','support_agent','onboarding_agent');
+CREATE TYPE topic_status      AS ENUM ('draft','published');
+CREATE TYPE question_type     AS ENUM ('single_choice','true_false','text_input');
+CREATE TYPE difficulty        AS ENUM ('easy','medium','hard');
+CREATE TYPE membership_status AS ENUM ('active','left');
+CREATE TYPE submission_status AS ENUM ('submitted','in_review','graded');
+CREATE TYPE attempt_status    AS ENUM ('in_progress','finished','abandoned');
+CREATE TYPE ticket_status     AS ENUM ('new','in_progress','waiting_user','waiting_internal','resolved','closed','reopened');
+CREATE TYPE support_category  AS ENUM ('technical','school_onboarding','learning','account_access','data_privacy','other');
+CREATE TYPE request_status    AS ENUM ('new','in_progress','contacted','onboarded','rejected');
+CREATE TYPE media_kind        AS ENUM ('cover','material','illustration','brand');
+CREATE TYPE scan_status       AS ENUM ('pending','clean','rejected');
+CREATE TYPE ai_context        AS ENUM ('topic_tutor','general_tutor');
+CREATE TYPE ai_role           AS ENUM ('user','assistant');
+CREATE TYPE ai_msg_status     AS ENUM ('complete','partial','failed');
+CREATE TYPE battle_session_status AS ENUM ('lobby','in_progress','finished','cancelled');   -- 5.9
+CREATE TYPE battle_phase          AS ENUM ('lobby','question','reveal','leaderboard','finished');
+```
+
+## 5.3 Пользователи, доступ, классы
+
+```sql
+CREATE TABLE schools (id uuid PRIMARY KEY, name text NOT NULL CHECK (length(name) <= 200),
+  region text, city text, status text NOT NULL DEFAULT 'active');   -- 'unverified' — школа, введённая учеником вручную
+
+CREATE TABLE users (id uuid PRIMARY KEY, email citext UNIQUE, display_name text NOT NULL,
+  login citext UNIQUE,                  -- логин ученика (PH-44: 3–32 символа a-z 0-9 . _ -)
+  password_hash text, is_child_safe boolean NOT NULL DEFAULT false, status text NOT NULL DEFAULT 'active',
+  last_login_at timestamptz,
+  email_verified_at timestamptz,        -- подтверждение email (API-AUTH-06; вход до подтверждения разрешён)
+  must_change_password boolean NOT NULL DEFAULT false,  -- временный пароль от учителя (API-T-27)
+  CHECK (email IS NOT NULL OR is_child_safe));
+
+-- Решение владельца (ред. 2026-10-13): столбцы PK в PostgreSQL не могут быть NULL, поэтому вместо
+-- PRIMARY KEY (user_id, role, school_id) — суррогатный id и уникальность с NULLS NOT DISTINCT (PG 15+).
+CREATE TABLE user_roles (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, role user_role NOT NULL,
+  school_id uuid REFERENCES schools, UNIQUE NULLS NOT DISTINCT (user_id, role, school_id));
+
+CREATE TABLE user_preferences (user_id uuid PRIMARY KEY REFERENCES users,
+  locale locale NOT NULL DEFAULT 'ru', theme text NOT NULL DEFAULT 'system', data_saver boolean NOT NULL DEFAULT false);
+
+CREATE TABLE auth_sessions (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  token_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, revoked_at timestamptz, user_agent text);
+
+CREATE TABLE consents (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, consent_type text NOT NULL,
+  granted boolean NOT NULL, granted_by uuid REFERENCES users, granted_at timestamptz NOT NULL, revoked_at timestamptz);
+
+CREATE TABLE data_subject_requests (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('export','rectify','delete','revoke_consent')),
+  status text NOT NULL DEFAULT 'new', completed_at timestamptz);
+
+CREATE TABLE classes (id uuid PRIMARY KEY, school_id uuid REFERENCES schools, teacher_id uuid NOT NULL REFERENCES users,
+  name text NOT NULL CHECK (length(name) <= 50), archived_at timestamptz);
+
+CREATE TABLE class_memberships (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  student_id uuid NOT NULL REFERENCES users, status membership_status NOT NULL DEFAULT 'active',
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz);
+CREATE UNIQUE INDEX ux_membership_active ON class_memberships (class_id, student_id) WHERE status = 'active';
+CREATE INDEX ix_membership_student ON class_memberships (student_id) WHERE status = 'active';
+
+CREATE TABLE class_invite_codes (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  code_hash bytea NOT NULL UNIQUE, expires_at timestamptz NOT NULL, is_active boolean NOT NULL DEFAULT true,
+  created_by uuid NOT NULL REFERENCES users);
+```
+
+## 5.4 Учебный контент
+
+```sql
+CREATE TABLE catalog_sections (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, position int NOT NULL);
+CREATE TABLE catalog_section_translations (section_id uuid REFERENCES catalog_sections, locale locale,
+  title text NOT NULL, description text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE subjects (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, section_id uuid REFERENCES catalog_sections,
+  is_official boolean NOT NULL DEFAULT false, in_public_catalog boolean NOT NULL DEFAULT false, archived_at timestamptz,
+  CHECK (is_official OR owner_id IS NOT NULL));
+CREATE TABLE subject_translations (subject_id uuid REFERENCES subjects, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  PRIMARY KEY (subject_id, locale));
+
+CREATE TABLE class_subject_access (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, granted_by uuid NOT NULL REFERENCES users,
+  granted_at timestamptz NOT NULL DEFAULT now(), revoked_at timestamptz);
+CREATE UNIQUE INDEX ux_csa_active ON class_subject_access (class_id, subject_id) WHERE revoked_at IS NULL;
+
+CREATE TABLE media_files (id uuid PRIMARY KEY, owner_id uuid REFERENCES users, kind media_kind NOT NULL,
+  original_name text NOT NULL, mime text NOT NULL, size_bytes bigint NOT NULL, sha256 bytea,
+  storage_key text NOT NULL UNIQUE, scan_status scan_status NOT NULL DEFAULT 'pending');
+
+CREATE TABLE topics (id uuid PRIMARY KEY, subject_id uuid NOT NULL REFERENCES subjects, position int NOT NULL,
+  status topic_status NOT NULL DEFAULT 'draft', cover_media_id uuid REFERENCES media_files, cover_url text,
+  published_at timestamptz, published_version_id uuid, archived_at timestamptz,
+  UNIQUE (subject_id, position) DEFERRABLE INITIALLY DEFERRED);
+CREATE TABLE topic_translations (topic_id uuid REFERENCES topics, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), description text CHECK (length(description) <= 1000),
+  fun_fact text CHECK (length(fun_fact) <= 500), body_md text CHECK (length(body_md) <= 50000), summary text,
+  PRIMARY KEY (topic_id, locale));
+
+CREATE TABLE topic_sections (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, position int NOT NULL,
+  illustration_media_id uuid REFERENCES media_files);
+CREATE TABLE topic_section_translations (section_id uuid REFERENCES topic_sections, locale locale,
+  title text NOT NULL, body text, PRIMARY KEY (section_id, locale));
+
+CREATE TABLE topic_versions (id uuid PRIMARY KEY, topic_id uuid NOT NULL REFERENCES topics, version_no int NOT NULL,
+  snapshot jsonb NOT NULL, change_note text CHECK (length(change_note) <= 500), created_by uuid NOT NULL REFERENCES users,
+  UNIQUE (topic_id, version_no));
+ALTER TABLE topics ADD FOREIGN KEY (published_version_id) REFERENCES topic_versions;
+
+CREATE TABLE topic_materials (topic_id uuid REFERENCES topics, media_id uuid REFERENCES media_files,
+  position int NOT NULL, PRIMARY KEY (topic_id, media_id));
+CREATE INDEX ix_topics_subject ON topics (subject_id, position);
+
+-- Базовая программа (этап 8.6, решение владельца 2026-10-16): постоянные коды строк, созданных импортом content/
+-- (BR-CNT-04). У контента учителей code = NULL. Базовый контент — subjects.is_official = true (owner_id NULL).
+ALTER TABLE subjects ADD COLUMN code text UNIQUE, ADD CONSTRAINT subjects_code_official CHECK (code IS NULL OR is_official);
+ALTER TABLE topics ADD COLUMN code text UNIQUE;
+ALTER TABLE topic_sections ADD COLUMN code text UNIQUE;
+ALTER TABLE questions ADD COLUMN code text UNIQUE;
+-- Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05); ученик видит пометку «На проверке».
+ALTER TABLE topic_translations ADD COLUMN needs_review boolean NOT NULL DEFAULT false;
+-- Порядок базовых предметов в каталоге — position из subject.yaml (решение владельца 2026-10-17); у предметов учителей NULL.
+ALTER TABLE subjects ADD COLUMN position int,
+  ADD CONSTRAINT subjects_position_official CHECK (position IS NULL OR (is_official AND position >= 1));
+```
+
+## 5.5 Квизы и задания
+
+```sql
+CREATE TABLE quizzes (id uuid PRIMARY KEY, topic_id uuid NOT NULL UNIQUE REFERENCES topics);
+
+CREATE TABLE questions (id uuid PRIMARY KEY, quiz_id uuid NOT NULL REFERENCES quizzes, type question_type NOT NULL,
+  difficulty difficulty NOT NULL, position int NOT NULL, is_demo boolean NOT NULL DEFAULT false,
+  text_answer text,                     -- только для type = text_input
+  archived_at timestamptz);
+CREATE TABLE question_translations (question_id uuid REFERENCES questions, locale locale,
+  text text NOT NULL CHECK (length(text) <= 1000), explanation text CHECK (length(explanation) <= 2000),
+  PRIMARY KEY (question_id, locale));
+
+CREATE TABLE answer_options (id uuid PRIMARY KEY, question_id uuid NOT NULL REFERENCES questions,
+  position int NOT NULL, is_correct boolean NOT NULL DEFAULT false);
+CREATE UNIQUE INDEX ux_one_correct ON answer_options (question_id) WHERE is_correct;
+CREATE TABLE answer_option_translations (option_id uuid REFERENCES answer_options, locale locale,
+  text text NOT NULL CHECK (length(text) <= 300), PRIMARY KEY (option_id, locale));
+
+CREATE TABLE assignments (id uuid PRIMARY KEY, class_id uuid NOT NULL REFERENCES classes,
+  subject_id uuid NOT NULL REFERENCES subjects, topic_id uuid NOT NULL REFERENCES topics,
+  due_at timestamptz NOT NULL, created_by uuid NOT NULL REFERENCES users);
+CREATE INDEX ix_assignments_class ON assignments (class_id, due_at);
+
+CREATE TABLE submissions (id uuid PRIMARY KEY, assignment_id uuid NOT NULL REFERENCES assignments,
+  student_id uuid NOT NULL REFERENCES users, status submission_status NOT NULL,
+  grade numeric(5,2), submitted_at timestamptz, graded_at timestamptz, graded_by uuid REFERENCES users,
+  UNIQUE (assignment_id, student_id));
+CREATE INDEX ix_submissions_status ON submissions (assignment_id, status);
+```
+
+Правило «тема принадлежит предмету» для `assignments` проверяется в сервисе и триггером `check_assignment_topic()`.
+
+## 5.6 Результаты и геймификация
+
+```sql
+CREATE TABLE quiz_attempts (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  quiz_id uuid NOT NULL REFERENCES quizzes, topic_version_id uuid REFERENCES topic_versions,
+  assignment_id uuid REFERENCES assignments, status attempt_status NOT NULL DEFAULT 'in_progress',
+  score_percent numeric(5,2), started_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz);
+CREATE INDEX ix_attempts_student ON quiz_attempts (student_id, finished_at);
+CREATE INDEX ix_attempts_quiz ON quiz_attempts (quiz_id);
+
+CREATE TABLE attempt_answers (attempt_id uuid REFERENCES quiz_attempts, question_id uuid REFERENCES questions,
+  option_id uuid REFERENCES answer_options, text_answer text, is_correct boolean NOT NULL,
+  answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
+
+CREATE TABLE learning_events (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question')),
+  subject_id uuid REFERENCES subjects, topic_id uuid REFERENCES topics, occurred_at timestamptz NOT NULL,
+  idempotency_key text NOT NULL, UNIQUE (student_id, idempotency_key));
+CREATE INDEX ix_events_student_time ON learning_events (student_id, occurred_at);
+
+CREATE TABLE topic_mastery (student_id uuid REFERENCES users, topic_id uuid REFERENCES topics,
+  best_percent numeric(5,2) NOT NULL, attempts_count int NOT NULL, mastered_at timestamptz,
+  PRIMARY KEY (student_id, topic_id));
+CREATE INDEX ix_mastery_topic ON topic_mastery (topic_id);
+
+CREATE TABLE student_stats (student_id uuid PRIMARY KEY REFERENCES users, xp_total int NOT NULL DEFAULT 0,
+  level int NOT NULL DEFAULT 1, streak_current int NOT NULL DEFAULT 0, streak_best int NOT NULL DEFAULT 0,
+  last_activity_date date);
+
+CREATE TABLE levels (level int PRIMARY KEY, xp_threshold int NOT NULL UNIQUE);
+CREATE TABLE level_translations (level int REFERENCES levels, locale locale, title text NOT NULL,
+  PRIMARY KEY (level, locale));
+
+CREATE TABLE badges (id uuid PRIMARY KEY, code text UNIQUE NOT NULL, image_media_id uuid REFERENCES media_files,
+  rule jsonb NOT NULL, position int NOT NULL, is_active boolean NOT NULL DEFAULT true);
+CREATE TABLE badge_translations (badge_id uuid REFERENCES badges, locale locale, title text NOT NULL,
+  condition_text text NOT NULL, PRIMARY KEY (badge_id, locale));
+CREATE TABLE student_badges (student_id uuid REFERENCES users, badge_id uuid REFERENCES badges,
+  awarded_at timestamptz NOT NULL DEFAULT now(), source_event_id uuid REFERENCES learning_events,
+  PRIMARY KEY (student_id, badge_id));
+
+CREATE TABLE xp_ledger (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users, amount int NOT NULL,
+  reason text NOT NULL, source_event_id uuid NOT NULL REFERENCES learning_events,
+  UNIQUE (student_id, source_event_id, reason));
+```
+
+## 5.7 ИИ, поддержка, служебные таблицы
+
+```sql
+CREATE TABLE ai_conversations (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, context ai_context NOT NULL,
+  topic_id uuid REFERENCES topics, explain_level text NOT NULL DEFAULT 'beginner', archived_at timestamptz,
+  CHECK (context <> 'topic_tutor' OR topic_id IS NOT NULL));
+CREATE TABLE ai_messages (id uuid PRIMARY KEY, conversation_id uuid NOT NULL REFERENCES ai_conversations,
+  role ai_role NOT NULL, content text NOT NULL, status ai_msg_status NOT NULL DEFAULT 'complete',
+  quick_action text CHECK (quick_action IN ('simpler','more_detail','check_me')),
+  tokens_in int, tokens_out int, created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_ai_messages_conv ON ai_messages (conversation_id, created_at);
+
+CREATE TABLE school_requests (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL,
+  school_name text NOT NULL CHECK (length(school_name) <= 200), region text CHECK (length(region) <= 120),
+  city text CHECK (length(city) <= 120), contact_person text NOT NULL CHECK (length(contact_person) <= 200),
+  phone text, email citext NOT NULL, message text CHECK (length(message) <= 5000),
+  status request_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users);
+
+CREATE TABLE support_tickets (id uuid PRIMARY KEY, public_number text UNIQUE NOT NULL, category support_category NOT NULL,
+  subject text NOT NULL CHECK (length(subject) <= 200), name text CHECK (length(name) <= 200), email citext NOT NULL,
+  phone text, description text NOT NULL CHECK (length(description) <= 10000), user_id uuid REFERENCES users,
+  status ticket_status NOT NULL DEFAULT 'new', assignee_id uuid REFERENCES users, tech_context jsonb,
+  resolved_at timestamptz, closed_at timestamptz);
+CREATE INDEX ix_tickets_queue ON support_tickets (status, assignee_id);
+CREATE INDEX ix_tickets_email ON support_tickets (email);
+
+CREATE TABLE ticket_messages (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  direction text NOT NULL CHECK (direction IN ('in','out','note')), author_id uuid REFERENCES users,
+  body text NOT NULL, is_internal boolean NOT NULL DEFAULT false, sent_at timestamptz);
+CREATE TABLE ticket_status_history (id uuid PRIMARY KEY, ticket_id uuid NOT NULL REFERENCES support_tickets,
+  from_status ticket_status, to_status ticket_status NOT NULL, changed_by uuid REFERENCES users,
+  changed_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE ticket_reply_tokens (ticket_id uuid REFERENCES support_tickets, token_hash bytea PRIMARY KEY,
+  expires_at timestamptz NOT NULL);
+CREATE TABLE response_templates (code text, locale locale, body text NOT NULL, PRIMARY KEY (code, locale));
+
+CREATE TABLE idempotency_keys (scope text, key text, request_hash bytea NOT NULL, response jsonb,
+  expires_at timestamptz NOT NULL, PRIMARY KEY (scope, key));
+CREATE TABLE outbox_events (id uuid PRIMARY KEY, type text NOT NULL, payload jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), processed_at timestamptz, attempts int NOT NULL DEFAULT 0, last_error text);
+CREATE TABLE email_queue (id uuid PRIMARY KEY, to_email citext NOT NULL, template text NOT NULL, payload jsonb NOT NULL,
+  status text NOT NULL DEFAULT 'pending', attempts int NOT NULL DEFAULT 0, sent_at timestamptz);
+CREATE TABLE notifications (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users, type text NOT NULL,
+  payload jsonb NOT NULL, read_at timestamptz);
+CREATE TABLE audit_log (id bigserial PRIMARY KEY, actor_id uuid REFERENCES users, school_id uuid,
+  entity_type text NOT NULL, entity_id uuid, action text NOT NULL, before jsonb, after jsonb,
+  created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX ix_audit_entity ON audit_log (entity_type, entity_id, created_at);
+REVOKE UPDATE, DELETE ON audit_log FROM app_user;
+
+CREATE TABLE feature_flags (key text PRIMARY KEY, enabled boolean NOT NULL, note text);
+CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confirmation boolean NOT NULL DEFAULT true,
+  confirmed_at timestamptz, confirmed_by text,
+  note text);                           -- PH-ID заглушки раздела 11 (решение владельца, ред. 2026-10-13)
+```
+
+Таблицы `feature_flags` и `app_config` хранят флаги функций и значения заглушек раздела 11.
+
+## 5.8 Роли БД
+
+| **Роль** | **Права** |
+|------|-----------------------------|
+| app_user | SELECT/INSERT/UPDATE на рабочие таблицы; только INSERT в audit_log; без DDL; без DELETE |
+| app_maintenance | Только для фоновых задач worker: SELECT и DELETE на таблицы с ограниченным сроком хранения и технические таблицы — support_tickets, ticket_messages, ticket_status_history, ticket_reply_tokens, school_requests, ai_conversations, ai_messages (очистка по срокам PH-18), media_files, topic_materials (удаление отклонённых и откреплённых файлов, BR-FILE-03), idempotency_keys, outbox_events, email_queue, auth_sessions (истёкшие записи); без INSERT/UPDATE, без DDL; к audit_log доступа нет (решение владельца, ред. 2026-10-13) |
+| migrator | DDL; используется только CI при миграции |
+| analytics_ro | SELECT на реплике |
+
+## 5.9 Battle (итерация 10.5)
+
+Миграция `0007_battle.sql` (+ откат), схема Drizzle `packages/db/src/schema/battle.ts`. Правила — 7.12, автомат — SM-BTL (раздел 9).
+
+```sql
+CREATE TABLE battle_quizzes (id uuid PRIMARY KEY, owner_id uuid NOT NULL REFERENCES users,
+  title text NOT NULL CHECK (length(title) BETWEEN 1 AND 120), description text CHECK (length(description) <= 500),
+  locale locale NOT NULL,                -- язык содержания теста; перевода нет
+  archived_at timestamptz);
+CREATE INDEX ix_battle_quizzes_owner ON battle_quizzes (owner_id, created_at DESC);
+
+CREATE TABLE battle_questions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  position int NOT NULL, type question_type NOT NULL CHECK (type IN ('single_choice','true_false')),
+  text text NOT NULL CHECK (length(text) BETWEEN 1 AND 300),
+  image_media_id uuid REFERENCES media_files,   -- файл галереи учителя (media_files kind = 'cover', BR-BTL-10)
+  time_limit_sec int NOT NULL DEFAULT 20 CHECK (time_limit_sec IN (5,10,20,30,60,90)),
+  source_question_id uuid REFERENCES questions, -- если вопрос импортирован из квиза темы (копия, BR-BTL-10)
+  archived_at timestamptz,
+  UNIQUE (battle_quiz_id, position) DEFERRABLE INITIALLY DEFERRED);
+
+CREATE TABLE battle_options (id uuid PRIMARY KEY, battle_question_id uuid NOT NULL REFERENCES battle_questions,
+  position int NOT NULL CHECK (position BETWEEN 1 AND 4), text text NOT NULL CHECK (length(text) BETWEEN 1 AND 150),
+  is_correct boolean NOT NULL DEFAULT false, UNIQUE (battle_question_id, position));
+CREATE UNIQUE INDEX ux_battle_one_correct ON battle_options (battle_question_id) WHERE is_correct;
+
+CREATE TABLE battle_sessions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  host_id uuid NOT NULL REFERENCES users, class_id uuid NOT NULL REFERENCES classes,
+  code char(6) NOT NULL CHECK (code ~ '^[A-Z]{3}[1-9]{3}$'),
+  status battle_session_status NOT NULL DEFAULT 'lobby', phase battle_phase NOT NULL DEFAULT 'lobby',
+  settings jsonb NOT NULL,                 -- 7.12, таблица настроек
+  questions_snapshot jsonb NOT NULL,       -- снимок вопросов при запуске (BR-BTL-05)
+  current_index int, question_started_at timestamptz, deadline_at timestamptz,
+  state_version int NOT NULL DEFAULT 0, cancel_reason text CHECK (cancel_reason IN ('host','expired')),
+  started_at timestamptz, finished_at timestamptz, last_activity_at timestamptz NOT NULL DEFAULT now());
+CREATE UNIQUE INDEX ux_battle_active_code ON battle_sessions (code) WHERE status IN ('lobby','in_progress');
+CREATE INDEX ix_battle_sessions_host ON battle_sessions (host_id, created_at DESC);
+CREATE INDEX ix_battle_sessions_class ON battle_sessions (class_id, created_at DESC);
+
+CREATE TABLE battle_participants (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  student_id uuid NOT NULL REFERENCES users, display_name text NOT NULL CHECK (length(display_name) <= 80),
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz, kicked_at timestamptz,
+  last_seen_at timestamptz NOT NULL DEFAULT now(),
+  correct_count int, answered_count int, correct_time_ms int, final_rank int,   -- итоги, пишутся при finished
+  UNIQUE (session_id, student_id));
+
+CREATE TABLE battle_answers (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  participant_id uuid NOT NULL REFERENCES battle_participants, question_index int NOT NULL CHECK (question_index >= 0),
+  option_position int NOT NULL CHECK (option_position BETWEEN 1 AND 4), is_correct boolean NOT NULL,
+  response_ms int NOT NULL CHECK (response_ms >= 0), answered_at timestamptz NOT NULL, client_answer_id uuid NOT NULL,
+  UNIQUE (participant_id, question_index), UNIQUE (participant_id, client_answer_id));
+CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_index);
+```
+
+- `questions_snapshot`: `[{ index, type, text, imageMediaId, timeLimitSec, options: [{ position, text, isCorrect }] }]`; порядок — с учётом настройки «Перемешать вопросы/варианты» (один порядок для всех). Правильные варианты из снимка MUST NOT отдаваться ученику до `reveal` (BR-BTL-03).
+- У всех таблиц Battle есть `created_at` и `updated_at` (5.1); в DDL опущены.
+- RLS (SHOULD, второй уровень, как в миграции 0002): при заданном `app.user_id` учитель видит только свои тесты и сессии, ученик — только сессии, где он участник, и только свои ответы; без контекста — не ограничивает (основная защита — guards и сервисы).
+- Аудит (REQ-NFR-SEC-05): создание и запуск сессии, выгон участника, досрочное завершение, отмена (`entity_type = 'battle_session'`).
+- Права ролей БД (5.8): `app_user` — SELECT/INSERT/UPDATE на таблицы Battle; DELETE — только `app_maintenance` для `battle_answers` (обезличивание по запросу на удаление, BR-BTL-11).
+
+
+# 6. API
+
+## 6.1 Общие правила
+
+| **ID** | **Правило** |
+|---|-----------------------------|
+| API-GEN-01 | Базовый путь `/api`. Формат — JSON, UTF-8. Описание — OpenAPI 3, генерируется из декораторов NestJS; клиент для web генерируется из OpenAPI. |
+| API-GEN-02 | Аутентификация — cookie `sid` (HttpOnly, Secure, SameSite=Lax, срок до 14 дней с продлением). Изменяющие запросы требуют заголовок `X-CSRF-Token` (double-submit cookie `csrf`). |
+| API-GEN-03 | Локаль запроса — заголовок `Accept-Language` (ru, kk, en); ответы с переводами содержат поле `locale` — фактически отданный язык. |
+| API-GEN-04 | Формат ошибки: `{ "code": "VALIDATION_FAILED", "message": "…", "fieldErrors": { "email": "…" }, "requestId": "…" }`. HTTP-коды: 400, 401, 403, 404, 409, 413, 422, 429, 500, 503. |
+| API-GEN-05 | Все POST публичных форм требуют заголовок `Idempotency-Key` (UUID). Тот же ключ и то же тело → прежний ответ; тот же ключ и другое тело → 409 `IDEMPOTENCY_MISMATCH`. Срок хранения ключа — 24 ч. |
+| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20; Battle — ввод кода 10 за 10 минут на ученика и 30 на IP, ответы — 1 в 200 мс на участника (BR-BTL-01/03). Ключи лимитов ввода кода класса и кода Battle разные (BR-CODE-06). Ответ 429 содержит `retryAfterSeconds`. |
+| API-GEN-07 | Списки — курсорная пагинация: `?cursor=&limit=` (limit ≤ 100), ответ `{ items, nextCursor }`. |
+| API-GEN-08 | Все обращения к данным проверяют владение/членство (BR-ACL-*). Нарушение → 404 (не раскрывать существование объекта). |
+
+## 6.2 Публичные операции (без входа)
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-PUB-01 | GET /api/public/subjects | — | `[{ id, title, description, icon, status: 'open'|'login_required'|'soon', href }]` — элементы по кодам PH-01 (код раздела каталога или базового предмета); `open` — есть опубликованные базовые темы, `href` — `/learn/sections/:id` или `/learn/subjects/:id`; иначе `soon` без ссылки (BR-CNT-08). Порядок: `open` первыми, затем `soon`; внутри группы — порядок content/ (позиция раздела, затем предмета в разделе, BR-CNT-02) |
+| API-PUB-02 | GET /api/public/demo-question | `?exclude=<id>` | `{ id, subjectId, version, text, options: [{ id, text }], hasAnother, locale }` — без `isCorrect`; `subjectId` — предмет вопроса («Перейти к предмету» для ученика); `hasAnother` — есть ли другие пробные вопросы (кнопка «Другой вопрос», PH-02) |
+| API-PUB-03 | POST /api/public/demo-answer | `{ questionId, version, optionId }` | `{ correct: boolean, correctOptionId, explanation }` |
+| API-PUB-04 | POST /api/public/school-requests | `SchoolRequestDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-05 | POST /api/public/support-tickets | `SupportTicketDto` (6.7) | 201 `{ publicNumber, email }` |
+| API-PUB-06 | POST /api/public/assistant | `{ message (≤2000), history: [{role, content}] (≤20) }` | SSE: `event: delta {text}` … `event: done {}` / `event: error {code}` |
+| API-PUB-07 | GET /api/public/config | — | `{ supportEmail, atlasUrls, features: {...} }` — только публичные значения из app_config |
+| API-PUB-08 | POST /api/public/join/check | `{ code }` | `{ valid: boolean }` — без данных класса; код активной сессии Battle — 404 `isBattleCode` (BR-CODE-04) |
+| API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
+| API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
+| API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }] }` — без статусов; не базовый → 404 |
+| API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
+
+## 6.3 Аутентификация и профиль
+
+| **ID** | **Метод и путь** | **Запрос** | **Ответ 2xx** |
+|---|------------|------------|------------|
+| API-AUTH-01 | POST /api/auth/login | `{ email, password }` | 200 `{ user: MeDto }` + cookie `sid` |
+| API-AUTH-02 | POST /api/auth/logout | — | 204 |
+| API-AUTH-03 | POST /api/auth/register | `{ role: 'teacher', email, displayName, password }` (PH-06) | 201 `{ user }` и вход; письмо со ссылкой подтверждения email (API-AUTH-06) |
+| API-AUTH-03S | POST /api/auth/register-student | `{ displayName, login, password, email?, schoolId?, schoolName?, code? }` (PH-06, PH-17, PH-44) | 201 `{ user }` и вход; верный код — сразу членство в классе и школа класса; неверный код — 400 без создания аккаунта; код активной сессии Battle — 400 `fieldErrors.code = isBattleCode` без создания аккаунта (BR-CODE-04) |
+| API-AUTH-04 | POST /api/auth/password/forgot, /reset | `{ email }`, `{ token, password }` | 204 |
+| API-AUTH-05 | POST /api/auth/password/change | `{ currentPassword?, password }` | 204; при `mustChangePassword` (временный пароль) текущий пароль не нужен |
+| API-AUTH-06 | POST /api/auth/email/verify, /email/resend | `{ token }`, — | 204; повторная отправка — только вошедшему с неподтверждённым email |
+| API-ME-01 | GET /api/me | — | `MeDto { id, displayName, initials, roles[], activeRole, preferences, emailVerified, mustChangePassword }`; `emailVerified` = null без email |
+| API-ME-02 | PATCH /api/me/preferences | `{ locale?, theme?, dataSaver? }` | 200 |
+| API-ME-03 | POST /api/me/active-role | `{ role }` | 200 |
+| API-ME-04 | GET /api/me/notifications | — | список (PH-32) |
+| API-ME-05 | POST /api/me/data-requests | `{ type: 'export'|'delete' }` | 201; создаёт обращение категории data_privacy (PH-08) |
+
+## 6.4 Учитель
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-T-01 | GET /api/teacher/subjects | Мои курсы (PH-24) |
+| API-T-02 | POST /api/teacher/subjects | Создать предмет: `{ translations: {ru?, kk?, en?: {title, description}}, inPublicCatalog }` — минимум один язык с title |
+| API-T-03 | GET / PATCH /api/teacher/subjects/:id | Получить / изменить предмет |
+| API-T-04 | GET /api/teacher/classes | Классы учителя: `[{ id, name, studentsCount }]` |
+| API-T-05 | POST /api/teacher/classes | Создать класс `{ name }` (PH-07) |
+| API-T-06 | POST /api/teacher/classes/:id/invite-codes | Выпустить код `{ code, expiresAt }` (код показывается один раз) |
+| API-T-07 | POST /api/teacher/subjects/:id/access | Выдать предмет классу `{ classId }`; повтор → 200 без дубля |
+| API-T-08 | DELETE /api/teacher/subjects/:id/access/:classId | Отозвать выдачу |
+| API-T-09 | POST /api/teacher/subjects/:id/topics | Создать тему (черновик) |
+| API-T-10 | GET / PUT /api/teacher/topics/:id | Получить / сохранить тему: `{ translations, coverMediaId?, coverUrl?, materialIds[] }`; `coverUrl` (http/https) сервер скачивает в своё хранилище и проверяет как загруженную обложку (BR-FILE-06); не удалось — 422 `fieldErrors.coverUrl` |
+| API-T-11 | POST /api/teacher/topics/:id/ai-draft | ИИ-черновик: ответ `{ ru: {title, description, funFact, bodyMd}, kk: {...} }` — название на языке черновика; ничего не сохраняет |
+| API-T-12 | POST /api/teacher/topics/:id/publish | `{ changeNote? }` → создаёт topic_version, status = published |
+| API-T-13 | POST /api/teacher/topics/:id/unpublish | Снять с публикации (PH-27) |
+| API-T-14 | GET /api/teacher/topics/:id/versions | История версий (PH-25) |
+| API-T-15 | GET /api/teacher/topics/:id/preview | Представление темы глазами ученика (без публикации) |
+| API-T-16 | POST /api/files/upload-url | `{ kind: 'cover'|'material', topicId?, fileName, mime, size }` → `{ mediaId, uploadUrl, headers }` после проверки лимитов BR-FILE-* |
+| API-T-17 | POST /api/files/:mediaId/complete | Подтвердить загрузку → постановка в очередь проверки (scan_status = pending) |
+| API-T-18 | GET /api/teacher/gallery | Обложки пользователя |
+| API-T-19 | GET /api/teacher/topics/:id/quiz | Квиз и вопросы |
+| API-T-20 | POST /api/teacher/topics/:id/quiz/questions | Создать вопрос `QuestionDto` (6.7) |
+| API-T-21 | PUT / DELETE /api/teacher/questions/:id | Изменить / архивировать вопрос |
+| API-T-22 | POST /api/teacher/assignments | `{ classId, subjectId, topicId, dueAt }` → `{ id }`. Класс — свой (иначе 404); предмет — базовый (общий каталог) или свой, выданный этому классу (чужой — 404, не выдан — 422 `subjectNotGranted`); тема — опубликованная тема этого предмета (422 `topicNotInSubject` / `topicNotPublished`); `dueAt` — ISO 8601 с часовым поясом. Аудит `assignment.created`. |
+| API-T-23 | GET /api/teacher/assignments | `[{ id, topicTitle, className, dueAt, counts: { submitted, inReview, graded } }]` Задания всех своих классов, поздний срок — первым. |
+| API-T-24 | GET /api/teacher/review-queue | Работы на проверку (PH-29 — пустой список) |
+| API-T-25 | GET /api/teacher/classes/:id/analytics | `{ avgPercent, engagement: { active, total, windowDays: 7 }, weakTopics: [{ topicId, title, students, percent, color }], attention: [{ studentId, name, lastActivityAt, reason: 'inactive' }] }` Учитываются и базовые уроки платформы, и личные уроки учителя (решение владельца 2026-10-17, см. BR-AN-02). |
+| API-T-28 | GET /api/teacher/classes/:id/assignment-options | `{ subjects: [{ id, title, official, topics: [{ id, title }] }] }` — что можно назначить классу (BR-ASG-01/02): базовые предметы и свои предметы, выданные классу; только опубликованные темы. Чужой класс → 404 (итерация 10) |
+| API-T-29 | GET /api/teacher/classes/:id/mastery | `?subjectId` (необязательно; по умолчанию — первый предмет API-T-28) → `{ subjects: [{ id, title, official }], subjectId, topics: [{ id, title }], students: [{ id, name }], cells: [{ studentId, topicId, status: 'mastered'|'started'|'not_started', percent }] }` — «Карта освоения»; чужой класс или недоступный предмет → 404 |
+| API-T-26 | GET /api/teacher/classes/:id/roster | Ростер: минимальная версия — `[{ id, displayName, login, hasEmail }]` активных учеников (страница «Ростер» — PH-24) |
+| API-T-27 | POST /api/teacher/classes/:id/students/:studentId/temporary-password | Временный пароль ученику своего класса без email → `{ temporaryPassword }` (показывается один раз); ученик меняет его при входе (API-AUTH-05) |
+
+## 6.5 Ученик
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-S-01 | POST /api/student/join | `{ code }` → вступление в класс после подтверждения (BR-CLS-02); код ищется только среди кодов классов; код активной сессии Battle — 404 `isBattleCode`, вступления нет (BR-CODE-02/04) |
+| API-S-02 | GET /api/student/class | `{ classId, className, teacherName, schoolName } | null` |
+| API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
+| API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
+| API-S-05 | GET /api/student/sections/:id | Предметы раздела (`status: 'available'|'soon'`, BR-CNT-08) |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05) |
+| API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` Тело (необязательно): `{ assignmentId }` — попытка из задания (решение по Q-18): назначение действующего класса ученика по этой теме, иначе 404; незавершённая попытка продолжается и связывается с заданием. |
+| API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
+| API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
+| API-S-10 | GET /api/student/assignments | Мои задания (PH-33) `[{ id, topicId, topicTitle, subjectTitle, dueAt, status: 'not_started'|'submitted'|'graded', grade, overdue }]` — назначения действующих классов ученика по видимым ему темам, ближайший срок — первым; `overdue` — срок прошёл, а работа не сдана. `late` — сдано после срока (BR-ASG-03). |
+| API-S-11 | POST /api/student/ai/conversations | `{ context: 'topic_tutor'|'general_tutor', topicId? }` → `{ id }`; `topic_tutor` — только по видимой теме (BR-VIS-01, иначе 404). У ученика один действующий диалог на тему и один общий: повторный вызов возвращает его (история после перезагрузки) |
+| API-S-12 | POST /api/student/ai/conversations/:id/messages | `{ content ≤ 2000, quickAction?: 'simpler'|'more_detail'|'check_me' }` → SSE как API-PUB-06; поддержка отмены (закрытие соединения → status = partial). Вопрос сохраняется сразу вместе с событием `ai_question` (без XP, BR-XP-01; не входит в серию, BR-ST-02), ответ — по завершении: complete / partial / failed (SM-AI-MESSAGE). Пока поставщик mock или недоступен — `event: error {code: 'AI_UNAVAILABLE'}`, ответ failed, клиент показывает PH-19 «Учебный ИИ скоро будет доступен». Лимиты PH-20 — на ученика (не на IP). Чужой диалог → 404 (BR-ACL-03) |
+| API-S-13 | GET /api/student/ai/conversations/:id | `{ id, context, topic: { id, title } | null, messages: [{ id, role, content, status, quickAction, createdAt }] }` — история сообщений; чужой диалог → 404 (BR-ACL-03) |
+| API-S-14 | GET /api/student/progress | `?period=today|7d|30d|90d|quarter|year` → `{ range: {from, to}, compareRange, nextStep: {action, reason, href}, progress: { mastered, total, percent, deltaPercent }, streak: { days, lastActivityDate, delta } }` Плюс `period`, `availablePeriods` (четверть — только если заданы четверти, Q-23; иначе `period=quarter` → 422 `periodUnavailable`); `nextStep` — `{ action: 'assignment'|'improve_topic'|'next_topic'|'catalog', reason, href, topicTitle, dueAt, percent }`, тексты — в интерфейсе. По умолчанию `period=30d`. |
+| API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
+| API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
+| API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }] }` — опубликованные темы по position; предмет не виден (BR-VIS-01) → 404 |
+
+## 6.6 Служебная поддержка
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-SUP-01 | GET /api/staff/tickets | Фильтры: `status, assigneeId, category, dueBefore, q` (номер или email) |
+| API-SUP-02 | GET /api/staff/tickets/:id | Обращение, tech_context, сообщения, заметки, история статусов |
+| API-SUP-03 | POST /api/staff/tickets/:id/assign | `{ assigneeId }` |
+| API-SUP-04 | POST /api/staff/tickets/:id/reply | `{ body, templateCode? }` → email_queue; статус по SM-TICKET: шаблон «Уточнение» → waiting_user, «Решение» → resolved (если переход допустим); остальные ответы статус не меняют |
+| API-SUP-05 | POST /api/staff/tickets/:id/notes | Внутренняя заметка (не отправляется клиенту) |
+| API-SUP-06 | POST /api/staff/tickets/:id/status | `{ to }` — только разрешённые переходы SM-TICKET |
+| API-SUP-07 | GET / POST … /api/staff/requests | Аналогично для школьных заявок (роль onboarding_agent) |
+| API-SUP-08 | POST /api/inbound/email | Вебхук входящих писем; связь по токену из ticket_reply_tokens; ответ после resolved/closed → reopened |
+
+## 6.7 Схемы DTO (Zod, packages/shared)
+
+```ts
+export const Locale = z.enum(['ru', 'kk', 'en']);
+const email = z.string().trim().email().max(254);
+const phone = z.string().trim().regex(/^\+?[0-9 ()-]{6,20}$/).optional().or(z.literal(''));
+
+export const SchoolRequestDto = z.object({
+  schoolName: z.string().trim().min(1).max(200),
+  region: z.string().trim().max(120).optional(),
+  city: z.string().trim().max(120).optional(),
+  contactPerson: z.string().trim().min(1).max(200),
+  phone,
+  email,
+  message: z.string().trim().max(5000).optional(),
+});
+
+export const SupportCategory = z.enum(['technical', 'school_onboarding', 'learning', 'account_access', 'data_privacy', 'other']);
+export const SupportTicketDto = z.object({
+  category: SupportCategory,
+  subject: z.string().trim().min(1).max(200),
+  name: z.string().trim().max(200).optional(),
+  email,
+  phone,
+  description: z.string().trim().min(1).max(10000),
+  techContext: z.object({ route: z.string(), appVersion: z.string(), locale: Locale,
+    dataSaver: z.boolean(), userAgent: z.string().max(300) }).optional(),
+});
+
+const LangText = z.object({ text: z.string().trim().min(1).max(1000), explanation: z.string().max(2000).optional() });
+export const QuestionDto = z.object({
+  type: z.enum(['single_choice', 'true_false', 'text_input']),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  translations: z.record(Locale, LangText).refine(t => Object.keys(t).length >= 1),
+  options: z.array(z.object({ translations: z.record(Locale, z.string().trim().min(1).max(300)),
+    isCorrect: z.boolean() })).optional(),
+  textAnswer: z.string().trim().max(300).optional(),
+}).superRefine((q, ctx) => {
+  if (q.type !== 'text_input') {
+    const n = q.options?.length ?? 0, correct = q.options?.filter(o => o.isCorrect).length ?? 0;
+    if (n < 2) ctx.addIssue({ code: 'custom', path: ['options'], message: 'min2' });
+    if (correct !== 1) ctx.addIssue({ code: 'custom', path: ['options'], message: 'exactlyOneCorrect' });
+  } else if (!q.textAnswer) ctx.addIssue({ code: 'custom', path: ['textAnswer'], message: 'required' });
+});
+```
+
+Тексты ошибок валидации — ключи i18n; пример RU для email: «Введите email, например name@example.com».
+
+## 6.8 Battle (итерация 10.5)
+
+Общие правила — 6.1: Zod-схемы в `packages/shared`, формат ошибок API-GEN-04, CSRF для изменяющих запросов, OpenAPI. Уточняющий код ошибки Battle передаётся в `fieldErrors` (как `subjectNotGranted` в API-T-22): `{ "code": "CONFLICT", "fieldErrors": { "battle": "questionClosed" } }`. Чужой тест или сессия → 404 (API-GEN-08).
+
+**Учитель — тесты** (`teacher`, только владелец — BR-BTL-12)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-01 | GET /api/teacher/battles | `?archived=false` → `[{ id, title, locale, questionsCount, gamesCount, lastPlayedAt, archived }]` — мои тесты |
+| API-BTL-02 | POST /api/teacher/battles | `{ title, description?, locale }` → 201 `{ id }` |
+| API-BTL-03 | GET /api/teacher/battles/:id | Тест с вопросами и вариантами (с правильными — это владелец) |
+| API-BTL-04 | PATCH /api/teacher/battles/:id | `{ title?, description?, locale?, archived? }` |
+| API-BTL-05 | POST /api/teacher/battles/:id/duplicate | Копия теста (неархивные вопросы) → 201 `{ id }` |
+| API-BTL-06 | POST /api/teacher/battles/:id/questions | `BattleQuestionDto` → 201 `{ id }`; больше 50 вопросов → 422 `tooManyQuestions` |
+| API-BTL-07 | PATCH /api/teacher/battles/:id/questions/:qid | `BattleQuestionDto` — вопрос и варианты целиком |
+| API-BTL-08 | DELETE /api/teacher/battles/:id/questions/:qid | Удалить вопрос (архивирование, `archived_at`) → 204 |
+| API-BTL-09 | POST /api/teacher/battles/:id/questions/reorder | `{ questionIds: [...] }` — все неархивные вопросы теста в новом порядке |
+| API-BTL-10 | GET /api/teacher/battles/import-sources | `[{ subjectId, subjectTitle, official, topics: [{ id, title, eligibleCount, questions: [{ id, text, type }] }] }]` — свои темы и базовые темы платформы с подходящими вопросами (BR-BTL-10; вопросы — для выбора чекбоксами в BT-T02) |
+| API-BTL-11 | POST /api/teacher/battles/:id/import | `{ topicId, questionIds? }` → `{ imported }` — копии вопросов (время по умолчанию, PH-45) |
+
+`BattleQuestionDto` (6.7): `{ type: 'single_choice'|'true_false', text (1–300), imageMediaId?, timeLimitSec ∈ {5,10,20,30,60,90}, options: [{ text (1–150), isCorrect }] }` — `single_choice`: 2–4 варианта, ровно один правильный; `true_false`: ровно два варианта, тексты «Верно» / «Неверно» задаёт сервер на языке теста, правильный — один.
+
+**Учитель — сессии** (ведущий — `battle_sessions.host_id = me`)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-20 | POST /api/teacher/battles/:id/sessions | `{ classId, settings }` → 201 `{ sessionId, code }`; класс свой (иначе 404); тест без вопросов → 422 `noQuestions`; у вопроса нет правильного варианта → 422 `noCorrectOption`; больше 3 активных сессий → 409 `tooManyActiveSessions` (BR-BTL-05) |
+| API-BTL-21 | GET /api/teacher/battle-sessions/:sid | Снимок ведущего: фаза, версия, участники, текущий вопрос с правильным вариантом, счётчики, `serverNow` |
+| API-BTL-22 | GET /api/teacher/battle-sessions/:sid/events | SSE-поток ведущего (6.9) |
+| API-BTL-23 | POST /api/teacher/battle-sessions/:sid/start | `lobby → question(0)`; без участников → 422 `noParticipants` |
+| API-BTL-24 | POST /api/teacher/battle-sessions/:sid/close-question | Досрочно закрыть вопрос → `reveal` |
+| API-BTL-25 | POST /api/teacher/battle-sessions/:sid/next | `reveal → leaderboard → question(i+1)`; на последнем вопросе → `finished` |
+| API-BTL-26 | POST /api/teacher/battle-sessions/:sid/finish | Досрочно завершить игру (итог по отвеченным вопросам) |
+| API-BTL-27 | POST /api/teacher/battle-sessions/:sid/cancel | Отменить (только из `lobby`) |
+| API-BTL-28 | POST /api/teacher/battle-sessions/:sid/participants/:pid/kick | Выгнать участника |
+| API-BTL-29 | GET /api/teacher/battle-sessions | `?battleId=&classId=&cursor=&limit=` (API-GEN-07) → `{ items: [{ id, battleTitle, className, status, participantsCount, questionsCount, startedAt, finishedAt }], nextCursor }` — история игр |
+| API-BTL-30 | GET /api/teacher/battle-sessions/:sid/results | Итоги: пьедестал, таблица, по вопросам (доля правильных, распределение вариантов, среднее время), ответы по участникам |
+| API-BTL-31 | GET /api/teacher/battle-sessions/:sid/results.csv | Экспорт итогов: UTF-8 с BOM, разделитель `;` |
+
+Переходы API-BTL-23…28 принимают `{ expectedVersion }`; версия не совпала → 409 `staleState`, в теле ошибки — поле `snapshot` (свежий снимок API-BTL-21). Повтор уже выполненного перехода ничего не меняет (SM-BTL).
+
+**Ученик** (`student`; участник — BR-BTL-02)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+ после нормализации — 422 `invalidBattleCode` без запроса в БД (BR-CODE-02); 404 `codeNotFound` (в том числе код чужого класса — без подробностей), 404 `isClassCode` (действующий код класса, BR-CODE-04), 409 `kicked`, 409 `full`, 409 `alreadyStarted` (позднее подключение выключено); лимит — BR-BTL-01 |
+| API-BTL-41 | GET /api/student/battle-sessions/:sid | Снимок ученика: фаза, версия, вопрос **без правильного ответа**, мой ответ, мой счёт и место (после `reveal`), число участников, `serverNow` |
+| API-BTL-42 | GET /api/student/battle-sessions/:sid/events | SSE-поток ученика (6.9) |
+| API-BTL-43 | POST /api/student/battle-sessions/:sid/answers | `{ questionIndex, optionPosition, clientAnswerId }` → `{ accepted: true }` — без правильности (BR-BTL-03); 409 `questionClosed`, 409 `alreadyAnswered` |
+| API-BTL-44 | POST /api/student/battle-sessions/:sid/leave | Выйти из игры → 204 |
+| API-BTL-45 | GET /api/student/battle-sessions | `?cursor=&limit=` → `{ items: [{ id, battleTitle, teacherName, finishedAt, rank, participantsCount, correctCount, questionsCount }], nextCursor }` — мои прошедшие Battle |
+| API-BTL-46 | GET /api/student/battle-sessions/:sid/results | После `finished`: пьедестал, полная таблица, мои ответы по вопросам с правильными вариантами; до `finished` → 409 `notFinished` |
+
+Чужая сессия или сессия, где ученик не участник, → 404. Выгнанный ученик получает в снимке `kicked: true` и не может отвечать (409 `kicked`); вышедший из игры — 409 `notInGame` до повторного входа по коду. Прочие коды: чужой класс при запуске — 404 `classNotFound`, чужой участник при выгоне — 404 `participantNotFound`, недопустимый переход — 409 `INVALID_TRANSITION` (`invalidTransition`) со снимком, код не удалось подобрать за 10 попыток — 503 `codeUnavailable`, ответ чаще 1 в 200 мс — 429.
+
+## 6.9 События Battle (SSE)
+
+Формат: `id: {stateVersion}-{seq}`, `event: <тип>`, `data: <JSON>`; каждые 15 с — комментарий `: ping` (и отметка `last_seen_at` участника). При подключении и переподключении первым приходит `snapshot`. Поток — только с cookie-сессией; не больше 2 одновременных потоков на пользователя в одной сессии (лишние закрываются, старейший первым).
+
+| **Событие** | **Кому** | **Данные** |
+|---|---|---|
+| `snapshot` | всем при подключении | Полное состояние для роли (как API-BTL-21 / API-BTL-41) + `serverNow` |
+| `participant_joined` / `participant_left` / `participant_kicked` | ведущему — с участником; ученикам — только счётчик | `{ participant?, participantsCount }` |
+| `question_started` | всем | `{ version, index, total, type, text, imageUrl?, options: [{ position, text }], startedAt, deadlineAt, serverNow }` |
+| `answer_progress` | ведущему, не чаще раза в 250 мс | `{ answered, active }` |
+| `answer_accepted` | ответившему ученику | `{ index }` |
+| `question_revealed` | всем | ведущему: `{ correctPosition, distribution: [{ position, count }], avgResponseMs }`; ученику: `{ correctPosition, myPosition, isCorrect, myCorrectCount, myRank, participantsCount }` |
+| `leaderboard` | всем | `{ top: [{ rank, displayName, correctCount }] (5), me?: { rank, correctCount } }` |
+| `finished` | всем | `{ podium, table, me? }` — таблица всех мест с именами |
+| `cancelled` | всем | `{ reason }` |
+| `kicked` | выгнанному | `{}` — клиент закрывает поток и показывает сообщение |
+
+- Оставшееся время на клиенте: `deadlineAt − (Date.now() + (serverNow − clientNowAtReceipt))`.
+- Переподключение — с нарастающей задержкой 1, 2, 4, 8 с (не больше 10 с) и новым `snapshot`; после 3 неудачных попыток — баннер «Нет соединения, переподключаемся…».
+- Персональные данные ученика (`question_revealed`, `leaderboard.me`, `finished.me`) формирует экземпляр api, держащий соединение ученика; через Redis Pub/Sub идёт только общее событие — правильность чужих ответов никому не уходит.
+- В режиме «Экономия трафика» данные событий не меняются.
+
+# 7. Бизнес-правила
+
+## 7.1 Доступ и видимость
+
+```text
+BR-VIS-01  canStudentSeeTopic(student, topic):
+             topic.status == 'published'
+             AND topic.archived_at IS NULL
+             AND ( subject(topic).in_public_catalog
+                   OR EXISTS class_subject_access csa
+                        JOIN class_memberships m ON m.class_id = csa.class_id
+                      WHERE csa.subject_id = topic.subject_id AND csa.revoked_at IS NULL
+                        AND m.student_id = student.id AND m.status = 'active' )
+           Применяется к: API-S-04..S-09, S-12 (topic_tutor), выдаче файлов материалов.
+BR-VIS-02  Черновик (status='draft') MUST NOT отдаваться ученику ни одним эндпоинтом. Предпросмотр учителя (API-T-15)
+           доступен только владельцу предмета.
+BR-VIS-03  Флаг каталога (subjects.in_public_catalog), выдача классу (class_subject_access) и публикация (topics.status) —
+           три независимых признака; объединять в одно поле запрещено.
+BR-ACL-01  Учитель изменяет только subjects.owner_id = me и всё, что к ним относится (topics, questions, materials).
+BR-ACL-02  Учитель работает только со своими классами (classes.teacher_id = me): выдача, задания, аналитика, коды.
+BR-ACL-03  Ученик читает только свои attempts, events, stats, badges, ai_conversations, submissions.
+BR-ACL-04  Служебные роли не имеют доступа к /api/teacher/*, /api/student/*; учебные роли — к /api/staff/*.
+BR-ACL-05  Базовый контент (subjects.is_official = true, его темы, разделы, вопросы, картинки) не изменяется ни одним
+           эндпоинтом API: у него нет владельца, поэтому API-T-* отвечают 404 (BR-ACL-01), прочие роли — 401/403.
+           Изменение — только файлами content/ и командой импорта (BR-CNT-01).
+BR-VIS-04  canGuestSeeTopic(topic): topic.status == 'published' AND topic.archived_at IS NULL
+             AND subject(topic).is_official AND subject(topic).in_public_catalog AND subject(topic).archived_at IS NULL.
+           Гость видит каталог, предметы и «Обзор» только базовых уроков (API-PUB-10..13); личные уроки учителей
+           гостю не видны, даже если они в общем каталоге. Квиз, учебный ИИ, события, XP и прогресс — только после входа.
+```
+
+## 7.2 Квиз
+
+```text
+BR-QZ-01  Правильный ответ (is_correct, text_answer) MUST NOT присутствовать в ответах API до ответа на вопрос.
+BR-QZ-02  single_choice и true_false: ровно один правильный вариант (ux_one_correct + Zod).
+          true_false: два фиксированных варианта «Верно» / «Неверно» (PH-28).
+BR-QZ-03  text_input: сравнение normalize(a) == normalize(b), где normalize = trim, схлопнуть пробелы, lower-case (PH-28).
+BR-QZ-04  Проверка ответа — сразу после выбора (PH-37): возвращаются correct, correctOptionId, explanation.
+BR-QZ-05  score_percent = round(100 * correct_answers / questions_count, 2) при finish.
+BR-QZ-06  Попытки не ограничены; в зачёт идёт лучшая (topic_mastery.best_percent = max). Незавершённая попытка
+          (in_progress) продолжается при повторном входе (API-S-07 возвращает уже данные ответы).
+BR-QZ-07  Тема освоена: best_percent >= 80 (PH-38) → mastered_at = now() при первом достижении.
+BR-QZ-08  Попытка связана с topic_version_id опубликованной версии на момент старта.
+BR-QZ-09  Гостевой пробный вопрос: questions.is_demo = true; баллы и события не начисляются. В квизе своей темы пробный
+          вопрос — обычный вопрос ученика.
+```
+
+## 7.3 Геймификация (PH-39)
+
+```text
+BR-XP-01  События и XP:
+            quiz_finished                → +10 XP
+            quiz_finished с score >= 80  → ещё +10 XP (reason = 'quiz_high_score')
+            lesson_opened (первое для темы) → +5 XP
+BR-XP-02  Идемпотентность: каждая запись xp_ledger уникальна по (student_id, source_event_id, reason);
+          повторная обработка события не начисляет XP повторно.
+BR-XP-03  level = floor(xp_total / 100) + 1; xpToNext = 100 * level - xp_total.
+          Ранг: level 1 → «Новичок»; иначе «Уровень N».
+BR-BDG-01 Бейджи и правила (rule jsonb):
+            first_step        quiz_finished count >= 1                         «Первый шаг» — «Пройден первый квиз»
+            warmup            streak >= 3                                       «Разогрев» — «Серия из 3 дней подряд»
+            week_power        streak >= 7                                       «Неделя силы» — «Серия из 7 дней подряд»
+            marathon          streak >= 30                                      «Марафонец» — «Серия из 30 дней подряд»
+            topic_mastered    mastered topics >= 1                              «Тема освоена» — «Первая тема пройдена на 80%+»
+            five_topics       mastered topics >= 5                              «Пятёрка знаний» — «5 тем освоено»
+            erudition         mastered topics >= 10                             «Эрудиция» — «10 тем освоено»
+            subject_conquered all published topics of a subject mastered        «Предмет покорён» — «Все темы предмета освоены»
+            erudite           level >= 5                                        «Эрудит» — «Достигнут 5-й уровень»
+            legend            level >= 10                                       «Легенда» — «Достигнут 10-й уровень»
+            comeback          topic mastered after a failed attempt (<50%)      «Исправился» — «Тема, которая сначала не давалась, потом взята»
+            bug_fixing        5 such topics                                     «Работа над ошибками» — «Пять тем вытянуто с неудачной попытки»
+          Пороги «неудачной попытки» (<50%) — PH-39. Ещё 5 бейджей не создаются; totalCount = 12.
+BR-BDG-02 Бейдж выдаётся один раз (PK student_id, badge_id).
+BR-XP-04  Начисление XP, пересчёт уровня и серии и выдача бейджей — синхронно, в транзакции события (finish, lesson_opened);
+          отдельной очереди пересчёта нет (решение по Q-17). Серия в хедере учитывает дату последней активности (API-S-16).
+```
+
+## 7.4 Показатели (PH-38)
+
+```text
+BR-ST-01  Часовой пояс расчётов — PLATFORM_TZ (UTC+5).
+BR-ST-02  День активности — календарный день, в котором есть learning_events типа quiz_finished или lesson_opened.
+BR-ST-03  streak_current = число подряд идущих дней активности, заканчивающихся сегодня или вчера; иначе 0.
+BR-ST-04  Периоды: today; 7d/30d/90d — последние N дней включая сегодня; quarter — текущая четверть из app_config
+          'progress.quarters' (PH-38), на каникулах и летом — последняя начавшаяся; year — 'progress.school_year'
+          (01.09–25.05, решение владельца 2026-10-17).
+          compareRange — предыдущий период той же длины.
+BR-ST-05  progress.total = число опубликованных тем во всех предметах, где у ученика есть хотя бы одно событие;
+          progress.mastered = число освоенных из них; percent = round(100 * mastered / total, 1). Значения — на конец
+          периода, но не позже сегодняшнего дня (события и mastered_at по min(range.to, сегодня) включительно); deltaPercent — разница с тем же расчётом на конец
+          compareRange; streak.days и streak.delta — так же (серия на range.to минус серия на compareRange.to).
+          Базовые и личные предметы считаются одинаково.
+BR-ST-06  nextStep: (1) незавершённое назначение с ближайшим сроком → (2) начатая тема с минимальным best_percent < 80
+          → (3) следующая тема после последней открытой → (4) каталог. «Незавершённое» — без сдачи и со сроком
+          в будущем; темы — только видимые ученику.
+```
+
+## 7.5 Аналитика класса (PH-30)
+
+```text
+BR-AN-01  Данные только по выбранному классу и его активным ученикам.
+BR-AN-02  avgPercent = среднее best_percent учеников класса по темам, назначенным классу (assignments);
+          если назначений нет — по всем темам выданных классу предметов и базовых предметов платформы, которые
+          ученики проходили (решение владельца 2026-10-17). Округление — до целого процента.
+BR-AN-03  engagement.active = число учеников с learning_events за последние 7 дней; total = число активных учеников.
+BR-AN-04  weakTopics: по каждой теме из набора BR-AN-02 — students = число учеников класса с попытками; percent = среднее best_percent;
+          сортировка по возрастанию percent; максимум 10 строк.
+          color: percent < 50 → 'red'; 50 ≤ percent < 80 → 'blue'; percent ≥ 80 → 'green'.
+BR-AN-05  attention: ученики без learning_events 7 дней и более; reason = 'inactive'; lastActivityAt — время последнего события
+          (null — событий не было); сначала те, кто дольше неактивен.
+```
+
+## 7.6 Задания
+
+```text
+BR-ASG-01 topic MUST принадлежать subject; класс MUST принадлежать учителю; subject — свой или is_official.
+BR-ASG-02 Список тем в форме фильтруется по выбранному предмету; при смене предмета выбранная тема сбрасывается.
+BR-ASG-03 Сдача (PH-29, решение владельца 2026-10-17): завершение попытки квиза темы создаёт/обновляет submission
+          каждого назначения по этой теме в действующих классах ученика, выданного до завершения попытки, — и попытки
+          из назначения (attempt.assignment_id), и попытки из урока: status = 'graded', grade = score_percent (лучший).
+          Попытки, завершённые до выдачи назначения, не засчитываются. После срока сдача принимается и помечается
+          «Сдано после срока» (submitted_at > due_at; SPEC сдачу после срока не запрещает).
+          Счётчики: submitted = число submissions; inReview = status 'in_review' (сейчас всегда 0); graded = status 'graded'.
+          Категории пересекаются (сданная и оценённая работа учитывается в обоих счётчиках).
+          Каждая оценка — в audit_log (submission.graded,
+          автор — система), REQ-NFR-SEC-05.
+```
+
+## 7.7 Классы
+
+```text
+BR-CLS-01 Код класса: 6 символов из алфавита 23456789ABCDEFGHJKLMNPQRSTUVWXYZ; хранится только hash (SHA-256 с солью);
+          срок 30 дней; ввод нормализуется: trim, upper-case, удаление пробелов (PH-07). Новый код никогда не имеет вид
+          кода Battle и не совпадает с кодом активной сессии Battle (BR-CODE-03).
+BR-CLS-02 До входа — только проверка годности кода (API-PUB-08) без данных класса. Вступление — после входа
+          и подтверждения; повторное вступление в тот же класс не создаёт второй записи (ux_membership_active).
+BR-CLS-03 Leave: membership.status = 'left', left_at = now(); доступ к предметам класса закрывается (BR-VIS-01);
+          личные результаты сохраняются.
+BR-CLS-04 Ученик регистрируется сам (PH-17 = true): имя, логин, пароль, email и школа — необязательные; код класса
+          необязателен. Верный код — ученик сразу становится членом класса, школа берётся из класса; неверный код —
+          ошибка без создания аккаунта. Без класса ученик может подключиться позже (/join, API-S-01).
+BR-CLS-05 Восстановление пароля: с email — по письму (API-AUTH-04); без email — учитель класса задаёт временный пароль
+          (API-T-27), ученик обязан сменить его при входе (API-AUTH-05). Роль «завуч» — TODO(OWNER).
+```
+
+## 7.8 Файлы
+
+```text
+BR-FILE-01 Обложка: mime ∈ {image/jpeg, image/png, image/webp, image/gif}; size ≤ 5 МБ (1 МБ = 1 048 576 байт).
+BR-FILE-02 Материалы: расширение и сигнатура ∈ {pdf, docx, xlsx, pptx, odt, txt, csv}; size ≤ 25 МБ;
+           на тему ≤ 20 файлов и ≤ 200 МБ суммарно (проверка до выдачи upload-url и повторно после загрузки).
+BR-FILE-03 После загрузки: проверка ClamAV и olevba; найден вирус или макрос → scan_status = 'rejected',
+           файл удаляется из хранилища, учителю показывается ошибка «Файл отклонён: обнаружены макросы или вредоносный код».
+BR-FILE-04 Ученикам отдаются только файлы со scan_status = 'clean' через подписанные ссылки сроком 10 минут.
+BR-FILE-05 Галерея обложек = media_files(kind='cover', owner_id = me). Выбор обложки — последнее действие побеждает (PH-26).
+BR-FILE-06 Обложка по ссылке учителя (REQ-TCH-TOP-04): при сохранении темы сервер скачивает картинку в своё хранилище
+           (media_files kind='cover', галерея учителя) и проверяет как загруженную: BR-FILE-01 (тип, ≤ 5 МБ, сигнатура),
+           затем BR-FILE-03. Ученику внешняя ссылка не отдаётся — только файл из хранилища (BR-FILE-04).
+           Защита от SSRF: только http/https, порты 80/443, без учётных данных в адресе; все адреса имени после DNS —
+           публичные (запрещены 0.0.0.0/8, 10/8, 100.64/10, 127/8, 169.254/16, 172.16/12, 192.168/16 и прочие служебные,
+           ::1, fc00::/7, fe80::/10, IPv4-mapped); соединение — на проверенный адрес; перенаправления (≤ 3) проверяются
+           заново; таймаут 10 с; чтение прерывается после 5 МБ. Не удалось скачать — учителю ошибка у поля ссылки.
+BR-FILE-07 Незавершённые загрузки: worker раз в сутки удаляет записи scan_status = 'pending' старше 24 часов, загрузка
+           которых не подтверждена (API-T-17 не вызван), и их объект в хранилище, если он есть. Подтверждённые файлы,
+           ожидающие проверки BR-FILE-03, не удаляются.
+```
+
+## 7.9 Формы и поддержка
+
+```text
+BR-FRM-01 Сохранение заявки/обращения, запись idempotency_keys и outbox_events('email.confirmation') — одна транзакция.
+BR-FRM-02 public_number: заявки 'SR-' + YYMMDD + '-' + 4 цифры; обращения 'T-' + YYMMDD + '-' + 4 цифры.
+BR-FRM-03 Письмо-подтверждение содержит номер, тип, способ ответа; без полного текста обращения.
+BR-FRM-04 Ошибка отправки письма не отменяет сохранённую запись.
+BR-SUP-01 Повторное открытие: входящий ответ пользователя на обращение в статусе resolved или closed → reopened.
+BR-SUP-02 Автозакрытие: resolved → closed через 7 дней без ответа пользователя (cron в worker).
+BR-SUP-03 Все смены статуса и ответственного пишутся в ticket_status_history и audit_log.
+```
+
+## 7.10 ИИ
+
+```text
+BR-AI-01 Клиент никогда не обращается к поставщику ИИ напрямую; только через API (LLMProvider).
+BR-AI-02 В промпт передаются: системная инструкция, база знаний (публичный) или текст текущей темы (topic_tutor),
+         уровень объяснения 'beginner', последние 20 сообщений. MUST NOT передаваться: email, телефон, ФИО, ID ученика.
+BR-AI-03 Ответ ИИ не вызывает никаких изменяющих операций (нет инструментов с записью).
+BR-AI-04 Отмена клиентом → сообщение сохраняется со status = 'partial' и пометкой «Ответ прерван».
+BR-AI-05 Гостевая история хранится только в памяти вкладки; на сервере не сохраняется.
+BR-AI-06 Пока LLM_PROVIDER = 'mock' или поставщик недоступен — поведение PH-19.
+BR-AI-07 Публичный помощник: ссылки в ответах только на внутренние маршруты раздела 4 и URL атласов из конфигурации;
+         остальные ссылки удаляются при санитизации. Учебный ИИ — та же серверная санитизация (REQ-NFR-SEC-06).
+BR-AI-08 (решение владельца 2026-10-17) Учебный ИИ не решает за ученика:
+         объясняет, подсказывает и задаёт наводящие вопросы; на вопросы квиза текущей темы не даёт готового ответа
+         (вариант, букву, число или слово), даже если ученик просит прямо или просит «забыть правила». В промпт topic_tutor
+         передаются тексты вопросов квиза темы без вариантов, правильных ответов и объяснений; при «Проверь меня» ИИ
+         задаёт свои вопросы, а не вопросы квиза.
+BR-AI-09 Текст текущей темы (topic_tutor, решение владельца 2026-10-17): снимок опубликованной версии на языке ученика
+         (нет перевода — RU, REQ-ST-LES-07): название, описание, интересный факт, текст урока и все разделы аккордеона.
+```
+
+## 7.11 Базовая программа платформы (этап 8.6)
+
+```text
+BR-CNT-01 Источник правды базовых уроков — файлы content/. Создаёт и меняет их разработчик по решению владельца
+          командой `pnpm content:import`; через сайт и API базовые уроки не меняет никто (BR-ACL-05). Деления на классы
+          (годы обучения) нет (1.3). Кто готовит контент — TODO(OWNER).
+BR-CNT-02 Формат (docs/CONTENT_GUIDE.md): content/<раздел>/section.yaml, content/<раздел>/<предмет>/subject.yaml,
+          content/<раздел>/<предмет>/<тема>/{ru.md, kk.md, en.md, quiz.yaml, media/}; каждый базовый предмет — в разделе
+          (предметов вне разделов нет). Порядок — position: раздела в section.yaml, предмета в разделе — в subject.yaml
+          (subjects.position), темы — в ru.md; номера уникальны на своём уровне. Тема — Markdown с YAML-заголовком, один файл на язык; разделы аккордеона —
+          заголовки «## Название {#код}». Разделы аккордеона есть только у базовых уроков (редактор учителя их не
+          поддерживает — TODO(OWNER)).
+BR-CNT-03 До записи проверяются все файлы: YAML-схемы, обязательные поля, длины 5.4, коды (a-z, 0-9, «-», «_»)
+          и их уникальность, ссылки на картинки, вопросы — по BR-QZ-02 и QuestionDto. Любая ошибка → импорт ничего
+          не меняет (одна транзакция), выводит все ошибки в виде «файл: поле — причина» и завершается с кодом 1.
+BR-CNT-04 Сопоставление — по постоянным кодам (catalog_sections.code, subjects/topics/topic_sections/questions.code).
+          Повторный запуск без изменений ничего не меняет. Изменённая тема (хеш снимка) → новая topic_version
+          и публикация; тема, удалённая из файлов → status = 'draft' (снята с публикации, строки и прогресс учеников
+          сохраняются); вопрос, удалённый из quiz.yaml → archived_at. Импорт управляет только строками с кодом.
+BR-CNT-05 Языки: ru.md обязателен; kk.md и en.md необязательны и содержат review: needs_review | reviewed. Переводы
+          готовит ИИ, до вычитки человеком — needs_review (topic_translations.needs_review), ученик видит «На проверке».
+          Нет файла языка — ученику показывается RU с пометкой «Урок пока доступен на русском» (REQ-GEN-PREF-02).
+BR-CNT-06 Картинки — только в content/.../media/: WEBP, PNG или JPG (сигнатура совпадает с расширением), не больше
+          300 КБ (307 200 байт); у каждой в YAML — источник (source) и лицензия: own (собственная), CC0 или
+          public-domain. Проверка — в импорте и в CI (`pnpm content:check`). Импорт кладёт файл в наше хранилище
+          (media_files: kind = 'illustration', owner_id NULL, ключ по sha256 — повтор не дублирует, scan_status = 'clean'
+          после проверки типа, сигнатуры и размера — как у обложек, BR-FILE-01); ученику — подписанные ссылки (BR-FILE-04).
+BR-CNT-07 Автор версий импорта — системный пользователь «Импорт» (users.status = 'system', без пароля и ролей).
+          Каждый запуск с изменениями пишется в audit_log: actor = «Импорт», entity_type = 'content_import',
+          action = 'content.import', after = сводка (создано, обновлено, снято с публикации).
+BR-CNT-08 Предмет без опубликованных тем — статус «Скоро», карточка не кликабельна: каталог ученика и гостя
+          (API-S-04/05, API-PUB-10/11) и /subjects (API-PUB-01).
+```
+
+## 7.12 Battle (итерация 10.5)
+
+Battle — живая викторина для класса: учитель собирает Battle-тест, запускает игровую сессию с кодом, ученики класса входят по коду и одновременно отвечают на время; в конце — рейтинг и пьедестал. Экран ведущего у учителя (подходит для проектора), «пульт» для ответов у ученика. Транспорт реального времени: SSE (сервер → клиент) + POST (клиент → сервер) + Redis Pub/Sub между экземплярами api; PostgreSQL — источник истины, api без состояния, время — только серверное. Код событий изолирован за интерфейсом `BattleRealtime` (замена транспорта на WebSocket — только в этом слое).
+
+```text
+BR-BTL-01 Код сессии: 3 латинские буквы A–Z и 3 цифры 1–9 (`^[A-Z]{3}[1-9]{3}$`, например KTR583; PH-45, Q-BTL-10);
+          генерация crypto.randomInt; уникален среди активных сессий (lobby, in_progress — частичный индекс
+          ux_battle_active_code), после завершения или отмены освобождается; при коллизии до 10 повторов, затем 503.
+          Не совпадает с действующим кодом класса (BR-CODE-03). Ввод: trim, удаление пробелов и дефисов, upper-case
+          («ktr 583» → KTR583). Хранится открыто (короткоживущий, показывается
+          на проекторе). Лимит ввода: 10 попыток за 10 минут на ученика и 30 на IP (API-GEN-06); ответ «код не найден»
+          одинаков для несуществующего и чужого кода.
+BR-BTL-02 Вход по коду (PH-45 battle.join_scope = 'class', Q-BTL-01): только ученик с активным членством в классе сессии.
+          Выгнанный — 409 kicked; лимит участников PH-45 max_participants (100, Q-BTL-08) — 409 full; после старта —
+          только при настройке «Позднее подключение» (Q-BTL-03), иначе 409 alreadyStarted; пропущенные вопросы —
+          без ответа. Повторный вход тем же аккаунтом (обрыв связи, «Выйти из игры») — та же строка участника, пока
+          сессия активна.
+BR-BTL-03 Ответы: один раз на вопрос, изменить нельзя. Принимается ответ, пришедший не позже deadline_at + 500 мс;
+          позже — 409 questionClosed. response_ms = answered_at − question_started_at (оба момента серверные).
+          Повтор с тем же clientAnswerId → 200 и прежний результат; другой вариант на тот же вопрос → 409 alreadyAnswered.
+          Правильность до раскрытия MUST NOT сообщаться ни ученику, ни в сетевых ответах («Ответ принят»).
+          Вопрос закрывается досрочно, когда ответили все активные участники (не выгнанные, не вышедшие, на связи
+          за последние 30 с). Ответы — не чаще 1 запроса в 200 мс на участника.
+BR-BTL-04 Рейтинг: (1) correct_count по убыванию; (2) correct_time_ms — сумма response_ms правильных ответов — по
+          возрастанию; (3) при полном равенстве — одно место (два вторых, затем четвёртое). Выгнанные в рейтинг не
+          входят; вышедшие сами остаются с набранным результатом. Итоги (final_rank, correct_count, correct_time_ms,
+          answered_count) пишутся в battle_participants при переходе в finished; пересчёт по battle_answers даёт тот же
+          результат. Пьедестал — места 1–3 с учётом совпадений (может быть больше трёх человек), остальные — таблица.
+BR-BTL-05 Сессия: запускается из теста для своего класса с настройками; при запуске замораживается снимок вопросов
+          (questions_snapshot) — правка теста не влияет на идущую игру и историю. У учителя не больше 3 активных
+          сессий (не finished и не cancelled) — иначе 409 tooManyActiveSessions.
+BR-BTL-06 Срок жизни: лобби без старта закрывается через 60 минут, игра без активности — через 30 минут
+          (status = cancelled, cancel_reason = 'expired'); проверка — задача worker раз в минуту.
+BR-BTL-07 Участники: имя в игре — из профиля, «имя и первая буква фамилии» (первое слово display_name + первая буква
+          второго слова с точкой: «Асель К.»; одно слово — как есть; PH-45 display_name, Q-BTL-07); свои ники не
+          вводятся. Учитель может выгнать участника (в лобби и в игре) — вернуться в эту сессию нельзя. Обрыв связи — не
+          выход. «Выйти из игры» — left_at; повторный вход по коду возможен, пока сессия активна.
+BR-BTL-08 Переходы SM-BTL — одна транзакция с SELECT … FOR UPDATE строки сессии и проверкой ожидаемых фазы, номера
+          вопроса и state_version; повторный или запоздавший переход ничего не меняет. Каждое изменение состояния
+          увеличивает state_version; события несут version, клиент игнорирует события со старой версией. Переходы
+          выполняет одна реализация (`packages/db/src/battle`), её вызывают api (BattleEngine) и worker (очередь battle:
+          таймер закрытия вопроса на deadline_at + 500 мс, автопереход).
+BR-BTL-09 Battle не начисляет XP и не влияет на освоение тем, «Мои показатели», задания и аналитику класса
+          (PH-45 xp.enabled = false, Q-BTL-04).
+BR-BTL-10 Battle-тест: владелец — учитель; название ≤ 120, описание ≤ 500, язык содержания RU/KK/EN (перевода нет);
+          1–50 вопросов. Вопрос: текст ≤ 300, необязательная картинка — только файл галереи учителя (загрузка как
+          обложка, BR-FILE-01/03; ученику — подписанная ссылка BR-FILE-04, только clean); типы single_choice (2–4
+          варианта, ровно один правильный) и true_false (Q-BTL-05); text_input не поддерживается; время 5/10/20/30/60/90 с,
+          по умолчанию 20 (Q-BTL-02). Импорт — копирование вопросов single_choice и true_false квиза своей темы или
+          базовой темы платформы (текст и варианты на языке теста, иначе RU; подходят вопросы не больше чем с 4 вариантами и с текстами в пределах лимитов Battle — 300 и 150 символов, тексты не обрезаются); правка копии не
+          меняет исходный квиз. Тест можно дублировать и архивировать; тест с прошедшими сессиями не удаляется — только
+          архив.
+BR-BTL-11 Удаление данных ученика (запрос «Мои данные», PH-08; исполняет сотрудник: `pnpm battle:anonymize --student=<id>`) распространяется на Battle: ответы ученика удаляются,
+          в чужой истории и итогах участник показывается как «Участник» (display_name), итоговые числа сохраняются.
+          Выход из класса и архивирование класса не удаляют прошедшие результаты.
+BR-BTL-12 Права: тесты и сессии видит и меняет только учитель-владелец (ведущий); остальным — 404. Ученик — только
+          сессии, где он участник. Служебные роли доступа не имеют (BR-ACL-04). Все изменяющие запросы — с CSRF;
+          SSE — только с cookie-сессией.
+```
+
+**Настройки сессии** (`battle_sessions.settings`)
+
+| **Настройка** | **По умолчанию** | **Описание** |
+|---|---|---|
+| Класс | обязательно | Войти могут только активные участники класса (BR-BTL-02) |
+| Перемешать вопросы | выкл | Один порядок для всех участников |
+| Перемешать варианты | выкл | Один порядок для всех; цвета и фигуры привязаны к позиции |
+| Промежуточный рейтинг | вкл (Q-BTL-09) | Топ-5 после каждого вопроса, кроме последнего |
+| Автопереход | выкл | После `reveal` через 5 с и после `leaderboard` через 5 с — без нажатия |
+| Позднее подключение | выкл (Q-BTL-03) | Вход после старта; пропущенные вопросы — без ответа |
+| Максимум участников | 100 (Q-BTL-08) | Лимит сессии (BR-BTL-02) |
+
+**Нагрузочные цели** (проверяются k6, этап B6): одна сессия — 100 участников, вопрос 10 с, все отвечают в первые 3 с: p95 «ответ → `answer_accepted`» ≤ 300 мс, p95 «закрытие → `question_revealed` у всех» ≤ 1 с, без потерянных ответов; 20 одновременных сессий по 40 участников на одном экземпляре api без ошибок; перезапуск экземпляра api посреди вопроса — все клиенты переподключились за ≤ 10 с, ответы не потеряны, игра продолжилась.
+
+**Вопросы владельцу** (docs/BATTLE_TZ.md, раздел 12) — `TODO(OWNER)`; до ответа действуют значения по умолчанию (PH-45):
+
+| **№** | **Вопрос** | **По умолчанию** |
+|---|---|---|
+| Q-BTL-01 | Кто может войти по коду: только ученики выбранного класса или любой ученик платформы, знающий код? | Только ученики класса сессии |
+| Q-BTL-02 | Время на вопрос по умолчанию и набор вариантов | 20 с; 5/10/20/30/60/90 с |
+| Q-BTL-03 | Позднее подключение после старта | Выключено, учитель может включить |
+| Q-BTL-04 | XP за Battle (вариант: +5 за участие, +10 за пьедестал) | Не начислять |
+| Q-BTL-05 | Типы вопросов | Выбор варианта и «Верно/Неверно», без вписанного ответа |
+| Q-BTL-06 | Показывать текст вопроса на экране ученика (вариант Kahoot — только на проекторе) | Показывать |
+| Q-BTL-07 | Имена в рейтинге | «Асель К.» — имя и первая буква фамилии |
+| Q-BTL-08 | Лимит участников в сессии | 100 |
+| Q-BTL-09 | Промежуточный рейтинг после каждого вопроса | Включён |
+| Q-BTL-10 | Код: исключить похожие буквы O и I | Не исключать — ровно A–Z |
+
+
+, например `KTR583` |
+| Срок | 30 дней (PH-07) | Пока сессия в `lobby` / `in_progress` |
+| Хранение | `class_invite_codes.code_hash` (HMAC) | `battle_sessions.code` (открыто) |
+| Где вводится | `/join`, поле «Код класса» при регистрации, блок «Подключиться к классу» | `/learn/battles`, карточка «Battle» на главной ученика |
+
+```text
+BR-CODE-01 Две независимые подсистемы. Код класса и код Battle генерируются, проверяются, хранятся и используются
+          разными модулями, таблицами, настройками (PH-07 class.code и PH-45 battle.code), эндпоинтами, ключами
+          rate-limit и разделами i18n. Ни одна операция Battle (создание теста, запуск, игра, завершение, отмена,
+          истечение, удаление данных) не читает для изменения и не изменяет classes, class_invite_codes, членство;
+          сессия Battle лишь ссылается на class_id (только чтение). Ни одна операция классов (выпуск или отзыв кода,
+          вступление, выход, архив класса) не изменяет battle_*. Единственная связь — проверка «код занят» только для
+          чтения (BR-CODE-03): ClassCodesService.isActiveCode(code) и BattleCodes.isActiveCode(code) → boolean; они
+          ничего не возвращают о классе или сессии и ничего не изменяют.
+BR-CODE-02 Вход принимает только свой тип кода. Вступление в класс (/join, поле при регистрации, «Подключиться к
+          классу», API-PUB-08, API-AUTH-03S, API-S-01) ищет код только среди кодов классов; код Battle никогда не
+          приводит к вступлению. Подключение к Battle (API-BTL-40, /learn/battles, карточка на главной) ищет код только
+          среди активных сессий; код класса никогда не приводит к подключению. Формат Battle: после нормализации (trim,
+          верхний регистр, удаление пробелов и дефисов) — ^[A-Z]{3}[1-9]{3}$, иначе 422 invalidBattleCode без запроса
+          в БД. Формат класса — как прежде (PH-07); старые коды класса вида LLLDDD продолжают работать (BR-CODE-05).
+BR-CODE-03 Невозможность совпадения активных кодов. Новый код класса никогда не имеет вид ^[A-Z]{3}[1-9]{3}$ и не
+          совпадает с кодом активной сессии Battle — такой код отбрасывается и генерируется заново (в пределах тех же
+          10 попыток, затем 503). Новый код Battle отбрасывается и генерируется заново, если совпадает с действующим
+          кодом класса (сравнение HMAC-хеша); лимит 10 попыток и 503 codeUnavailable сохраняются. В любой момент нет
+          строки, которая одновременно — действующий код класса и код активной сессии Battle.
+BR-CODE-04 Подсказки при вводе «не туда». Вступление в класс: код класса не найден, но строка — код активной сессии
+          Battle → 404 isBattleCode (API-AUTH-03S — 400, fieldErrors.code = isBattleCode) и текст «Это код Battle.
+          Введи его в разделе „Battle“» со ссылкой на /learn/battles (гостю — на вход ученика
+          /auth/start?role=student); вступления нет. Подключение к Battle: сессия не найдена, но строка — действующий
+          код класса → 404 isClassCode и текст «Это код класса. Введи его в блоке „Подключиться к классу“» со ссылкой
+          (/join); подключения нет. Подсказка не раскрывает данных о классе или сессии; обе учитываются в лимите
+          попыток своего входа.
+BR-CODE-05 Сохранность данных. Без миграций classes, class_invite_codes, членства; существующие коды не
+          перевыпускаются, не отзываются и не меняют срок; BR-CODE-03 — только для новых кодов; связи «учитель — класс —
+          ученик» не меняются.
+BR-CODE-06 Раздельные лимиты. Ключи rate-limit ввода кода класса (join) и кода Battle (battle_join_student,
+          battle_join_ip) разные; исчерпание одного не блокирует другой вход.
+BR-CODE-07 Различимость в интерфейсе — таблица ниже. На главной ученика блоки «Подключиться к классу» и «Battle»
+          визуально разные (заголовок, иконка, подпись поля) и не стоят рядом без заголовков. Тексты — через i18n
+          (RU/KK/EN), новые — в needs_confirmation.json, KK — needs_review.
+```
+
+| **Элемент** | **Код класса** | **Код Battle** |
+|---|---|---|
+| Подпись поля | «Код класса» | «Код Battle» |
+| Пример (placeholder) | `7KQ2MP` (вместо `ABC123` во всех языках) | `KTR583` |
+| Подсказка под полем | «Код выдаёт учитель твоего класса. Действует 30 дней.» | «Код игры показывает учитель на экране. Работает только во время игры.» |
+| Иконка | «люди» (класс) | «молния» (Battle) |
+| Поле ввода | Обычное поле | `CodeInput` из 6 ячеек (3 буквы + 3 цифры, разделитель между группами) |
 
 # 8. Функциональные требования по экранам
 
@@ -1801,6 +4804,16 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | AC-BTL-16 | Сессия учителя A | Учитель B открывает её | 404 |
 | AC-BTL-17 | Нагрузочные цели 7.12 | Сценарии k6 | Цели выполнены |
 | AC-BTL-18 | Экраны Battle | axe, клавиатура | Без нарушений; игра проходится с клавиатуры; варианты различимы без цвета |
+| AC-CODE-01 | Код активной сессии Battle | Ввод в любое поле и API вступления в класс | Вступления нет; подсказка `isBattleCode` |
+| AC-CODE-02 | Код класса | Ввод в поле Battle, API-BTL-40 | Подключения нет; `invalidBattleCode` или подсказка `isClassCode` |
+| AC-CODE-03 | Выпуск кода класса | 100 000 генераций | Ни одного кода вида `LLLDDD` с цифрами 1–9 |
+| AC-CODE-04 | Старый код класса совпадает с кодом от генератора Battle | Запуск Battle | Код отброшен; активный код Battle не совпадает с действующим кодом класса |
+| AC-CODE-05 | Полный цикл Battle; операции классов | Сравнение снимков до и после | Классы, коды классов и членство не меняются; строки `battle_*` не меняются |
+| AC-CODE-06 | Существующие классы | После изменений | Классы, коды и ученики сохранены; старые коды классов работают |
+| AC-CODE-07 | Ввод «не туда» | Код Battle в поле класса и наоборот | Понятная подсказка со ссылкой, без данных класса или сессии |
+| AC-CODE-08 | Исчерпан лимит одного входа | Ввод кода другого типа | Не блокируется |
+| AC-CODE-09 | Поля «Код класса» и «Код Battle» | RU, KK, EN | Различимы: подпись, пример, подсказка, иконка |
+| AC-CODE-10 | Изменения CODES_TZ | lint, typecheck, тесты, CI | Зелёные |
 | AC-VIS-01 | Seed visual | Скриншот-тесты на эталонных размерах | Совпадение с T04–T10, U01–U13, S01–S26 в пределах порога (ручн. для итогового сравнения) |
 
 # 14. Трассировка к исходному ТЗ
@@ -1871,4 +4884,5 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-17 | 6.4 API-T-22 (ошибки и аудит), API-T-23, API-T-25, новая API-T-28 (что можно назначить классу); 6.5 API-S-07 `assignmentId` (Q-18), API-S-10 (формат), API-S-14 (`period`, `availablePeriods`, формат `nextStep`, по умолчанию 30d), API-S-15 `xpPerLevel`; 7.4 BR-ST-05 (значения на конец периода, дельты к концу периода сравнения), BR-ST-06; 7.5 BR-AN-02 (базовые предметы, округление), BR-AN-04/05; 7.6 BR-ASG-03 (только попытка из задания, аудит оценок) | Итерация 10; показатели и аналитика учитывают базовые и личные уроки — решение владельца 2026-10-17 |
 | 2026-10-17 | 11 PH-38 — четверти 2026–2027 и учебный год 01.09–25.05 (TODO(OWNER): сверить с приказом Минпросвещения); 7.4 BR-ST-04 — на каникулах последняя начавшаяся четверть; 7.6 BR-ASG-03 — засчитывается и квиз из урока после выдачи задания, сдача после срока — «Сдано после срока»; 6.5 API-S-10 `late`; 8.4.8 REQ-ST-ASG-01; 8.4.6 REQ-ST-PRG-01/02 — подзаголовок и блок «Начни отсюда» с эталона U08; 8.3.7 REQ-TCH-AN-01 и новая API-T-29 — «Карта освоения» (простая версия вместо PH-24); BR-ST-05 (толкование) и правила назначения (только опубликованные темы, свой предмет — выданный классу) подтверждены | Решение владельца 2026-10-17 при приёмке итерации 10 |
 | 2026-10-20 | Итерация 10.5 «Battle» (docs/BATTLE_TZ.md): 1.1, 1.2 (матрица — Battle учителя и ученика); 2.2 (модуль `battle`, очередь worker `battle`); 4 (маршруты `/teacher/battles…`, `/teacher/battle-sessions/…`, `/learn/battles…`); 5.2 и 5.9 (таблицы `battle_*`, перечисления, RLS, аудит); 6.1 API-GEN-06 (лимиты Battle); 6.8 API-BTL-01…11, 20…31, 40…46; 6.9 события SSE; 7.12 BR-BTL-01…12, настройки сессии, нагрузочные цели, вопросы Q-BTL-01…10 (TODO(OWNER), значения по умолчанию); 8.6 REQ-BTL-GEN-01…03, REQ-BTL-T01…T11, REQ-BTL-S01…S07; 9 SM-BTL; 11 PH-45; 12 итерация 10.5; 13 AC-BTL-01…18 | Команда владельца 2026-10-20: выполнить docs/BATTLE_TZ.md (этап B0) |
+| 2026-10-20 | Разделение кодов класса и кодов Battle (docs/CODES_TZ.md): 6.1 API-GEN-06 (раздельные лимиты); 6.2 API-PUB-08, 6.3 API-AUTH-03S, 6.5 API-S-01 — `isBattleCode`; 6.8 API-BTL-40 — `invalidBattleCode` (422), `isClassCode`; 7.7 BR-CLS-01 и 7.12 BR-BTL-01 — ссылки на BR-CODE-03, удаление дефисов при вводе кода Battle; новый подраздел 7.13 «Коды доступа» BR-CODE-01…07; 13 AC-CODE-01…10. Миграций нет | Команда владельца 2026-10-20: выполнить docs/CODES_TZ.md |
 | 2026-10-20 | 6.8 — коды ошибок Battle вне ТЗ (`notInGame`, `classNotFound`, `participantNotFound`, `codeUnavailable`, `invalidTransition`, 429 ответов); API-BTL-10 — вопросы темы в ответе (выбор чекбоксами); 7.12 BR-BTL-10 — критерий подходящих для импорта вопросов, BR-BTL-11 — команда `pnpm battle:anonymize`; нагрузочные цели проверены (docs/BATTLE.md) | Этапы B1–B6 итерации 10.5 |

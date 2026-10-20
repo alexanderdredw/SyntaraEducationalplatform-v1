@@ -16,6 +16,29 @@ export function generateBattleCode(
   );
 }
 
+/** BR-BTL-01: повторы генерации кода при коллизии, затем 503. */
+export const BATTLE_CODE_ATTEMPTS = 10;
+
+/**
+ * BR-BTL-01, BR-CODE-03: подбор свободного кода — до 10 попыток. Код отбрасывается, если он совпадает с активным
+ * кодом класса (`isClassCode` — ClassCodesService.isActiveCode, только чтение) или вставка нарушила уникальность
+ * активного кода (`insert` вернул null). Все попытки исчерпаны — null (вызывающий отвечает 503).
+ */
+export async function allocateBattleCode<T>(
+  generate: () => string,
+  isClassCode: (code: string) => Promise<boolean>,
+  insert: (code: string) => Promise<T | null>,
+  attempts = BATTLE_CODE_ATTEMPTS,
+): Promise<T | null> {
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    const code = generate();
+    if (await isClassCode(code)) continue;
+    const result = await insert(code);
+    if (result !== null) return result;
+  }
+  return null;
+}
+
 /** Перемешивание (Фишер — Йетс, crypto.randomInt) — один порядок для всех участников сессии. */
 export function shuffled<T>(items: readonly T[]): T[] {
   const copy = [...items];

@@ -2,20 +2,26 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import { Users } from 'lucide-react';
 import { Button, Card, Field, Input, Modal } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
-import { apiRequest } from '@/lib/api/browser';
+import { apiRequest, type ApiResult } from '@/lib/api/browser';
 import { AppLink } from '../app-link';
 import { StudentAuth } from './student-auth';
 import { usePreservedState } from '../preferences/preserved-state';
 
 type Viewer = 'guest' | 'student' | 'other';
-type Check = 'idle' | 'valid' | 'invalid' | 'tooMany' | 'error';
+type Check = 'idle' | 'valid' | 'invalid' | 'battle' | 'tooMany' | 'error';
+
+/** BR-CODE-04: ответ «это код Battle» (404, fieldErrors.code = isBattleCode). */
+const isBattleCode = (res: ApiResult<unknown>) =>
+  res.kind === 'http' && res.status === 404 && res.error.fieldErrors?.code === 'isBattleCode';
 
 /**
  * /join (REQ-GEN-AUTH-03, BR-CLS-02, PH-44): до входа — только проверка годности кода (API-PUB-08);
  * гостю с годным кодом — форма ученика (вход или регистрация) с заполненным кодом; вошедшему ученику — подтверждение
  * «Присоединиться к классу?» и API-S-01. Код хранится в памяти вкладки и переживает переход на вход.
+ * Код Battle — подсказка со ссылкой на раздел «Battle» (гостю — на вход ученика), вступления нет (BR-CODE-04).
  */
 export function JoinFlow({ viewer }: { viewer: Viewer }) {
   const t = useTranslations('join');
@@ -47,7 +53,8 @@ export function JoinFlow({ viewer }: { viewer: Viewer }) {
     if (res.kind === 'ok') {
       setCheck(res.data.valid ? 'valid' : 'invalid');
       if (res.data.valid && currentViewer === 'student') setConfirm(true);
-    } else if (res.kind === 'http' && res.status === 429) tooMany(res.error.retryAfterSeconds);
+    } else if (isBattleCode(res)) setCheck('battle');
+    else if (res.kind === 'http' && res.status === 429) tooMany(res.error.retryAfterSeconds);
     else setCheck('error');
   };
 
@@ -59,7 +66,8 @@ export function JoinFlow({ viewer }: { viewer: Viewer }) {
     if (res.kind === 'ok') {
       setCode('');
       router.push('/learn/subjects');
-    } else if (res.kind === 'http' && res.status === 404) setCheck('invalid');
+    } else if (isBattleCode(res)) setCheck('battle');
+    else if (res.kind === 'http' && res.status === 404) setCheck('invalid');
     else if (res.kind === 'http' && res.status === 429) tooMany(res.error.retryAfterSeconds);
     else setCheck('error');
   };
@@ -84,9 +92,15 @@ export function JoinFlow({ viewer }: { viewer: Viewer }) {
           }}
         >
           <div className="flex-1">
-            <Field id="join-code" label={t('codeLabel')}>
+            <Field
+              id="join-code"
+              label={t('codeLabel')}
+              hint={t('codeHint')}
+              icon={<Users aria-hidden="true" className="size-4" />}
+            >
               <Input
                 value={code}
+                placeholder={t('codePlaceholder')}
                 autoComplete="off"
                 autoCapitalize="characters"
                 onChange={(e) => {
@@ -126,6 +140,20 @@ export function JoinFlow({ viewer }: { viewer: Viewer }) {
                 {th('supportLink')}
               </AppLink>
             </div>
+          ) : null}
+          {check === 'battle' ? (
+            <p className="text-[var(--danger-text)]" data-testid="join-battle-code">
+              {t.rich('isBattleCode', {
+                link: (chunks) => (
+                  <AppLink
+                    href={currentViewer === 'guest' ? '/auth/start?role=student' : '/learn/battles'}
+                    className="font-semibold underline"
+                  >
+                    {chunks}
+                  </AppLink>
+                ),
+              })}
+            </p>
           ) : null}
           {check === 'tooMany' ? (
             <p className="text-[var(--danger-text)]">{t('tooMany', { minutes: retryMinutes })}</p>

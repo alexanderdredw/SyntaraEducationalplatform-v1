@@ -199,7 +199,7 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     await expect(s.getByTestId('cabinet-header')).toBeVisible();
 
     // Вступление с подтверждением «Присоединиться к классу?»; повтор не создаёт второй записи (API).
-    await s.getByRole('textbox', { name: ru.student.class.join }).fill(second);
+    await s.getByRole('textbox', { name: ru.join.codeLabel }).fill(second);
     await s.getByRole('button', { name: ru.student.class.joinSubmit }).click();
     await s
       .getByRole('dialog', { name: ru.join.confirmTitle })

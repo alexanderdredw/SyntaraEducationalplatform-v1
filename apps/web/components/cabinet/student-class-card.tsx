@@ -3,19 +3,22 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Users } from 'lucide-react';
 import { Button, Card, Field, Input, Modal } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
+import { AppLink } from '../app-link';
 
 type StudentClass = components['schemas']['StudentClassDto'];
-type Problem = 'invalid' | 'tooMany' | 'error' | null;
+type Problem = 'invalid' | 'battle' | 'tooMany' | 'error' | null;
 
 const KEY = ['student', 'class'];
 
 /**
  * Карточка класса (REQ-ST-CAT-01, API-S-02): «Вы в классе «{name}»», «Учитель: … · школа», «Выйти из класса»
  * с подтверждением (PH-40) → API-S-03; это не выход из аккаунта. Без класса — поле «Подключиться к классу»
- * и подтверждение вступления (BR-CLS-02, API-S-01).
+ * и подтверждение вступления (BR-CLS-02, API-S-01). Заголовок, подпись «Код класса», пример, подсказка и иконка
+ * «люди» отличают блок от карточки «Battle» (BR-CODE-07); код Battle — подсказка со ссылкой (BR-CODE-04).
  */
 export function StudentClassCard() {
   const t = useTranslations('student.class');
@@ -52,7 +55,8 @@ export function StudentClassCard() {
       setCode('');
       setProblem(null);
       queryClient.setQueryData(KEY, res.data);
-    } else if (res.kind === 'http' && res.status === 404) setProblem('invalid');
+    } else if (res.kind === 'http' && res.status === 404)
+      setProblem(res.error.fieldErrors?.code === 'isBattleCode' ? 'battle' : 'invalid');
     else if (res.kind === 'http' && res.status === 429) {
       setRetryMinutes(Math.max(1, Math.ceil((res.error.retryAfterSeconds ?? 60) / 60)));
       setProblem('tooMany');
@@ -109,6 +113,10 @@ export function StudentClassCard() {
 
   return (
     <Card data-testid="student-join" className="p-5">
+      <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">
+        <Users aria-hidden="true" className="size-5 text-[var(--accent)]" />
+        {t('join')}
+      </h2>
       <form
         className="flex flex-col gap-3 sm:flex-row sm:items-end"
         onSubmit={(e) => {
@@ -117,9 +125,15 @@ export function StudentClassCard() {
         }}
       >
         <div className="flex-1">
-          <Field id="student-join-code" label={t('join')}>
+          <Field
+            id="student-join-code"
+            label={tj('codeLabel')}
+            hint={tj('codeHint')}
+            icon={<Users aria-hidden="true" className="size-4" />}
+          >
             <Input
               value={code}
+              placeholder={tj('codePlaceholder')}
               onChange={(e) => {
                 setCode(e.target.value);
                 setProblem(null);
@@ -137,9 +151,17 @@ export function StudentClassCard() {
         <p role="alert" className="mt-3 text-sm text-[var(--danger-text)]">
           {problem === 'invalid'
             ? tj('invalid')
-            : problem === 'tooMany'
-              ? tj('tooMany', { minutes: retryMinutes })
-              : tf('serverError')}
+            : problem === 'battle'
+              ? tj.rich('isBattleCode', {
+                  link: (chunks) => (
+                    <AppLink href="/learn/battles" className="font-semibold underline">
+                      {chunks}
+                    </AppLink>
+                  ),
+                })
+              : problem === 'tooMany'
+                ? tj('tooMany', { minutes: retryMinutes })
+                : tf('serverError')}
         </p>
       ) : null}
       <Modal

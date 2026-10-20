@@ -159,7 +159,7 @@ test.describe('Ученик: вход или регистрация (этало�
     await card(page).getByLabel(sa.password, { exact: true }).fill('student-pass-1');
     await card(page).getByRole('button', { name: sa.loginSubmit }).click();
     await expect(page.getByTestId('student-join')).toBeVisible();
-    await page.getByRole('textbox', { name: ru.student.class.join }).fill(code);
+    await page.getByRole('textbox', { name: ru.join.codeLabel }).fill(code);
     await page.getByRole('button', { name: ru.student.class.joinSubmit }).click();
     await page
       .getByRole('dialog', { name: ru.join.confirmTitle })
