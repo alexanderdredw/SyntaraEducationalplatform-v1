@@ -30,7 +30,7 @@ describe('migrations (integration)', () => {
                   where n.nspname = 'public' and t.typtype = 'e'`,
     );
 
-  it('AG-09 applies all migrations on a clean database (section 5: 55 tables, 16 enums)', async () => {
+  it('AG-09 applies all migrations on a clean database (section 5: 61 tables, 18 enums)', async () => {
     await migrateUp(db);
     expect(await appliedMigrations(db)).toEqual([
       '0000_extensions_roles',
@@ -40,13 +40,15 @@ describe('migrations (integration)', () => {
       '0004_self_registration',
       '0005_base_content',
       '0006_subject_position',
+      '0007_battle',
     ]);
-    expect(await tables()).toBe(55);
-    expect(await enums()).toBe(16);
+    expect(await tables()).toBe(61);
+    expect(await enums()).toBe(18);
   });
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0007_battle',
       '0006_subject_position',
       '0005_base_content',
       '0004_self_registration',
@@ -68,7 +70,17 @@ describe('migrations (integration)', () => {
 
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
+    expect(await tables()).toBe(61);
+    // 0007: таблицы, функции RLS и перечисления Battle (5.9).
+    expect(await rollback(db, 1)).toEqual(['0007_battle']);
     expect(await tables()).toBe(55);
+    expect(await enums()).toBe(16);
+    expect(
+      await count(
+        db,
+        sql`select count(*) as n from pg_proc where proname in ('battle_session_visible', 'app_user_context')`,
+      ),
+    ).toBe(0);
     expect(await rollback(db, 1)).toEqual(['0006_subject_position']);
     expect(
       await count(
@@ -95,6 +107,6 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(7);
+    expect(await appliedMigrations(db)).toHaveLength(8);
   });
 });

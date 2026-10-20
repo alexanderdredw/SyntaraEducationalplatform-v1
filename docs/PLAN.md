@@ -699,7 +699,7 @@ AC-VIS-01 и регресс всех AC; REQ-NFR-SEC-01..07, DATA-01..03, PERF-0
 
 ### В работе — итерация 10.5 «Battle» (docs/BATTLE_TZ.md, команда владельца 2026-10-20)
 - [x] B0 — SPEC и PLAN: требования перенесены (SPEC 1.2, 2.2, 4, 5.9, 6.8–6.9, 7.12, 8.6, 9, 11 PH-45, 12, 13, 16), вопросы Q-BTL-01…10 — TODO(OWNER) со значениями по умолчанию.
-- [ ] B1 — данные и тесты Battle.
+- [x] B1 — данные и тесты Battle (2026-10-20): миграция `0007_battle` (+ откат; RLS по `app.user_id`, отложенная уникальность позиций, частичный индекс кода), схема `schema/battle.ts`, PH-45 в seed `config`; DTO и правила в `packages/shared/src/battle.ts` (код, имя «Асель К.», рейтинг BR-BTL-04); модуль api `battle` — API-BTL-01…11 (владение — `OwnershipGuard`, сущность `battle`); web — пункт «Battle», BT-T01 `/teacher/battles` (вкладка «История игр» — заглушка PH-24 до B5; кнопка «Запустить» — в B4), BT-T02 `/teacher/battles/:id` (автосохранение, ↑↓ и перетаскивание, картинка из галереи, импорт из темы); `packages/ui`: токены вариантов и медалей, `AnswerMarker`, `AnswerTile`. Тесты: db battle-constraints (9), api battle-quiz.int (8) + ACL, shared battle.spec (7), e2e battle-editor (3 × 2 ширины); скриншоты `docs/media/battle/b1-*`.
 - [ ] B2 — движок и реальное время.
 - [ ] B3 — интерфейс ученика.
 - [ ] B4 — интерфейс учителя (ведущий).

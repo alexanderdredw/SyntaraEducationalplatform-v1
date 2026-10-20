@@ -36,6 +36,9 @@ export const ScanStatus = z.enum(['pending', 'clean', 'rejected']);
 export const AiContext = z.enum(['topic_tutor', 'general_tutor']);
 export const AiRole = z.enum(['user', 'assistant']);
 export const AiMsgStatus = z.enum(['complete', 'partial', 'failed']);
+/** 5.9 Battle (итерация 10.5). */
+export const BattleSessionStatus = z.enum(['lobby', 'in_progress', 'finished', 'cancelled']);
+export const BattlePhase = z.enum(['lobby', 'question', 'reveal', 'leaderboard', 'finished']);
 
 export type TopicStatus = z.infer<typeof TopicStatus>;
 export type QuestionType = z.infer<typeof QuestionType>;
@@ -51,3 +54,5 @@ export type ScanStatus = z.infer<typeof ScanStatus>;
 export type AiContext = z.infer<typeof AiContext>;
 export type AiRole = z.infer<typeof AiRole>;
 export type AiMsgStatus = z.infer<typeof AiMsgStatus>;
+export type BattleSessionStatus = z.infer<typeof BattleSessionStatus>;
+export type BattlePhase = z.infer<typeof BattlePhase>;

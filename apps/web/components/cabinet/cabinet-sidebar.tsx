@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { BarChart3, BookOpen, ClipboardList, LifeBuoy, Sparkles, Trophy, Users } from 'lucide-react';
+import { BarChart3, BookOpen, ClipboardList, LifeBuoy, Sparkles, Trophy, Users, Zap } from 'lucide-react';
 import { cn } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { AppLink } from '../app-link';
@@ -14,6 +14,7 @@ const ICONS: Record<CabinetIcon, typeof BookOpen> = {
   assistant: Sparkles,
   progress: BarChart3,
   achievements: Trophy,
+  battle: Zap,
 };
 
 /**

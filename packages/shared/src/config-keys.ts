@@ -63,6 +63,7 @@ export const CONFIG_KEYS = {
   'platform.tz': { ph: 'PH-42' },
   'routes.legal': { ph: 'PH-43' },
   'auth.student_registration_by_class_code': { ph: 'PH-44' },
+  battle: { ph: 'PH-45' },
 } as const satisfies Record<string, ConfigKeyMeta>;
 
 export type ConfigKey = keyof typeof CONFIG_KEYS;

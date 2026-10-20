@@ -402,6 +402,28 @@
         "fields": ["displayName", "login", "password", "email?"],
         "status": "требует уточнения"
       }
+    },
+    {
+      "key": "battle",
+      "note": "PH-45",
+      "value": {
+        "join_scope": "class",
+        "default_time_limit_sec": 20,
+        "time_limits_sec": [5, 10, 20, 30, 60, 90],
+        "late_join_default": false,
+        "xp": {
+          "enabled": false
+        },
+        "question_types": ["single_choice", "true_false"],
+        "show_question_on_student": true,
+        "display_name": "first_name_initial",
+        "max_participants": 100,
+        "leaderboard_default": true,
+        "code": {
+          "letters": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          "digits": "123456789"
+        }
+      }
     }
   ]
 }

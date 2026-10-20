@@ -17,13 +17,23 @@ import { ApiException } from '../../common/api-exception';
 import { DB } from '../../infra/tokens';
 import { type AuthRequest } from '../auth/auth.types';
 
-export type OwnedEntity = 'subject' | 'topic' | 'question' | 'media' | 'attempt' | 'conversation';
+export type OwnedEntity =
+  | 'subject'
+  | 'topic'
+  | 'question'
+  | 'media'
+  | 'attempt'
+  | 'conversation'
+  | 'battle'
+  | 'battleSession'
+  | 'battleParticipation';
 
 const OWNS_KEY = 'content:owns';
 
 /**
  * BR-ACL-01, BR-ACL-03, API-GEN-08: учитель работает только со своими предметами и всем, что к ним относится;
  * ученик — только со своими попытками и диалогами с учебным ИИ.
+ * Battle (BR-BTL-12): тест — только владельцу, сессия — только ведущему, участие — только участнику.
  * Проверка выполняется guard'ом — до разбора тела запроса, поэтому чужой или несуществующий ID всегда даёт
  * 404 (не 400 и не 403), и существование чужого объекта не раскрывается (REQ-NFR-SEC-04).
  */
@@ -60,6 +70,7 @@ export class OwnershipGuard implements CanActivate {
 
   private async owns(entity: OwnedEntity, id: string, userId: string): Promise<boolean> {
     const { subjects, topics, quizzes, questions, mediaFiles, quizAttempts, aiConversations } = schema;
+    const { battleQuizzes, battleSessions, battleParticipants } = schema;
     const ownSubject = and(eq(subjects.ownerId, userId), isNull(subjects.archivedAt));
     let rows: unknown[];
     switch (entity) {
@@ -106,6 +117,26 @@ export class OwnershipGuard implements CanActivate {
               isNull(aiConversations.archivedAt),
             ),
           );
+        break;
+      // Battle-тест — только владельцу, в том числе архивный (из архива можно вернуть).
+      case 'battle':
+        rows = await this.db
+          .select({ id: battleQuizzes.id })
+          .from(battleQuizzes)
+          .where(and(eq(battleQuizzes.id, id), eq(battleQuizzes.ownerId, userId)));
+        break;
+      case 'battleSession':
+        rows = await this.db
+          .select({ id: battleSessions.id })
+          .from(battleSessions)
+          .where(and(eq(battleSessions.id, id), eq(battleSessions.hostId, userId)));
+        break;
+      // Сессия, где ученик — участник (в том числе выгнанный: снимок сообщает ему об этом).
+      case 'battleParticipation':
+        rows = await this.db
+          .select({ id: battleParticipants.id })
+          .from(battleParticipants)
+          .where(and(eq(battleParticipants.sessionId, id), eq(battleParticipants.studentId, userId)));
         break;
       case 'media':
         rows = await this.db

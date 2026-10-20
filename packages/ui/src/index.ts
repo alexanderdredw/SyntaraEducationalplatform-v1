@@ -51,3 +51,4 @@ export {
   Capsule,
   HeaderBar,
 } from './layout';
+export { ANSWER_LETTERS, answerToneClass, AnswerShape, AnswerMarker, AnswerTile } from './battle';

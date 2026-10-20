@@ -1332,6 +1332,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/teacher/battles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["BattleQuizController_list"];
+        put?: never;
+        post: operations["BattleQuizController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/battles/import-sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["BattleQuizController_importSources"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/battles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["BattleQuizController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["BattleQuizController_update"];
+        trace?: never;
+    };
+    "/api/teacher/battles/{id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["BattleQuizController_duplicate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/battles/{id}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["BattleQuizController_addQuestion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/battles/{id}/questions/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["BattleQuizController_reorder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/battles/{id}/questions/{qid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["BattleQuizController_archiveQuestion"];
+        options?: never;
+        head?: never;
+        patch: operations["BattleQuizController_updateQuestion"];
+        trace?: never;
+    };
+    "/api/teacher/battles/{id}/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["BattleQuizController_importQuestions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2519,6 +2647,126 @@ export interface components {
             /** @description PH-10 atlas.urls */
             atlasUrls: components["schemas"]["AtlasUrlsDto"];
             features: components["schemas"]["PublicFeaturesDto"];
+        };
+        BattleQuizListItemDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+            questionsCount: number;
+            /** @description Число начатых игр */
+            gamesCount: number;
+            /** Format: date-time */
+            lastPlayedAt: string | null;
+            archived: boolean;
+        };
+        BattleQuizCreateBody: {
+            title: string;
+            description?: string;
+            /**
+             * @description Язык содержания теста; перевода нет
+             * @enum {string}
+             */
+            locale: "ru" | "kk" | "en";
+        };
+        BattleIdDto: {
+            /** Format: uuid */
+            id: string;
+        };
+        BattleImportQuestionDto: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+            /** @enum {string} */
+            type: "single_choice" | "true_false";
+        };
+        BattleImportTopicDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** @description Вопросы, которые можно скопировать (BR-BTL-10) */
+            eligibleCount: number;
+            /** @description Для выбора чекбоксами (BT-T02) */
+            questions: components["schemas"]["BattleImportQuestionDto"][];
+        };
+        BattleImportSourceDto: {
+            /** Format: uuid */
+            subjectId: string;
+            subjectTitle: string;
+            official: boolean;
+            topics: components["schemas"]["BattleImportTopicDto"][];
+        };
+        BattleOptionDto: {
+            position: number;
+            text: string;
+            isCorrect: boolean;
+        };
+        BattleQuestionItemDto: {
+            /** Format: uuid */
+            id: string;
+            /** @description Порядковый номер в тесте */
+            number: number;
+            /** @enum {string} */
+            type: "single_choice" | "true_false";
+            text: string;
+            /** Format: uuid */
+            imageMediaId: string | null;
+            /** @description Подписанная ссылка (только clean, BR-FILE-04) */
+            imageUrl: string | null;
+            timeLimitSec: number;
+            /** @description Импортирован из квиза темы (копия) */
+            imported: boolean;
+            options: components["schemas"]["BattleOptionDto"][];
+        };
+        BattleQuizDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string | null;
+            /** @enum {string} */
+            locale: "ru" | "kk" | "en";
+            archived: boolean;
+            gamesCount: number;
+            questions: components["schemas"]["BattleQuestionItemDto"][];
+        };
+        BattleQuizUpdateBody: {
+            title?: string;
+            description?: string | null;
+            /** @enum {string} */
+            locale?: "ru" | "kk" | "en";
+            /** @description true — в архив, false — из архива */
+            archived?: boolean;
+        };
+        BattleOptionBody: {
+            /** @description Для true_false текст задаёт сервер */
+            text: string;
+            isCorrect: boolean;
+        };
+        BattleQuestionBody: {
+            /** @enum {string} */
+            type: "single_choice" | "true_false";
+            text: string;
+            /**
+             * Format: uuid
+             * @description Файл галереи
+             */
+            imageMediaId?: string | null;
+            /** @enum {number} */
+            timeLimitSec: 5 | 10 | 20 | 30 | 60 | 90;
+            /** @description single_choice — 2–4, true_false — 2; ровно один isCorrect */
+            options: components["schemas"]["BattleOptionBody"][];
+        };
+        BattleReorderBody: {
+            questionIds: string[];
+        };
+        BattleImportBody: {
+            /** Format: uuid */
+            topicId: string;
+            questionIds?: string[];
+        };
+        BattleImportedDto: {
+            imported: number;
         };
     };
     responses: never;
@@ -6062,6 +6310,482 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PublicConfigDto"];
                 };
+            };
+        };
+    };
+    BattleQuizController_list: {
+        parameters: {
+            query?: {
+                archived?: "true" | "false";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleQuizListItemDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BattleQuizCreateBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleIdDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_importSources: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleImportSourceDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleQuizDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BattleQuizUpdateBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_duplicate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleIdDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_addQuestion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BattleQuestionBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleIdDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description tooManyQuestions (> 50) / invalidFile (картинка не из галереи) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_reorder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BattleReorderBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description invalidOrder — нужны все неархивные вопросы теста */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_archiveQuestion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                qid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_updateQuestion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                qid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BattleQuestionBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BattleQuizController_importQuestions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BattleImportBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BattleImportedDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description tooManyQuestions / notEligible */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

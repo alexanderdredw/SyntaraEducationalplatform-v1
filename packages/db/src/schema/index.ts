@@ -7,3 +7,4 @@ export * from './results';
 export * from './ai';
 export * from './support';
 export * from './system';
+export * from './battle';

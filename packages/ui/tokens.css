@@ -34,6 +34,25 @@
   --danger: #e5484d; /* низкий результат, «требуют внимания» */
   /* Текст ошибок: --danger на --bg даёт 4.3:1 < 4.5:1 (REQ-NFR-A11Y-01); оттенок подтверждён владельцем 2026-10-14. */
   --danger-text: #f0686c;
+
+  /* ---- Battle (итерация 10.5, REQ-BTL-GEN-02) ---- */
+  /* Варианты ответа: всегда цвет + фигура (▲ ◆ ● ■) + буква (A–D). Текст на заливке — контраст ≥ 4,5:1. */
+  --answer-1: #d13438; /* красный ▲ A */
+  --answer-1-text: #ffffff;
+  --answer-2: #1e63e4; /* синий ◆ B */
+  --answer-2-text: #ffffff;
+  --answer-3: #f5b301; /* жёлтый ● C */
+  --answer-3-text: #1a1a1a;
+  --answer-4: #1b7f45; /* зелёный ■ D */
+  --answer-4-text: #ffffff;
+  /* Медали пьедестала; *-text — тот же оттенок для текста на фоне страницы. */
+  --medal-gold: #f5b301;
+  --medal-gold-text: #f5c542;
+  --medal-silver: #b8bec8;
+  --medal-silver-text: #c9ced6;
+  --medal-bronze: #c27a3a;
+  --medal-bronze-text: #d9925a;
+  --medal-ink: #1a1a1a; /* текст на заливке медали */
   --warning: #f5b301; /* значки роли, серии, «лампочки» и баннера email в эталонах */
   /* Текст цвета --warning (роль участника команды, UX-08): контраст ≥ 4.5:1 в обеих темах. */
   --warning-text: #f5b301;
@@ -126,6 +145,10 @@
   /* Текст ошибок на светлом фоне: контраст ≥ 4.5:1. */
   --danger-text: #d13438;
   --success-text: #166534;
+  /* Battle: медали — текст для светлого фона (контраст ≥ 4,5:1). */
+  --medal-gold-text: #8a6100;
+  --medal-silver-text: #5b616b;
+  --medal-bronze-text: #8b4d1c;
   --warning-text: #854d0e;
   --backdrop-line: rgb(24 24 24 / 0.08);
   --accent-bright: #1765e8;

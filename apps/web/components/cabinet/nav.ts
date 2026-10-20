@@ -1,6 +1,13 @@
 import { type UserRole } from '@syntara/shared';
 
-export type CabinetIcon = 'courses' | 'classes' | 'assignments' | 'assistant' | 'progress' | 'achievements';
+export type CabinetIcon =
+  | 'courses'
+  | 'classes'
+  | 'assignments'
+  | 'assistant'
+  | 'progress'
+  | 'achievements'
+  | 'battle';
 
 export interface CabinetNavItem {
   href: string;
@@ -24,6 +31,8 @@ export const CABINET_NAV: Partial<Record<UserRole, CabinetNavItem[]>> = {
     },
     { href: '/teacher/classes', key: 'classes', icon: 'classes' },
     { href: '/teacher/assignments', key: 'assignments', icon: 'assignments' },
+    // Итерация 10.5: Battle (REQ-BTL-T01); игра ведущего — внутри раздела.
+    { href: '/teacher/battles', key: 'battle', icon: 'battle', also: ['/teacher/battle-sessions'] },
   ],
   student: [
     { href: '/learn/subjects', key: 'subjects', icon: 'courses', also: ['/learn/sections', '/learn/topics'] },

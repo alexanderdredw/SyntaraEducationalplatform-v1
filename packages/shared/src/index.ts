@@ -11,3 +11,4 @@ export * from './content';
 export * from './file-signature';
 export * from './gamification';
 export * from './progress';
+export * from './battle';

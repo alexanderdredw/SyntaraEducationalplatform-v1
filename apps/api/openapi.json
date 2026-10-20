@@ -3848,6 +3848,524 @@
           "public"
         ]
       }
+    },
+    "/api/teacher/battles": {
+      "get": {
+        "operationId": "BattleQuizController_list",
+        "parameters": [
+          {
+            "name": "archived",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BattleQuizListItemDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "post": {
+        "operationId": "BattleQuizController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BattleQuizCreateBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BattleIdDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/import-sources": {
+      "get": {
+        "operationId": "BattleQuizController_importSources",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BattleImportSourceDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/{id}": {
+      "get": {
+        "operationId": "BattleQuizController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BattleQuizDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "patch": {
+        "operationId": "BattleQuizController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BattleQuizUpdateBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/{id}/duplicate": {
+      "post": {
+        "operationId": "BattleQuizController_duplicate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BattleIdDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/{id}/questions": {
+      "post": {
+        "operationId": "BattleQuizController_addQuestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BattleQuestionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BattleIdDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "422": {
+            "description": "tooManyQuestions (> 50) / invalidFile (картинка не из галереи)"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/{id}/questions/reorder": {
+      "post": {
+        "operationId": "BattleQuizController_reorder",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BattleReorderBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "422": {
+            "description": "invalidOrder — нужны все неархивные вопросы теста"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/{id}/questions/{qid}": {
+      "patch": {
+        "operationId": "BattleQuizController_updateQuestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qid",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BattleQuestionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      },
+      "delete": {
+        "operationId": "BattleQuizController_archiveQuestion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qid",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/battles/{id}/import": {
+      "post": {
+        "operationId": "BattleQuizController_importQuestions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BattleImportBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BattleImportedDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "422": {
+            "description": "tooManyQuestions / notEligible"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
     }
   },
   "info": {
@@ -7980,6 +8498,425 @@
           "supportEmail",
           "atlasUrls",
           "features"
+        ]
+      },
+      "BattleQuizListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          },
+          "questionsCount": {
+            "type": "number"
+          },
+          "gamesCount": {
+            "type": "number",
+            "description": "Число начатых игр"
+          },
+          "lastPlayedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "archived": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "locale",
+          "questionsCount",
+          "gamesCount",
+          "lastPlayedAt",
+          "archived"
+        ]
+      },
+      "BattleQuizCreateBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ],
+            "description": "Язык содержания теста; перевода нет"
+          }
+        },
+        "required": [
+          "title",
+          "locale"
+        ]
+      },
+      "BattleIdDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "BattleImportQuestionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "type"
+        ]
+      },
+      "BattleImportTopicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "eligibleCount": {
+            "type": "number",
+            "description": "Вопросы, которые можно скопировать (BR-BTL-10)"
+          },
+          "questions": {
+            "description": "Для выбора чекбоксами (BT-T02)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BattleImportQuestionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "eligibleCount",
+          "questions"
+        ]
+      },
+      "BattleImportSourceDto": {
+        "type": "object",
+        "properties": {
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subjectTitle": {
+            "type": "string"
+          },
+          "official": {
+            "type": "boolean"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BattleImportTopicDto"
+            }
+          }
+        },
+        "required": [
+          "subjectId",
+          "subjectTitle",
+          "official",
+          "topics"
+        ]
+      },
+      "BattleOptionDto": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "text": {
+            "type": "string"
+          },
+          "isCorrect": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "position",
+          "text",
+          "isCorrect"
+        ]
+      },
+      "BattleQuestionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "number",
+            "description": "Порядковый номер в тесте"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "imageMediaId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Подписанная ссылка (только clean, BR-FILE-04)"
+          },
+          "timeLimitSec": {
+            "type": "number"
+          },
+          "imported": {
+            "type": "boolean",
+            "description": "Импортирован из квиза темы (копия)"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BattleOptionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "type",
+          "text",
+          "imageMediaId",
+          "imageUrl",
+          "timeLimitSec",
+          "imported",
+          "options"
+        ]
+      },
+      "BattleQuizDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "gamesCount": {
+            "type": "number"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BattleQuestionItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "locale",
+          "archived",
+          "gamesCount",
+          "questions"
+        ]
+      },
+      "BattleQuizUpdateBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "kk",
+              "en"
+            ]
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "true — в архив, false — из архива"
+          }
+        }
+      },
+      "BattleOptionBody": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 150,
+            "description": "Для true_false текст задаёт сервер"
+          },
+          "isCorrect": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text",
+          "isCorrect"
+        ]
+      },
+      "BattleQuestionBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "imageMediaId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid",
+            "description": "Файл галереи"
+          },
+          "timeLimitSec": {
+            "type": "number",
+            "enum": [
+              5,
+              10,
+              20,
+              30,
+              60,
+              90
+            ]
+          },
+          "options": {
+            "description": "single_choice — 2–4, true_false — 2; ровно один isCorrect",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BattleOptionBody"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "timeLimitSec",
+          "options"
+        ]
+      },
+      "BattleReorderBody": {
+        "type": "object",
+        "properties": {
+          "questionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "questionIds"
+        ]
+      },
+      "BattleImportBody": {
+        "type": "object",
+        "properties": {
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "questionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "topicId"
+        ]
+      },
+      "BattleImportedDto": {
+        "type": "object",
+        "properties": {
+          "imported": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "imported"
         ]
       }
     }

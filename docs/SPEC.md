@@ -832,7 +832,7 @@ export const QuestionDto = z.object({
 | API-BTL-07 | PATCH /api/teacher/battles/:id/questions/:qid | `BattleQuestionDto` — вопрос и варианты целиком |
 | API-BTL-08 | DELETE /api/teacher/battles/:id/questions/:qid | Удалить вопрос (архивирование, `archived_at`) → 204 |
 | API-BTL-09 | POST /api/teacher/battles/:id/questions/reorder | `{ questionIds: [...] }` — все неархивные вопросы теста в новом порядке |
-| API-BTL-10 | GET /api/teacher/battles/import-sources | `[{ subjectId, subjectTitle, official, topics: [{ id, title, eligibleCount }] }]` — свои темы и базовые темы платформы с числом подходящих вопросов (BR-BTL-10) |
+| API-BTL-10 | GET /api/teacher/battles/import-sources | `[{ subjectId, subjectTitle, official, topics: [{ id, title, eligibleCount, questions: [{ id, text, type }] }] }]` — свои темы и базовые темы платформы с подходящими вопросами (BR-BTL-10; вопросы — для выбора чекбоксами в BT-T02) |
 | API-BTL-11 | POST /api/teacher/battles/:id/import | `{ topicId, questionIds? }` → `{ imported }` — копии вопросов (время по умолчанию, PH-45) |
 
 `BattleQuestionDto` (6.7): `{ type: 'single_choice'|'true_false', text (1–300), imageMediaId?, timeLimitSec ∈ {5,10,20,30,60,90}, options: [{ text (1–150), isCorrect }] }` — `single_choice`: 2–4 варианта, ровно один правильный; `true_false`: ровно два варианта, тексты «Верно» / «Неверно» задаёт сервер на языке теста, правильный — один.
@@ -1174,7 +1174,7 @@ BR-BTL-10 Battle-тест: владелец — учитель; название
           обложка, BR-FILE-01/03; ученику — подписанная ссылка BR-FILE-04, только clean); типы single_choice (2–4
           варианта, ровно один правильный) и true_false (Q-BTL-05); text_input не поддерживается; время 5/10/20/30/60/90 с,
           по умолчанию 20 (Q-BTL-02). Импорт — копирование вопросов single_choice и true_false квиза своей темы или
-          базовой темы платформы (текст и варианты на языке теста, иначе RU; не больше 4 вариантов); правка копии не
+          базовой темы платформы (текст и варианты на языке теста, иначе RU; подходят вопросы не больше чем с 4 вариантами и с текстами в пределах лимитов Battle — 300 и 150 символов, тексты не обрезаются); правка копии не
           меняет исходный квиз. Тест можно дублировать и архивировать; тест с прошедшими сессиями не удаляется — только
           архив.
 BR-BTL-11 Удаление данных ученика (запрос «Мои данные», PH-08) распространяется на Battle: ответы ученика удаляются,

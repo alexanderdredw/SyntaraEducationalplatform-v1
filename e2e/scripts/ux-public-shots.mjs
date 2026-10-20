@@ -63,6 +63,11 @@ await shot('UX-09-schools-full-light', '/ru/schools', { fullPage: true, theme: '
 await shot('UX-10-closed-390', '/ru/support', { width: 390, height: 844 });
 await shot('UX-10-open-390', '/ru/support', { width: 390, height: 844, openMenu: true });
 await shot('UX-10-open-320', '/ru/support', { width: 320, height: 640, openMenu: true });
-await shot('UX-10-open-light-390', '/ru/support', { width: 390, height: 844, theme: 'light', openMenu: true });
+await shot('UX-10-open-light-390', '/ru/support', {
+  width: 390,
+  height: 844,
+  theme: 'light',
+  openMenu: true,
+});
 
 await browser.close();

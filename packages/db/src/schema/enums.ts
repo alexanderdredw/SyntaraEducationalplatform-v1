@@ -4,6 +4,8 @@ import {
   AiMsgStatus,
   AiRole,
   AttemptStatus,
+  BattlePhase,
+  BattleSessionStatus,
   Difficulty,
   Locale,
   MediaKind,
@@ -38,3 +40,5 @@ export const scanStatusEnum = pgEnum('scan_status', values(ScanStatus));
 export const aiContextEnum = pgEnum('ai_context', values(AiContext));
 export const aiRoleEnum = pgEnum('ai_role', values(AiRole));
 export const aiMsgStatusEnum = pgEnum('ai_msg_status', values(AiMsgStatus));
+export const battleSessionStatusEnum = pgEnum('battle_session_status', values(BattleSessionStatus));
+export const battlePhaseEnum = pgEnum('battle_phase', values(BattlePhase));

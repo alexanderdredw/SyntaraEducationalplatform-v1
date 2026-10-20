@@ -54,7 +54,12 @@
     "subjectNotGranted": "This subject is not given to the class — give it on the subject page",
     "topicNotInSubject": "The topic does not belong to the subject",
     "topicNotPublished": "The topic is not published",
-    "invalidDate": "Enter a date and time"
+    "invalidDate": "Enter a date and time",
+    "max4": "No more than 4 options",
+    "invalidTimeLimit": "Choose a time from the list",
+    "tooManyQuestions": "No more than 50 questions in a test",
+    "invalidOrder": "The question order is out of date — reload the page",
+    "notEligible": "This question cannot be imported"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -772,7 +777,8 @@
       "assistant": "Learning assistant",
       "progress": "My progress",
       "achievements": "Achievements",
-      "support": "Support"
+      "support": "Support",
+      "battle": "Battle"
     },
     "verify": {
       "text": "Confirm your email",
@@ -1237,5 +1243,90 @@
     "guest": "Continue without signing in →",
     "identifier": "Email or login",
     "loginSubmit": "Sign in"
+  },
+  "battle": {
+    "teacher": {
+      "list": {
+        "title": "My Battles",
+        "tabsLabel": "Battle sections",
+        "tabTests": "Tests",
+        "tabHistory": "Game history",
+        "new": "New Battle",
+        "emptyTitle": "No Battle tests yet",
+        "emptyText": "Battle is a live quiz for your class: you ask the questions, students answer at the same time against the clock, and at the end there is a leaderboard and a podium.",
+        "questions": "{count, plural, one {# question} other {# questions}}",
+        "lastPlayed": "Last game: {date}",
+        "neverPlayed": "Not played yet",
+        "edit": "Edit",
+        "more": "More actions: {title}",
+        "duplicate": "Duplicate",
+        "archive": "Archive",
+        "unarchive": "Restore",
+        "filterLabel": "Which tests to show",
+        "active": "Active",
+        "archived": "Archive",
+        "emptyArchive": "The archive is empty",
+        "duplicated": "Copy created",
+        "archivedDone": "The test was archived",
+        "restoredDone": "The test was restored"
+      },
+      "create": {
+        "title": "New Battle",
+        "submit": "Create"
+      },
+      "editor": {
+        "title": "Battle editor",
+        "back": "← To my Battles",
+        "name": "Title",
+        "description": "Description (optional)",
+        "language": "Question language",
+        "languageHint": "You write the questions in this language; there is no translation.",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveError": "Could not save — check the fields and your connection",
+        "unsaved": "Not saved",
+        "questions": "Questions",
+        "addQuestion": "+ Question",
+        "import": "Import from a topic",
+        "empty": "No questions yet — add the first one or import from a topic",
+        "question": "Question {number}",
+        "questionText": "Question text",
+        "type": "Question type",
+        "time": "Time to answer",
+        "seconds": "{n} s",
+        "options": "Answer options",
+        "option": "Option {letter}",
+        "correct": "Correct",
+        "correctFor": "Option {letter} is correct",
+        "addOption": "+ Option",
+        "removeOption": "Remove option {letter}",
+        "image": "Picture (optional)",
+        "imageNone": "No picture",
+        "moveUp": "Move question {number} up",
+        "moveDown": "Move question {number} down",
+        "drag": "Drag question {number}",
+        "delete": "Delete question {number}",
+        "deleteTitle": "Delete question {number}?",
+        "deleteText": "The question will be removed from the test. Past games will not change.",
+        "deleteConfirm": "Delete",
+        "cancel": "Cancel",
+        "imported": "From a topic",
+        "ready": "Ready to launch: {count, plural, one {# question} other {# questions}}",
+        "notReady": "Before launching, every question needs text and a correct option. Check: {numbers}",
+        "noQuestions": "Add at least one question to launch a game"
+      },
+      "import": {
+        "title": "Import from a topic",
+        "subject": "Subject",
+        "topic": "Topic",
+        "questions": "Questions",
+        "choose": "Choose",
+        "all": "Select all",
+        "submit": "Import",
+        "empty": "No topics with suitable questions (multiple choice or true/false, up to 4 options)",
+        "done": "Questions imported: {count}",
+        "official": "Platform"
+      }
+    }
   }
 }

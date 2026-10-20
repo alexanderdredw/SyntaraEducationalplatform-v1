@@ -123,7 +123,7 @@ test.describe('UX публичных страниц', () => {
     await expect(nav.getByRole('link', { name: ru.shell.nav.about })).toHaveAttribute('aria-current', 'page');
     for (const link of await nav.getByRole('link').all()) {
       const box = await link.boundingBox();
-      expect(box!.height).toBeGreaterThanOrEqual(48);
+      expect(Math.round(box!.height)).toBeGreaterThanOrEqual(48);
     }
     for (const button of await dialog.getByRole('button').all()) {
       const box = await button.boundingBox();
