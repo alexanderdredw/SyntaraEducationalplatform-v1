@@ -62,8 +62,8 @@ Syntara Education Platform — адаптивная веб-платформа д
 | **Режим** | **Роль** | **Объём** |
 |-------|------|-----------------------------|
 | Гостевой | guest (без входа) | 10 публичных страниц, пробный вопрос, публичный помощник, заявка школы, обращение в поддержку, правовые документы; каталог и «Обзор» базовых уроков платформы (BR-VIS-04) |
-| Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса |
-| Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс |
+| Кабинет учителя | teacher | Предметы, выдача классу, темы, материалы, публикация, вопросы квиза, задания, аналитика класса; Battle — живые викторины для класса (7.12) |
+| Интерфейс ученика | student | Каталог, урок, квиз, учебный ИИ, показатели, достижения, класс; участие в Battle по коду (7.12) |
 | Служебная поддержка | support_agent, onboarding_agent | Очереди обращений и школьных заявок |
 
 ## 1.2 Матрица доступа (REQ-GEN-ACL)
@@ -79,6 +79,8 @@ Syntara Education Platform — адаптивная веб-платформа д
 | Учебный ИИ, личные показатели, достижения | — | R/W (свои) | — | — | — |
 | Предметы, темы, вопросы, материалы | — | — | R/W (свои) | — | — |
 | Выдача предмета классу, задания, аналитика | — | — | R/W (свои классы) | — | — |
+| Battle-тесты, игровые сессии (ведущий), итоги и история своих игр (7.12) | — | — | R/W (свои) | — | — |
+| Участие в Battle по коду: лобби, ответы, свои итоги и история (BR-BTL-02) | → login | R/W (свои; только сессии своего класса) | — | — | — |
 | Очередь обращений | — | — | — | R/W | — |
 | Очередь школьных заявок | — | — | — | — | R/W |
 
@@ -140,8 +142,8 @@ syntara/
 │  │  ├─ app/[locale]/(staff)/...    # /staff/tickets, /staff/requests
 │  │  └─ components/        # компоненты страниц
 │  ├─ api/                 # NestJS
-│  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit}
-│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, cleanup
+│  │  └─ src/modules/{auth,users,classes,content,quiz,assignments,results,gamification,ai,support,public,files,audit,battle}
+│  └─ worker/              # BullMQ-процессоры: outbox, email, file-scan, cleanup, battle (таймеры игр, 7.12)
 ├─ packages/
 │  ├─ shared/              # Zod-схемы, типы DTO, enum, i18n (ru.json, kk.json, en.json), config keys
 │  ├─ ui/                  # дизайн-система (токены, Button, Card, Tabs, Field, Modal ...)
@@ -283,6 +285,13 @@ pnpm lint && pnpm typecheck
 | /learn/progress | Мои показатели | student | U08 | 8.4.6 |
 | /learn/achievements | Достижения | student | U10 | 8.4.7 |
 | /learn/assignments | Мои задания (PH-33) | student | — | 8.4.8 |
+| /teacher/battles | Мои Battle: вкладки «Тесты» и «История игр» (`?tab=history&classId=`) | teacher | — | 8.6.1 |
+| /teacher/battles/:id | Редактор Battle-теста | teacher (владелец) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid | Игра ведущего: лобби, вопрос, раскрытие, рейтинг, итог | teacher (ведущий сессии) | — | 8.6.1 |
+| /teacher/battle-sessions/:sid/results | Результаты игры | teacher (ведущий сессии) | — | 8.6.1 |
+| /learn/battles | Вход в Battle по коду и «Мои Battle» | student | — | 8.6.2 |
+| /learn/battles/:sid | Игра ученика: лобби, вопрос, раскрытие, рейтинг, итог | student (участник) | — | 8.6.2 |
+| /learn/battles/:sid/results | Итоги игры ученика | student (участник) | — | 8.6.2 |
 | /staff/tickets, /staff/requests | Служебные очереди | support_agent / onboarding_agent | — | 8.5 |
 
 Правила: внешние ссылки атласов — из конфигурации (PH-10). `returnTo` — только относительный внутренний путь, проверенный по белому списку префиксов; иначе `/`. Прямой заход по URL отдаёт ту же страницу, что и навигация (SSR).
@@ -323,6 +332,8 @@ CREATE TYPE scan_status       AS ENUM ('pending','clean','rejected');
 CREATE TYPE ai_context        AS ENUM ('topic_tutor','general_tutor');
 CREATE TYPE ai_role           AS ENUM ('user','assistant');
 CREATE TYPE ai_msg_status     AS ENUM ('complete','partial','failed');
+CREATE TYPE battle_session_status AS ENUM ('lobby','in_progress','finished','cancelled');   -- 5.9
+CREATE TYPE battle_phase          AS ENUM ('lobby','question','reveal','leaderboard','finished');
 ```
 
 ## 5.3 Пользователи, доступ, классы
@@ -576,6 +587,65 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | migrator | DDL; используется только CI при миграции |
 | analytics_ro | SELECT на реплике |
 
+## 5.9 Battle (итерация 10.5)
+
+Миграция `0007_battle.sql` (+ откат), схема Drizzle `packages/db/src/schema/battle.ts`. Правила — 7.12, автомат — SM-BTL (раздел 9).
+
+```sql
+CREATE TABLE battle_quizzes (id uuid PRIMARY KEY, owner_id uuid NOT NULL REFERENCES users,
+  title text NOT NULL CHECK (length(title) BETWEEN 1 AND 120), description text CHECK (length(description) <= 500),
+  locale locale NOT NULL,                -- язык содержания теста; перевода нет
+  archived_at timestamptz);
+CREATE INDEX ix_battle_quizzes_owner ON battle_quizzes (owner_id, created_at DESC);
+
+CREATE TABLE battle_questions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  position int NOT NULL, type question_type NOT NULL CHECK (type IN ('single_choice','true_false')),
+  text text NOT NULL CHECK (length(text) BETWEEN 1 AND 300),
+  image_media_id uuid REFERENCES media_files,   -- файл галереи учителя (media_files kind = 'cover', BR-BTL-10)
+  time_limit_sec int NOT NULL DEFAULT 20 CHECK (time_limit_sec IN (5,10,20,30,60,90)),
+  source_question_id uuid REFERENCES questions, -- если вопрос импортирован из квиза темы (копия, BR-BTL-10)
+  archived_at timestamptz,
+  UNIQUE (battle_quiz_id, position) DEFERRABLE INITIALLY DEFERRED);
+
+CREATE TABLE battle_options (id uuid PRIMARY KEY, battle_question_id uuid NOT NULL REFERENCES battle_questions,
+  position int NOT NULL CHECK (position BETWEEN 1 AND 4), text text NOT NULL CHECK (length(text) BETWEEN 1 AND 150),
+  is_correct boolean NOT NULL DEFAULT false, UNIQUE (battle_question_id, position));
+CREATE UNIQUE INDEX ux_battle_one_correct ON battle_options (battle_question_id) WHERE is_correct;
+
+CREATE TABLE battle_sessions (id uuid PRIMARY KEY, battle_quiz_id uuid NOT NULL REFERENCES battle_quizzes,
+  host_id uuid NOT NULL REFERENCES users, class_id uuid NOT NULL REFERENCES classes,
+  code char(6) NOT NULL CHECK (code ~ '^[A-Z]{3}[1-9]{3}$'),
+  status battle_session_status NOT NULL DEFAULT 'lobby', phase battle_phase NOT NULL DEFAULT 'lobby',
+  settings jsonb NOT NULL,                 -- 7.12, таблица настроек
+  questions_snapshot jsonb NOT NULL,       -- снимок вопросов при запуске (BR-BTL-05)
+  current_index int, question_started_at timestamptz, deadline_at timestamptz,
+  state_version int NOT NULL DEFAULT 0, cancel_reason text CHECK (cancel_reason IN ('host','expired')),
+  started_at timestamptz, finished_at timestamptz, last_activity_at timestamptz NOT NULL DEFAULT now());
+CREATE UNIQUE INDEX ux_battle_active_code ON battle_sessions (code) WHERE status IN ('lobby','in_progress');
+CREATE INDEX ix_battle_sessions_host ON battle_sessions (host_id, created_at DESC);
+CREATE INDEX ix_battle_sessions_class ON battle_sessions (class_id, created_at DESC);
+
+CREATE TABLE battle_participants (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  student_id uuid NOT NULL REFERENCES users, display_name text NOT NULL CHECK (length(display_name) <= 80),
+  joined_at timestamptz NOT NULL DEFAULT now(), left_at timestamptz, kicked_at timestamptz,
+  last_seen_at timestamptz NOT NULL DEFAULT now(),
+  correct_count int, answered_count int, correct_time_ms int, final_rank int,   -- итоги, пишутся при finished
+  UNIQUE (session_id, student_id));
+
+CREATE TABLE battle_answers (id uuid PRIMARY KEY, session_id uuid NOT NULL REFERENCES battle_sessions,
+  participant_id uuid NOT NULL REFERENCES battle_participants, question_index int NOT NULL CHECK (question_index >= 0),
+  option_position int NOT NULL CHECK (option_position BETWEEN 1 AND 4), is_correct boolean NOT NULL,
+  response_ms int NOT NULL CHECK (response_ms >= 0), answered_at timestamptz NOT NULL, client_answer_id uuid NOT NULL,
+  UNIQUE (participant_id, question_index), UNIQUE (participant_id, client_answer_id));
+CREATE INDEX ix_battle_answers_question ON battle_answers (session_id, question_index);
+```
+
+- `questions_snapshot`: `[{ index, type, text, imageMediaId, timeLimitSec, options: [{ position, text, isCorrect }] }]`; порядок — с учётом настройки «Перемешать вопросы/варианты» (один порядок для всех). Правильные варианты из снимка MUST NOT отдаваться ученику до `reveal` (BR-BTL-03).
+- У всех таблиц Battle есть `created_at` и `updated_at` (5.1); в DDL опущены.
+- RLS (SHOULD, второй уровень, как в миграции 0002): при заданном `app.user_id` учитель видит только свои тесты и сессии, ученик — только сессии, где он участник, и только свои ответы; без контекста — не ограничивает (основная защита — guards и сервисы).
+- Аудит (REQ-NFR-SEC-05): создание и запуск сессии, выгон участника, досрочное завершение, отмена (`entity_type = 'battle_session'`).
+- Права ролей БД (5.8): `app_user` — SELECT/INSERT/UPDATE на таблицы Battle; DELETE — только `app_maintenance` для `battle_answers` (обезличивание по запросу на удаление, BR-BTL-11).
+
 
 # 6. API
 
@@ -588,7 +658,7 @@ CREATE TABLE app_config (key text PRIMARY KEY, value jsonb NOT NULL, needs_confi
 | API-GEN-03 | Локаль запроса — заголовок `Accept-Language` (ru, kk, en); ответы с переводами содержат поле `locale` — фактически отданный язык. |
 | API-GEN-04 | Формат ошибки: `{ "code": "VALIDATION_FAILED", "message": "…", "fieldErrors": { "email": "…" }, "requestId": "…" }`. HTTP-коды: 400, 401, 403, 404, 409, 413, 422, 429, 500, 503. |
 | API-GEN-05 | Все POST публичных форм требуют заголовок `Idempotency-Key` (UUID). Тот же ключ и то же тело → прежний ответ; тот же ключ и другое тело → 409 `IDEMPOTENCY_MISMATCH`. Срок хранения ключа — 24 ч. |
-| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20. Ответ 429 содержит `retryAfterSeconds`. |
+| API-GEN-06 | Лимиты (Redis): формы — 5 в минуту на IP; вход — 10 в 15 минут на IP+email; проверка кода класса — 10 в 15 минут; ИИ — PH-20; Battle — ввод кода 10 за 10 минут на ученика и 30 на IP, ответы — 1 в 200 мс на участника (BR-BTL-01/03). Ответ 429 содержит `retryAfterSeconds`. |
 | API-GEN-07 | Списки — курсорная пагинация: `?cursor=&limit=` (limit ≤ 100), ответ `{ items, nextCursor }`. |
 | API-GEN-08 | Все обращения к данным проверяют владение/членство (BR-ACL-*). Нарушение → 404 (не раскрывать существование объекта). |
 
@@ -744,6 +814,83 @@ export const QuestionDto = z.object({
 ```
 
 Тексты ошибок валидации — ключи i18n; пример RU для email: «Введите email, например name@example.com».
+
+## 6.8 Battle (итерация 10.5)
+
+Общие правила — 6.1: Zod-схемы в `packages/shared`, формат ошибок API-GEN-04, CSRF для изменяющих запросов, OpenAPI. Уточняющий код ошибки Battle передаётся в `fieldErrors` (как `subjectNotGranted` в API-T-22): `{ "code": "CONFLICT", "fieldErrors": { "battle": "questionClosed" } }`. Чужой тест или сессия → 404 (API-GEN-08).
+
+**Учитель — тесты** (`teacher`, только владелец — BR-BTL-12)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-01 | GET /api/teacher/battles | `?archived=false` → `[{ id, title, locale, questionsCount, gamesCount, lastPlayedAt, archived }]` — мои тесты |
+| API-BTL-02 | POST /api/teacher/battles | `{ title, description?, locale }` → 201 `{ id }` |
+| API-BTL-03 | GET /api/teacher/battles/:id | Тест с вопросами и вариантами (с правильными — это владелец) |
+| API-BTL-04 | PATCH /api/teacher/battles/:id | `{ title?, description?, locale?, archived? }` |
+| API-BTL-05 | POST /api/teacher/battles/:id/duplicate | Копия теста (неархивные вопросы) → 201 `{ id }` |
+| API-BTL-06 | POST /api/teacher/battles/:id/questions | `BattleQuestionDto` → 201 `{ id }`; больше 50 вопросов → 422 `tooManyQuestions` |
+| API-BTL-07 | PATCH /api/teacher/battles/:id/questions/:qid | `BattleQuestionDto` — вопрос и варианты целиком |
+| API-BTL-08 | DELETE /api/teacher/battles/:id/questions/:qid | Удалить вопрос (архивирование, `archived_at`) → 204 |
+| API-BTL-09 | POST /api/teacher/battles/:id/questions/reorder | `{ questionIds: [...] }` — все неархивные вопросы теста в новом порядке |
+| API-BTL-10 | GET /api/teacher/battles/import-sources | `[{ subjectId, subjectTitle, official, topics: [{ id, title, eligibleCount }] }]` — свои темы и базовые темы платформы с числом подходящих вопросов (BR-BTL-10) |
+| API-BTL-11 | POST /api/teacher/battles/:id/import | `{ topicId, questionIds? }` → `{ imported }` — копии вопросов (время по умолчанию, PH-45) |
+
+`BattleQuestionDto` (6.7): `{ type: 'single_choice'|'true_false', text (1–300), imageMediaId?, timeLimitSec ∈ {5,10,20,30,60,90}, options: [{ text (1–150), isCorrect }] }` — `single_choice`: 2–4 варианта, ровно один правильный; `true_false`: ровно два варианта, тексты «Верно» / «Неверно» задаёт сервер на языке теста, правильный — один.
+
+**Учитель — сессии** (ведущий — `battle_sessions.host_id = me`)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-20 | POST /api/teacher/battles/:id/sessions | `{ classId, settings }` → 201 `{ sessionId, code }`; класс свой (иначе 404); тест без вопросов → 422 `noQuestions`; у вопроса нет правильного варианта → 422 `noCorrectOption`; больше 3 активных сессий → 409 `tooManyActiveSessions` (BR-BTL-05) |
+| API-BTL-21 | GET /api/teacher/battle-sessions/:sid | Снимок ведущего: фаза, версия, участники, текущий вопрос с правильным вариантом, счётчики, `serverNow` |
+| API-BTL-22 | GET /api/teacher/battle-sessions/:sid/events | SSE-поток ведущего (6.9) |
+| API-BTL-23 | POST /api/teacher/battle-sessions/:sid/start | `lobby → question(0)`; без участников → 422 `noParticipants` |
+| API-BTL-24 | POST /api/teacher/battle-sessions/:sid/close-question | Досрочно закрыть вопрос → `reveal` |
+| API-BTL-25 | POST /api/teacher/battle-sessions/:sid/next | `reveal → leaderboard → question(i+1)`; на последнем вопросе → `finished` |
+| API-BTL-26 | POST /api/teacher/battle-sessions/:sid/finish | Досрочно завершить игру (итог по отвеченным вопросам) |
+| API-BTL-27 | POST /api/teacher/battle-sessions/:sid/cancel | Отменить (только из `lobby`) |
+| API-BTL-28 | POST /api/teacher/battle-sessions/:sid/participants/:pid/kick | Выгнать участника |
+| API-BTL-29 | GET /api/teacher/battle-sessions | `?battleId=&classId=&cursor=&limit=` (API-GEN-07) → `{ items: [{ id, battleTitle, className, status, participantsCount, questionsCount, startedAt, finishedAt }], nextCursor }` — история игр |
+| API-BTL-30 | GET /api/teacher/battle-sessions/:sid/results | Итоги: пьедестал, таблица, по вопросам (доля правильных, распределение вариантов, среднее время), ответы по участникам |
+| API-BTL-31 | GET /api/teacher/battle-sessions/:sid/results.csv | Экспорт итогов: UTF-8 с BOM, разделитель `;` |
+
+Переходы API-BTL-23…28 принимают `{ expectedVersion }`; версия не совпала → 409 `staleState`, в теле ошибки — поле `snapshot` (свежий снимок API-BTL-21). Повтор уже выполненного перехода ничего не меняет (SM-BTL).
+
+**Ученик** (`student`; участник — BR-BTL-02)
+
+| **ID** | **Метод и путь** | **Назначение** |
+|---|------------|-----------------------------|
+| API-BTL-40 | POST /api/student/battles/join | `{ code }` → `{ sessionId }`; 404 `codeNotFound` (в том числе код чужого класса — без подробностей), 409 `kicked`, 409 `full`, 409 `alreadyStarted` (позднее подключение выключено); лимит — BR-BTL-01 |
+| API-BTL-41 | GET /api/student/battle-sessions/:sid | Снимок ученика: фаза, версия, вопрос **без правильного ответа**, мой ответ, мой счёт и место (после `reveal`), число участников, `serverNow` |
+| API-BTL-42 | GET /api/student/battle-sessions/:sid/events | SSE-поток ученика (6.9) |
+| API-BTL-43 | POST /api/student/battle-sessions/:sid/answers | `{ questionIndex, optionPosition, clientAnswerId }` → `{ accepted: true }` — без правильности (BR-BTL-03); 409 `questionClosed`, 409 `alreadyAnswered` |
+| API-BTL-44 | POST /api/student/battle-sessions/:sid/leave | Выйти из игры → 204 |
+| API-BTL-45 | GET /api/student/battle-sessions | `?cursor=&limit=` → `{ items: [{ id, battleTitle, teacherName, finishedAt, rank, participantsCount, correctCount, questionsCount }], nextCursor }` — мои прошедшие Battle |
+| API-BTL-46 | GET /api/student/battle-sessions/:sid/results | После `finished`: пьедестал, полная таблица, мои ответы по вопросам с правильными вариантами; до `finished` → 409 `notFinished` |
+
+Чужая сессия или сессия, где ученик не участник, → 404. Выгнанный ученик получает в снимке `kicked: true` и не может отвечать (409 `kicked`).
+
+## 6.9 События Battle (SSE)
+
+Формат: `id: {stateVersion}-{seq}`, `event: <тип>`, `data: <JSON>`; каждые 15 с — комментарий `: ping` (и отметка `last_seen_at` участника). При подключении и переподключении первым приходит `snapshot`. Поток — только с cookie-сессией; не больше 2 одновременных потоков на пользователя в одной сессии (лишние закрываются, старейший первым).
+
+| **Событие** | **Кому** | **Данные** |
+|---|---|---|
+| `snapshot` | всем при подключении | Полное состояние для роли (как API-BTL-21 / API-BTL-41) + `serverNow` |
+| `participant_joined` / `participant_left` / `participant_kicked` | ведущему — с участником; ученикам — только счётчик | `{ participant?, participantsCount }` |
+| `question_started` | всем | `{ version, index, total, type, text, imageUrl?, options: [{ position, text }], startedAt, deadlineAt, serverNow }` |
+| `answer_progress` | ведущему, не чаще раза в 250 мс | `{ answered, active }` |
+| `answer_accepted` | ответившему ученику | `{ index }` |
+| `question_revealed` | всем | ведущему: `{ correctPosition, distribution: [{ position, count }], avgResponseMs }`; ученику: `{ correctPosition, myPosition, isCorrect, myCorrectCount, myRank, participantsCount }` |
+| `leaderboard` | всем | `{ top: [{ rank, displayName, correctCount }] (5), me?: { rank, correctCount } }` |
+| `finished` | всем | `{ podium, table, me? }` — таблица всех мест с именами |
+| `cancelled` | всем | `{ reason }` |
+| `kicked` | выгнанному | `{}` — клиент закрывает поток и показывает сообщение |
+
+- Оставшееся время на клиенте: `deadlineAt − (Date.now() + (serverNow − clientNowAtReceipt))`.
+- Переподключение — с нарастающей задержкой 1, 2, 4, 8 с (не больше 10 с) и новым `snapshot`; после 3 неудачных попыток — баннер «Нет соединения, переподключаемся…».
+- Персональные данные ученика (`question_revealed`, `leaderboard.me`, `finished.me`) формирует экземпляр api, держащий соединение ученика; через Redis Pub/Sub идёт только общее событие — правильность чужих ответов никому не уходит.
+- В режиме «Экономия трафика» данные событий не меняются.
 
 # 7. Бизнес-правила
 
@@ -978,6 +1125,94 @@ BR-CNT-07 Автор версий импорта — системный поль
 BR-CNT-08 Предмет без опубликованных тем — статус «Скоро», карточка не кликабельна: каталог ученика и гостя
           (API-S-04/05, API-PUB-10/11) и /subjects (API-PUB-01).
 ```
+
+## 7.12 Battle (итерация 10.5)
+
+Battle — живая викторина для класса: учитель собирает Battle-тест, запускает игровую сессию с кодом, ученики класса входят по коду и одновременно отвечают на время; в конце — рейтинг и пьедестал. Экран ведущего у учителя (подходит для проектора), «пульт» для ответов у ученика. Транспорт реального времени: SSE (сервер → клиент) + POST (клиент → сервер) + Redis Pub/Sub между экземплярами api; PostgreSQL — источник истины, api без состояния, время — только серверное. Код событий изолирован за интерфейсом `BattleRealtime` (замена транспорта на WebSocket — только в этом слое).
+
+```text
+BR-BTL-01 Код сессии: 3 латинские буквы A–Z и 3 цифры 1–9 (`^[A-Z]{3}[1-9]{3}$`, например KTR583; PH-45, Q-BTL-10);
+          генерация crypto.randomInt; уникален среди активных сессий (lobby, in_progress — частичный индекс
+          ux_battle_active_code), после завершения или отмены освобождается; при коллизии до 10 повторов, затем 503.
+          Ввод: trim, удаление пробелов, upper-case («ktr 583» → KTR583). Хранится открыто (короткоживущий, показывается
+          на проекторе). Лимит ввода: 10 попыток за 10 минут на ученика и 30 на IP (API-GEN-06); ответ «код не найден»
+          одинаков для несуществующего и чужого кода.
+BR-BTL-02 Вход по коду (PH-45 battle.join_scope = 'class', Q-BTL-01): только ученик с активным членством в классе сессии.
+          Выгнанный — 409 kicked; лимит участников PH-45 max_participants (100, Q-BTL-08) — 409 full; после старта —
+          только при настройке «Позднее подключение» (Q-BTL-03), иначе 409 alreadyStarted; пропущенные вопросы —
+          без ответа. Повторный вход тем же аккаунтом (обрыв связи, «Выйти из игры») — та же строка участника, пока
+          сессия активна.
+BR-BTL-03 Ответы: один раз на вопрос, изменить нельзя. Принимается ответ, пришедший не позже deadline_at + 500 мс;
+          позже — 409 questionClosed. response_ms = answered_at − question_started_at (оба момента серверные).
+          Повтор с тем же clientAnswerId → 200 и прежний результат; другой вариант на тот же вопрос → 409 alreadyAnswered.
+          Правильность до раскрытия MUST NOT сообщаться ни ученику, ни в сетевых ответах («Ответ принят»).
+          Вопрос закрывается досрочно, когда ответили все активные участники (не выгнанные, не вышедшие, на связи
+          за последние 30 с). Ответы — не чаще 1 запроса в 200 мс на участника.
+BR-BTL-04 Рейтинг: (1) correct_count по убыванию; (2) correct_time_ms — сумма response_ms правильных ответов — по
+          возрастанию; (3) при полном равенстве — одно место (два вторых, затем четвёртое). Выгнанные в рейтинг не
+          входят; вышедшие сами остаются с набранным результатом. Итоги (final_rank, correct_count, correct_time_ms,
+          answered_count) пишутся в battle_participants при переходе в finished; пересчёт по battle_answers даёт тот же
+          результат. Пьедестал — места 1–3 с учётом совпадений (может быть больше трёх человек), остальные — таблица.
+BR-BTL-05 Сессия: запускается из теста для своего класса с настройками; при запуске замораживается снимок вопросов
+          (questions_snapshot) — правка теста не влияет на идущую игру и историю. У учителя не больше 3 активных
+          сессий (не finished и не cancelled) — иначе 409 tooManyActiveSessions.
+BR-BTL-06 Срок жизни: лобби без старта закрывается через 60 минут, игра без активности — через 30 минут
+          (status = cancelled, cancel_reason = 'expired'); проверка — задача worker раз в минуту.
+BR-BTL-07 Участники: имя в игре — из профиля, «имя и первая буква фамилии» (первое слово display_name + первая буква
+          второго слова с точкой: «Асель К.»; одно слово — как есть; PH-45 display_name, Q-BTL-07); свои ники не
+          вводятся. Учитель может выгнать участника (в лобби и в игре) — вернуться в эту сессию нельзя. Обрыв связи — не
+          выход. «Выйти из игры» — left_at; повторный вход по коду возможен, пока сессия активна.
+BR-BTL-08 Переходы SM-BTL — одна транзакция с SELECT … FOR UPDATE строки сессии и проверкой ожидаемых фазы, номера
+          вопроса и state_version; повторный или запоздавший переход ничего не меняет. Каждое изменение состояния
+          увеличивает state_version; события несут version, клиент игнорирует события со старой версией. Переходы
+          выполняет одна реализация (`packages/db/src/battle`), её вызывают api (BattleEngine) и worker (очередь battle:
+          таймер закрытия вопроса на deadline_at + 500 мс, автопереход).
+BR-BTL-09 Battle не начисляет XP и не влияет на освоение тем, «Мои показатели», задания и аналитику класса
+          (PH-45 xp.enabled = false, Q-BTL-04).
+BR-BTL-10 Battle-тест: владелец — учитель; название ≤ 120, описание ≤ 500, язык содержания RU/KK/EN (перевода нет);
+          1–50 вопросов. Вопрос: текст ≤ 300, необязательная картинка — только файл галереи учителя (загрузка как
+          обложка, BR-FILE-01/03; ученику — подписанная ссылка BR-FILE-04, только clean); типы single_choice (2–4
+          варианта, ровно один правильный) и true_false (Q-BTL-05); text_input не поддерживается; время 5/10/20/30/60/90 с,
+          по умолчанию 20 (Q-BTL-02). Импорт — копирование вопросов single_choice и true_false квиза своей темы или
+          базовой темы платформы (текст и варианты на языке теста, иначе RU; не больше 4 вариантов); правка копии не
+          меняет исходный квиз. Тест можно дублировать и архивировать; тест с прошедшими сессиями не удаляется — только
+          архив.
+BR-BTL-11 Удаление данных ученика (запрос «Мои данные», PH-08) распространяется на Battle: ответы ученика удаляются,
+          в чужой истории и итогах участник показывается как «Участник» (display_name), итоговые числа сохраняются.
+          Выход из класса и архивирование класса не удаляют прошедшие результаты.
+BR-BTL-12 Права: тесты и сессии видит и меняет только учитель-владелец (ведущий); остальным — 404. Ученик — только
+          сессии, где он участник. Служебные роли доступа не имеют (BR-ACL-04). Все изменяющие запросы — с CSRF;
+          SSE — только с cookie-сессией.
+```
+
+**Настройки сессии** (`battle_sessions.settings`)
+
+| **Настройка** | **По умолчанию** | **Описание** |
+|---|---|---|
+| Класс | обязательно | Войти могут только активные участники класса (BR-BTL-02) |
+| Перемешать вопросы | выкл | Один порядок для всех участников |
+| Перемешать варианты | выкл | Один порядок для всех; цвета и фигуры привязаны к позиции |
+| Промежуточный рейтинг | вкл (Q-BTL-09) | Топ-5 после каждого вопроса, кроме последнего |
+| Автопереход | выкл | После `reveal` через 5 с и после `leaderboard` через 5 с — без нажатия |
+| Позднее подключение | выкл (Q-BTL-03) | Вход после старта; пропущенные вопросы — без ответа |
+| Максимум участников | 100 (Q-BTL-08) | Лимит сессии (BR-BTL-02) |
+
+**Нагрузочные цели** (проверяются k6, этап B6): одна сессия — 100 участников, вопрос 10 с, все отвечают в первые 3 с: p95 «ответ → `answer_accepted`» ≤ 300 мс, p95 «закрытие → `question_revealed` у всех» ≤ 1 с, без потерянных ответов; 20 одновременных сессий по 40 участников на одном экземпляре api без ошибок; перезапуск экземпляра api посреди вопроса — все клиенты переподключились за ≤ 10 с, ответы не потеряны, игра продолжилась.
+
+**Вопросы владельцу** (docs/BATTLE_TZ.md, раздел 12) — `TODO(OWNER)`; до ответа действуют значения по умолчанию (PH-45):
+
+| **№** | **Вопрос** | **По умолчанию** |
+|---|---|---|
+| Q-BTL-01 | Кто может войти по коду: только ученики выбранного класса или любой ученик платформы, знающий код? | Только ученики класса сессии |
+| Q-BTL-02 | Время на вопрос по умолчанию и набор вариантов | 20 с; 5/10/20/30/60/90 с |
+| Q-BTL-03 | Позднее подключение после старта | Выключено, учитель может включить |
+| Q-BTL-04 | XP за Battle (вариант: +5 за участие, +10 за пьедестал) | Не начислять |
+| Q-BTL-05 | Типы вопросов | Выбор варианта и «Верно/Неверно», без вписанного ответа |
+| Q-BTL-06 | Показывать текст вопроса на экране ученика (вариант Kahoot — только на проекторе) | Показывать |
+| Q-BTL-07 | Имена в рейтинге | «Асель К.» — имя и первая буква фамилии |
+| Q-BTL-08 | Лимит участников в сессии | 100 |
+| Q-BTL-09 | Промежуточный рейтинг после каждого вопроса | Включён |
+| Q-BTL-10 | Код: исключить похожие буквы O и I | Не исключать — ровно A–Z |
 
 
 # 8. Функциональные требования по экранам
@@ -1267,6 +1502,48 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | REQ-SUP-03 | Действия: назначить, ответить (шаблоны response_templates: подтверждение, уточнение, решение, задержка; текст и адрес видны перед отправкой), сменить статус по SM-TICKET, эскалировать (waiting_internal). |
 | REQ-SUP-04 | Работает при недоступном ИИ. Цель первого ответа — 1 рабочий день (PH-22), не показывается пользователю. |
 
+## 8.6 Battle (итерация 10.5)
+
+Общие требования к экранам Battle:
+
+| **ID** | **Требование** |
+|---|-----------------------------|
+| REQ-BTL-GEN-01 | Экраны — только из токенов и компонентов `packages/ui`, текущий тёмный стиль; React Bits не подключается. Обе темы; ширины 320/390/768/1280/1440 без горизонтальной прокрутки; axe без нарушений serious/critical; `prefers-reduced-motion` и «Экономия трафика» отключают анимации и конфетти. |
+| REQ-BTL-GEN-02 | Новые элементы `packages/ui`: токены медалей `--medal-gold`, `--medal-silver`, `--medal-bronze` (+ варианты для текста с контрастом ≥ 4,5:1); 4 цвета вариантов ответа — красный, синий, жёлтый, зелёный; каждый вариант всегда с фигурой (▲ ◆ ● ■) и буквой (A–D), не только цветом. Компоненты `CodeInput` (6 ячеек, автопереход, вставка, верхний регистр), `BigCode` (крупный код с «Копировать»), `CountdownBar` (таймер), `AnswerTile`, `Podium`, `LeaderboardTable`, `ParticipantChip`, `ConnectionBanner`. |
+| REQ-BTL-GEN-03 | Смена фаз — плавная смена содержимого (≤ 250 мс) без перезагрузки. Изменения состояния объявляются через `aria-live="polite"` («Вопрос 3 из 10», «Время вышло», «Верно»). Тексты — i18n RU/KK/EN (`needs_confirmation.json`; KK и EN — `needs_review`); название функции во всех языках — «Battle»; содержание вопросов не переводится. |
+
+### 8.6.1 Учитель (BT-T*)
+
+Новый пункт боковой панели учителя «Battle» (значок «молния» из набора Lucide).
+
+| **ID** | **Экран и маршрут** | **Требование** |
+|---|---|-----------------------------|
+| REQ-BTL-T01 | Мои Battle, `/teacher/battles` | Вкладки «Тесты» и «История игр». Карточки тестов: название, число вопросов, последняя игра, кнопки «Запустить», «Изменить», меню (дублировать, архивировать). Кнопка «Новый Battle». Пустое состояние с пояснением, что такое Battle. |
+| REQ-BTL-T02 | Редактор, `/teacher/battles/:id` | Название, описание, язык. Список вопросов (перетаскивание + кнопки ↑↓ для клавиатуры). Карточка вопроса: текст, картинка, тип, время (сегменты 5/10/20/30/60/90), 2–4 варианта с цветом и фигурой как в игре и переключателем «правильный». «+ Вопрос», «Импорт из темы» (модальное окно: предмет → тема → чекбоксы вопросов). Проверка перед запуском: у каждого вопроса есть правильный вариант. Автосохранение с индикатором «Сохранено». |
+| REQ-BTL-T03 | Запуск — модальное окно | Выбор класса, настройки 7.12, кнопка «Создать игру» → API-BTL-20 → лобби. |
+| REQ-BTL-T04 | Лобби ведущего, `/teacher/battle-sessions/:sid` | Крупный код (`BigCode`) и подсказка «Ученики: кабинет → Battle → ввести код». Счётчик и сетка подключившихся (`ParticipantChip`, мягкое появление, «×» — выгнать с подтверждением). «Начать» (неактивна при 0 участников) и «Отменить». «Во весь экран» — режим проектора. |
+| REQ-BTL-T05 | Вопрос (ведущий) | «Вопрос 3 из 10», текст крупно, картинка, плитки вариантов без отметки правильного, большой таймер, «Ответили 18 из 24», «Завершить вопрос». |
+| REQ-BTL-T06 | Раскрытие | Правильный вариант подсвечен, остальные приглушены. Столбчатая диаграмма распределения ответов по вариантам (цвет + фигура + число), среднее время. «Далее». |
+| REQ-BTL-T07 | Промежуточный рейтинг | Топ-5: место, имя, правильных. «Следующий вопрос». |
+| REQ-BTL-T08 | Итог | Пьедестал (2-е слева, 1-е по центру выше, 3-е справа; цвета медалей, имя, «X из Y правильных», время), ниже таблица остальных мест. «Сыграть ещё раз» (новая сессия того же теста и класса), «Подробные результаты», «Экспорт CSV». |
+| REQ-BTL-T09 | Результаты игры, `/teacher/battle-sessions/:sid/results` | Шапка: тест, класс, дата, участников. Пьедестал + таблица. «По вопросам»: доля правильных (цвет по порогам аналитики PH-30), распределение, среднее время; список «Сложные вопросы». «По ученикам»: строка ученика раскрывается ответами по вопросам. |
+| REQ-BTL-T10 | Режим проектора | Крупная типографика (вопрос ≥ 40 px на 1280 px), без боковой панели, кнопки управления внизу; выход по Esc. |
+| REQ-BTL-T11 | Карточка класса `/teacher/classes/:id` | Ссылка «Battle этого класса» → история игр, отфильтрованная по классу. |
+
+### 8.6.2 Ученик (BT-S*)
+
+Новый пункт боковой панели ученика «Battle». На главной ученика — карточка «Есть код Battle? Введи его» с полем `CodeInput`.
+
+| **ID** | **Экран и маршрут** | **Требование** |
+|---|---|-----------------------------|
+| REQ-BTL-S01 | Вход в Battle, `/learn/battles` | Крупный `CodeInput` и «Войти в игру». Ошибки: «Код не найден — проверь буквы и цифры», «Игра уже началась», «Учитель удалил тебя из этой игры». Ниже «Мои Battle» — история (тест, дата, место «3 из 24», правильных «7 из 10»). |
+| REQ-BTL-S02 | Лобби, `/learn/battles/:sid` | «Ты в игре!», название теста, имя учителя, «Ждём, когда учитель начнёт», число участников, своё имя, мягкая анимация ожидания. «Выйти». |
+| REQ-BTL-S03 | Вопрос | Таймер сверху, «Вопрос 3 из 10», текст вопроса и картинка (Q-BTL-06). 2–4 больших плитки `AnswerTile` (на телефоне — сетка 2×2 или столбец, высота ≥ 72 px). Нажатие сразу отправляет ответ; с клавиатуры — Tab/стрелки + Enter. После ответа — «Ответ принят! Ждём остальных…», плитки заблокированы, выбранная отмечена. Время вышло без ответа — «Время вышло». |
+| REQ-BTL-S04 | Раскрытие | «Верно!» (зелёный, ✓) или «Неверно» (+ правильный вариант). «Правильных: 4», «Твоё место: 5 из 24». |
+| REQ-BTL-S05 | Промежуточный рейтинг | Топ-5 и строка «Ты: 7-е место». |
+| REQ-BTL-S06 | Итог, `/learn/battles/:sid/results` | Пьедестал (как у учителя) + своя карточка: место, правильных X из Y, время. Таблица всех мест, своя строка подсвечена. «Мои ответы» — разбор по вопросам с правильными вариантами. Короткое CSS-конфетти для мест 1–3 (отключается при reduced motion и «Экономии трафика»). |
+| REQ-BTL-S07 | Связь | Обрыв — переподключение (6.9), после 3 неудач — `ConnectionBanner` «Нет соединения, переподключаемся…»; после переподключения — текущая фаза из `snapshot`. |
+
 # 9. Конечные автоматы
 
 ```text
@@ -1294,6 +1571,14 @@ SM-REQUEST      new --> in_progress --> contacted --> onboarded | rejected
 SM-FILE         pending --scan ok--> clean ; pending --virus|macro--> rejected (файл удалён)
 
 SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; streaming --error--> failed
+
+SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | все ответили | «Завершить вопрос»)--> reveal
+                reveal --(«Далее» | автопереход 5 с)--> leaderboard --next--> question(i+1)
+                reveal --next--> question(i+1)                       (промежуточный рейтинг выключен)
+                reveal | leaderboard на последнем вопросе --next--> finished
+                любое состояние, кроме finished/cancelled --«Завершить игру»--> finished (итог по отвеченным вопросам)
+                lobby --«Отменить» | 60 мин без старта--> cancelled ; игра 30 мин без активности --> cancelled (expired)
+                status: lobby (фаза lobby), in_progress (question | reveal | leaderboard), finished, cancelled (7.12)
 ```
 
 Недопустимые переходы возвращают 409 `INVALID_TRANSITION`.
@@ -1404,6 +1689,12 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
   "PH-44 auth.student_registration_by_class_code": {
     "enabled": true, "requires_valid_code": true, "email_required": false,
     "fields": ["displayName", "login", "password", "email?"], "status": "требует уточнения"
+  },
+  "PH-45 battle": {   // итерация 10.5, значения по умолчанию вопросов Q-BTL-01…10 (7.12) — TODO(OWNER)
+    "join_scope": "class", "default_time_limit_sec": 20, "time_limits_sec": [5, 10, 20, 30, 60, 90],
+    "late_join_default": false, "xp": { "enabled": false }, "question_types": ["single_choice", "true_false"],
+    "show_question_on_student": true, "display_name": "first_name_initial", "max_participants": 100,
+    "leaderboard_default": true, "code": { "letters": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "digits": "123456789" }
   }
 }
 ```
@@ -1413,6 +1704,8 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 **PH-44 — регистрация ученика.** Q-16 решён владельцем 2026-10-14: ограничение «только по коду класса» отменено — ученик регистрируется сам (PH-17 = true, BR-CLS-04, REQ-GEN-AUTH-02), код класса необязателен. Ниже — исходная редакция от 2026-10-13 (для истории).
 **Исходная редакция (отменена):**
 Ученик регистрируется только по действующему коду класса (BR-CLS-01). На `/join` после успешной проверки кода (API-PUB-08) гость без аккаунта вводит имя, логин и пароль (email необязателен; пароль — не короче PH-06). Сервер повторно проверяет код, создаёт пользователя с ролью `student` (без email — `is_child_safe = true`, вход по логину), фиксирует согласие в `consents` и создаёт активное членство в классе в одной транзакции. Без действующего кода регистрация ученика невозможна; ответ сервера не раскрывает данных класса до входа. Эндпоинт — `POST /api/auth/register-student { code, displayName, login, password, email? }` (лимиты как у проверки кода, API-GEN-06). Открытые вопросы: правила формата логина, согласие родителя для детей, вход по логину на /auth/login (поле «Email или логин»), восстановление пароля без email. Тексты экрана — `needs_confirmation`.
+
+**PH-45 — Battle.** Значения по умолчанию для вопросов владельца Q-BTL-01…10 (7.12). Набор времени и формат кода закреплены также ограничениями БД (5.9: `time_limit_sec IN (…)`, `code ~ '^[A-Z]{3}[1-9]{3}$'`) — их изменение потребует миграции. `join_scope`, `xp.enabled`, `show_question_on_student` — пока поддерживается только значение по умолчанию; другое значение — отдельная задача после решения владельца.
 
 **Недостающие тексты.** Видимые тексты, которых нет в документе, задаются заглушками в i18n-файлах и перечисляются в `packages/shared/i18n/needs_confirmation.json` (решение владельца, ред. 2026-10-13).
 
@@ -1432,6 +1725,7 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 8 | Интерфейс ученика: обучение | Каталог, урок, квиз, события, mastery, XP, бейджи | AC-ST-01..05 |
 | 9 | Учебный ИИ | Диалоги, SSE, отмена, быстрые действия, /learn/assistant | AC-ST-06..07 |
 | 10 | Задания, показатели, аналитика | Назначения, «Мои задания», /learn/progress, /learn/achievements, аналитика класса | AC-TCH-08..09, AC-ST-08..09 |
+| 10.5 | Battle | Этапы B0–B6 (docs/PLAN.md): данные и тесты, движок и реальное время, интерфейсы ученика и ведущего, история и результаты, надёжность и нагрузка (7.12) | AC-BTL-01..18 |
 | 11 | Качество и выпуск | Визуальные тесты по эталонам, axe, k6, проверка безопасности, бэкап/восстановление, отчёт заглушек | Все AC; REQ-NFR-*; отчёт `config:report` |
 
 # 13. Критерии приёмки
@@ -1489,6 +1783,24 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | AC-CNT-05 | Изменён файл темы | Импорт | Новая опубликованная версия; ученик видит новый текст; прогресс сохранён |
 | AC-CNT-06 | Файл с ошибкой | Импорт | Код выхода 1, список ошибок; БД не изменена |
 | AC-CNT-07 | Тема удалена из файлов | Импорт | Тема снята с публикации, не удалена; результаты учеников сохранены |
+| AC-BTL-01 | Учитель | Создаёт тест из 5 вопросов, 2 импортирует из темы | Тест сохранён; импортированные вопросы — копии |
+| AC-BTL-02 | Тест с вопросами | Запуск игры для класса | Код вида `^[A-Z]{3}[1-9]{3}$`, уникален среди активных |
+| AC-BTL-03 | Ученик класса | Вводит код в нижнем регистре с пробелом | Попадает в лобби; учитель видит его без перезагрузки ≤ 1 с |
+| AC-BTL-04 | Ученик другого класса | Вводит код | «Код не найден», без подробностей |
+| AC-BTL-05 | Лобби с участниками | Учитель нажимает «Начать» | У всех участников вопрос появляется одновременно (разница ≤ 1 с), таймер совпадает |
+| AC-BTL-06 | Идёт вопрос | Ученик отвечает | «Ответ принят»; в сетевых ответах нет правильности; счётчик у ведущего растёт |
+| AC-BTL-07 | Идёт вопрос | Все ответили раньше времени | Вопрос закрывается досрочно, раскрытие у всех |
+| AC-BTL-08 | Вопрос закрыт | Ответ после дедлайна + 500 мс | 409 `questionClosed`, ответ не засчитан |
+| AC-BTL-09 | Ответ отправлен | Повтор того же ответа (повтор сети) | Один ответ в БД; второй запрос — 200 с тем же результатом |
+| AC-BTL-10 | Идёт вопрос | Ученик теряет связь на 15 с | После переподключения видит текущую фазу; ответ, если успел, сохранён |
+| AC-BTL-11 | Идёт игра | Перезапуск api | Игра продолжается, данные не потеряны |
+| AC-BTL-12 | Равенство правильных | Итог | Выше тот, у кого меньше суммарное время правильных; полное равенство — одинаковое место |
+| AC-BTL-13 | Последний вопрос | Завершение | Пьедестал 1–3 (золото, серебро, бронза), таблица остальных; у ученика своя строка выделена |
+| AC-BTL-14 | Игра завершена | История | Учитель видит игру в истории с разбором по вопросам; ученик — в «Мои Battle» с местом |
+| AC-BTL-15 | Участник в игре | Учитель выгоняет его | Участник видит сообщение, не может вернуться в эту игру, не входит в рейтинг |
+| AC-BTL-16 | Сессия учителя A | Учитель B открывает её | 404 |
+| AC-BTL-17 | Нагрузочные цели 7.12 | Сценарии k6 | Цели выполнены |
+| AC-BTL-18 | Экраны Battle | axe, клавиатура | Без нарушений; игра проходится с клавиатуры; варианты различимы без цвета |
 | AC-VIS-01 | Seed visual | Скриншот-тесты на эталонных размерах | Совпадение с T04–T10, U01–U13, S01–S26 в пределах порога (ручн. для итогового сравнения) |
 
 # 14. Трассировка к исходному ТЗ
@@ -1558,3 +1870,4 @@ SM-AI-MESSAGE   streaming --done--> complete ; streaming --abort--> partial ; st
 | 2026-10-17 | 7.10 BR-AI-08 подтверждено; 8.4.5 REQ-ST-AI-03 — абзац U02 «Syntara анализирует ваш прогресс…» не выводится, пока такой функции нет (отступление от эталона); REQ-ST-AI-04 — mock: вопрос сохраняется, ответ PH-19; лимиты PH-20 на ученика; Q-11 — реальный ИИ пока не подключается, mock по умолчанию, порядок подключения — docs/AI_PROVIDER.md (хранение данных в РК — обязательный критерий) | Решение владельца 2026-10-17 при приёмке итерации 9 |
 | 2026-10-17 | 6.4 API-T-22 (ошибки и аудит), API-T-23, API-T-25, новая API-T-28 (что можно назначить классу); 6.5 API-S-07 `assignmentId` (Q-18), API-S-10 (формат), API-S-14 (`period`, `availablePeriods`, формат `nextStep`, по умолчанию 30d), API-S-15 `xpPerLevel`; 7.4 BR-ST-05 (значения на конец периода, дельты к концу периода сравнения), BR-ST-06; 7.5 BR-AN-02 (базовые предметы, округление), BR-AN-04/05; 7.6 BR-ASG-03 (только попытка из задания, аудит оценок) | Итерация 10; показатели и аналитика учитывают базовые и личные уроки — решение владельца 2026-10-17 |
 | 2026-10-17 | 11 PH-38 — четверти 2026–2027 и учебный год 01.09–25.05 (TODO(OWNER): сверить с приказом Минпросвещения); 7.4 BR-ST-04 — на каникулах последняя начавшаяся четверть; 7.6 BR-ASG-03 — засчитывается и квиз из урока после выдачи задания, сдача после срока — «Сдано после срока»; 6.5 API-S-10 `late`; 8.4.8 REQ-ST-ASG-01; 8.4.6 REQ-ST-PRG-01/02 — подзаголовок и блок «Начни отсюда» с эталона U08; 8.3.7 REQ-TCH-AN-01 и новая API-T-29 — «Карта освоения» (простая версия вместо PH-24); BR-ST-05 (толкование) и правила назначения (только опубликованные темы, свой предмет — выданный классу) подтверждены | Решение владельца 2026-10-17 при приёмке итерации 10 |
+| 2026-10-20 | Итерация 10.5 «Battle» (docs/BATTLE_TZ.md): 1.1, 1.2 (матрица — Battle учителя и ученика); 2.2 (модуль `battle`, очередь worker `battle`); 4 (маршруты `/teacher/battles…`, `/teacher/battle-sessions/…`, `/learn/battles…`); 5.2 и 5.9 (таблицы `battle_*`, перечисления, RLS, аудит); 6.1 API-GEN-06 (лимиты Battle); 6.8 API-BTL-01…11, 20…31, 40…46; 6.9 события SSE; 7.12 BR-BTL-01…12, настройки сессии, нагрузочные цели, вопросы Q-BTL-01…10 (TODO(OWNER), значения по умолчанию); 8.6 REQ-BTL-GEN-01…03, REQ-BTL-T01…T11, REQ-BTL-S01…S07; 9 SM-BTL; 11 PH-45; 12 итерация 10.5; 13 AC-BTL-01…18 | Команда владельца 2026-10-20: выполнить docs/BATTLE_TZ.md (этап B0) |
