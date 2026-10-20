@@ -1335,6 +1335,91 @@
       "answered": "Жауап берілді",
       "time": "Дұрыс жауаптар уақыты, с",
       "question": "{number}-сұрақ"
+    },
+    "common": {
+      "podium": "Тұғыр",
+      "place": "{rank}-орын",
+      "score": "{total} ішінен {correct} дұрыс · {time}",
+      "seconds": "{seconds} с",
+      "me": "Сен",
+      "table": "Барлық орындар",
+      "top": "Топ-5",
+      "cols": {
+        "rank": "Орын",
+        "name": "Қатысушы",
+        "correct": "Дұрыс",
+        "time": "Уақыт"
+      }
+    },
+    "student": {
+      "home": {
+        "title": "Battle коды бар ма? Оны енгіз"
+      },
+      "join": {
+        "title": "Battle",
+        "codeLabel": "Ойын коды",
+        "cell": "6 таңбаның {n}-сі",
+        "submit": "Ойынға кіру"
+      },
+      "errors": {
+        "codeNotFound": "Код табылмады — әріптер мен сандарды тексер",
+        "alreadyStarted": "Ойын басталып кетті",
+        "kicked": "Мұғалім сені бұл ойыннан шығарды",
+        "full": "Ойында қатысушылар саны толды",
+        "rateLimited": "Әрекет тым көп. {seconds} сек. кейін қайталап көр",
+        "network": "Байланыс жоқ. Интернетті тексеріп, қайталап көр"
+      },
+      "history": {
+        "title": "Менің Battle",
+        "empty": "Мұнда сен қатысқан ойындар шығады",
+        "place": "Орын: {total} ішінен {rank}",
+        "correct": "Дұрыс: {total} ішінен {correct}",
+        "open": "Қорытынды"
+      },
+      "lobby": {
+        "inGame": "Сен ойындасың!",
+        "teacher": "Мұғалім: {name}",
+        "waiting": "Мұғалімнің бастауын күтеміз",
+        "participants": "{count} қатысушы",
+        "you": "Сен: {name}"
+      },
+      "leave": "Шығу",
+      "question": {
+        "counter": "{total} сұрақтың {index}-сі",
+        "timer": "{seconds} с қалды",
+        "options": "Жауап нұсқалары",
+        "accepted": "Жауап қабылданды! Басқаларды күтеміз…",
+        "timeUp": "Уақыт бітті"
+      },
+      "reveal": {
+        "correct": "Дұрыс!",
+        "wrong": "Қате",
+        "correctAnswer": "Дұрыс жауап: {letter} — {text}",
+        "correctCount": "Дұрыс: {count}",
+        "place": "Сенің орның: {total} ішінен {rank}"
+      },
+      "leaderboard": {
+        "title": "Топ-5",
+        "me": "Сен: {rank}-орын"
+      },
+      "final": {
+        "title": "Ойын қорытындысы",
+        "myPlace": "Сенің орның: {total} ішінен {rank}",
+        "myCorrect": "Дұрыс: {total} ішінен {correct}",
+        "myTime": "Уақыт: {time}",
+        "answers": "Менің жауаптарым"
+      },
+      "cancelled": "Ойын тоқтатылды",
+      "connection": "Байланыс жоқ, қайта қосылудамыз…",
+      "results": {
+        "title": "Ойын қорытындысы",
+        "back": "← Battle-ге",
+        "notFinished": "Қорытынды ойын біткенде шығады",
+        "question": "{number}-сұрақ",
+        "yourAnswer": "Сенің жауабың:",
+        "noAnswer": "жауапсыз",
+        "correctAnswer": "Дұрысы:"
+      }
     }
   }
 }

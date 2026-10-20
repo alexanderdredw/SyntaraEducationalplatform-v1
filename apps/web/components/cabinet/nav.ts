@@ -1,13 +1,7 @@
 import { type UserRole } from '@syntara/shared';
 
 export type CabinetIcon =
-  | 'courses'
-  | 'classes'
-  | 'assignments'
-  | 'assistant'
-  | 'progress'
-  | 'achievements'
-  | 'battle';
+  'courses' | 'classes' | 'assignments' | 'assistant' | 'progress' | 'achievements' | 'battle';
 
 export interface CabinetNavItem {
   href: string;
@@ -40,5 +34,7 @@ export const CABINET_NAV: Partial<Record<UserRole, CabinetNavItem[]>> = {
     { href: '/learn/assistant', key: 'assistant', icon: 'assistant' },
     { href: '/learn/progress', key: 'progress', icon: 'progress' },
     { href: '/learn/achievements', key: 'achievements', icon: 'achievements' },
+    // Итерация 10.5: Battle (REQ-BTL-S01).
+    { href: '/learn/battles', key: 'battle', icon: 'battle' },
   ],
 };

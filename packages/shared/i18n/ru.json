@@ -1335,6 +1335,91 @@
       "answered": "Отвечено",
       "time": "Время правильных, с",
       "question": "Вопрос {number}"
+    },
+    "common": {
+      "podium": "Пьедестал",
+      "place": "{rank}-е место",
+      "score": "{correct} из {total} правильных · {time}",
+      "seconds": "{seconds} с",
+      "me": "Ты",
+      "table": "Все места",
+      "top": "Топ-5",
+      "cols": {
+        "rank": "Место",
+        "name": "Участник",
+        "correct": "Правильных",
+        "time": "Время"
+      }
+    },
+    "student": {
+      "home": {
+        "title": "Есть код Battle? Введи его"
+      },
+      "join": {
+        "title": "Battle",
+        "codeLabel": "Код игры",
+        "cell": "Символ {n} из 6",
+        "submit": "Войти в игру"
+      },
+      "errors": {
+        "codeNotFound": "Код не найден — проверь буквы и цифры",
+        "alreadyStarted": "Игра уже началась",
+        "kicked": "Учитель удалил тебя из этой игры",
+        "full": "В игре уже максимум участников",
+        "rateLimited": "Слишком много попыток. Попробуй через {seconds} сек.",
+        "network": "Нет соединения. Проверь интернет и попробуй ещё раз"
+      },
+      "history": {
+        "title": "Мои Battle",
+        "empty": "Здесь появятся игры, в которых ты участвовал",
+        "place": "Место: {rank} из {total}",
+        "correct": "Правильных: {correct} из {total}",
+        "open": "Итоги"
+      },
+      "lobby": {
+        "inGame": "Ты в игре!",
+        "teacher": "Учитель: {name}",
+        "waiting": "Ждём, когда учитель начнёт",
+        "participants": "{count, plural, one {# участник} few {# участника} other {# участников}}",
+        "you": "Ты: {name}"
+      },
+      "leave": "Выйти",
+      "question": {
+        "counter": "Вопрос {index} из {total}",
+        "timer": "Осталось {seconds} с",
+        "options": "Варианты ответа",
+        "accepted": "Ответ принят! Ждём остальных…",
+        "timeUp": "Время вышло"
+      },
+      "reveal": {
+        "correct": "Верно!",
+        "wrong": "Неверно",
+        "correctAnswer": "Правильный ответ: {letter} — {text}",
+        "correctCount": "Правильных: {count}",
+        "place": "Твоё место: {rank} из {total}"
+      },
+      "leaderboard": {
+        "title": "Топ-5",
+        "me": "Ты: {rank}-е место"
+      },
+      "final": {
+        "title": "Итог игры",
+        "myPlace": "Твоё место: {rank} из {total}",
+        "myCorrect": "Правильных: {correct} из {total}",
+        "myTime": "Время: {time}",
+        "answers": "Мои ответы"
+      },
+      "cancelled": "Игра отменена",
+      "connection": "Нет соединения, переподключаемся…",
+      "results": {
+        "title": "Итоги игры",
+        "back": "← К Battle",
+        "notFinished": "Итоги появятся, когда игра закончится",
+        "question": "Вопрос {number}",
+        "yourAnswer": "Твой ответ:",
+        "noAnswer": "без ответа",
+        "correctAnswer": "Правильный:"
+      }
     }
   }
 }

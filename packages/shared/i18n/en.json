@@ -1335,6 +1335,91 @@
       "answered": "Answered",
       "time": "Correct answers time, s",
       "question": "Question {number}"
+    },
+    "common": {
+      "podium": "Podium",
+      "place": "Place {rank}",
+      "score": "{correct} of {total} correct · {time}",
+      "seconds": "{seconds} s",
+      "me": "You",
+      "table": "All places",
+      "top": "Top 5",
+      "cols": {
+        "rank": "Place",
+        "name": "Player",
+        "correct": "Correct",
+        "time": "Time"
+      }
+    },
+    "student": {
+      "home": {
+        "title": "Got a Battle code? Enter it"
+      },
+      "join": {
+        "title": "Battle",
+        "codeLabel": "Game code",
+        "cell": "Character {n} of 6",
+        "submit": "Join the game"
+      },
+      "errors": {
+        "codeNotFound": "Code not found — check the letters and digits",
+        "alreadyStarted": "The game has already started",
+        "kicked": "The teacher removed you from this game",
+        "full": "The game is full",
+        "rateLimited": "Too many attempts. Try again in {seconds} s.",
+        "network": "No connection. Check your internet and try again"
+      },
+      "history": {
+        "title": "My Battles",
+        "empty": "Games you take part in will appear here",
+        "place": "Place: {rank} of {total}",
+        "correct": "Correct: {correct} of {total}",
+        "open": "Results"
+      },
+      "lobby": {
+        "inGame": "You're in!",
+        "teacher": "Teacher: {name}",
+        "waiting": "Waiting for the teacher to start",
+        "participants": "{count, plural, one {# player} other {# players}}",
+        "you": "You: {name}"
+      },
+      "leave": "Leave",
+      "question": {
+        "counter": "Question {index} of {total}",
+        "timer": "{seconds} s left",
+        "options": "Answer options",
+        "accepted": "Answer received! Waiting for the others…",
+        "timeUp": "Time's up"
+      },
+      "reveal": {
+        "correct": "Correct!",
+        "wrong": "Wrong",
+        "correctAnswer": "Correct answer: {letter} — {text}",
+        "correctCount": "Correct: {count}",
+        "place": "Your place: {rank} of {total}"
+      },
+      "leaderboard": {
+        "title": "Top 5",
+        "me": "You: place {rank}"
+      },
+      "final": {
+        "title": "Game results",
+        "myPlace": "Your place: {rank} of {total}",
+        "myCorrect": "Correct: {correct} of {total}",
+        "myTime": "Time: {time}",
+        "answers": "My answers"
+      },
+      "cancelled": "The game was cancelled",
+      "connection": "No connection, reconnecting…",
+      "results": {
+        "title": "Game results",
+        "back": "← Back to Battle",
+        "notFinished": "Results will appear when the game ends",
+        "question": "Question {number}",
+        "yourAnswer": "Your answer:",
+        "noAnswer": "no answer",
+        "correctAnswer": "Correct:"
+      }
     }
   }
 }

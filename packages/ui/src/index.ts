@@ -51,4 +51,18 @@ export {
   Capsule,
   HeaderBar,
 } from './layout';
-export { ANSWER_LETTERS, answerToneClass, AnswerShape, AnswerMarker, AnswerTile } from './battle';
+export {
+  ANSWER_LETTERS,
+  answerToneClass,
+  AnswerShape,
+  AnswerMarker,
+  AnswerTile,
+  CodeInput,
+  BigCode,
+  CountdownBar,
+  Podium,
+  type PodiumRow,
+  LeaderboardTable,
+  ParticipantChip,
+  ConnectionBanner,
+} from './battle';

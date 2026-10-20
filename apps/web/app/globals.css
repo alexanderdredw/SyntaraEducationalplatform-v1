@@ -201,3 +201,65 @@ h3 {
 .mobile-menu-overlay[data-state='closed'] {
   animation: mobile-menu-fade-out var(--duration-base) var(--ease-standard);
 }
+
+/*
+ * Battle (REQ-BTL-GEN-03): мягкая смена фаз (≤ 250 мс), ожидание в лобби, появление участников, конфетти мест 1–3.
+ * Всё отключается при prefers-reduced-motion и «Экономии трафика» (tokens.css); конфетти тогда скрыто.
+ */
+@keyframes battle-phase-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.battle-phase {
+  animation: battle-phase-in 220ms var(--ease-standard);
+}
+@keyframes battle-pulse {
+  50% {
+    transform: scale(1.12);
+    opacity: 0.7;
+  }
+}
+.battle-waiting {
+  animation: battle-pulse 1.6s ease-in-out infinite;
+}
+.battle-chip {
+  animation: battle-phase-in 240ms var(--ease-standard);
+}
+@keyframes battle-confetti-fall {
+  from {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(160px) rotate(360deg);
+    opacity: 0;
+  }
+}
+.battle-confetti span {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: battle-confetti-fall 1.4s ease-out 2 forwards;
+}
+.battle-confetti span[data-tone='0'] {
+  background: var(--answer-1);
+}
+.battle-confetti span[data-tone='1'] {
+  background: var(--answer-2);
+}
+.battle-confetti span[data-tone='2'] {
+  background: var(--answer-3);
+}
+.battle-confetti span[data-tone='3'] {
+  background: var(--answer-4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-confetti {
+    display: none;
+  }
+}

@@ -8,6 +8,7 @@ import { CardGrid, InfoCard, LinkButton, Section } from '@/components/public/blo
 import { DemoQuestionBlock } from '@/components/public/demo-question';
 import { SubjectCards } from '@/components/public/subject-cards';
 import { WhySyntara } from '@/components/public/why-syntara';
+import { BattleHomeCard } from '@/components/battle/student-join';
 
 /**
  * Главная (8.1.1): секции строго в порядке REQ-PUB-HOME-01 —
@@ -78,6 +79,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
               </>
             )}
           </div>
+          {/* 8.6.2: на главной ученика — «Есть код Battle? Введи его». */}
+          {student ? <BattleHomeCard /> : null}
         </div>
       </section>
 
