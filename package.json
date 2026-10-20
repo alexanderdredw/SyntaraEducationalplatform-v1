@@ -22,6 +22,7 @@
     "db:seed": "pnpm --filter @syntara/db db:seed",
     "content:check": "pnpm --filter @syntara/db content:check",
     "content:import": "pnpm --filter @syntara/db content:import",
+    "battle:anonymize": "pnpm --filter @syntara/db battle:anonymize",
     "db:studio": "pnpm --filter @syntara/db db:studio"
   },
   "devDependencies": {

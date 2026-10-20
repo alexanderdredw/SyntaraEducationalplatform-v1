@@ -18,6 +18,7 @@ const TABS = ['roster', 'mastery', 'analytics'] as const;
  */
 export function ClassTabs({ classId }: { classId: string }) {
   const t = useTranslations('teacher.analytics');
+  const tb = useTranslations('battle.teacher.history');
   const locale = useLocale();
   const pathname = usePathname();
   const classes = useQuery({
@@ -41,6 +42,13 @@ export function ClassTabs({ classId }: { classId: string }) {
         <h1 className="text-cabinet-title font-bold" data-testid="class-name">
           {name}
         </h1>
+        {/* REQ-BTL-T11: история игр Battle, отфильтрованная по классу. */}
+        <AppLink
+          href={`/teacher/battles?tab=history&classId=${classId}`}
+          className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--accent-bright)] hover:underline"
+        >
+          {tb('classLink')}
+        </AppLink>
       </div>
       <NavTabs
         label={t('tabs')}

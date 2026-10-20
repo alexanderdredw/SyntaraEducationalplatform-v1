@@ -35,7 +35,8 @@
     "db:generate": "drizzle-kit generate",
     "db:studio": "node --env-file-if-exists=../../.env node_modules/drizzle-kit/bin.cjs studio",
     "content:check": "node --import tsx src/cli.ts content:check",
-    "content:import": "node --env-file-if-exists=../../.env --import tsx src/cli.ts content:import"
+    "content:import": "node --env-file-if-exists=../../.env --import tsx src/cli.ts content:import",
+    "battle:anonymize": "node --env-file-if-exists=../../.env --import tsx src/cli.ts battle:anonymize"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1152.0",

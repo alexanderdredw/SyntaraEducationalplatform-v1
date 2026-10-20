@@ -250,7 +250,7 @@ export function HostGame({ sessionId }: { sessionId: string }) {
         'mx-auto flex flex-col gap-6',
         projector
           ? 'battle-projector fixed inset-0 z-50 max-w-none overflow-y-auto bg-[var(--bg)] px-6 pb-28 pt-8 md:px-12'
-          : 'max-w-[1040px] px-4 py-8',
+          : 'max-w-[1040px] px-4 pt-8 pb-40 md:pb-8',
       )}
       data-testid="host-game"
       data-phase={snap?.phase}

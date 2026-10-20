@@ -1,5 +1,6 @@
 // CLI БД: `pnpm db:migrate`, `pnpm db:rollback [--steps=N|--all]`, `pnpm db:reset`, `pnpm db:seed --set=config|demo|visual`,
-// `pnpm content:check`, `pnpm content:import [--dry-run] [--dir=<папка>]` (BR-CNT-01..07).
+// `pnpm content:check`, `pnpm content:import [--dry-run] [--dir=<папка>]` (BR-CNT-01..07),
+// `pnpm battle:anonymize --student=<id>` (BR-BTL-11).
 import { resolve } from 'node:path';
 import {
   checkContent,
@@ -9,6 +10,7 @@ import {
   importContent,
   s3MediaStoreFromEnv,
 } from './content';
+import { anonymizeStudentBattles } from './battle/anonymize';
 import { createDb } from './index';
 import { appliedMigrations, migrateUp, rollback } from './migrator';
 import { runSeed, SEED_SETS, type SeedSet } from './seed';
@@ -89,9 +91,20 @@ async function main(): Promise<void> {
         printSummary(summary!, dryRun);
         break;
       }
+      // BR-BTL-11: обезличивание Battle по запросу ученика на удаление данных (PH-08).
+      case 'battle:anonymize': {
+        const student = arg('student');
+        if (!student || !/^[0-9a-f-]{36}$/i.test(student))
+          throw new Error('Usage: battle:anonymize --student=<uuid>');
+        const result = await anonymizeStudentBattles(db, student);
+        console.warn(
+          `[battle] обезличено: участий ${result.participants}, ответов удалено ${result.answers}`,
+        );
+        break;
+      }
       default:
         throw new Error(
-          'Usage: cli.ts migrate | rollback [--steps=N|--all] | reset | seed --set=<set> | content:check | content:import [--dry-run]',
+          'Usage: cli.ts migrate | rollback [--steps=N|--all] | reset | seed --set=<set> | content:check | content:import [--dry-run] | battle:anonymize --student=<id>',
         );
     }
   } finally {

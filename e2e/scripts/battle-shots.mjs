@@ -98,5 +98,78 @@ await api(teacher, 'POST', '/api/teacher/battles', { title: 'Дыхательн�
 await shot(teacher, 'b1-teacher-battles', '/ru/teacher/battles');
 await shot(teacher, 'b1-teacher-editor', `/ru/teacher/battles/${battleId}`);
 
+// ---- B3–B5: игра — класс, 4 ученика, ведущий и ученик в каждой фазе, итоги и история ----
+const cls = await api(teacher, 'POST', '/api/teacher/classes', { name: '8 «Б»' });
+const invite = await api(teacher, 'POST', `/api/teacher/classes/${cls.id}/invite-codes`);
+const { sessionId, code } = await api(teacher, 'POST', `/api/teacher/battles/${battleId}/sessions`, {
+  classId: cls.id,
+});
+const studentCtx = [];
+const students = [];
+for (const name of ['Асель Каримова', 'Ержан Сейтов', 'Дана Ахметова', 'Тимур Касымов']) {
+  const ctx = await context();
+  const page = await ctx.newPage();
+  await page.goto('/ru');
+  await api(page, 'POST', '/api/auth/register-student', {
+    displayName: name,
+    login: `shots.${randomUUID().slice(0, 8)}`,
+    password: 'student-pass-1',
+    code: invite.code,
+  });
+  studentCtx.push(ctx);
+  students.push(page);
+}
+const me = students[0];
+await shot(me, 'b3-student-join', '/ru/learn/battles');
+for (const s of students) await api(s, 'POST', '/api/student/battles/join', { code });
+await shot(me, 'b3-student-lobby', `/ru/learn/battles/${sessionId}`, { fullPage: false });
+await shot(teacher, 'b4-host-lobby', `/ru/teacher/battle-sessions/${sessionId}`);
+
+const step = async (action) => {
+  const snap = await api(teacher, 'GET', `/api/teacher/battle-sessions/${sessionId}`);
+  await api(teacher, 'POST', `/api/teacher/battle-sessions/${sessionId}/${action}`, {
+    expectedVersion: snap.version,
+  });
+};
+const answer = (s, q, option) =>
+  api(s, 'POST', `/api/student/battle-sessions/${sessionId}/answers`, {
+    questionIndex: q,
+    optionPosition: option,
+    clientAnswerId: randomUUID(),
+  });
+
+await step('start');
+await answer(students[1], 0, 3);
+await shot(me, 'b3-student-question', `/ru/learn/battles/${sessionId}`, { fullPage: false });
+await shot(teacher, 'b4-host-question', `/ru/teacher/battle-sessions/${sessionId}`);
+await answer(students[0], 0, 3);
+await answer(students[2], 0, 1);
+await answer(students[3], 0, 3);
+await shot(me, 'b3-student-reveal', `/ru/learn/battles/${sessionId}`, { fullPage: false });
+await shot(teacher, 'b4-host-reveal', `/ru/teacher/battle-sessions/${sessionId}`);
+await step('next');
+await shot(me, 'b3-student-leaderboard', `/ru/learn/battles/${sessionId}`);
+await shot(teacher, 'b4-host-leaderboard', `/ru/teacher/battle-sessions/${sessionId}`);
+await step('next');
+for (const [i, s] of students.entries()) await answer(s, 1, i === 3 ? 2 : 1);
+await step('next');
+await step('next');
+for (const [i, s] of students.entries()) await answer(s, 2, i % 2 === 0 ? 1 : 2);
+await step('next');
+await shot(me, 'b3-student-final', `/ru/learn/battles/${sessionId}`);
+await shot(teacher, 'b4-host-final', `/ru/teacher/battle-sessions/${sessionId}`);
+await shot(me, 'b3-student-results', `/ru/learn/battles/${sessionId}/results`);
+await shot(teacher, 'b5-teacher-results', `/ru/teacher/battle-sessions/${sessionId}/results`);
+await shot(teacher, 'b5-teacher-history', '/ru/teacher/battles?tab=history');
+
+// Пьедестал в светлой теме (BATTLE_TZ 13).
+const lightCtx = await context('light');
+const light = await lightCtx.newPage();
+await light.goto('/ru');
+await lightCtx.addCookies((await teacherCtx.cookies()).filter((c) => c.name !== 'theme'));
+await shot(light, 'b4-host-final-light', `/ru/teacher/battle-sessions/${sessionId}`);
+await lightCtx.close();
+
+for (const ctx of studentCtx) await ctx.close();
 await teacherCtx.close();
 await browser.close();

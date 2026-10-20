@@ -2,6 +2,7 @@ import { type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { eq, sql } from 'drizzle-orm';
 import { v7 as uuidv7 } from 'uuid';
 import { type Database } from '../src';
+import { anonymizeStudentBattles } from '../src/battle';
 import { migrateUp } from '../src/migrator';
 import {
   battleAnswers,
@@ -224,5 +225,28 @@ describe('Battle constraints and RLS (integration)', () => {
       await tx.execute(sql`delete from battle_answers where participant_id = ${participantId}`);
     });
     expect(await db.select().from(battleAnswers)).toHaveLength(0);
+  });
+
+  it('BR-BTL-11 anonymize: answers removed, name «Участник», final results kept; idempotent', async () => {
+    await db
+      .update(battleParticipants)
+      .set({ finalRank: 2, correctCount: 1, correctTimeMs: 900 })
+      .where(eq(battleParticipants.id, participantId));
+    await db.insert(battleAnswers).values({
+      sessionId,
+      participantId,
+      questionIndex: 0,
+      optionPosition: 1,
+      isCorrect: true,
+      responseMs: 900,
+      answeredAt: new Date(),
+      clientAnswerId: uuidv7(),
+    });
+    expect(await anonymizeStudentBattles(db, student)).toEqual({ participants: 1, answers: 1 });
+    const [p] = await db.select().from(battleParticipants).where(eq(battleParticipants.id, participantId));
+    expect(p).toMatchObject({ displayName: 'Участник', finalRank: 2, correctCount: 1, correctTimeMs: 900 });
+    expect(await db.select().from(battleAnswers)).toHaveLength(0);
+    expect(await anonymizeStudentBattles(db, student)).toEqual({ participants: 1, answers: 0 });
+    expect(await anonymizeStudentBattles(db, outsider)).toEqual({ participants: 0, answers: 0 });
   });
 });

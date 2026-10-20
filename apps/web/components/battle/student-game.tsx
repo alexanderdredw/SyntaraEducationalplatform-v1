@@ -192,7 +192,7 @@ export function StudentGame({ sessionId }: { sessionId: string }) {
 
   return (
     <section
-      className={`mx-auto flex ${STUDENT_BATTLE_WIDTH} flex-col gap-6 px-4 py-8`}
+      className={`mx-auto flex ${STUDENT_BATTLE_WIDTH} flex-col gap-6 px-4 pt-8 pb-40 md:pb-8`}
       data-testid="student-game"
       data-phase={snap?.phase}
     >
