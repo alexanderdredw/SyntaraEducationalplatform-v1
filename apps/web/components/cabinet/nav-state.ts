@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { useLocale } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { type UserRole } from '@syntara/shared';
@@ -50,9 +50,12 @@ function useNavBadges(enabled: boolean) {
     },
   });
   const { refetch } = query;
-  // При каждом переходе между страницами.
+  // При каждом переходе между страницами; первая загрузка — сам запрос, без повторного.
+  const lastPath = useRef(pathname);
   useEffect(() => {
-    if (enabled) void refetch();
+    if (!enabled || lastPath.current === pathname) return;
+    lastPath.current = pathname;
+    void refetch();
   }, [enabled, pathname, refetch]);
   return query.data ?? null;
 }

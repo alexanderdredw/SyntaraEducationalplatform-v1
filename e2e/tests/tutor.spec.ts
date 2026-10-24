@@ -85,6 +85,8 @@ test.describe('Учебный ИИ (итерация 9)', () => {
     await student(context, baseURL!);
     const topicId = await cardioId(baseURL!);
     await page.goto(`/ru/learn/topics/${topicId}?tab=ai`);
+    // Диалог открыт (API-S-11) — до этого Enter не отправляет (как в остальных сценариях).
+    await expect(page.getByTestId('tutor-chat')).toHaveAttribute('data-ready', 'true');
     const input = page.getByPlaceholder(ai.placeholderTopic);
     await input.fill('Почему у сердца четыре камеры?');
     await input.press('Enter');
