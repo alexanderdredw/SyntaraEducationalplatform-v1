@@ -64,6 +64,13 @@
       "when": 1792513860476,
       "tag": "0008_battle_class_optional",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792835486552,
+      "tag": "0009_nav_seen",
+      "breakpoints": true
     }
   ]
 }

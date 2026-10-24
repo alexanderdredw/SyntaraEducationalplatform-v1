@@ -30,7 +30,7 @@ describe('migrations (integration)', () => {
                   where n.nspname = 'public' and t.typtype = 'e'`,
     );
 
-  it('AG-09 applies all migrations on a clean database (section 5: 61 tables, 18 enums)', async () => {
+  it('AG-09 applies all migrations on a clean database (section 5: 62 tables, 18 enums)', async () => {
     await migrateUp(db);
     expect(await appliedMigrations(db)).toEqual([
       '0000_extensions_roles',
@@ -42,13 +42,15 @@ describe('migrations (integration)', () => {
       '0006_subject_position',
       '0007_battle',
       '0008_battle_class_optional',
+      '0009_nav_seen',
     ]);
-    expect(await tables()).toBe(61);
+    expect(await tables()).toBe(62);
     expect(await enums()).toBe(18);
   });
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0009_nav_seen',
       '0008_battle_class_optional',
       '0007_battle',
       '0006_subject_position',
@@ -72,6 +74,15 @@ describe('migrations (integration)', () => {
 
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
+    expect(await tables()).toBe(62);
+    // 0009: nav_seen (REQ-NAV-14) с RLS «только свои»; откат удаляет только её.
+    expect(
+      await count(
+        db,
+        sql`select count(*) as n from pg_policies where tablename = 'nav_seen' and policyname = 'nav_seen_own'`,
+      ),
+    ).toBe(1);
+    expect(await rollback(db, 1)).toEqual(['0009_nav_seen']);
     expect(await tables()).toBe(61);
     // 0008: класс сессии Battle необязателен (Q-BTL-01); откат возвращает NOT NULL.
     const classNullable = () =>
@@ -118,6 +129,6 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(9);
+    expect(await appliedMigrations(db)).toHaveLength(10);
   });
 });

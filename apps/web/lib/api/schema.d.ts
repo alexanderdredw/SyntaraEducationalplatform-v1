@@ -1764,6 +1764,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/class/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentNavController_classOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/nav-badges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentNavController_badges"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/nav-seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StudentNavController_seen"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3195,6 +3243,36 @@ export interface components {
         BattleAcceptedDto: {
             /** @enum {boolean} */
             accepted: true;
+        };
+        ClassSubjectDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            description: string | null;
+            /** @description Опубликованные темы */
+            topicsTotal: number;
+            /** @description Освоенные учеником темы (≥ порога PH-38) */
+            topicsMastered: number;
+            /** @description Выдан классу после последнего открытия «Мой класс» (REQ-NAV-14) */
+            isNew: boolean;
+        };
+        ClassOverviewDto: {
+            class: components["schemas"]["StudentClassDto"] | null;
+            subjects: components["schemas"]["ClassSubjectDto"][];
+            /** @description До 3 незавершённых заданий, ближайший срок — первым */
+            upcomingAssignments: components["schemas"]["StudentAssignmentDto"][];
+        };
+        NavBadgesDto: {
+            /** @description Задания без сдачи, включая просроченные */
+            assignmentsOpen: number;
+            /** @description Из них просроченные */
+            assignmentsOverdue: number;
+            classHasNew: boolean;
+            achievementsHasNew: boolean;
+        };
+        NavSeenBody: {
+            /** @enum {string} */
+            section: "class" | "achievements";
         };
     };
     responses: never;
@@ -8121,6 +8199,107 @@ export interface operations {
             };
             /** @description notFinished / kicked */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentNavController_classOverview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClassOverviewDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentNavController_badges: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NavBadgesDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentNavController_seen: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NavSeenBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

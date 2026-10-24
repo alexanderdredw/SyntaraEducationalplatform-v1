@@ -13,6 +13,7 @@ import { PublicModule } from './public/public.module';
 import { FilesModule } from './files/files.module';
 import { AuditModule } from './audit/audit.module';
 import { BattleModule } from './battle/battle.module';
+import { NavModule } from './nav/nav.module';
 
 /** Доменные модули модульного монолита (раздел 2.2 SPEC). */
 export const DOMAIN_MODULES = [
@@ -31,4 +32,5 @@ export const DOMAIN_MODULES = [
   FilesModule,
   AuditModule,
   BattleModule,
+  NavModule,
 ];

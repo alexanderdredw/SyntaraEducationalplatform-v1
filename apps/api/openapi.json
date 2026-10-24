@@ -5303,6 +5303,105 @@
           "student"
         ]
       }
+    },
+    "/api/student/class/overview": {
+      "get": {
+        "operationId": "StudentNavController_classOverview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassOverviewDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/nav-badges": {
+      "get": {
+        "operationId": "StudentNavController_badges",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NavBadgesDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/nav-seen": {
+      "post": {
+        "operationId": "StudentNavController_seen",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NavSeenBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
     }
   },
   "info": {
@@ -10224,6 +10323,114 @@
         },
         "required": [
           "accepted"
+        ]
+      },
+      "ClassSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "topicsTotal": {
+            "type": "number",
+            "description": "Опубликованные темы"
+          },
+          "topicsMastered": {
+            "type": "number",
+            "description": "Освоенные учеником темы (≥ порога PH-38)"
+          },
+          "isNew": {
+            "type": "boolean",
+            "description": "Выдан классу после последнего открытия «Мой класс» (REQ-NAV-14)"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "topicsTotal",
+          "topicsMastered",
+          "isNew"
+        ]
+      },
+      "ClassOverviewDto": {
+        "type": "object",
+        "properties": {
+          "class": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StudentClassDto"
+              }
+            ]
+          },
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassSubjectDto"
+            }
+          },
+          "upcomingAssignments": {
+            "description": "До 3 незавершённых заданий, ближайший срок — первым",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentAssignmentDto"
+            }
+          }
+        },
+        "required": [
+          "class",
+          "subjects",
+          "upcomingAssignments"
+        ]
+      },
+      "NavBadgesDto": {
+        "type": "object",
+        "properties": {
+          "assignmentsOpen": {
+            "type": "number",
+            "description": "Задания без сдачи, включая просроченные"
+          },
+          "assignmentsOverdue": {
+            "type": "number",
+            "description": "Из них просроченные"
+          },
+          "classHasNew": {
+            "type": "boolean"
+          },
+          "achievementsHasNew": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "assignmentsOpen",
+          "assignmentsOverdue",
+          "classHasNew",
+          "achievementsHasNew"
+        ]
+      },
+      "NavSeenBody": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "enum": [
+              "class",
+              "achievements"
+            ]
+          }
+        },
+        "required": [
+          "section"
         ]
       }
     }
