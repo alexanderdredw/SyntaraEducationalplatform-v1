@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Layers } from 'lucide-react';
 import { type Locale, LOCALES } from '@syntara/shared';
-import { Button, Card, EmptyState, Skeleton } from '@syntara/ui';
+import { Button, Card, EmptyState, Skeleton, Toast, ToastProvider } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
+import { DeleteTopic } from './delete-topic';
 import { CABINET_FORM_WIDTH, PageHeader, StatusPill } from './parts';
 import { emptySubject, SubjectForm, type SubjectValues } from './subject-form';
 
@@ -111,6 +113,7 @@ export function SubjectPage({ id }: { id: string }) {
         title={pickTitle(data.translations, locale)}
         back={{ href: '/teacher/courses', label: tsf('back') }}
       />
+      <DeletedToast />
       <SubjectForm mode="edit" subjectId={id} initial={initial} />
 
       <section aria-labelledby="access-title" className="flex flex-col gap-3" data-testid="subject-access">
@@ -181,11 +184,14 @@ export function SubjectPage({ id }: { id: string }) {
         ) : (
           <ul className="flex flex-col gap-2">
             {data.topics.map((topic) => (
-              <li key={topic.id}>
+              <li
+                key={topic.id}
+                className="flex items-center gap-1 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] pr-1 hover:border-[var(--border-strong)]"
+              >
                 <AppLink
                   href={`/teacher/topics/${topic.id}`}
                   data-testid="subject-topic"
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 hover:border-[var(--border-strong)]"
+                  className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] px-4 py-3"
                 >
                   <span className="flex flex-col">
                     <span className="text-xs text-[var(--text-muted)]">
@@ -197,6 +203,15 @@ export function SubjectPage({ id }: { id: string }) {
                     {t(`status.${topic.status}`)}
                   </StatusPill>
                 </AppLink>
+                {/* BR-DEL-01: корзина — только у черновиков, которые ни разу не публиковались и без заданий. */}
+                {topic.deletable ? (
+                  <DeleteTopic
+                    topicId={topic.id}
+                    title={topic.title ?? t('untitled')}
+                    variant="icon"
+                    onDeleted={() => queryClient.invalidateQueries({ queryKey: key })}
+                  />
+                ) : null}
               </li>
             ))}
           </ul>
@@ -208,5 +223,26 @@ export function SubjectPage({ id }: { id: string }) {
         </p>
       ) : null}
     </section>
+  );
+}
+
+/**
+ * DELETE_TZ, раздел 2, п. 4: после удаления из редактора — страница предмета с `?deleted=1` и уведомлением
+ * «Черновик удалён»; параметр убирается из адреса, чтобы уведомление не повторялось после перезагрузки.
+ */
+function DeletedToast() {
+  const t = useTranslations('teacher.delete');
+  const params = useSearchParams();
+  const [open, setOpen] = useState(() => params.get('deleted') === '1');
+  useEffect(() => {
+    if (params.get('deleted') !== '1') return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('deleted');
+    window.history.replaceState(null, '', url);
+  }, [params]);
+  return (
+    <ToastProvider regionLabel={t('notifications')}>
+      <Toast open={open} onOpenChange={setOpen} title={t('topicDeleted')} tone="success" />
+    </ToastProvider>
   );
 }

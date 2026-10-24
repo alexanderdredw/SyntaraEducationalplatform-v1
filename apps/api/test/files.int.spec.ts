@@ -256,6 +256,8 @@ describe('files (integration, MinIO)', () => {
       { kind: 'cover', fileName: 'pending.png', mime: 'image/png', size: PNG.length },
       PNG,
     );
+    // Загрузка подтверждена (API-T-17) и ждёт проверки — «Проверяется»; неподтверждённая не показывается.
+    await post(teacher, `/api/files/${pending}/complete`).expect(200);
     await stack.db
       .update(schema.mediaFiles)
       .set({ scanStatus: 'clean' })
@@ -276,6 +278,7 @@ describe('files (integration, MinIO)', () => {
     const cleanId = await upload(material({ topicId: topic, fileName: 'ok.pdf' }), PDF);
     const rejectedId = await upload(material({ topicId: topic, fileName: 'macro.pdf' }), PDF);
     const pendingId = await upload(material({ topicId: topic, fileName: 'wait.pdf' }), PDF);
+    await post(teacher, `/api/files/${pendingId}/complete`).expect(200);
     await stack.db
       .update(schema.mediaFiles)
       .set({ scanStatus: 'clean' })

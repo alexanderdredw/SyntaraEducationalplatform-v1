@@ -231,8 +231,8 @@ describe('teacher content (integration)', () => {
       const b = await newTopic(teacher, subjectId, 'Вторая');
       const res = await as(teacher).get(`/api/teacher/subjects/${subjectId}`).expect(200);
       expect(res.body.topics).toEqual([
-        { id: a, number: 1, title: null, status: 'draft' },
-        { id: b, number: 2, title: 'Вторая', status: 'draft' },
+        { id: a, number: 1, title: null, status: 'draft', deletable: true },
+        { id: b, number: 2, title: 'Вторая', status: 'draft', deletable: true },
       ]);
     });
 

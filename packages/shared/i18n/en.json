@@ -1019,6 +1019,26 @@
       "caption": "Topic mastery in «{subject}» by the class students",
       "legend": "Legend",
       "withPercent": "{status} · {percent} %"
+    },
+    "delete": {
+      "topicAria": "Delete draft “{title}”",
+      "topicButton": "Delete draft",
+      "topicConfirmTitle": "Delete topic “{title}”?",
+      "topicConfirmText": "The text, quiz and materials will be deleted permanently.",
+      "confirm": "Delete",
+      "cancel": "Cancel",
+      "topicDeleted": "Draft deleted",
+      "notifications": "Notifications",
+      "topicHasHistory": "Students have already seen this topic — you can unpublish it, but not delete it, so their results are kept",
+      "topicHasAssignments": "This topic has an assignment — it cannot be deleted",
+      "failed": "Could not delete — please try again",
+      "imageAria": "Delete image",
+      "imageConfirmTitle": "Delete the image from the gallery?",
+      "coverInUse": "This image is the cover of the topic “{title}”. Choose another cover for the topic or remove it first.",
+      "coverInUseBattle": "This image is used in the Battle test “{title}”. Remove it from the question first.",
+      "usedInTopic": "Used as the cover of the topic “{title}”",
+      "usedInBattle": "Used in the Battle test “{title}”",
+      "removeCover": "Remove cover"
     }
   },
   "student": {

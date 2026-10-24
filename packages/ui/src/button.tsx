@@ -9,7 +9,15 @@ import { cn } from './cn';
  * Состояния: hover и нажатие — только у доступной кнопки; focus — общий контур из tokens.css; disabled — 50 %.
  */
 export type ButtonVariant =
-  'primary-blue' | 'primary-white' | 'secondary' | 'text' | 'quiet' | 'publish' | 'ai';
+  | 'primary-blue'
+  | 'primary-white'
+  | 'secondary'
+  | 'text'
+  | 'quiet'
+  | 'publish'
+  | 'ai'
+  | 'danger'
+  | 'danger-text';
 
 const variants: Record<ButtonVariant, string> = {
   'primary-blue': 'bg-[var(--accent-strong)] text-white not-disabled:hover:brightness-110',
@@ -21,6 +29,10 @@ const variants: Record<ButtonVariant, string> = {
   quiet: 'bg-transparent text-[var(--text-muted)] not-disabled:hover:text-[var(--text)]',
   publish: 'bg-white text-[#070707] shadow-card not-disabled:hover:bg-white/90',
   ai: 'bg-[image:var(--ai-gradient)] text-white not-disabled:hover:brightness-110',
+  // Опасное действие («Удалить», DELETE_TZ): белый на --danger не даёт 4,5:1 — тёмный текст.
+  danger: 'bg-[var(--danger)] text-[#070707] not-disabled:hover:brightness-110',
+  // Опасное действие текстом («Удалить черновик»): красный текст --danger-text (контраст 4,5:1).
+  'danger-text': 'bg-transparent text-[var(--danger-text)] underline-offset-4 not-disabled:hover:underline',
 };
 
 /**

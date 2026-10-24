@@ -8,7 +8,9 @@ import { Button, cn, fieldClass } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { uploadFile } from '@/lib/upload';
+import { X } from 'lucide-react';
 import { useErrorText } from '../forms/form-parts';
+import { ConfirmDelete } from './confirm-delete';
 
 export type GalleryItem = components['schemas']['GalleryItemDto'];
 
@@ -38,6 +40,10 @@ export function CoverPicker({
   const input = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | undefined>();
+  const td = useTranslations('teacher.delete');
+  const [deleting, setDeleting] = useState<GalleryItem | null>(null);
+  const [deletePending, setDeletePending] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const gallery = useQuery({
     queryKey: ['teacher', 'gallery'],
@@ -57,6 +63,27 @@ export function CoverPicker({
     if (!res.ok) return setUploadError(res.error);
     await queryClient.invalidateQueries({ queryKey: ['teacher', 'gallery'] });
     onSelect(res.media.id);
+  }
+
+  /** API-T-31: удаление картинки из галереи; выбранная в форме — снимается с темы (иначе сохранение не пройдёт). */
+  async function removeImage() {
+    if (!deleting) return;
+    setDeletePending(true);
+    setDeleteError(null);
+    const res = await apiRequest(`/api/teacher/gallery/${deleting.id}`, { method: 'DELETE' });
+    setDeletePending(false);
+    if (res.kind !== 'ok') {
+      const key = res.kind === 'http' ? res.error.fieldErrors?.media : undefined;
+      // Где используется — по свежему списку галереи (обложку могли выбрать в другой вкладке).
+      const fresh = (await gallery.refetch()).data?.find((g) => g.id === deleting.id);
+      const title = fresh?.usedIn?.title ?? deleting.usedIn?.title ?? '';
+      return setDeleteError(
+        key === 'coverInUse' || key === 'coverInUseBattle' ? td(key, { title }) : td('failed'),
+      );
+    }
+    if (deleting.id === coverMediaId) onSelect(null);
+    setDeleting(null);
+    await queryClient.invalidateQueries({ queryKey: ['teacher', 'gallery'] });
   }
 
   const error = errorText(uploadError) ?? urlError;
@@ -96,12 +123,31 @@ export function CoverPicker({
           }}
         />
       </div>
+      {coverMediaId || coverUrl ? (
+        // DELETE_TZ, раздел 3, п. 4: тема без обложки.
+        <div>
+          <Button
+            variant="text"
+            data-testid="remove-cover"
+            onClick={() => {
+              onSelect(null);
+              onUrl('');
+            }}
+          >
+            {td('removeCover')}
+          </Button>
+        </div>
+      ) : null}
       {gallery.data?.length ? (
         <ul aria-label={t('gallery')} className="flex flex-wrap gap-3">
           {gallery.data.map((g) => {
             const selected = g.id === coverMediaId;
+            // BR-DEL-04: используемую картинку удалить нельзя — «✕» неактивна, с подсказкой где используется.
+            const usedHint = g.usedIn
+              ? td(g.usedIn.kind === 'battle' ? 'usedInBattle' : 'usedInTopic', { title: g.usedIn.title })
+              : null;
             return (
-              <li key={g.id}>
+              <li key={g.id} className="group relative">
                 <button
                   type="button"
                   aria-pressed={selected}
@@ -117,6 +163,39 @@ export function CoverPicker({
                 >
                   {g.url ? <img src={g.url} alt="" className="size-full object-cover" /> : ts(g.scanStatus)}
                 </button>
+                <button
+                  type="button"
+                  data-testid="gallery-delete"
+                  aria-label={td('imageAria')}
+                  aria-disabled={usedHint ? true : undefined}
+                  aria-describedby={usedHint ? `gallery-used-${g.id}` : undefined}
+                  title={usedHint ? undefined : td('imageAria')}
+                  onClick={() => {
+                    if (usedHint) return;
+                    setDeleteError(null);
+                    setDeleting(g);
+                  }}
+                  className={cn(
+                    // Телефон — видна всегда; компьютер — при наведении и при фокусе с клавиатуры.
+                    'absolute -top-2 -right-2 inline-flex size-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] shadow-card after:absolute after:-inset-1.5 after:content-[""] md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100 md:group-focus-within:opacity-100',
+                    usedHint
+                      ? 'peer cursor-not-allowed border-dashed text-[var(--text-muted)] opacity-70'
+                      : 'text-[var(--text)] hover:text-[var(--danger-text)]',
+                  )}
+                >
+                  <X aria-hidden="true" className="size-4" />
+                </button>
+                {usedHint ? (
+                  // Подсказка видна при наведении и фокусе на «✕» (на телефоне — по нажатию, фокус остаётся на кнопке).
+                  <span
+                    id={`gallery-used-${g.id}`}
+                    role="tooltip"
+                    data-testid="gallery-used-hint"
+                    className="pointer-events-none invisible absolute top-full left-0 z-10 mt-2 w-max max-w-[240px] rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs text-[var(--text)] shadow-popover peer-hover:visible peer-focus-visible:visible peer-focus:visible"
+                  >
+                    {usedHint}
+                  </span>
+                ) : null}
               </li>
             );
           })}
@@ -130,6 +209,16 @@ export function CoverPicker({
           {error}
         </p>
       ) : null}
+      <ConfirmDelete
+        open={deleting !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
+        title={td('imageConfirmTitle')}
+        pending={deletePending}
+        error={deleteError}
+        onConfirm={() => void removeImage()}
+      />
     </fieldset>
   );
 }

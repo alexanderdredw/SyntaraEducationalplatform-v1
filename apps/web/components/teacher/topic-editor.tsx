@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Sparkles } from 'lucide-react';
 import { type Locale, LOCALES, TopicContentDto } from '@syntara/shared';
 import { Button, Card, Field, Input, Skeleton, Textarea } from '@syntara/ui';
+import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { useErrorText } from '../forms/form-parts';
@@ -14,6 +15,7 @@ import { issuesByPath } from './parts';
 import { MarkdownField } from './markdown-field';
 import { CABINET_FORM_WIDTH, LanguageTabs, PageHeader } from './parts';
 import { pickTitle } from './subject-page';
+import { DeleteTopic } from './delete-topic';
 import { CoverPicker } from './topic-cover';
 import { MaterialsList, type Material } from './topic-materials';
 import { PublishPanel } from './topic-publish';
@@ -54,6 +56,8 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
   const t = useTranslations('teacher.topic');
   const tsf = useTranslations('teacher.subjectForm');
   const tf = useTranslations('forms');
+  const tsubj = useTranslations('teacher.subject');
+  const router = useRouter();
   const errorText = useErrorText();
   const locale = useLocale();
   const queryClient = useQueryClient();
@@ -309,6 +313,17 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
                 <span className="text-[var(--text-muted)]">{t('unsaved')}</span>
               ) : null}
             </span>
+            {/* DELETE_TZ, раздел 2: «Удалить черновик» — только у тем, которые никогда не публиковались (BR-DEL-01). */}
+            {topic.data.deletable ? (
+              <span className="basis-full sm:ml-auto sm:basis-auto">
+                <DeleteTopic
+                  topicId={id}
+                  title={savedTitle || tsubj('untitled')}
+                  variant="text"
+                  onDeleted={() => router.push(`/teacher/subjects/${topic.data!.subjectId}?deleted=1`)}
+                />
+              </span>
+            ) : null}
           </div>
         </form>
       </Card>
