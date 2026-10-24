@@ -120,6 +120,8 @@ test.describe('Ученик: вход или регистрация (этало�
     await fillRegistration(page, { name: 'Самостоятельный', login });
     await card(page).getByRole('button', { name: sa.submit }).click();
     await expect(page).toHaveURL(/\/ru\/learn\/subjects$/);
+    // Карточка класса — в «Мой класс» (REQ-NAV-11).
+    await page.goto('/ru/learn/class');
     await expect(page.getByTestId('student-join')).toBeVisible();
 
     await signOut(page);
@@ -142,6 +144,8 @@ test.describe('Ученик: вход или регистрация (этало�
     await fillRegistration(page, { name: 'С кодом', login: `coded.${uid()}`, code: code.toLowerCase() });
     await card(page).getByRole('button', { name: sa.submit }).click();
     await expect(page).toHaveURL(/\/ru\/learn\/subjects$/);
+    // Карточка класса — в «Мой класс» (REQ-NAV-11).
+    await page.goto('/ru/learn/class');
     await expect(page.getByTestId('student-class-card')).toContainText('Вы в классе «8 «Г»»');
     await api.dispose();
   });
@@ -164,6 +168,8 @@ test.describe('Ученик: вход или регистрация (этало�
     await card(page).getByRole('textbox', { name: sa.identifier }).fill(login);
     await card(page).getByLabel(sa.password, { exact: true }).fill('student-pass-1');
     await card(page).getByRole('button', { name: sa.loginSubmit }).click();
+    await expect(page).toHaveURL(/\/ru\/learn\/subjects$/);
+    await page.goto('/ru/learn/class');
     await expect(page.getByTestId('student-join')).toBeVisible();
     await page.getByRole('textbox', { name: ru.join.codeLabel }).fill(code);
     await page.getByRole('button', { name: ru.student.class.joinSubmit }).click();
@@ -254,6 +260,8 @@ test.describe('Ученик: вход или регистрация (этало�
     await s.getByLabel(ru.auth.change.password).fill('my-own-pass-1');
     await s.getByRole('button', { name: ru.auth.change.submit }).click();
     await expect(s).toHaveURL(/\/ru\/learn\/subjects$/);
+    // Карточка класса — в «Мой класс» (REQ-NAV-11).
+    await s.goto('/ru/learn/class');
     await expect(s.getByTestId('student-class-card')).toContainText('Вы в классе «Пароли»');
     await ctx.close();
   });

@@ -32,9 +32,9 @@ export async function CabinetShell({
   return (
     <>
       <CabinetHeader me={me} role={role} stats={stats} enabledLocales={enabledLocales} nav={nav} />
-      <CabinetSidebar nav={nav} />
+      <CabinetSidebar nav={nav} role={role} />
       {/* Контент и футер — правее закреплённой панели навигации (эталоны T04, U13: футер начинается у её края). */}
-      <div className="md:pl-[var(--nav-w)]">
+      <div className="md:pl-[calc(var(--nav-w)+1rem)]">
         {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}
         <main id="main" tabIndex={-1} className="min-w-0 outline-none">
           {children}

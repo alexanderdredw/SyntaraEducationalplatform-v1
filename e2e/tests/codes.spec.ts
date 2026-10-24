@@ -95,7 +95,7 @@ test.describe('Коды класса и Battle (CODES_TZ)', () => {
     const battleCode = await battleSession(teacher, host.id);
 
     await signUpStudent(page);
-    await page.goto('/ru/learn/subjects');
+    await page.goto('/ru/learn/class');
     const card = page.getByTestId('student-join');
     await card.getByLabel(ru.join.codeLabel).fill(battleCode);
     await card.getByRole('button', { name: ru.student.class.joinSubmit }).click();
@@ -158,7 +158,7 @@ test.describe('Коды класса и Battle (CODES_TZ)', () => {
       const t = bundles[locale];
       await signUpStudent(page);
 
-      await page.goto(`/${locale}/learn/subjects`);
+      await page.goto(`/${locale}/learn/class`);
       const card = page.getByTestId('student-join');
       await expect(card.getByRole('heading', { name: t.student.class.join })).toBeVisible();
       const classField = card.getByLabel(t.join.codeLabel);

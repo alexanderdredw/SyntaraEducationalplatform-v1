@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { DropdownMenu, Popover } from 'radix-ui';
 import { Bell, ChevronDown, Flame, Zap } from 'lucide-react';
 import { type Locale, type UserRole } from '@syntara/shared';
 import { BrandMark, Capsule, Header, Wordmark } from '@syntara/ui';
 import { useQuery } from '@tanstack/react-query';
-import { usePathname, useRouter } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import { HOME_BY_ROLE, ROLE_HOME } from '@/lib/auth';
 import type { components } from '@/lib/api/schema';
@@ -24,7 +24,9 @@ import {
 } from '../shell/preference-controls';
 import { LogoutButton } from '../staff/logout-button';
 import { NAV_ICONS } from './cabinet-sidebar';
-import { isNavActive, type NavItem, type RoleNav } from './nav';
+import { type NavItem, type RoleNav } from './nav';
+import { NavBadge, navBadgeState, useNavBadgeLabel } from './nav-badge';
+import { useNavState } from './nav-state';
 
 type Me = components['schemas']['MeDto'];
 type Notification = components['schemas']['NotificationDto'];
@@ -60,7 +62,8 @@ export function CabinetHeader({
   const ts = useTranslations('shell');
   const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
+  const { activeHref, badges } = useNavState(nav, role);
+  const badgeLabel = useNavBadgeLabel();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [reopened] = useState(() => {
     const value = reopenMenuAfterLocaleSwitch;
@@ -115,7 +118,9 @@ export function CabinetHeader({
 
   const menuLink = (item: NavItem, index: number) => {
     const Icon = NAV_ICONS[item.icon];
-    const active = isNavActive(pathname, item);
+    const active = item.href === activeHref;
+    const label = t(`nav.${item.key}`);
+    const badge = navBadgeState(item.badge, badges);
     return (
       <li key={item.href}>
         <AppLink
@@ -123,16 +128,18 @@ export function CabinetHeader({
           href={item.href}
           onClick={() => setMenuOpen(false)}
           aria-current={active ? 'page' : undefined}
+          aria-label={badge ? badgeLabel(label, item.badge, badges) : undefined}
           className={menuRowClass(active)}
         >
           {active ? <ActiveRowMark /> : null}
           <Icon aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.75} />
-          {t(`nav.${item.key}`)}
+          {label}
+          {/* REQ-NAV-14, п. 6: те же числа и точки, что в панели. */}
+          {badge ? <NavBadge state={badge} placement="row" /> : null}
         </AppLink>
       </li>
     );
   };
-  const groupItems = (key: 'cabinet' | 'platform') => nav.groups.find((g) => g.key === key)?.items ?? [];
 
   return (
     <Header data-testid="cabinet-header">
@@ -273,16 +280,19 @@ export function CabinetHeader({
           }}
         >
           <nav aria-label={t('sidebarLabel')} data-testid="cabinet-menu-nav" className="flex flex-col gap-4">
-            <MenuSection id="cabinet-menu-cabinet" title={t('navGroups.cabinet')}>
-              <ul className="flex flex-col gap-2">{[nav.home, ...groupItems('cabinet')].map(menuLink)}</ul>
-            </MenuSection>
-            <hr className="border-[var(--border)]" />
-            <MenuSection id="cabinet-menu-platform" title={t('navGroups.platform')}>
-              <ul className="flex flex-col gap-2">
-                {groupItems('platform').map((item) => menuLink(item, -1))}
-              </ul>
-            </MenuSection>
-            <hr className="border-[var(--border)]" />
+            {/* Группы — как в панели; «Главная» — сверху первой группы (REQ-NAV-07, REQ-NAV-10). */}
+            {nav.groups.map((group, g) => (
+              <Fragment key={group.key}>
+                <MenuSection id={`cabinet-menu-${group.key}`} title={t(`navGroups.${group.key}`)}>
+                  <ul className="flex flex-col gap-2">
+                    {(g === 0 ? [nav.home, ...group.items] : group.items).map((item, i) =>
+                      menuLink(item, g === 0 ? i : -1),
+                    )}
+                  </ul>
+                </MenuSection>
+                <hr className="border-[var(--border)]" />
+              </Fragment>
+            ))}
             <MenuSection id="cabinet-menu-help" title={t(`nav.${nav.help.key}`)}>
               <ul className="flex flex-col gap-2">{menuLink(nav.help, -1)}</ul>
             </MenuSection>

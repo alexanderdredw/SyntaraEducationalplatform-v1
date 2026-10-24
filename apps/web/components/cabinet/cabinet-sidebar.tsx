@@ -18,11 +18,13 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
+import { type UserRole } from '@syntara/shared';
 import { cn } from '@syntara/ui';
-import { usePathname } from '@/i18n/navigation';
 import { SIDEBAR_COLLAPSED, SIDEBAR_STORAGE_KEY } from '@/lib/preferences';
 import { AppLink } from '../app-link';
-import { isNavActive, type NavIcon, type NavItem, type RoleNav } from './nav';
+import { type NavIcon, type NavItem, type RoleNav } from './nav';
+import { NavBadge, navBadgeState, useNavBadgeLabel } from './nav-badge';
+import { useNavState } from './nav-state';
 
 /** Иконки пунктов (REQ-NAV-03, п. 4): у каждого пункта роли — своя. */
 export const NAV_ICONS: Record<NavIcon, typeof BookOpen> = {
@@ -67,43 +69,51 @@ const rowClass =
   'relative flex min-h-11 w-full items-center gap-3 rounded-[var(--radius-field)] px-3 text-sm nav-collapsed:mx-auto nav-collapsed:size-[46px] nav-collapsed:min-h-0 nav-collapsed:justify-center nav-collapsed:px-0';
 
 /**
- * Панель навигации кабинета (REQ-NAV-01..03, REQ-GEN-SHELL-03), ≥ 768 px: «Главная», группы «Мой кабинет» и
- * «Платформа» с подписями, внизу «Помощь» и «Свернуть панель». Развёрнутая (~220 px) — иконка и подпись;
- * свёрнутая (~70 px) — иконки с подсказками, подписи групп скрыты, разделители остаются.
- * На телефоне те же пункты — в меню хедера (REQ-NAV-07).
+ * Панель навигации кабинета (REQ-NAV-01..03, REQ-NAV-10, REQ-GEN-SHELL-03), ≥ 768 px: «Главная», группы с
+ * подписями, внизу «Помощь» и «Свернуть панель». Развёрнутая (~220 px) — иконка, подпись и счётчик; свёрнутая
+ * (~70 px) — иконки с подсказками, подписи групп скрыты, разделители остаются, счётчики — точки на иконках
+ * (REQ-NAV-14, REQ-NAV-16). Выделен ровно один пункт (REQ-NAV-13). На телефоне — меню хедера (REQ-NAV-07).
  */
-export function CabinetSidebar({ nav }: { nav: RoleNav }) {
+export function CabinetSidebar({ nav, role }: { nav: RoleNav; role: UserRole }) {
   const t = useTranslations('cabinet');
-  const pathname = usePathname();
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
+  const { activeHref, badges } = useNavState(nav, role);
+  const badgeLabel = useNavBadgeLabel();
 
   const link = (item: NavItem) => {
     const Icon = NAV_ICONS[item.icon];
     const label = t(`nav.${item.key}`);
-    const active = isNavActive(pathname, item);
+    const active = item.href === activeHref;
+    const badge = navBadgeState(item.badge, badges);
     return (
       <li key={item.href}>
         <AppLink
           href={item.href}
-          aria-label={label}
+          aria-label={badgeLabel(label, item.badge, badges)}
           title={collapsed ? label : undefined}
           aria-current={active ? 'page' : undefined}
+          data-badge={item.badge}
           className={cn(
             rowClass,
             active
               ? // Синие иконка и полоса; подпись — основным цветом текста (контраст 4.5:1 в обеих темах).
                 'bg-[var(--accent-soft)] font-semibold text-[var(--text)] before:absolute before:left-1.5 before:top-1/2 before:h-[22px] before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-[var(--accent-bright)]'
-              : 'text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
+              : // Наведение — только лёгкий фон, без полосы (REQ-NAV-13, п. 2).
+                'text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
           )}
         >
-          <Icon
-            aria-hidden="true"
-            className={cn('size-[18px] shrink-0', active && 'text-[var(--accent-bright)]')}
-            strokeWidth={1.75}
-          />
+          <span className="relative inline-flex shrink-0">
+            <Icon
+              aria-hidden="true"
+              className={cn('size-[18px]', active && 'text-[var(--accent-bright)]')}
+              strokeWidth={1.75}
+            />
+            {badge && collapsed ? <NavBadge state={badge} placement="icon" /> : null}
+          </span>
           <span aria-hidden="true" className="min-w-0 leading-tight nav-collapsed:hidden">
             {label}
           </span>
+          {badge && !collapsed ? <NavBadge state={badge} placement="row" /> : null}
         </AppLink>
       </li>
     );
@@ -116,7 +126,8 @@ export function CabinetSidebar({ nav }: { nav: RoleNav }) {
     <nav
       aria-label={t('sidebarLabel')}
       data-testid="cabinet-sidebar"
-      className="fixed top-[calc(var(--header-h)+10px)] bottom-4 left-0 z-20 hidden w-[var(--nav-w)] flex-col rounded-r-[14px] border border-l-0 border-[var(--chrome-border)] bg-[var(--sidebar)] py-3 md:flex"
+      // REQ-NAV-15: левая граница — как у капсулы хедера (отступ 16 px), одна рамка и скругление со всех сторон.
+      className="fixed top-[calc(var(--header-h)+10px)] bottom-4 left-4 z-20 hidden w-[var(--nav-w)] flex-col rounded-[18px] border border-[var(--chrome-border)] bg-[var(--sidebar)] py-3 md:flex"
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2">
         <ul className="flex flex-col gap-0.5">{link(nav.home)}</ul>

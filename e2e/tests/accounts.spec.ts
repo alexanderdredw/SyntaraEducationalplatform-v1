@@ -159,6 +159,8 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     await reg.getByRole('button', { name: ru.studentAuth.submit }).click();
 
     await expect(g).toHaveURL(/\/ru\/learn\/subjects$/);
+    // Карточка класса — в «Мой класс» (REQ-NAV-11).
+    await g.goto('/ru/learn/class');
     await expect(g.getByTestId('student-class-card')).toContainText('Вы в классе «5 «А»»');
     await expect(g.getByTestId('student-class-card')).toContainText('Учитель: Алия Учитель');
     await expect(g.getByTestId('cabinet-stats')).toBeVisible();
@@ -195,6 +197,8 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     await s.getByLabel(ru.auth.login.password).fill('student-pass-1');
     await s.getByRole('button', { name: ru.auth.login.submit }).click();
     await expect(s).toHaveURL(/\/ru\/learn\/subjects$/);
+    // Карточка класса — в «Мой класс» (REQ-NAV-11).
+    await s.goto('/ru/learn/class');
     await expect(s.getByTestId('student-class-card')).toContainText('Вы в классе «Первый»');
 
     // Выход из класса — подтверждение «Выйти из класса «…»?» (PH-40), это не выход из аккаунта.
@@ -239,6 +243,8 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
       .getByRole('button', { name: ru.join.confirm })
       .click();
     await expect(s).toHaveURL(/\/ru\/learn\/subjects$/);
+    // Карточка класса — в «Мой класс» (REQ-NAV-11).
+    await s.goto('/ru/learn/class');
     await expect(s.getByTestId('student-class-card')).toContainText('Вы в классе «Цель»');
     await ctx.close();
   });

@@ -180,13 +180,13 @@ test.describe('Интерфейс ученика: обучение (итерац
     await page.getByTestId('publish').click();
     await expect(page.getByTestId('topic-status')).toHaveText(tt.topic.statusPublished);
 
-    // Ученик класса: каталог → предмет → урок → квиз → XP.
+    // Ученик класса: «Мой класс» → предмет → урок → квиз → XP (предметы учителя — в «Мой класс», REQ-NAV-11).
     const studentCtx = await browser.newContext({ baseURL });
     await acceptCookies(studentCtx, baseURL);
     await signIn(studentCtx, student, baseURL!);
     const s = await studentCtx.newPage();
-    await s.goto('/ru/learn/subjects');
-    await s.getByTestId('catalog-subject').filter({ hasText: subjectTitle }).click();
+    await s.goto('/ru/learn/class');
+    await s.getByTestId('class-subject').filter({ hasText: subjectTitle }).click();
     await expect(s).toHaveURL(new RegExp(`/learn/subjects/${subjectId}$`));
     await s.getByTestId('student-topic').filter({ hasText: 'Листья' }).click();
     await expect(s).toHaveURL(new RegExp(`/learn/topics/${topicId}`));
@@ -408,9 +408,8 @@ test.describe('Интерфейс ученика: обучение (итерац
     await page.goto('/ru/learn/subjects');
     await expect(page.getByRole('heading', { name: st.catalog.title })).toBeVisible();
     await expect(page.getByTestId('catalog-section').first()).toContainText(st.catalog.section);
-    await expect(
-      page.getByTestId('catalog-subject').filter({ hasText: st.catalog.available }).first(),
-    ).toBeVisible();
+    // REQ-NAV-12: в каталоге только базовые предметы (все — в разделах); предмет учителя — в «Мой класс».
+    await expect(page.getByTestId('catalog-subject')).toHaveCount(0);
     // BR-CNT-08: предмет без опубликованных тем — «Скоро», не ссылка. Все базовые предметы — в разделах
     // («Химия» — в «Естественных науках», решение владельца 2026-10-17).
     await page.getByTestId('catalog-section').filter({ hasText: 'Естественные науки' }).click();

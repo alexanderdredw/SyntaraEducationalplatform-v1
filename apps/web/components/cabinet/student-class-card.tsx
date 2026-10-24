@@ -8,6 +8,7 @@ import { Button, Card, Field, Input, Modal } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
+import { CLASS_OVERVIEW_KEY, NAV_BADGES_KEY } from './nav-state';
 
 type StudentClass = components['schemas']['StudentClassDto'];
 type Problem = 'invalid' | 'battle' | 'tooMany' | 'error' | null;
@@ -42,6 +43,12 @@ export function StudentClassCard() {
     },
   });
 
+  // «Мой класс», плашка каталога и счётчики панели зависят от класса (API-S-19, API-S-20).
+  const refreshClassViews = () => {
+    void queryClient.invalidateQueries({ queryKey: CLASS_OVERVIEW_KEY });
+    void queryClient.invalidateQueries({ queryKey: NAV_BADGES_KEY });
+  };
+
   const join = async () => {
     setPending(true);
     const res = await apiRequest<StudentClass>('/api/student/join', {
@@ -55,6 +62,7 @@ export function StudentClassCard() {
       setCode('');
       setProblem(null);
       queryClient.setQueryData(KEY, res.data);
+      refreshClassViews();
     } else if (res.kind === 'http' && res.status === 404)
       setProblem(res.error.fieldErrors?.code === 'isBattleCode' ? 'battle' : 'invalid');
     else if (res.kind === 'http' && res.status === 429) {
@@ -68,8 +76,10 @@ export function StudentClassCard() {
     const res = await apiRequest('/api/student/class/leave', { method: 'POST', locale });
     setPending(false);
     setConfirmLeave(false);
-    if (res.kind === 'ok') queryClient.setQueryData(KEY, null);
-    else setProblem('error');
+    if (res.kind === 'ok') {
+      queryClient.setQueryData(KEY, null);
+      refreshClassViews();
+    } else setProblem('error');
   };
 
   if (current.isPending) return <Card aria-busy="true" className="h-24" />;

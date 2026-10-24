@@ -786,9 +786,13 @@
       "ai": "Syntara AI",
       "about": "About",
       "schools": "For schools",
-      "help": "Help"
+      "help": "Help",
+      "studentCatalog": "Catalog",
+      "myClass": "My class"
     },
     "navGroups": {
+      "study": "Learning",
+      "progress": "My progress",
       "cabinet": "My dashboard",
       "platform": "Platform"
     },
@@ -799,6 +803,11 @@
       "text": "Confirm your email",
       "resend": "Send the email again",
       "resent": "Email sent"
+    },
+    "navBadges": {
+      "open": "{count, plural, other {# not done}}",
+      "overdue": "some overdue",
+      "new": "something new"
     }
   },
   "teacher": {
@@ -1032,7 +1041,8 @@
       "section": "Section",
       "available": "Available",
       "empty": "No subjects available yet",
-      "soon": "Soon"
+      "soon": "Soon",
+      "classLink": "Subjects from your teacher are in “My class” →"
     },
     "section": {
       "back": "← Subjects",
@@ -1201,6 +1211,18 @@
       "badges": "Badges",
       "earned": "Earned {earned} of {total}",
       "locked": "LOCKED"
+    },
+    "myClass": {
+      "title": "My class",
+      "subjects": "Subjects from your teacher",
+      "subjectsEmpty": "Your teacher has not shared any subjects with the class yet",
+      "progress": "{mastered} of {total} topics mastered",
+      "new": "New",
+      "upcoming": "Upcoming assignments",
+      "allAssignments": "All assignments →",
+      "noAssignments": "No assignments",
+      "joinHint": "Your teacher gives you the code. Once you join, subjects and assignments from your teacher appear here",
+      "back": "← My class"
     }
   },
   "privacy": {

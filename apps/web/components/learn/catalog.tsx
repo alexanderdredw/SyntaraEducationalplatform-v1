@@ -7,6 +7,8 @@ import { EmptyState, Pill, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
+import { useClassOverview, useIsClassSubject, useReportSubject } from '../cabinet/nav-state';
+import { MY_CLASS_HREF } from '../cabinet/nav';
 import { useLearnViewer } from './viewer';
 
 type Catalog = components['schemas']['CatalogDto'];
@@ -71,13 +73,17 @@ function CatalogCard({
 
 const grid = 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3';
 
-/** Запрос к API от имени зрителя: ученик — API-S-*, гость — API-PUB-10..13 (BR-VIS-04). */
-function useApi<T>(key: unknown[], path: string) {
+/**
+ * Запрос к API от имени зрителя: ученик — API-S-*, гость — API-PUB-10..13 (BR-VIS-04). `baseOnly` — только базовые
+ * предметы платформы (API-PUB-10/11) и у ученика: каталог без предметов учителя (REQ-NAV-12).
+ */
+function useApi<T>(key: unknown[], path: string, baseOnly = false) {
   const locale = useLocale();
   const { guest } = useLearnViewer();
-  const url = guest ? path.replace('/api/student/', '/api/public/') : path;
+  const pub = guest || baseOnly;
+  const url = pub ? path.replace('/api/student/', '/api/public/') : path;
   return useQuery({
-    queryKey: [...key, guest, locale],
+    queryKey: [...key, pub, locale],
     queryFn: async () => {
       const res = await apiRequest<T>(url, { locale });
       if (res.kind !== 'ok') throw new Error(url);
@@ -86,15 +92,24 @@ function useApi<T>(key: unknown[], path: string) {
   });
 }
 
-/** «Предметы платформы» (API-S-04, REQ-ST-CAT-02, U13): разделы и доступные предметы, сетка в 3 колонки. */
-export function StudentCatalog() {
+/**
+ * «Предметы платформы» (REQ-ST-CAT-02, U13): разделы и базовые предметы, сетка в 3 колонки. Предметы учителя —
+ * в «Мой класс» (REQ-NAV-12): каталог ученика берёт только базовые предметы (API-PUB-10), доступ не меняется.
+ * `heading` — уровень заголовка: у ученика это заголовок страницы, у гостя — блок под «Предметы».
+ */
+export function StudentCatalog({ heading = 2 }: { heading?: 1 | 2 }) {
   const t = useTranslations('student.catalog');
-  const catalog = useApi<Catalog>(['student', 'catalog'], '/api/student/catalog');
+  const catalog = useApi<Catalog>(['student', 'catalog'], '/api/student/catalog', true);
+  const Heading = heading === 1 ? 'h1' : 'h2';
   return (
     <section aria-labelledby="catalog-title" className="flex flex-col gap-4" data-testid="student-catalog">
-      <h2 id="catalog-title" className="text-cabinet-block font-semibold">
+      <Heading
+        id="catalog-title"
+        className={heading === 1 ? 'text-cabinet-title font-bold' : 'text-cabinet-block font-semibold'}
+      >
         {t('title')}
-      </h2>
+      </Heading>
+      {heading === 1 ? <ClassSubjectsLink /> : null}
       {catalog.isPending ? <Skeleton className="h-32" /> : null}
       {catalog.data && catalog.data.sections.length + catalog.data.subjects.length === 0 ? (
         <EmptyState title={t('empty')} />
@@ -126,11 +141,40 @@ export function StudentCatalog() {
   );
 }
 
-function PageShell({ back, title, children }: { back: string; title?: string; children: ReactNode }) {
+/**
+ * REQ-NAV-12, п. 3: тонкая плашка «Предметы от твоего учителя — в разделе „Мой класс“ →» — только если ученик в
+ * классе и у класса есть предметы.
+ */
+function ClassSubjectsLink() {
+  const t = useTranslations('student.catalog');
+  const overview = useClassOverview();
+  if (!overview.data?.subjects.length) return null;
+  return (
+    <AppLink
+      href={MY_CLASS_HREF}
+      data-testid="catalog-class-link"
+      className="inline-flex min-h-11 w-fit items-center rounded-[var(--radius-pill)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm hover:border-[var(--border-strong)]"
+    >
+      {t('classLink')}
+    </AppLink>
+  );
+}
+
+function PageShell({
+  back,
+  backHref = '/learn/subjects',
+  title,
+  children,
+}: {
+  back: string;
+  backHref?: string;
+  title?: string;
+  children: ReactNode;
+}) {
   return (
     <section className="mx-auto flex max-w-[1012px] flex-col gap-6 px-4 py-8">
       <AppLink
-        href="/learn/subjects"
+        href={backHref}
         className="inline-flex min-h-11 w-fit items-center text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
       >
         {back}
@@ -148,7 +192,7 @@ function PageShell({ back, title, children }: { back: string; title?: string; ch
 /** Раздел каталога (/learn/sections/:id, API-S-05, REQ-ST-CAT-03, U03). */
 export function StudentSection({ id }: { id: string }) {
   const t = useTranslations('student');
-  const section = useApi<Section>(['student', 'section', id], `/api/student/sections/${id}`);
+  const section = useApi<Section>(['student', 'section', id], `/api/student/sections/${id}`, true);
   return (
     <PageShell back={t('section.back')} title={section.data?.title}>
       {section.data?.description ? (
@@ -178,9 +222,18 @@ export function StudentSection({ id }: { id: string }) {
  */
 export function StudentSubject({ id }: { id: string }) {
   const t = useTranslations('student.subject');
+  const tc = useTranslations('student.myClass');
+  const { guest } = useLearnViewer();
   const subject = useApi<Subject>(['student', 'subject', id], `/api/student/subjects/${id}`);
+  // Предмет учителя: назад — в «Мой класс», в панели активен «Мой класс» (REQ-NAV-11, п. 3; REQ-NAV-13).
+  const inClass = useIsClassSubject(id, !guest);
+  useReportSubject(guest ? null : id);
   return (
-    <PageShell back={t('back')} title={subject.data?.title}>
+    <PageShell
+      back={inClass ? tc('back') : t('back')}
+      backHref={inClass ? MY_CLASS_HREF : undefined}
+      title={subject.data?.title}
+    >
       {subject.data?.description ? (
         <p className="text-[var(--text-muted)]">{subject.data.description}</p>
       ) : null}

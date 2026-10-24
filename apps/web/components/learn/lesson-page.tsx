@@ -12,6 +12,8 @@ import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../les
 import { LinkButton } from '../public/blocks';
 import { StudentQuiz } from './quiz';
 import { TutorChatLoader } from './tutor-chat-loader';
+import { MY_CLASS_HREF } from '../cabinet/nav';
+import { useIsClassSubject, useReportSubject } from '../cabinet/nav-state';
 import { useLearnViewer } from './viewer';
 
 export const LESSON_TABS = ['overview', 'quiz', 'ai'] as const;
@@ -34,6 +36,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
   const opened = useRef(false);
   const { guest, cabinetHref, api } = useLearnViewer();
   const tc = useTranslations('cabinet');
+  const tm = useTranslations('student.myClass');
 
   const lesson = useQuery({
     queryKey: ['student', 'lesson', topicId, guest, locale],
@@ -44,6 +47,11 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
       return res.data;
     },
   });
+
+  // Урок предмета учителя: крошки «← Мой класс / …», в панели активен «Мой класс» (REQ-NAV-11, REQ-NAV-13).
+  const subjectId = lesson.data?.subject.id;
+  useReportSubject(guest ? null : subjectId);
+  const inClass = useIsClassSubject(subjectId, !guest);
 
   // REQ-ST-LES-04: одно событие в день на тему (ключ lesson:{topicId}:{дата в PLATFORM_TZ}).
   // Гостю событие, XP и прогресс не создаются (REQ-ST-LES-06).
@@ -107,7 +115,12 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
       className="mx-auto flex max-w-[1012px] flex-col gap-6 px-4 py-8"
       data-testid="lesson-page"
     >
-      <LessonHeader lesson={data} level={1} subjectHref={`/learn/subjects/${data.subject.id}`} />
+      <LessonHeader
+        lesson={data}
+        level={1}
+        subjectHref={`/learn/subjects/${data.subject.id}`}
+        parent={inClass ? { href: MY_CLASS_HREF, label: tm('back') } : undefined}
+      />
       {/* REQ-ST-LES-07, BR-CNT-05: пометки языка урока. */}
       {data.needsReview || (data.locale === 'ru' && locale !== 'ru') ? (
         <div className="flex flex-wrap items-center gap-2" data-testid="lesson-language">

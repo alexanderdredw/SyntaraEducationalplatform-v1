@@ -61,16 +61,22 @@ async function baseContent(baseURL: string) {
 
 /** Пункты панели в порядке: подпись и адрес. */
 async function sidebarItems(page: Page) {
-  return page
-    .getByTestId('cabinet-sidebar')
-    .getByRole('link')
-    .evaluateAll((links) => links.map((a) => `${a.getAttribute('aria-label')} ${a.getAttribute('href')}`));
+  return (
+    page
+      .getByTestId('cabinet-sidebar')
+      .getByRole('link')
+      // Подпись без состояния счётчика (после запятой — «есть новое» и т. п., REQ-NAV-14).
+      .evaluateAll((links) =>
+        links.map((a) => `${a.getAttribute('aria-label')!.split(',')[0]} ${a.getAttribute('href')}`),
+      )
+  );
 }
 
 const EXPECTED: Record<Role, string[]> = {
   student: [
     `${nav.home} /ru`,
-    `${nav.subjects} /ru/learn/subjects`,
+    `${nav.studentCatalog} /ru/learn/subjects`,
+    `${nav.myClass} /ru/learn/class`,
     `${nav.myAssignments} /ru/learn/assignments`,
     `${nav.assistant} /ru/learn/assistant`,
     `${nav.battle} /ru/learn/battles`,
@@ -324,14 +330,11 @@ test.describe('Единая рабочая среда (docs/NAV_TZ.md)', () => {
         const dialog = page.getByRole('dialog', { name: ru.shell.menu });
         // Первый заголовок — скрытое название диалога «Меню» (Radix Dialog.Title).
         const headings = await dialog.getByRole('heading', { level: 2 }).allTextContents();
-        expect(headings).toEqual([
-          ru.shell.menu,
-          ru.cabinet.navGroups.cabinet,
-          ru.cabinet.navGroups.platform,
-          nav.help,
-          ru.shell.language,
-          ru.shell.settings,
-        ]);
+        const groups =
+          role === 'student'
+            ? [ru.cabinet.navGroups.study, ru.cabinet.navGroups.progress, ru.cabinet.navGroups.platform]
+            : [ru.cabinet.navGroups.cabinet, ru.cabinet.navGroups.platform];
+        expect(headings).toEqual([ru.shell.menu, ...groups, nav.help, ru.shell.language, ru.shell.settings]);
         const links = await dialog
           .getByTestId('cabinet-menu-nav')
           .getByRole('link')

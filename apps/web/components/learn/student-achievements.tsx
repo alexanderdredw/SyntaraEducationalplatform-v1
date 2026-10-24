@@ -6,6 +6,7 @@ import { Award, Flame, Lock } from 'lucide-react';
 import { Card, Pill, ProgressBar, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
+import { useMarkSectionSeen } from './my-class';
 
 type Achievements = components['schemas']['AchievementsDto'];
 
@@ -24,6 +25,8 @@ export function StudentAchievements() {
       return res.data;
     },
   });
+  // REQ-NAV-14: раздел открыт — точка «новое» у «Достижений» пропадает.
+  useMarkSectionSeen('achievements', data.isSuccess);
   const a = data.data;
   return (
     <section

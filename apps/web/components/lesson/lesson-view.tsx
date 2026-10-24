@@ -17,24 +17,42 @@ export type Lesson = components['schemas']['LessonDto'];
 export function LessonHeader({
   lesson,
   subjectHref,
+  parent,
   level = 2,
 }: {
   lesson: Lesson;
   subjectHref?: string;
+  /** Раздел над предметом: урок предмета учителя — «← Мой класс / {Предмет} / {Тема}» (REQ-NAV-11, п. 3). */
+  parent?: { href: string; label: string };
   level?: 1 | 2;
 }) {
   const t = useTranslations('teacher.lesson');
   const tl = useTranslations('student.lesson');
   const Heading = level === 1 ? 'h1' : 'h2';
+  const arrow = parent ? '' : '← ';
   return (
     <header className="flex flex-col gap-2">
       <nav aria-label={tl('breadcrumbs')} className="text-sm text-[var(--text-muted)]">
+        {parent ? (
+          <>
+            <AppLink href={parent.href} className="hover:text-[var(--text)] hover:underline">
+              {parent.label}
+            </AppLink>
+            <span aria-hidden="true" className="px-2">
+              /
+            </span>
+          </>
+        ) : null}
         {subjectHref ? (
           <AppLink href={subjectHref} className="hover:text-[var(--text)] hover:underline">
-            ← {lesson.subject.title}
+            {arrow}
+            {lesson.subject.title}
           </AppLink>
         ) : (
-          <span>← {lesson.subject.title}</span>
+          <span>
+            {arrow}
+            {lesson.subject.title}
+          </span>
         )}
         <span aria-hidden="true" className="px-2">
           /
