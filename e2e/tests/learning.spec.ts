@@ -377,6 +377,27 @@ test.describe('Интерфейс ученика: обучение (итерац
     );
   });
 
+  test('AC-STF-09, REQ-ST-QZ-02 two of three right → «67 %», «2 из 3 правильно», the 80 % threshold message', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const { student, topicId } = await setup(baseURL!, 3);
+    await signIn(context, student, baseURL!);
+    await page.goto(`/ru/learn/topics/${topicId}?tab=quiz`);
+    for (const answer of ['Ответ 1.0', 'Ответ 2.0', 'Ответ 3.3']) {
+      await answerOption(page, answer);
+      await page.getByTestId('quiz-next').click();
+    }
+    await expect(page.getByTestId('quiz-result')).toContainText(st.quiz.result.replace('{score}', '67'));
+    await expect(page.getByTestId('quiz-correct-count')).toHaveText(
+      st.quiz.correctCount.replace('{correct}', '2').replace('{total}', '3'),
+    );
+    await expect(page.getByTestId('quiz-mastery')).toHaveText(
+      st.quiz.masteredNo.replace('{threshold}', '80'),
+    );
+  });
+
   test('REQ-ST-CAT-01..03, REQ-ST-HOME-01 catalog, section, «Продолжить учёбу», «Перейти к предмету»; a11y and 320 px', async ({
     page,
     context,

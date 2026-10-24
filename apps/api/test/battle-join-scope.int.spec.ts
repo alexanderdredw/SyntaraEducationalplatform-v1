@@ -96,7 +96,7 @@ describe('Battle without classes (integration)', () => {
 
   afterAll(() => stack?.stop());
 
-  it('BR-BTL-02 Q-BTL-01 API-BTL-20 launch without a class; a student without a class joins by code and plays to the podium', async () => {
+  it('BR-BTL-02 Q-BTL-01 API-BTL-20, AC-STF-12 launch without a class; a student without a class joins by code and plays to the podium, no XP', async () => {
     const host = await newTeacher();
     const battleId = await newBattle(host);
     const before = await classRows();
@@ -137,6 +137,8 @@ describe('Battle without classes (integration)', () => {
     expect(mine.items.map((i: { id: string }) => i.id)).toContain(game.sessionId);
     const history = (await as(host).get('/api/teacher/battle-sessions').expect(200)).body;
     expect(history.items[0]).toMatchObject({ id: game.sessionId, className: null, status: 'finished' });
+    // AC-STF-12: XP за Battle не начисляется (7.12; вопрос владельцу — SPEC 8.4.9).
+    expect((await as(student).get('/api/me/stats').expect(200)).body.xpTotal).toBe(0);
 
     // Существующие классы, коды и ученики не меняются.
     expect(await classRows()).toEqual(before);

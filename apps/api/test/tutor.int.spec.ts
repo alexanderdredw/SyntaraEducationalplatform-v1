@@ -6,6 +6,7 @@ import { schema } from '@syntara/db';
 import { baseIds, type BaseIds } from '@syntara/db/seed';
 import { LLM_PROVIDER, type LLMProvider, type Prompt, type Usage } from '../src/modules/ai/llm-provider';
 import { MockProvider } from '../src/modules/ai/mock-provider';
+import { AppConfigService } from '../src/config/app-config.service';
 import { ACCOUNTS, freshIp, login, type Session } from './support/session';
 import { startStack, type TestStack } from './support/stack';
 
@@ -340,6 +341,29 @@ describe('learning AI tutor (integration)', () => {
     const o = await newStudent();
     const oid = await open(o, { context: 'general_tutor' });
     expect((await ask(o, oid, { content: 'q' })).res.status).toBe(200);
+  });
+
+  it('API-GEN-06, PH-20, AC-STF-10 per-day limit per student comes from app_config ai.limits', async () => {
+    const config = stack.app.get(AppConfigService);
+    await stack.db
+      .update(schema.appConfig)
+      .set({ value: { per_minute: 100, per_day: 3, max_chars: 2000 } })
+      .where(eq(schema.appConfig.key, 'ai.limits'));
+    await config.invalidate('ai.limits');
+    try {
+      const s = await newStudent();
+      const id = await open(s, { context: 'general_tutor' });
+      for (let i = 0; i < 3; i++) expect((await ask(s, id, { content: `q${i}` })).res.status).toBe(200);
+      const limited = await as(s).post(`/api/student/ai/conversations/${id}/messages`, { content: 'ещё' });
+      expect(limited.status).toBe(429);
+      expect(limited.body.retryAfterSeconds).toBeGreaterThan(60);
+    } finally {
+      await stack.db
+        .update(schema.appConfig)
+        .set({ value: { per_minute: 10, per_day: 50, max_chars: 2000 } })
+        .where(eq(schema.appConfig.key, 'ai.limits'));
+      await config.invalidate('ai.limits');
+    }
   });
 
   it('API-GEN-01 OpenAPI documents API-S-11..13', async () => {
