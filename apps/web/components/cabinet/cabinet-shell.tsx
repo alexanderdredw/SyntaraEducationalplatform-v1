@@ -29,19 +29,21 @@ export async function CabinetShell({
   const supportEmail = config?.supportEmail ?? null;
   const stats = role === 'student' ? await getMeStats((await cookies()).toString()) : null;
   const nav = CABINET_NAV[role]!;
+  // Футер всегда внизу: при коротком содержимом прижат к низу окна (колонка контента растягивается под хедером),
+  // при длинном — после содержимого. Не fixed/sticky — не перекрывает контент и экранную клавиатуру.
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       <CabinetHeader me={me} role={role} stats={stats} enabledLocales={enabledLocales} nav={nav} />
       <CabinetSidebar nav={nav} role={role} />
       {/* Контент и футер — правее закреплённой панели навигации (эталоны T04, U13: футер начинается у её края). */}
-      <div className="md:pl-[calc(var(--nav-w)+1rem)]">
+      <div className="flex flex-1 flex-col md:pl-[calc(var(--nav-w)+1rem)]">
         {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}
-        <main id="main" tabIndex={-1} className="min-w-0 outline-none">
+        <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none">
           {children}
         </main>
         <SiteFooter supportEmail={supportEmail} cabinetHref={HOME_BY_ROLE[role]} />
       </div>
       <FloatingHelp supportEmail={supportEmail} lamp />
-    </>
+    </div>
   );
 }

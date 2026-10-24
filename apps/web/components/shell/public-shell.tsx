@@ -30,15 +30,17 @@ export async function PublicShell({ children }: { children: ReactNode }) {
   const supportEmail = config?.supportEmail ?? null;
   // REQ-GEN-SHELL-01: у вошедшего пользователя служебной роли вместо «Войти» — «Кабинет» его роли.
   const cabinetHref = me ? HOME_BY_ROLE[me.activeRole as keyof typeof HOME_BY_ROLE] : undefined;
+  // Футер всегда внизу: при коротком содержимом прижат к низу окна (основной блок растягивается), при длинном —
+  // после содержимого. Не fixed/sticky — не перекрывает контент и экранную клавиатуру.
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       <PublicHeader enabledLocales={enabledLocales} cabinetHref={cabinetHref} />
-      <main id="main" tabIndex={-1} className="outline-none">
+      <main id="main" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
       <SiteFooter supportEmail={supportEmail} />
       <FloatingHelp supportEmail={supportEmail} />
       <CookieBanner />
-    </>
+    </div>
   );
 }
