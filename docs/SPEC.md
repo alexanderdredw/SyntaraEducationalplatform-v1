@@ -160,7 +160,7 @@ syntara/
 | DATABASE_URL | postgres://syntara:***@pgbouncer:6432/syntara | api, worker |
 | REDIS_URL | redis://redis:6379 | api, worker |
 | S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY | http://minio:9000, syntara-files | api, worker |
-| S3_PUBLIC_ENDPOINT | https://files.syntara-edu.me — адрес хранилища для браузера: подписанные ссылки на загрузку и чтение, CSP web; пусто — как S3_ENDPOINT | api, web |
+| S3_PUBLIC_ENDPOINT | https://files.syntara-edu.me — адрес хранилища для браузера: подписанные ссылки на загрузку и чтение, CSP web; пусто — как S3_ENDPOINT | api, web (web без адреса хранилища не разрешит его в CSP — загрузка файлов не работает; `pnpm dev`/`start` читают корневой `.env`) |
 | SESSION_SECRET | 64 случайных байта | api |
 | APP_BASE_URL | https://syntara-edu.me | web, api |
 | API_INTERNAL_URL | http://api:3001 | web (SSR) |
@@ -170,6 +170,7 @@ syntara/
 | SMTP_URL, MAIL_FROM | smtp://..., noreply@syntara-edu.me | worker |
 | SUPPORT_EMAIL | PH-09 | api, web (через API config) |
 | CLAMD_HOST, OLEVBA_URL | clamav:3310, http://olevba:8080 | worker |
+| WORKER_QUEUES | необязательно; очереди процесса через запятую (`outbox,file-scan` — только проверка файлов, для e2e); пусто — все очереди 2.2 | worker |
 | PLATFORM_TZ | Asia/Almaty (UTC+5) — PH-42 | api, worker |
 | SENTRY_DSN, OTEL_EXPORTER_OTLP_ENDPOINT | — | все |
 
@@ -2051,3 +2052,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-24 | Единая рабочая среда после входа (docs/NAV_TZ.md, часть A): 1.2 (вошедшие видят публичные страницы без выхода, страницы входа — на главную роли); 3.3 REQ-GEN-SHELL-01 («Кабинет» в публичном хедере — у служебных ролей), REQ-GEN-SHELL-03 (панель по REQ-NAV), новый 3.3.1 REQ-NAV-01…08; 4 (`/auth/login`, `/auth/start` у вошедшего, правило оболочки); 13 AC-NAV-01…09 | Команда владельца 2026-10-24: выполнить docs/NAV_TZ.md |
 | 2026-10-24 | Проверка функций ученика и вопросы владельцу (docs/NAV_TZ.md, части B и C): 13 AC-STF-01…17; новый 8.4.9 — вопросы TODO(OWNER) (профиль, уведомления, несколько классов, согласие родителя, XP за Battle, упоминания «офлайн», «Мои данные» без email, вкладки базового урока у учителя). Требования не менялись | Команда владельца 2026-10-24: выполнить docs/NAV_TZ.md |
 | 2026-10-24 | Панель ученика (docs/NAV_TZ_2.md): 3.3.1 REQ-NAV-02 (состав ученика → REQ-NAV-10), новые REQ-NAV-10…17; 4 (`/learn/class`, каталог); 5.10 таблица `nav_seen`, миграция 0009; 6.5 API-S-19…21; 8.4.2 REQ-ST-CAT-01 (карточка класса — в «Мой класс»); новый 8.4.10 «Мой класс» с вопросами TODO(OWNER); 13 AC-NAV-10…19 | Решения владельца 2026-10-24: предметы учителя — только в «Мой класс», название «Мой класс», счётчики и метки новизны |
+| 2026-10-24 | 2.3: web читает корневой `.env` (адрес хранилища для CSP), `WORKER_QUEUES` у worker. Исправление: загрузка обложек и материалов в редакторе темы (CSP без адреса MinIO); правила BR-FILE-01…07 и проверка ClamAV/olevba не менялись | Баг владельца 2026-10-24 «Файл не загрузился» |

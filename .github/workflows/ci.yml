@@ -55,6 +55,14 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # BR-FILE-03: настоящая проверка файлов для e2e — ClamAV и olevba (как в infra/docker-compose.yml).
+      # Запускаются заранее: ClamAV скачивает базы сигнатур, пока идут lint, тесты и сборка.
+      - name: ClamAV and olevba for e2e (start)
+        run: |
+          docker run -d --name clamav -p 3310:3310 clamav/clamav:stable
+          docker build -q -t syntara-olevba infra/olevba
+          docker run -d --name olevba -p 8080:8080 syntara-olevba
+
       - name: Lint
         run: pnpm lint
 
@@ -101,8 +109,29 @@ jobs:
           pnpm db:migrate
           pnpm db:seed --set=demo
 
+      # Worker только с проверкой файлов (outbox → file-scan): таймеры Battle и письма сценарии ведут сами.
+      - name: Worker with file checks for e2e
+        env:
+          WORKER_QUEUES: outbox,file-scan
+          CLAMD_HOST: localhost:3310
+          OLEVBA_URL: http://localhost:8080
+          SMTP_URL: smtp://localhost:1025
+          MAIL_FROM: noreply@syntara-edu.me
+        run: |
+          for i in $(seq 1 90); do docker exec clamav clamdcheck.sh >/dev/null 2>&1 && break; sleep 5; done
+          docker exec clamav clamdcheck.sh || { docker logs --tail 50 clamav; exit 1; }
+          for i in $(seq 1 30); do curl -sf http://localhost:8080/health && break; sleep 2; done
+          curl -sf http://localhost:8080/health || { docker logs olevba; exit 1; }
+          nohup pnpm --filter @syntara/worker start > worker.log 2>&1 &
+          for i in $(seq 1 30); do grep -q 'worker started' worker.log && break; sleep 1; done
+          grep -q 'worker started' worker.log || { cat worker.log; exit 1; }
+
       - name: E2E
         run: pnpm e2e
+
+      - name: Worker log
+        if: failure()
+        run: cat worker.log || true
 
       - uses: actions/upload-artifact@v7
         if: failure()

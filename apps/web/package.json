@@ -4,9 +4,9 @@
   "private": true,
   "description": "Next.js: публичные страницы, кабинеты, служебная поддержка (раздел 2.2 SPEC)",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "node --env-file-if-exists=../../.env node_modules/next/dist/bin/next dev -p 3000",
     "build": "next build",
-    "start": "next start -p 3000",
+    "start": "node --env-file-if-exists=../../.env node_modules/next/dist/bin/next start -p 3000",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",

@@ -83,13 +83,15 @@ export function createProcessors(
   };
 }
 
+/** `queues` — какие очереди обрабатывать (WORKER_QUEUES); по умолчанию — все. */
 export function createWorkers(
   connection: ConnectionOptions,
   logger: Logger,
   deps: WorkerDeps,
+  queues: readonly QueueName[] = QUEUE_NAMES,
 ): { workers: Worker[]; close: () => Promise<void> } {
   const { processors, close } = createProcessors(connection, logger, deps);
-  const workers = QUEUE_NAMES.map((queue) => {
+  const workers = queues.map((queue) => {
     const worker = new Worker(queue, processors[queue], { connection });
     worker.on('failed', (job, err) =>
       logger.error({ queue, jobId: job?.id, err: err.message }, 'job failed'),

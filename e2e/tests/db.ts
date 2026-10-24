@@ -41,3 +41,18 @@ export async function setBattleSessionClass(sessionId: string, classId: string):
     await sql.end();
   }
 }
+
+/** Файлы учителя (media_files): имя для пользователя и ключ объекта в хранилище (7.8, BR-FILE-07). */
+export async function mediaFilesOf(
+  ownerEmail: string,
+): Promise<{ originalName: string; storageKey: string; kind: string; scanStatus: string }[]> {
+  const sql = postgres(env('DATABASE_URL'), { max: 1 });
+  try {
+    return await sql`
+      SELECT m.original_name AS "originalName", m.storage_key AS "storageKey", m.kind, m.scan_status AS "scanStatus"
+      FROM media_files m JOIN users u ON u.id = m.owner_id
+      WHERE u.email = ${ownerEmail} ORDER BY m.created_at`;
+  } finally {
+    await sql.end();
+  }
+}

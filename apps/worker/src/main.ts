@@ -17,16 +17,21 @@ const db = createDb(env.DATABASE_URL, { max: 5 });
 const publisher = new Redis(env.REDIS_URL, { maxRetriesPerRequest: 3 });
 const transport = nodemailer.createTransport(env.SMTP_URL);
 
-const { workers, close } = createWorkers(connection, logger, {
-  db,
-  transport,
-  mailFrom: env.MAIL_FROM,
-  tokens: connection,
-  appBaseUrl: env.APP_BASE_URL,
-  storage: createS3Storage(env),
-  scanners: createScanners(env.CLAMD_HOST, env.OLEVBA_URL),
-  publish: (channel, message) => publisher.publish(channel, message),
-});
+const { workers, close } = createWorkers(
+  connection,
+  logger,
+  {
+    db,
+    transport,
+    mailFrom: env.MAIL_FROM,
+    tokens: connection,
+    appBaseUrl: env.APP_BASE_URL,
+    storage: createS3Storage(env),
+    scanners: createScanners(env.CLAMD_HOST, env.OLEVBA_URL),
+    publish: (channel, message) => publisher.publish(channel, message),
+  },
+  env.WORKER_QUEUES,
+);
 void scheduleJobs(connection).catch((err: Error) => logger.error({ err: err.message }, 'scheduling failed'));
 logger.info({ queues: workers.map((w) => w.name) }, 'worker started');
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { QUEUE_NAMES } from './queues';
 
 /** Переменные окружения worker (раздел 2.3 SPEC). Секреты SMTP — только здесь (AG-10). */
 const EnvSchema = z.object({
@@ -16,6 +17,15 @@ const EnvSchema = z.object({
   S3_SECRET_KEY: z.string().min(1),
   CLAMD_HOST: z.string().regex(/^[^:\s]+:\d+$/),
   OLEVBA_URL: z.url(),
+  /**
+   * Какие очереди обрабатывает этот процесс (через запятую); по умолчанию — все (QUEUE_NAMES). Для e2e — только
+   * проверка файлов (`outbox,file-scan`): таймеры Battle и письма сценарии ведут сами.
+   */
+  WORKER_QUEUES: z
+    .string()
+    .optional()
+    .transform((v) => (v ? v.split(',').map((s) => s.trim()) : [...QUEUE_NAMES]))
+    .pipe(z.array(z.enum(QUEUE_NAMES)).min(1)),
 });
 export type WorkerEnv = z.infer<typeof EnvSchema>;
 
