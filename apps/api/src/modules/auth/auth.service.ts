@@ -86,9 +86,33 @@ export class AuthService {
       .where(eq(userRoles.userId, user.id));
     if (roles.length === 0) throw invalidCredentials();
 
+    // BR-AUTH-01: вход привязан к форме роли. Проверка — после пароля (неверный пароль не раскрывает ни роль,
+    // ни существование аккаунта); при несовпадении сессия не создаётся.
+    if (dto.role) {
+      const owned = roles.map((r) => r.role);
+      if (!owned.includes(dto.role)) {
+        const expected = owned.find((r): r is 'student' | 'teacher' => r === 'student' || r === 'teacher');
+        // Только служебная роль — форм учителя и ученика для неё нет: прежний общий ответ.
+        // TODO(OWNER): подсказка для сотрудника, вошедшего через форму учителя или ученика.
+        if (!expected) throw invalidCredentials();
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          'FORBIDDEN',
+          'Wrong login form for this account',
+          { login: 'wrongRoleForLogin' },
+          undefined,
+          undefined,
+          expected,
+        );
+      }
+      preferredRole = dto.role;
+    }
+
     // Новая сессия при каждом входе; прежняя (если была в этом браузере) отзывается.
     if (previousSessionId) await this.sessions.revoke(previousSessionId, res);
     await this.sessions.create(user.id, userAgent, res);
+    // BR-AUTH-01: аккаунт с обеими ролями — активна роль формы.
+    if (dto.role) this.sessions.setActiveRole(res, dto.role);
     await this.db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
 
     return this.me.me(

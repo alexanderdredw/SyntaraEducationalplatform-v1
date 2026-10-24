@@ -60,7 +60,8 @@ export async function SiteFooter({
           ...((cabinetHref
             ? [[cabinetHref, t('footer.cabinet')]]
             : [
-                ['/auth/login', t('shell.login')],
+                // BR-AUTH-01: «Войти» — выбор «Я ученик» / «Я учитель».
+                ['/auth/start', t('shell.login')],
                 ['/join', t('footer.joinClass')],
               ]) as Array<[string, string]>),
         ])}

@@ -59,9 +59,9 @@ const toCookies = (state) => state.cookies.map(({ name, value }) => ({ name, val
 
 await shot('home-1440', '/ru', { fullPage: false });
 await shot('student-auth-390', '/ru/auth/start?role=student', { width: 390, height: 844 });
-await shot('login-390', '/ru/auth/login', { width: 390, height: 844, fullPage: false });
+await shot('login-390', '/ru/auth/login?role=teacher', { width: 390, height: 844, fullPage: false });
 await shot('join-390', '/ru/join', { width: 390, height: 844, fullPage: false });
-await shot('login-1440', '/ru/auth/login', { fullPage: false });
+await shot('login-1440', '/ru/auth/login?role=teacher', { fullPage: false });
 await shot('support-form-1440', '/ru/support', { fullPage: false });
 await shot('teacher-classes-1440', '/ru/teacher/classes', {
   auth: toCookies(teacherState),

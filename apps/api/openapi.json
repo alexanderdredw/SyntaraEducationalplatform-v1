@@ -5552,6 +5552,14 @@
           "password": {
             "type": "string",
             "maxLength": 200
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "teacher"
+            ],
+            "description": "BR-AUTH-01: роль формы входа; нет роли у аккаунта — 403 wrongRoleForLogin + expectedEntry. Без поля — служебный вход"
           }
         },
         "required": [

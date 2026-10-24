@@ -10,10 +10,11 @@ import {
 } from '@/components/auth/password-forms';
 import { AppLink } from '@/components/app-link';
 import { getMe } from '@/lib/api/server';
-import { HOME_BY_ROLE, ROLE_HOME } from '@/lib/auth';
+import { HOME_BY_ROLE, loginEntryHref, ROLE_HOME, safeReturnTo } from '@/lib/auth';
 import { redirect } from '@/i18n/navigation';
 
 type Search = {
+  role?: string | string[];
   returnTo?: string | string[];
   forgot?: string | string[];
   resetToken?: string | string[];
@@ -48,6 +49,20 @@ export default async function LoginPage({
     redirect({ href: ROLE_HOME[signedIn.activeRole as UserRole], locale });
   }
   const me = one(q.change) ? signedIn : null;
+  // BR-AUTH-01: общей формы входа без роли нет. «Я учитель» — `?role=teacher`; служебный вход сотрудников
+  // (`?role=staff` или возврат в /staff/…) — прежняя форма без роли; иначе — выбор «Как продолжить?» или форма ученика.
+  const returnTo = one(q.returnTo) ?? null;
+  const teacherForm = one(q.role) === 'teacher';
+  const staffForm = !teacherForm && (one(q.role) === 'staff' || safeReturnTo(returnTo).startsWith('/staff/'));
+  if (!verifyToken && !resetToken && !me && !one(q.forgot) && !teacherForm && !staffForm) {
+    const entry = one(q.role) === 'student' ? '/auth/start?role=student' : loginEntryHref(returnTo);
+    const withStudentBack =
+      one(q.role) === 'student' && returnTo
+        ? `${entry}&returnTo=${encodeURIComponent(safeReturnTo(returnTo))}`
+        : entry;
+    const notice = one(q.reset) === 'done' ? `${withStudentBack.includes('?') ? '&' : '?'}reset=done` : '';
+    redirect({ href: withStudentBack + notice, locale });
+  }
   const mode = verifyToken
     ? 'verify'
     : resetToken
@@ -68,12 +83,19 @@ export default async function LoginPage({
   return (
     <section data-testid="login-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[440px]">
+        {mode === 'login' && teacherForm ? (
+          // BR-AUTH-01: форма входа учителя — «Я учитель».
+          <p className="mb-2 text-sm font-semibold text-[var(--accent)]" data-testid="login-entry">
+            {t('choice.teacher')}
+          </p>
+        ) : null}
         <h1 className="text-page-title font-bold">{title}</h1>
         <div className="mt-8 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card sm:p-6">
           {mode === 'verify' ? (
             <div className="flex flex-col gap-6">
               <VerifyEmail token={verifyToken!} />
-              <LoginForm returnTo={null} />
+              {/* Подтверждение email — у учителя (API-AUTH-06). */}
+              <LoginForm returnTo={null} entry="teacher" />
             </div>
           ) : null}
           {mode === 'reset' ? <ResetPasswordForm token={resetToken!} /> : null}
@@ -87,12 +109,16 @@ export default async function LoginPage({
           {mode === 'login' ? (
             <>
               <LoginForm
-                returnTo={one(q.returnTo) ?? null}
+                returnTo={returnTo}
+                entry={teacherForm ? 'teacher' : undefined}
                 notice={one(q.reset) === 'done' ? t('login.registered') : undefined}
               />
               <p className="mt-6 text-sm text-[var(--text-muted)]">
                 {t('login.noAccount')}{' '}
-                <AppLink href="/auth/start" className="font-semibold text-[var(--accent)] hover:underline">
+                <AppLink
+                  href={teacherForm ? '/auth/start?role=teacher' : '/auth/start'}
+                  className="font-semibold text-[var(--accent)] hover:underline"
+                >
                   {t('login.start')}
                 </AppLink>
               </p>

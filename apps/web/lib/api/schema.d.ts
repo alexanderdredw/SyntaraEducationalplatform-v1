@@ -1847,6 +1847,11 @@ export interface components {
             /** @description Email или логин ученика (PH-44) */
             email: string;
             password: string;
+            /**
+             * @description BR-AUTH-01: роль формы входа; нет роли у аккаунта — 403 wrongRoleForLogin + expectedEntry. Без поля — служебный вход
+             * @enum {string}
+             */
+            role?: "student" | "teacher";
         };
         PreferencesDto: {
             /** @enum {string} */

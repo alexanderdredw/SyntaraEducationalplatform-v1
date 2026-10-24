@@ -5,6 +5,13 @@ import { MeDto } from '../users/me.dto';
 export class LoginBody {
   @ApiProperty({ maxLength: 254, description: 'Email или логин ученика (PH-44)' }) email: string;
   @ApiProperty({ maxLength: 200 }) password: string;
+  @ApiProperty({
+    required: false,
+    enum: ['student', 'teacher'],
+    description:
+      'BR-AUTH-01: роль формы входа; нет роли у аккаунта — 403 wrongRoleForLogin + expectedEntry. Без поля — служебный вход',
+  })
+  role?: 'student' | 'teacher';
 }
 
 export class LoginResponse {

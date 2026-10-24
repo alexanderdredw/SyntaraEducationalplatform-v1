@@ -31,6 +31,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
       body.code = exception.code;
       if (exception.fieldErrors) body.fieldErrors = exception.fieldErrors;
       if (exception.snapshot !== undefined) body.snapshot = exception.snapshot;
+      if (exception.expectedEntry) body.expectedEntry = exception.expectedEntry;
       if (exception.retryAfterSeconds !== undefined) {
         body.retryAfterSeconds = exception.retryAfterSeconds;
         res.setHeader('Retry-After', String(exception.retryAfterSeconds));

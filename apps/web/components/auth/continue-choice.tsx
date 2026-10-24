@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ChevronRight, GraduationCap, User } from 'lucide-react';
 import { type Locale } from '@syntara/shared';
 import { cn } from '@syntara/ui';
+import { safeReturnTo } from '@/lib/auth';
 import { AppLink } from '../app-link';
 import { LanguageSegments } from '../shell/preference-controls';
 
@@ -13,8 +14,20 @@ import { LanguageSegments } from '../shell/preference-controls';
  * регистрация»; учитель → регистрация и вход учителя (`?role=teacher`); «Заниматься без аккаунта» — тот же
  * гостевой режим, что «Продолжить без входа →». Карточки «Родитель» нет: роли нет в SPEC 1.3 (UX-04 ⚠).
  */
-export function ContinueChoice({ enabledLocales }: { enabledLocales: readonly Locale[] }) {
+export function ContinueChoice({
+  enabledLocales,
+  returnTo = null,
+  notice,
+}: {
+  enabledLocales: readonly Locale[];
+  /** BR-AUTH-01: возврат после входа передаётся в форму выбранной роли. */
+  returnTo?: string | null;
+  /** Сообщение после смены пароля по ссылке (API-AUTH-04). */
+  notice?: string;
+}) {
   const t = useTranslations('auth.choice');
+  const target = safeReturnTo(returnTo);
+  const back = target !== '/' ? `&returnTo=${encodeURIComponent(target)}` : '';
   const option = (
     role: 'student' | 'teacher',
     href: string,
@@ -71,15 +84,26 @@ export function ContinueChoice({ enabledLocales }: { enabledLocales: readonly Lo
       </AppLink>
       <p className="text-sm tracking-[0.12em] text-[var(--text-muted)]">{t('eyebrow')}</p>
       <div className="w-full rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-popover sm:p-9">
+        {notice ? (
+          <p role="status" data-testid="login-notice" className="mb-3 text-sm">
+            {notice}
+          </p>
+        ) : null}
         <h1 className="text-3xl font-bold">{t('title')}</h1>
         <div className="mt-7 flex flex-col gap-4">
-          {option('student', '/auth/start?role=student', <GraduationCap />, t('student'), t('studentText'))}
+          {option(
+            'student',
+            `/auth/start?role=student${back}`,
+            <GraduationCap />,
+            t('student'),
+            t('studentText'),
+          )}
           <p className="flex items-center gap-3 text-sm text-[var(--text-muted)]">
             <span aria-hidden="true" className="h-px flex-1 bg-[var(--border)]" />
             {t('or')}
             <span aria-hidden="true" className="h-px flex-1 bg-[var(--border)]" />
           </p>
-          {option('teacher', '/auth/start?role=teacher', <User />, t('teacher'), t('teacherText'))}
+          {option('teacher', `/auth/start?role=teacher${back}`, <User />, t('teacher'), t('teacherText'))}
         </div>
         <div className="mt-7 flex flex-col items-center gap-1 text-center">
           <AppLink

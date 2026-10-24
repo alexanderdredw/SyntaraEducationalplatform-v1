@@ -73,7 +73,8 @@ test.describe('Базовая программа платформы (этап 8.
       await expect(invite).toContainText(tab === 'ai' ? st.lesson.guestInviteAi : st.lesson.guestInvite);
       await expect(invite.getByTestId('guest-login')).toHaveAttribute(
         'href',
-        `/ru/auth/login?returnTo=${encodeURIComponent(`/learn/topics/${ids.cardio}?tab=${tab}`)}`,
+        // BR-AUTH-01: вход ученика — «Я ученик», с возвратом на эту вкладку.
+        `/ru/auth/start?role=student&returnTo=${encodeURIComponent(`/learn/topics/${ids.cardio}?tab=${tab}`)}`,
       );
     }
     await expect(page.getByTestId('student-quiz')).toHaveCount(0);

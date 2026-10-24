@@ -97,6 +97,17 @@ export class SessionService {
     this.clearCookies(res);
   }
 
+  /** Активная роль (API-ME-03; при входе через форму роли — BR-AUTH-01): cookie на срок сессии. */
+  setActiveRole(res: Response, role: string): void {
+    res.cookie(ACTIVE_ROLE_COOKIE, role, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: SESSION_TTL_MS,
+    });
+  }
+
   clearCookies(res: Response): void {
     const { maxAge: _maxAge, ...options } = this.cookieOptions(true);
     res.clearCookie(SESSION_COOKIE, options);

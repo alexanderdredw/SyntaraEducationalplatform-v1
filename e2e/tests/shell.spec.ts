@@ -159,12 +159,21 @@ test.describe('Оболочка и навигация', () => {
     await expect(footer.getByText(ru.footer.copyright)).toBeVisible();
   });
 
-  test('раздел 4: closed cabinet pages send a guest to the login page with returnTo', async ({ page }) => {
+  test('раздел 4, BR-AUTH-01: closed cabinet pages send a guest to the login of the right role with returnTo', async ({
+    page,
+  }) => {
     // Страницы PH-24 кабинетов проверяются в accounts.spec.ts после входа.
     // Каталог и уроки базовой программы гость открывает без входа (BR-VIS-04) — здесь «Мои показатели».
-    for (const path of ['/teacher/courses', '/learn/progress', '/account/privacy']) {
+    const cases: Array<[string, string]> = [
+      ['/teacher/courses', '/ru/auth/login?role=teacher&returnTo='],
+      ['/learn/progress', '/ru/auth/start?role=student&returnTo='],
+      ['/account/privacy', '/ru/auth/start?returnTo='],
+      ['/staff/tickets', '/ru/auth/login?returnTo='],
+    ];
+    for (const [path, entry] of cases) {
       await page.goto(`/ru${path}`);
-      await expect(page).toHaveURL(new RegExp(`/ru/auth/login\\?returnTo=${encodeURIComponent(path)}$`));
+      const url = new URL(page.url());
+      expect(url.pathname + url.search, path).toBe(entry + encodeURIComponent(path));
     }
   });
 

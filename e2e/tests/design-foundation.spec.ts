@@ -3,7 +3,12 @@ import { acceptCookies, expectNoSeriousA11yViolations, hasHorizontalScroll } fro
 
 /** Основа дизайна: токены 3.1 в одном месте, единые состояния, плавность и фон страниц входа. */
 
-const AUTH_PAGES = ['/ru/auth/login', '/ru/auth/start', '/ru/auth/start?role=student', '/ru/join'];
+const AUTH_PAGES = [
+  '/ru/auth/login?role=teacher',
+  '/ru/auth/start',
+  '/ru/auth/start?role=student',
+  '/ru/join',
+];
 
 const cssVar = (page: Page, name: string) =>
   page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);

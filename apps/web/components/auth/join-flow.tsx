@@ -6,6 +6,7 @@ import { Users } from 'lucide-react';
 import { Button, Card, Field, Input, Modal } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest, type ApiResult } from '@/lib/api/browser';
+import { loginEntryHref } from '@/lib/auth';
 import { AppLink } from '../app-link';
 import { StudentAuth } from './student-auth';
 import { usePreservedState } from '../preferences/preserved-state';
@@ -120,7 +121,8 @@ export function JoinFlow({ viewer }: { viewer: Viewer }) {
             <div className="flex flex-wrap items-center gap-3" data-testid="join-valid">
               <p>{t('valid')}</p>
               <AppLink
-                href="/auth/login?returnTo=%2Fjoin"
+                // BR-AUTH-01: вход ученика — «Я ученик», с возвратом на /join.
+                href={loginEntryHref('/join')}
                 className="inline-flex min-h-11 items-center font-semibold text-[var(--accent)] hover:underline"
               >
                 {t('login')}

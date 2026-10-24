@@ -399,6 +399,8 @@
     "auth.login.registered": "needs_review",
     "auth.login.noAccount": "needs_review",
     "auth.login.start": "needs_review",
+    "auth.login.wrongRoleStudent": "needs_review",
+    "auth.login.wrongRoleTeacher": "needs_review",
     "auth.forgot.title": "needs_review",
     "auth.forgot.text": "needs_review",
     "auth.forgot.email": "needs_review",

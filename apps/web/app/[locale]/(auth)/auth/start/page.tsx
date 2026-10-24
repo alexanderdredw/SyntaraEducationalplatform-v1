@@ -18,7 +18,11 @@ export default async function StartPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ role?: string | string[] }>;
+  searchParams: Promise<{
+    role?: string | string[];
+    returnTo?: string | string[];
+    reset?: string | string[];
+  }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -26,12 +30,16 @@ export default async function StartPage({
   const me = await getMe((await cookies()).toString());
   if (me && !me.mustChangePassword) redirect({ href: ROLE_HOME[me.activeRole as UserRole], locale });
   const t = await getTranslations('auth.start');
-  const raw = (await searchParams).role;
-  const role = Array.isArray(raw) ? raw[0] : raw;
+  const tl = await getTranslations('auth.login');
+  const q = await searchParams;
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+  const role = one(q.role);
+  // BR-AUTH-01: возврат после входа — в форму выбранной роли.
+  const returnTo = one(q.returnTo) ?? null;
   if (role === 'student') {
     return (
       <section data-testid="start-page" className="px-4 py-8 md:py-12">
-        <StudentAuthFromJoin />
+        <StudentAuthFromJoin returnTo={returnTo} />
       </section>
     );
   }
@@ -39,7 +47,11 @@ export default async function StartPage({
     const config = await getPublicConfig();
     return (
       <section data-testid="start-page" className="px-4 py-10 md:py-14">
-        <ContinueChoice enabledLocales={config?.features.enabledLocales ?? ['ru', 'kk', 'en']} />
+        <ContinueChoice
+          enabledLocales={config?.features.enabledLocales ?? ['ru', 'kk', 'en']}
+          returnTo={returnTo}
+          notice={one(q.reset) === 'done' ? tl('registered') : undefined}
+        />
       </section>
     );
   }
@@ -48,7 +60,7 @@ export default async function StartPage({
       <div className="mx-auto max-w-[640px]">
         <h1 className="text-page-title font-bold">{t('title')}</h1>
         <div className="mt-8">
-          <StartChoice initialRole="teacher" />
+          <StartChoice initialRole="teacher" returnTo={returnTo} />
         </div>
       </div>
     </section>

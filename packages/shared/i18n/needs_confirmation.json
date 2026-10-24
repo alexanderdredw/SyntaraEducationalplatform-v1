@@ -749,7 +749,9 @@
     "teacher.delete.topicHasAssignments": "AC-DEL-10: текста нет в docs/DELETE_TZ.md — заглушка, ждёт подтверждения владельца",
     "teacher.delete.failed": "AC-DEL-10: текста нет в docs/DELETE_TZ.md — заглушка, ждёт подтверждения владельца",
     "teacher.delete.coverInUseBattle": "AC-DEL-10: текста нет в docs/DELETE_TZ.md — заглушка, ждёт подтверждения владельца",
-    "teacher.delete.usedInBattle": "AC-DEL-10: текста нет в docs/DELETE_TZ.md — заглушка, ждёт подтверждения владельца"
+    "teacher.delete.usedInBattle": "AC-DEL-10: текста нет в docs/DELETE_TZ.md — заглушка, ждёт подтверждения владельца",
+    "auth.login.wrongRoleStudent": "BR-AUTH-01: текст из задания владельца (вход по роли) — ждёт подтверждения",
+    "auth.login.wrongRoleTeacher": "BR-AUTH-01: текст из задания владельца (вход по роли) — ждёт подтверждения"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

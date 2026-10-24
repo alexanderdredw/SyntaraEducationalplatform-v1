@@ -1,12 +1,12 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
-import { isGuestLearnPath } from './lib/auth';
+import { isGuestLearnPath, loginEntryHref } from './lib/auth';
 import { buildCsp, storageOrigin } from './lib/csp';
 
 const handleI18n = createMiddleware(routing);
 
-/** Маршруты, требующие входа (раздел 4): без cookie сессии — на /auth/login с возвратом. */
+/** Маршруты, требующие входа (раздел 4): без cookie сессии — во вход нужной роли с возвратом (BR-AUTH-01). */
 const PROTECTED = ['/staff', '/teacher', '/learn', '/account'];
 
 function withoutLocale(pathname: string): { locale: string | null; path: string } {
@@ -32,9 +32,10 @@ export default function middleware(request: NextRequest) {
     !isGuestLearnPath(path) &&
     !request.cookies.has('sid')
   ) {
-    const url = new URL(`/${locale}/auth/login`, request.url);
-    url.searchParams.set('returnTo', path + request.nextUrl.search);
-    return NextResponse.redirect(url);
+    // BR-AUTH-01: сразу в форму нужной роли (или «Как продолжить?»), с возвратом.
+    return NextResponse.redirect(
+      new URL(`/${locale}${loginEntryHref(path + request.nextUrl.search)}`, request.url),
+    );
   }
 
   const nonce = btoa(crypto.randomUUID());

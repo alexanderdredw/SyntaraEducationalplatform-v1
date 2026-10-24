@@ -144,7 +144,8 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     await expect(g.getByTestId('join-valid')).toContainText(ru.join.valid);
     await expect(g.getByTestId('join-valid').getByRole('link', { name: ru.join.login })).toHaveAttribute(
       'href',
-      '/ru/auth/login?returnTo=%2Fjoin',
+      // BR-AUTH-01: вход ученика — «Я ученик», с возвратом на /join.
+      '/ru/auth/start?role=student&returnTo=%2Fjoin',
     );
 
     const login = `kid.${uid()}`;
@@ -192,10 +193,13 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     const ctx = await browser.newContext();
     await acceptCookies(ctx, baseURL);
     const s = await ctx.newPage();
-    await s.goto('/ru/auth/login');
-    await s.getByRole('textbox', { name: ru.auth.login.email }).fill(login.toUpperCase());
-    await s.getByLabel(ru.auth.login.password).fill('student-pass-1');
-    await s.getByRole('button', { name: ru.auth.login.submit }).click();
+    // BR-AUTH-01: ученик входит через «Я ученик».
+    await s.goto('/ru/auth/start?role=student');
+    const auth = s.getByTestId('student-auth');
+    await auth.getByRole('tab', { name: ru.studentAuth.tabLogin }).click();
+    await auth.getByRole('textbox', { name: ru.studentAuth.identifier }).fill(login.toUpperCase());
+    await auth.getByLabel(ru.studentAuth.password, { exact: true }).fill('student-pass-1');
+    await auth.getByRole('button', { name: ru.studentAuth.loginSubmit }).click();
     await expect(s).toHaveURL(/\/ru\/learn\/subjects$/);
     // Карточка класса — в «Мой класс» (REQ-NAV-11).
     await s.goto('/ru/learn/class');
@@ -252,7 +256,7 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
   test('API-AUTH-04 «Забыли пароль?» → same answer for any email; invalid reset link → message', async ({
     page,
   }) => {
-    await page.goto('/ru/auth/login');
+    await page.goto('/ru/auth/login?role=teacher');
     await page.getByRole('link', { name: ru.auth.login.forgot }).click();
     await expect(page).toHaveURL(/\/ru\/auth\/login\?forgot=1$/);
     await page.getByRole('textbox', { name: ru.auth.forgot.email }).fill('nobody@example.kz');

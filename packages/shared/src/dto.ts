@@ -90,10 +90,19 @@ export const QuestionDto = z
 export type QuestionDto = z.infer<typeof QuestionDto>;
 
 /** API-AUTH-01. Поле email принимает и логин (PH-44). Пароль не триммится и не проверяется по длине при входе (правила PH-06 — при регистрации). */
+/** BR-AUTH-01: форма входа роли — «Я ученик» / «Я учитель». */
+export const LOGIN_ENTRIES = ['student', 'teacher'] as const;
+export type LoginEntry = (typeof LOGIN_ENTRIES)[number];
+
 export const LoginDto = z.object({
   /** Email или логин ученика (PH-44: вход по логину для аккаунтов без email). */
   email: z.string().trim().min(1, 'required').max(254, 'tooLong'),
   password: z.string().min(1, 'required').max(200, 'tooLong'),
+  /**
+   * BR-AUTH-01: роль формы входа; аккаунт без этой роли не входит (403 wrongRoleForLogin). Без роли — служебный
+   * вход сотрудников (как раньше).
+   */
+  role: z.enum(LOGIN_ENTRIES).optional(),
 });
 export type LoginDto = z.infer<typeof LoginDto>;
 

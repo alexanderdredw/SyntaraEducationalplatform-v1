@@ -68,3 +68,19 @@ export function workspaceRole(
   if (!me || me.mustChangePassword) return null;
   return me.activeRole === 'student' || me.activeRole === 'teacher' ? me.activeRole : null;
 }
+
+/**
+ * BR-AUTH-01: куда ведёт вход с возвратом `returnTo`. Общей формы без роли нет: учитель — форма «Я учитель»
+ * (`/auth/login?role=teacher`), ученик — «Я ученик» (`/auth/start?role=student`), иначе — выбор «Как продолжить?».
+ * Служебный вход сотрудников (`/staff/…`) не меняется — прежняя форма без роли.
+ */
+export function loginEntryHref(returnTo?: string | null): string {
+  const target = returnTo ? safeReturnTo(returnTo) : '/';
+  const back = target !== '/' ? `returnTo=${encodeURIComponent(target)}` : '';
+  const withBack = (base: string) => (back ? `${base}${base.includes('?') ? '&' : '?'}${back}` : base);
+  if (target.startsWith('/staff/')) return withBack('/auth/login');
+  if (target.startsWith('/teacher/')) return withBack('/auth/login?role=teacher');
+  if (target.startsWith('/learn/') || target === '/join' || target.startsWith('/join?'))
+    return withBack('/auth/start?role=student');
+  return withBack('/auth/start');
+}

@@ -7,6 +7,7 @@ import { Button, Card, cn, Field, Input } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import { AppLink } from '../app-link';
+import { loginEntryFor } from './wrong-role';
 import { useErrorText } from '../forms/form-parts';
 
 type Role = 'student' | 'teacher';
@@ -17,7 +18,13 @@ type Fields = 'email' | 'displayName' | 'password';
  * Учитель → регистрация (email, имя, пароль ≥ 8, API-AUTH-03); ученик → «Ученики подключаются через класс
  * ученик → экран «Вход или регистрация» (`?role=student`, BR-CLS-04).
  */
-export function StartChoice({ initialRole }: { initialRole: 'teacher' | null }) {
+export function StartChoice({
+  initialRole,
+  returnTo = null,
+}: {
+  initialRole: 'teacher' | null;
+  returnTo?: string | null;
+}) {
   const t = useTranslations('auth.start');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
@@ -128,7 +135,9 @@ export function StartChoice({ initialRole }: { initialRole: 'teacher' | null }) 
             ) : null}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <AppLink
-                href="/auth/login"
+                // BR-AUTH-01: вход учителя — форма «Я учитель».
+                href={loginEntryFor('teacher', returnTo)}
+                data-testid="teacher-login-link"
                 className="inline-flex min-h-11 items-center text-sm text-[var(--accent)] hover:underline"
               >
                 {t('haveAccount')}

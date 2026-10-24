@@ -3,15 +3,16 @@
 import { useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Eye, EyeOff, GraduationCap, Users } from 'lucide-react';
-import { LOGIN_PATTERN, type UserRole } from '@syntara/shared';
+import { type LoginEntry, LOGIN_PATTERN, type UserRole } from '@syntara/shared';
 import { cn, fieldClass } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
-import { HOME_BY_ROLE } from '@/lib/auth';
+import { HOME_BY_ROLE, safeReturnTo } from '@/lib/auth';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
 import { useErrorText } from '../forms/form-parts';
 import { SchoolCombobox, type SchoolValue } from './school-combobox';
+import { WrongRoleMessage, wrongRoleOf } from './wrong-role';
 
 type Me = components['schemas']['MeDto'];
 type Tab = 'register' | 'login';
@@ -115,11 +116,14 @@ export function StudentAuth({
   initialCode = '',
   initialTab = 'register',
   onLoggedIn,
+  returnTo = null,
 }: {
   initialCode?: string;
   initialTab?: Tab;
   /** Встраивание (например, на /join): что делать после входа вместо перехода в кабинет. */
   onLoggedIn?: (me: Me, via: 'register' | 'login') => void;
+  /** Куда вернуться после входа (раздел 4: только внутренний путь из белого списка). */
+  returnTo?: string | null;
 }) {
   const t = useTranslations('studentAuth');
   const tj = useTranslations('join');
@@ -143,11 +147,13 @@ export function StudentAuth({
   const [errors, setErrors] = useState<Partial<Record<RegisterField, string>>>({});
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [wrongRole, setWrongRole] = useState<LoginEntry | null>(null);
 
   const afterAuth = (me: Me, via: 'register' | 'login') => {
     if (onLoggedIn) return onLoggedIn(me, via);
+    const target = safeReturnTo(returnTo);
     if (me.mustChangePassword) router.replace('/auth/login?change=1');
-    else router.replace(HOME_BY_ROLE[me.activeRole as UserRole]);
+    else router.replace(target !== '/' ? target : HOME_BY_ROLE[me.activeRole as UserRole]);
     router.refresh();
   };
 
@@ -208,16 +214,20 @@ export function StudentAuth({
 
   const signIn = async () => {
     setLoginError(null);
+    setWrongRole(null);
     if (!loginForm.email.trim() || !loginForm.password) return setLoginError(errorText('required') ?? '');
     setPending(true);
     const res = await apiRequest<{ user: Me }>('/api/auth/login', {
       method: 'POST',
       locale,
-      body: loginForm,
+      // BR-AUTH-01: форма «Я ученик» впускает только аккаунт ученика.
+      body: { ...loginForm, role: 'student' },
     });
     setPending(false);
     if (res.kind === 'ok') return afterAuth(res.data.user, 'login');
     if (res.kind === 'http' && res.status === 401) return setLoginError(tAuth('invalid'));
+    const expected = wrongRoleOf(res);
+    if (expected) return setWrongRole(expected);
     setLoginError(res.kind === 'network' ? tf('networkError') : tf('serverError'));
   };
 
@@ -428,6 +438,9 @@ export function StudentAuth({
               <p role="alert" data-testid="student-login-error" className="text-sm text-[var(--danger-text)]">
                 {loginError}
               </p>
+            ) : null}
+            {wrongRole ? (
+              <WrongRoleMessage expected={wrongRole} returnTo={returnTo} testId="student-login-wrong-role" />
             ) : null}
             <button
               type="submit"

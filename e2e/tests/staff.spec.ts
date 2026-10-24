@@ -11,7 +11,7 @@ const ACCOUNTS = {
   teacher: 'teacher@syntara.local',
 };
 
-async function login(page: Page, email: string, path = '/ru/auth/login') {
+async function login(page: Page, email: string, path = '/ru/auth/login?role=staff') {
   await page.goto(path);
   await page.getByRole('textbox', { name: ru.auth.login.email }).fill(email);
   await page.getByLabel(ru.auth.login.password).fill(PASSWORD);
@@ -65,7 +65,8 @@ test.describe('Вход и служебные очереди (8.5)', () => {
   test('REQ-GEN-AUTH-01 login page: Email, Пароль, «Войти», «Забыли пароль?»; wrong password → error', async ({
     page,
   }) => {
-    await page.goto('/ru/auth/login');
+    // Служебный вход сотрудников — прежняя форма без роли (BR-AUTH-01, п. 5).
+    await page.goto('/ru/auth/login?role=staff');
     await expect(page.getByRole('textbox', { name: ru.auth.login.email })).toBeVisible();
     await expect(page.getByLabel(ru.auth.login.password)).toHaveAttribute('type', 'password');
     await expect(page.getByRole('link', { name: ru.auth.login.forgot })).toBeVisible();

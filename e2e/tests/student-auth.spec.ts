@@ -225,7 +225,7 @@ test.describe('Ученик: вход или регистрация (этало�
     await guest.dispose();
     await api.dispose();
 
-    await page.goto('/ru/auth/login');
+    await page.goto('/ru/auth/login?role=teacher');
     await page.getByRole('textbox', { name: ru.auth.login.email }).fill(email);
     await page.getByLabel(ru.auth.login.password).fill('teacher-pass-1');
     await page.getByRole('button', { name: ru.auth.login.submit }).click();
@@ -248,10 +248,12 @@ test.describe('Ученик: вход или регистрация (этало�
     const ctx = await browser.newContext();
     await acceptCookies(ctx, baseURL);
     const s = await ctx.newPage();
-    await s.goto('/ru/auth/login');
-    await s.getByRole('textbox', { name: ru.auth.login.email }).fill(login);
-    await s.getByLabel(ru.auth.login.password).fill(temp);
-    await s.getByRole('button', { name: ru.auth.login.submit }).click();
+    // BR-AUTH-01: ученик входит через «Я ученик»; временный пароль — сразу смена (BR-CLS-05).
+    await s.goto('/ru/auth/start?role=student');
+    await card(s).getByRole('tab', { name: sa.tabLogin }).click();
+    await card(s).getByRole('textbox', { name: sa.identifier }).fill(login);
+    await card(s).getByLabel(sa.password, { exact: true }).fill(temp);
+    await card(s).getByRole('button', { name: sa.loginSubmit }).click();
     await expect(s).toHaveURL(/\/ru\/auth\/login\?change=1$/);
     await expect(s.getByRole('heading', { level: 1 })).toHaveText(ru.auth.change.title);
     // Кабинет недоступен, пока пароль не сменён.

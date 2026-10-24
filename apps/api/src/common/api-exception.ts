@@ -11,6 +11,8 @@ export class ApiException extends HttpException {
     readonly retryAfterSeconds?: number,
     /** Battle: свежий снимок при 409 staleState (SPEC 6.8). */
     readonly snapshot?: unknown,
+    /** BR-AUTH-01: форма входа для аккаунта при 403 wrongRoleForLogin. */
+    readonly expectedEntry?: 'student' | 'teacher',
   ) {
     super(message, status);
   }

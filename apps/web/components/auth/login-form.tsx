@@ -4,28 +4,40 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginDto, type UserRole } from '@syntara/shared';
+import { LoginDto, type LoginEntry, type UserRole } from '@syntara/shared';
 import { Button, Field, Input } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import { HOME_BY_ROLE, safeReturnTo } from '@/lib/auth';
 import { AppLink } from '../app-link';
 import { useErrorText } from '../forms/form-parts';
+import { WrongRoleMessage, wrongRoleOf } from './wrong-role';
 
 type Values = { email: string; password: string };
 type Problem = 'invalid' | 'rateLimited' | 'network' | 'server' | null;
 
 /**
  * Вход (REQ-GEN-AUTH-01, API-AUTH-01): Email, Пароль, «Войти», «Забыли пароль?».
- * После входа — returnTo из белого списка или страница по роли. Регистрация и сброс пароля — итерация 6.
+ * После входа — returnTo из белого списка или страница по роли. `entry` — форма «Я учитель» (BR-AUTH-01): сервер
+ * впускает только аккаунт с этой ролью; аккаунт ученика — подсказка со ссылкой на «Я ученик». Без `entry` —
+ * служебный вход сотрудников (как раньше).
  */
-export function LoginForm({ returnTo, notice }: { returnTo: string | null; notice?: string }) {
+export function LoginForm({
+  returnTo,
+  notice,
+  entry,
+}: {
+  returnTo: string | null;
+  notice?: string;
+  entry?: 'teacher';
+}) {
   const t = useTranslations('auth.login');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
   const locale = useLocale();
   const router = useRouter();
   const [problem, setProblem] = useState<Problem>(null);
+  const [wrongRole, setWrongRole] = useState<LoginEntry | null>(null);
   const [retryMinutes, setRetryMinutes] = useState(1);
   const [pending, setPending] = useState(false);
   const form = useForm<Values>({
@@ -37,11 +49,12 @@ export function LoginForm({ returnTo, notice }: { returnTo: string | null; notic
   const onSubmit = form.handleSubmit(async (values) => {
     setPending(true);
     setProblem(null);
+    setWrongRole(null);
     const result = await apiRequest<{
       user: { roles: UserRole[]; activeRole: UserRole; mustChangePassword: boolean };
     }>('/api/auth/login', {
       method: 'POST',
-      body: values,
+      body: entry ? { ...values, role: entry } : values,
       locale,
     });
     if (result.kind === 'ok') {
@@ -60,6 +73,8 @@ export function LoginForm({ returnTo, notice }: { returnTo: string | null; notic
     form.setValue('password', '');
     if (result.kind === 'network') return setProblem('network');
     if (result.kind === 'http' && result.status === 401) return setProblem('invalid');
+    const expected = wrongRoleOf(result);
+    if (expected) return setWrongRole(expected);
     if (result.kind === 'http' && result.status === 429) {
       setRetryMinutes(Math.max(1, Math.ceil((result.error.retryAfterSeconds ?? 60) / 60)));
       return setProblem('rateLimited');
@@ -95,6 +110,9 @@ export function LoginForm({ returnTo, notice }: { returnTo: string | null; notic
         <p role="alert" data-testid="login-error" className="text-sm text-[var(--danger-text)]">
           {message}
         </p>
+      ) : null}
+      {wrongRole ? (
+        <WrongRoleMessage expected={wrongRole} returnTo={returnTo} testId="login-wrong-role" />
       ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <AppLink

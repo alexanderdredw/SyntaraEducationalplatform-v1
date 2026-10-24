@@ -173,7 +173,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
       <Section testId="home-progress" title={t('progress.title')} text={t('progress.text')}>
         <div className="flex flex-wrap gap-4">
           {signedInCta ?? (
-            <LinkButton href="/auth/login" variant="blue">
+            <LinkButton href="/auth/start" variant="blue">
               {t('progress.login')}
             </LinkButton>
           )}

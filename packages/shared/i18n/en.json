@@ -531,7 +531,9 @@
       "rateLimited": "Too many sign-in attempts. Try again in {minutes} min.",
       "registered": "Password changed. Sign in with your new password.",
       "noAccount": "No account?",
-      "start": "Get started"
+      "start": "Get started",
+      "wrongRoleStudent": "This is a student account. Sign in via “<link>I’m a student</link>”",
+      "wrongRoleTeacher": "This is a teacher account. Sign in via “<link>I’m a teacher</link>”"
     },
     "forgot": {
       "title": "Password recovery",

@@ -8,6 +8,8 @@ export interface ApiErrorBody {
   retryAfterSeconds?: number;
   /** Battle: свежий снимок при 409 staleState (SPEC 6.8). */
   snapshot?: unknown;
+  /** BR-AUTH-01: 403 wrongRoleForLogin — через какую форму входить («Я ученик» / «Я учитель»). */
+  expectedEntry?: 'student' | 'teacher';
 }
 
 export const API_ERROR_CODES = [

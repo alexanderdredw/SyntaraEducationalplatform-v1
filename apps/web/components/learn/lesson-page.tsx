@@ -8,6 +8,7 @@ import { localDate } from '@syntara/shared';
 import { BookOpen, MessageCircle, PencilLine } from 'lucide-react';
 import { Pill, Skeleton, Tabs } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
+import { loginEntryHref } from '@/lib/auth';
 import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../lesson/lesson-view';
 import { LinkButton } from '../public/blocks';
 import { StudentQuiz } from './quiz';
@@ -102,7 +103,8 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
         <p className="text-lg">{t(tabValue === 'ai' ? 'guestInviteAi' : 'guestInvite')}</p>
         <LinkButton
           variant="blue"
-          href={`/auth/login?returnTo=${encodeURIComponent(`/learn/topics/${topicId}?tab=${tabValue}`)}`}
+          // BR-AUTH-01: вход ученика — «Я ученик», с возвратом на эту вкладку урока.
+          href={loginEntryHref(`/learn/topics/${topicId}?tab=${tabValue}`)}
           testId="guest-login"
         >
           {t('guestLogin')}
