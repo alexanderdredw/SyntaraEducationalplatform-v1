@@ -1,7 +1,12 @@
 import { type Queue } from 'bullmq';
 import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 import { type Logger } from 'pino';
-import { OUTBOX_EVENT_TYPES, type OutboxEmailPayload, type OutboxFileScanPayload } from '@syntara/shared';
+import {
+  OUTBOX_EVENT_TYPES,
+  type OutboxEmailPayload,
+  type OutboxFileDeletePayload,
+  type OutboxFileScanPayload,
+} from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { FILE_SCAN_JOB_OPTIONS } from './file-scan';
 
@@ -48,6 +53,14 @@ export async function processOutbox(db: Database, queues: OutboxQueues, logger: 
         if (event.type === OUTBOX_EVENT_TYPES.fileScan && fileScan) {
           const { mediaId } = event.payload as OutboxFileScanPayload;
           await fileScan.add('scan', { mediaId }, { ...FILE_SCAN_JOB_OPTIONS, jobId: mediaId });
+        } else if (event.type === OUTBOX_EVENT_TYPES.fileDelete && fileScan) {
+          // BR-DEL-02/05: объекты удалённых файлов; jobId — id события (повторная публикация не дублирует).
+          const { storageKeys } = event.payload as OutboxFileDeletePayload;
+          await fileScan.add(
+            'delete',
+            { storageKeys },
+            { ...FILE_SCAN_JOB_OPTIONS, jobId: `delete-${event.id}` },
+          );
         } else if (EMAIL_EVENTS.has(event.type)) {
           const { emailQueueId } = event.payload as OutboxEmailPayload;
           await emailQueue.add('send', { emailQueueId }, { ...EMAIL_JOB_OPTIONS, jobId: emailQueueId });

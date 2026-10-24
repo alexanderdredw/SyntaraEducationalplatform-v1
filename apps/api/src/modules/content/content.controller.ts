@@ -50,6 +50,7 @@ import {
 import { Owns } from './ownership.guard';
 import { StudentContentService } from './student-content.service';
 import { SubjectsService } from './subjects.service';
+import { TopicDeletionService } from './topic-deletion.service';
 import { TopicsService } from './topics.service';
 
 const locale = (req: AuthRequest) => resolveLocale(req.headers['accept-language']);
@@ -152,6 +153,7 @@ export class TeacherTopicsController {
   constructor(
     private readonly topics: TopicsService,
     private readonly aiDraft: AiDraftService,
+    private readonly deletion: TopicDeletionService,
   ) {}
 
   /** API-T-10 */
@@ -218,6 +220,19 @@ export class TeacherTopicsController {
     @Req() req: AuthRequest,
   ): Promise<PublishResultDto> {
     return this.topics.unpublish(req.user!.id, id);
+  }
+
+  /**
+   * API-T-30 (BR-DEL-01…03): удалить черновик, который ни разу не публиковался. Опубликованная или снятая с
+   * публикации тема — 409 topicHasHistory, тема с заданием — 409 topicHasAssignments; чужая или базовая — 404.
+   */
+  @Delete(':id')
+  @Owns('topic')
+  @HttpCode(204)
+  @ApiNoContentResponse()
+  @ApiConflictResponse({ description: 'topicHasHistory | topicHasAssignments' })
+  remove(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<void> {
+    return this.deletion.remove(req.user!.id, id);
   }
 
   /** API-T-14 (PH-25) */

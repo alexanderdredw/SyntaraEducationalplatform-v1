@@ -13,6 +13,11 @@ export const OUTBOX_EVENT_TYPES = {
   emailAccount: 'email.account',
   /** API-T-17, BR-FILE-03: загруженный файл — в очередь проверки file-scan. */
   fileScan: 'file.scan',
+  /**
+   * BR-DEL-02, BR-DEL-05: удалённые записи файлов — объекты хранилища удаляет worker после фиксации транзакции
+   * (очередь file-scan, задание delete); удаление отсутствующего объекта — не ошибка.
+   */
+  fileDelete: 'file.delete',
 } as const;
 export type OutboxEventType = (typeof OUTBOX_EVENT_TYPES)[keyof typeof OUTBOX_EVENT_TYPES];
 
@@ -23,6 +28,11 @@ export interface OutboxEmailPayload {
 /** Событие file.scan и задание очереди file-scan (SM-FILE). */
 export interface OutboxFileScanPayload {
   mediaId: string;
+}
+
+/** Событие file.delete и задание delete очереди file-scan: ключи объектов хранилища. */
+export interface OutboxFileDeletePayload {
+  storageKeys: string[];
 }
 
 export const EMAIL_TEMPLATES = {

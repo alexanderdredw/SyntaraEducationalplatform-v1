@@ -6,6 +6,7 @@ import { ApiException } from '../../common/api-exception';
 import { pickTranslation } from '../../common/locale';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
+import { TopicDeletionService } from './topic-deletion.service';
 import {
   type SubjectDetailDto,
   type SubjectLangDto,
@@ -28,6 +29,7 @@ export class SubjectsService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly audit: AuditService,
+    private readonly deletion: TopicDeletionService,
   ) {}
 
   /** API-T-01 */
@@ -225,10 +227,12 @@ export class SubjectsService {
           rows.map((r) => r.id),
         ),
       );
+    const blockers = await this.deletion.blockers(rows.map((r) => r.id));
     return rows.map((r) => ({
       id: r.id,
       number: r.position,
       status: r.status,
+      deletable: !blockers.has(r.id),
       title:
         pickTranslation(
           translations.filter((t) => t.topicId === r.id),

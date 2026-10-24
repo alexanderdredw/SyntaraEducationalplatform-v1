@@ -334,7 +334,7 @@ export interface paths {
         get: operations["TeacherTopicsController_get"];
         put: operations["TeacherTopicsController_save"];
         post?: never;
-        delete?: never;
+        delete: operations["TeacherTopicsController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -607,6 +607,22 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/gallery/{mediaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["GalleryController_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1967,6 +1983,8 @@ export interface components {
             title: string | null;
             /** @enum {string} */
             status: "draft" | "published";
+            /** @description Черновик можно удалить (BR-DEL-01): ни разу не публиковался и без заданий */
+            deletable: boolean;
         };
         SubjectDetailDto: {
             /** Format: uuid */
@@ -2047,6 +2065,8 @@ export interface components {
             materials: components["schemas"]["MaterialDto"][];
             /** Format: uuid */
             quizId: string;
+            /** @description Черновик можно удалить (BR-DEL-01): ни разу не публиковался и без заданий */
+            deletable: boolean;
         };
         TopicBody: {
             /** @description Переводы по языкам ru / kk / en; хотя бы один язык с названием */
@@ -2266,6 +2286,11 @@ export interface components {
             scanStatus: "pending" | "clean" | "rejected";
             url: string | null;
         };
+        CoverUsageDto: {
+            /** @enum {string} */
+            kind: "topic" | "battle";
+            title: string;
+        };
         GalleryItemDto: {
             /** Format: uuid */
             id: string;
@@ -2274,6 +2299,8 @@ export interface components {
             scanStatus: "pending" | "clean" | "rejected";
             /** @description Миниатюра — только после проверки */
             url: string | null;
+            /** @description Где используется (BR-DEL-04): обложка темы или картинка Battle — удалить нельзя */
+            usedIn: components["schemas"]["CoverUsageDto"] | null;
         };
         ChatMessageBody: {
             /** @enum {string} */
@@ -4189,6 +4216,53 @@ export interface operations {
             };
         };
     };
+    TeacherTopicsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description topicHasHistory | topicHasAssignments */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     TeacherTopicsController_draft: {
         parameters: {
             query?: never;
@@ -4858,6 +4932,53 @@ export interface operations {
             };
             /** @description Нет роли или неверный X-CSRF-Token */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    GalleryController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mediaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description coverInUse — обложка темы (черновик или опубликованная версия); coverInUseBattle — картинка Battle */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

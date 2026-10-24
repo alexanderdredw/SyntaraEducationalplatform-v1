@@ -1,5 +1,6 @@
 import { and, eq, lt, sql } from 'drizzle-orm';
 import { type Database, schema } from '@syntara/db';
+import { FILE_SCAN_JOB_OPTIONS } from './file-scan';
 
 /** BR-SUP-02: resolved → closed через 7 дней без ответа пользователя. */
 export const AUTO_CLOSE_DAYS = 7;
@@ -115,4 +116,41 @@ export async function abandonStaleAttempts(db: Database, now = new Date()): Prom
     )
     .returning({ id: a.id });
   return updated.length;
+}
+
+/** AC-DEL-09: сколько ждать после передачи в очередь, прежде чем считать проверку зависшей. */
+export const STUCK_SCAN_MINUTES = 10;
+
+/**
+ * AC-DEL-09 (docs/DELETE_TZ.md, раздел 5): файл загружен (событие file.scan передано в очередь), но всё ещё
+ * pending — у задания проверки кончились повторы (ClamAV или olevba долго недоступны) или задание потеряно.
+ * Такое задание запускается снова: упавшее — retry, отсутствующее — заново с тем же jobId. Проверка
+ * не ослабляется — файл по-прежнему проходит ClamAV и olevba.
+ */
+export async function requeueStuckScans(
+  db: Database,
+  queue: {
+    getJob(id: string): Promise<{ getState(): Promise<string>; retry(): Promise<void> } | undefined>;
+    add(name: string, data: { mediaId: string }, opts: object): Promise<unknown>;
+  },
+  now = new Date(),
+): Promise<number> {
+  const { mediaFiles: m, outboxEvents: o } = schema;
+  const threshold = new Date(now.getTime() - STUCK_SCAN_MINUTES * 60 * 1000);
+  const stuck = await db
+    .select({ id: m.id })
+    .from(m)
+    .innerJoin(o, sql`${o.type} = 'file.scan' AND ${o.payload}->>'mediaId' = ${m.id}::text`)
+    .where(and(eq(m.scanStatus, 'pending'), lt(o.processedAt, threshold)));
+  let requeued = 0;
+  for (const { id } of stuck) {
+    const job = await queue.getJob(id);
+    const state = job ? await job.getState() : 'missing';
+    if (state === 'failed') await job!.retry();
+    else if (state === 'missing')
+      await queue.add('scan', { mediaId: id }, { ...FILE_SCAN_JOB_OPTIONS, jobId: id });
+    else continue; // ждёт, выполняется или в задержке перед повтором — не мешаем.
+    requeued += 1;
+  }
+  return requeued;
 }

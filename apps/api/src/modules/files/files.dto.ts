@@ -24,10 +24,22 @@ export class MediaStatusDto {
 }
 
 /** API-T-18 */
+/** BR-DEL-04 */
+export class CoverUsageDto {
+  @ApiProperty({ enum: ['topic', 'battle'] }) kind: 'topic' | 'battle';
+  @ApiProperty() title: string;
+}
+
 export class GalleryItemDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() name: string;
   @ApiProperty({ enum: ['pending', 'clean', 'rejected'] }) scanStatus: 'pending' | 'clean' | 'rejected';
   @ApiProperty({ type: String, nullable: true, description: 'Миниатюра — только после проверки' })
   url: string | null;
+  @ApiProperty({
+    type: CoverUsageDto,
+    nullable: true,
+    description: 'Где используется (BR-DEL-04): обложка темы или картинка Battle — удалить нельзя',
+  })
+  usedIn: CoverUsageDto | null;
 }

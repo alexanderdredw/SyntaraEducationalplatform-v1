@@ -53,6 +53,8 @@ export class TopicListItemDto {
   @ApiProperty({ type: String, nullable: true, description: 'null — тема ещё без названия' })
   title: string | null;
   @ApiProperty({ enum: ['draft', 'published'] }) status: 'draft' | 'published';
+  @ApiProperty({ description: 'Черновик можно удалить (BR-DEL-01): ни разу не публиковался и без заданий' })
+  deletable: boolean;
 }
 
 /** API-T-03 GET */
@@ -110,6 +112,8 @@ export class TopicDetailDto {
   coverPreviewUrl: string | null;
   @ApiProperty({ type: MaterialDto, isArray: true }) materials: MaterialDto[];
   @ApiProperty({ format: 'uuid' }) quizId: string;
+  @ApiProperty({ description: 'Черновик можно удалить (BR-DEL-01): ни разу не публиковался и без заданий' })
+  deletable: boolean;
 }
 
 /** API-T-11 */

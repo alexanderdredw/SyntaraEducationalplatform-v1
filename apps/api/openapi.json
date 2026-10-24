@@ -905,6 +905,44 @@
         "tags": [
           "teacher"
         ]
+      },
+      "delete": {
+        "operationId": "TeacherTopicsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "409": {
+            "description": "topicHasHistory | topicHasAssignments"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
       }
     },
     "/api/teacher/topics/{id}/ai-draft": {
@@ -1602,6 +1640,46 @@
           },
           "403": {
             "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/gallery/{mediaId}": {
+      "delete": {
+        "operationId": "GalleryController_remove",
+        "parameters": [
+          {
+            "name": "mediaId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "409": {
+            "description": "coverInUse — обложка темы (черновик или опубликованная версия); coverInUseBattle — картинка Battle"
           }
         },
         "security": [
@@ -5934,13 +6012,18 @@
               "draft",
               "published"
             ]
+          },
+          "deletable": {
+            "type": "boolean",
+            "description": "Черновик можно удалить (BR-DEL-01): ни разу не публиковался и без заданий"
           }
         },
         "required": [
           "id",
           "number",
           "title",
-          "status"
+          "status",
+          "deletable"
         ]
       },
       "SubjectDetailDto": {
@@ -6195,6 +6278,10 @@
           "quizId": {
             "type": "string",
             "format": "uuid"
+          },
+          "deletable": {
+            "type": "boolean",
+            "description": "Черновик можно удалить (BR-DEL-01): ни разу не публиковался и без заданий"
           }
         },
         "required": [
@@ -6209,7 +6296,8 @@
           "coverUrl",
           "coverPreviewUrl",
           "materials",
-          "quizId"
+          "quizId",
+          "deletable"
         ]
       },
       "TopicBody": {
@@ -6930,6 +7018,25 @@
           "url"
         ]
       },
+      "CoverUsageDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "topic",
+              "battle"
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "title"
+        ]
+      },
       "GalleryItemDto": {
         "type": "object",
         "properties": {
@@ -6952,13 +7059,24 @@
             "type": "string",
             "nullable": true,
             "description": "Миниатюра — только после проверки"
+          },
+          "usedIn": {
+            "nullable": true,
+            "description": "Где используется (BR-DEL-04): обложка темы или картинка Battle — удалить нельзя",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CoverUsageDto"
+              }
+            ]
           }
         },
         "required": [
           "id",
           "name",
           "scanStatus",
-          "url"
+          "url",
+          "usedIn"
         ]
       },
       "ChatMessageBody": {

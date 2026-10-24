@@ -1,7 +1,10 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Req } from '@nestjs/common';
 import {
   ApiBody,
+  ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiPayloadTooLargeResponse,
   ApiTags,
@@ -61,5 +64,19 @@ export class GalleryController {
   @ApiOkResponse({ type: GalleryItemDto, isArray: true })
   gallery(@Req() req: AuthRequest): Promise<GalleryItemDto[]> {
     return this.files.gallery(req.user!.id);
+  }
+
+  /** API-T-31 (BR-DEL-04/05): чужая или несуществующая картинка — 404. */
+  @Delete(':mediaId')
+  @Owns('media', 'mediaId')
+  @HttpCode(204)
+  @ApiNoContentResponse()
+  @ApiNotFoundResponse()
+  @ApiConflictResponse({
+    description:
+      'coverInUse — обложка темы (черновик или опубликованная версия); coverInUseBattle — картинка Battle',
+  })
+  remove(@Param('mediaId', new UuidParamPipe()) mediaId: string, @Req() req: AuthRequest): Promise<void> {
+    return this.files.removeCover(req.user!.id, mediaId);
   }
 }

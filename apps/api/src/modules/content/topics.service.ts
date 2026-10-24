@@ -12,7 +12,8 @@ import { ApiException } from '../../common/api-exception';
 import { AppConfigService } from '../../config/app-config.service';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
-import { FilesService } from '../files/files.service';
+import { FilesService, uploadCompleted } from '../files/files.service';
+import { TopicDeletionService } from './topic-deletion.service';
 import { StorageService } from '../files/storage.service';
 import {
   type LessonDto,
@@ -47,6 +48,7 @@ export class TopicsService {
     private readonly lessons: LessonService,
     private readonly storage: StorageService,
     private readonly files: FilesService,
+    private readonly deletion: TopicDeletionService,
     private readonly config: AppConfigService,
   ) {}
 
@@ -81,6 +83,7 @@ export class TopicsService {
       coverPreviewUrl: await this.lessons.coverUrl(topic),
       materials: await this.materials(id),
       quizId: row!.quizId ?? (await this.ensureQuiz(id)),
+      deletable: !(await this.deletion.blockers([id])).has(id),
     };
   }
 
@@ -154,12 +157,20 @@ export class TopicsService {
         bodyMd: t.bodyMd ?? null,
       }));
       if (rows.length) await tx.insert(tt).values(rows);
+      const before = await tx
+        .select({ id: topicMaterials.mediaId })
+        .from(topicMaterials)
+        .where(eq(topicMaterials.topicId, id));
       await tx.delete(topicMaterials).where(eq(topicMaterials.topicId, id));
       if (dto.materialIds.length) {
         await tx
           .insert(topicMaterials)
           .values(dto.materialIds.map((mediaId, i) => ({ topicId: id, mediaId, position: i + 1 })));
       }
+      // DELETE_TZ, раздел 4: убранный «✕» материал удаляется вместе с объектом хранилища (worker), если его нет
+      // ни в одной версии темы — опубликованную версию, которую видят ученики, не трогаем.
+      const removed = before.map((m) => m.id!).filter((m) => !dto.materialIds.includes(m));
+      await this.files.enqueueDelete(tx, await this.files.releaseMaterials(tx, removed));
     });
   }
 
@@ -254,7 +265,8 @@ export class TopicsService {
       })
       .from(topicMaterials)
       .innerJoin(mediaFiles, eq(mediaFiles.id, topicMaterials.mediaId))
-      .where(eq(topicMaterials.topicId, topicId))
+      // Оборванная загрузка (API-T-17 не вызван) не показывается как «Проверяется» (DELETE_TZ, раздел 5).
+      .where(and(eq(topicMaterials.topicId, topicId), uploadCompleted()))
       .orderBy(asc(topicMaterials.position));
     return Promise.all(
       rows.map(async ({ key, ...r }) => ({

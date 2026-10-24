@@ -1,14 +1,15 @@
 import { Queue, Worker, type ConnectionOptions, type Job, type Processor } from 'bullmq';
 import { type Logger } from 'pino';
-import { type OutboxFileScanPayload } from '@syntara/shared';
+import { type OutboxFileDeletePayload, type OutboxFileScanPayload } from '@syntara/shared';
 import { type Database } from '@syntara/db';
 import { type EmailJobData, type MailTransport, sendEmail, type TokenStore } from './processors/email';
-import { type ObjectStorage, scanFile } from './processors/file-scan';
+import { deleteObjects, type ObjectStorage, scanFile } from './processors/file-scan';
 import {
   abandonStaleAttempts,
   autoCloseResolved,
   cleanupIdempotencyKeys,
   cleanupStaleUploads,
+  requeueStuckScans,
 } from './processors/maintenance';
 import { processBattleJob } from './processors/battle';
 import { processOutbox } from './processors/outbox';
@@ -42,6 +43,8 @@ export const SCHEDULES = [
   { queue: 'cleanup', id: 'stale-uploads', name: 'stale-uploads', every: 24 * 60 * 60_000 },
   // SM-ATTEMPT: брошенные попытки — раз в сутки.
   { queue: 'cleanup', id: 'abandon-attempts', name: 'abandon-attempts', every: 24 * 60 * 60_000 },
+  // AC-DEL-09: проверка, у которой кончились повторы (ClamAV долго недоступен), запускается снова — раз в 10 минут.
+  { queue: 'cleanup', id: 'rescan-pending', name: 'rescan-pending', every: 10 * 60_000 },
   // BR-BTL-06: истечение сессий Battle — раз в минуту.
   { queue: 'battle', id: 'battle-expire', name: 'expire', every: 60_000 },
 ] as const satisfies ReadonlyArray<{ queue: QueueName; id: string; name: string; every: number }>;
@@ -62,14 +65,16 @@ export function createProcessors(
     // BR-FRM-03/04, API-SUP-04: отправка письма с повторами.
     email: async (job: Job<EmailJobData>) => ({ result: await sendEmail(job, { ...deps, logger }) }),
     // BR-FILE-03, SM-FILE: ClamAV + olevba; отклонённый файл удаляется из хранилища.
-    'file-scan': async (job: Job<OutboxFileScanPayload>) => ({
-      result: await scanFile(job, { ...deps, logger }),
-    }),
+    'file-scan': async (job: Job) =>
+      job.name === 'delete'
+        ? { removed: await deleteObjects(job as Job<OutboxFileDeletePayload>, { ...deps, logger }) }
+        : { result: await scanFile(job as Job<OutboxFileScanPayload>, { ...deps, logger }) },
     cleanup: async (job: Job) => {
       if (job.name === 'auto-close') return { closed: await autoCloseResolved(deps.db) };
       if (job.name === 'idempotency-keys') return { deleted: await cleanupIdempotencyKeys(deps.db) };
       if (job.name === 'abandon-attempts') return { abandoned: await abandonStaleAttempts(deps.db) };
       if (job.name === 'stale-uploads') return { deleted: await cleanupStaleUploads(deps.db, deps.storage) };
+      if (job.name === 'rescan-pending') return { requeued: await requeueStuckScans(deps.db, fileScanQueue) };
       return { handled: false };
     },
     battle: async (job: Job) =>

@@ -2,7 +2,12 @@ import { createHash } from 'node:crypto';
 import { type Job } from 'bullmq';
 import { and, eq } from 'drizzle-orm';
 import { type Logger } from 'pino';
-import { extensionOf, OFFICE_EXTENSIONS, type OutboxFileScanPayload } from '@syntara/shared';
+import {
+  extensionOf,
+  OFFICE_EXTENSIONS,
+  type OutboxFileDeletePayload,
+  type OutboxFileScanPayload,
+} from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { type Scanners } from './scanners';
 
@@ -92,4 +97,17 @@ export async function scanFile(
   if (reason) await deps.storage.remove(media.storageKey);
   deps.logger.info({ mediaId: media.id, status, reason }, 'file scanned');
   return status;
+}
+
+/**
+ * BR-DEL-02, BR-DEL-05: объекты удалённых записей (черновик темы, картинка галереи, материал). Запись уже удалена
+ * в транзакции api; отсутствующий объект — не ошибка (DeleteObject идемпотентен), поэтому повтор безопасен.
+ */
+export async function deleteObjects(
+  job: Pick<Job<OutboxFileDeletePayload>, 'data'>,
+  deps: Pick<FileScanDeps, 'storage' | 'logger'>,
+): Promise<number> {
+  for (const key of job.data.storageKeys) await deps.storage.remove(key);
+  deps.logger.info({ count: job.data.storageKeys.length }, 'files removed from storage');
+  return job.data.storageKeys.length;
 }

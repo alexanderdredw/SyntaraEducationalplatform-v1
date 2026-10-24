@@ -9,8 +9,14 @@ import { createDb, type Database, schema } from '@syntara/db';
 import { migrateUp } from '@syntara/db/migrator';
 import { runSeed } from '@syntara/db/seed';
 import { DEMO_IDS } from '@syntara/db/seed';
-import { FILE_SCAN_JOB_OPTIONS, hasMacroParts, scanFile, zipEntryNames } from '../src/processors/file-scan';
-import { abandonStaleAttempts, cleanupStaleUploads } from '../src/processors/maintenance';
+import {
+  deleteObjects,
+  FILE_SCAN_JOB_OPTIONS,
+  hasMacroParts,
+  scanFile,
+  zipEntryNames,
+} from '../src/processors/file-scan';
+import { abandonStaleAttempts, cleanupStaleUploads, requeueStuckScans } from '../src/processors/maintenance';
 import { processOutbox } from '../src/processors/outbox';
 import { clamdScan, type Scanners } from '../src/processors/scanners';
 
@@ -244,6 +250,67 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
     const email = { add: async () => undefined } as unknown as Queue;
     expect(await processOutbox(db, { email, fileScan }, logger)).toBeGreaterThanOrEqual(1);
     expect(added).toContainEqual(['scan', { mediaId: id }, expect.objectContaining({ jobId: id })]);
+  });
+
+  it('BR-DEL-02/05 file.delete → a delete job in file-scan (jobId per event); objects are removed, a missing one is not an error', async () => {
+    const [event] = await db
+      .insert(schema.outboxEvents)
+      .values({ type: OUTBOX_EVENT_TYPES.fileDelete, payload: { storageKeys: ['cover/a', 'cover/b'] } })
+      .returning();
+    const added: Array<[string, unknown, { jobId?: string }]> = [];
+    const fileScan = {
+      add: async (...args: [string, unknown, { jobId?: string }]) => added.push(args),
+    } as unknown as Queue;
+    const email = { add: async () => undefined } as unknown as Queue;
+    await processOutbox(db, { email, fileScan }, logger);
+    expect(added).toContainEqual([
+      'delete',
+      { storageKeys: ['cover/a', 'cover/b'] },
+      expect.objectContaining({ jobId: `delete-${event!.id}`, attempts: FILE_SCAN_JOB_OPTIONS.attempts }),
+    ]);
+    objects.set('cover/a', Buffer.from('x'));
+    expect(await deleteObjects({ data: { storageKeys: ['cover/a', 'cover/b'] } }, { storage, logger })).toBe(
+      2,
+    );
+    expect(objects.has('cover/a')).toBe(false);
+    // Повтор задания — без ошибки (объектов уже нет).
+    await deleteObjects({ data: { storageKeys: ['cover/a'] } }, { storage, logger });
+  });
+
+  it('BR-DEL-05 a scan of a file deleted from the gallery ends without an error', async () => {
+    const id = await pending('deleted.png', Buffer.from('png'), 'cover');
+    await db.delete(schema.mediaFiles).where(eq(schema.mediaFiles.id, id));
+    expect(await scan(id)).toBe('skipped');
+  });
+
+  it('AC-DEL-09 a pending scan whose retries ran out (ClamAV unavailable) is retried; a missing job is re-added; others are left alone', async () => {
+    const now = new Date();
+    const queued = async (processedAgoMin: number) => {
+      const id = await pending('stuck.png', Buffer.from('png'), 'cover');
+      await db.insert(schema.outboxEvents).values({
+        type: OUTBOX_EVENT_TYPES.fileScan,
+        payload: { mediaId: id },
+        processedAt: new Date(now.getTime() - processedAgoMin * 60_000),
+      });
+      return id;
+    };
+    const failed = await queued(30);
+    const lost = await queued(30);
+    const waiting = await queued(30);
+    const recent = await queued(1);
+    const retried: string[] = [];
+    const added: Array<[string, unknown, { jobId?: string }]> = [];
+    const states: Record<string, string> = { [failed]: 'failed', [waiting]: 'delayed', [recent]: 'failed' };
+    const queue = {
+      getJob: async (id: string) =>
+        states[id]
+          ? { getState: async () => states[id]!, retry: async () => void retried.push(id) }
+          : undefined,
+      add: async (...args: [string, { mediaId: string }, { jobId?: string }]) => void added.push(args),
+    };
+    expect(await requeueStuckScans(db, queue, now)).toBe(2);
+    expect(retried).toEqual([failed]);
+    expect(added).toEqual([['scan', { mediaId: lost }, expect.objectContaining({ jobId: lost })]]);
   });
 
   it('BR-FILE-07 unconfirmed uploads older than 24 h are deleted with their object; others stay', async () => {

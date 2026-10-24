@@ -14,6 +14,7 @@ import { LessonService } from './lesson.service';
 import { OwnershipGuard } from './ownership.guard';
 import { StudentContentService } from './student-content.service';
 import { SubjectsService } from './subjects.service';
+import { TopicDeletionService } from './topic-deletion.service';
 import { TopicsService } from './topics.service';
 import { VisibilityService } from './visibility.service';
 
@@ -34,6 +35,7 @@ import { VisibilityService } from './visibility.service';
     OwnershipGuard,
     SubjectsService,
     TopicsService,
+    TopicDeletionService,
     LessonService,
     AiDraftService,
     StudentContentService,
