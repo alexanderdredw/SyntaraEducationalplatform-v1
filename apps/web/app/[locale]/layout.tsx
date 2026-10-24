@@ -7,7 +7,7 @@ import { type ReactNode } from 'react';
 import { routing } from '@/i18n/routing';
 import { Providers } from '@/components/providers';
 import { PreferencesProvider } from '@/components/preferences/preferences-provider';
-import { COOKIE, parseConsent, parseTheme, THEME_INIT_SCRIPT } from '@/lib/preferences';
+import { COOKIE, parseConsent, parseTheme, SIDEBAR_INIT_SCRIPT, THEME_INIT_SCRIPT } from '@/lib/preferences';
 import '../globals.css';
 
 export async function generateMetadata({
@@ -43,7 +43,11 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} data-theme={theme} data-data-saver={String(dataSaver)} suppressHydrationWarning>
       <head>
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT + SIDEBAR_INIT_SCRIPT }}
+        />
       </head>
       <body>
         <a

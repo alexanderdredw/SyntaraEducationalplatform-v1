@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import '@syntara/ui/tokens.css';
 
+/* REQ-NAV-03: стили свёрнутой панели навигации — атрибут data-sidebar на <html> (SIDEBAR_INIT_SCRIPT). */
+@custom-variant nav-collapsed (:root[data-sidebar='collapsed'] &);
+
 /* Классы компонентов packages/ui (REQ-GEN-DS-01). */
 @source '../../../packages/ui/src';
 
@@ -48,6 +51,14 @@ html {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+}
+
+/* REQ-NAV-03: ширина панели навигации кабинета — развёрнутая с подписями или узкая полоса иконок. */
+:root {
+  --nav-w: var(--sidebar-w-expanded);
+}
+:root[data-sidebar='collapsed'] {
+  --nav-w: var(--sidebar-w);
 }
 
 body {

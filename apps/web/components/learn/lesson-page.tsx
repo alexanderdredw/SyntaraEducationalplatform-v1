@@ -32,7 +32,8 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
   // Вкладка — из адреса: replaceState обновляет useSearchParams без запроса к серверу; «назад» тоже работает.
   const tab = tabOf(params.get('tab'));
   const opened = useRef(false);
-  const { guest, api } = useLearnViewer();
+  const { guest, cabinetHref, api } = useLearnViewer();
+  const tc = useTranslations('cabinet');
 
   const lesson = useQuery({
     queryKey: ['student', 'lesson', topicId, guest, locale],
@@ -79,18 +80,27 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
   }
   const data = lesson.data;
   // REQ-ST-LES-06: на «Квиз» и «Syntara AI» гостю — приглашение войти с возвратом на эту вкладку урока.
-  const invite = (tabValue: LessonTab) => (
-    <div className="flex flex-col items-start gap-4 py-4" data-testid="guest-invite">
-      <p className="text-lg">{t(tabValue === 'ai' ? 'guestInviteAi' : 'guestInvite')}</p>
-      <LinkButton
-        variant="blue"
-        href={`/auth/login?returnTo=${encodeURIComponent(`/learn/topics/${topicId}?tab=${tabValue}`)}`}
-        testId="guest-login"
-      >
-        {t('guestLogin')}
-      </LinkButton>
-    </div>
-  );
+  // REQ-NAV-05: вошедшему без роли ученика (учитель) «Войти» не показывается — «Перейти в кабинет →».
+  // TODO(OWNER): поясняющий текст на «Квиз» и «Syntara AI» базового урока для учителя (SPEC молчит).
+  const invite = (tabValue: LessonTab) =>
+    cabinetHref ? (
+      <div className="flex flex-col items-start gap-4 py-4" data-testid="signed-in-invite">
+        <LinkButton variant="blue" href={cabinetHref} testId="to-cabinet">
+          {tc('toCabinet')}
+        </LinkButton>
+      </div>
+    ) : (
+      <div className="flex flex-col items-start gap-4 py-4" data-testid="guest-invite">
+        <p className="text-lg">{t(tabValue === 'ai' ? 'guestInviteAi' : 'guestInvite')}</p>
+        <LinkButton
+          variant="blue"
+          href={`/auth/login?returnTo=${encodeURIComponent(`/learn/topics/${topicId}?tab=${tabValue}`)}`}
+          testId="guest-login"
+        >
+          {t('guestLogin')}
+        </LinkButton>
+      </div>
+    );
   return (
     <article
       lang={data.locale}

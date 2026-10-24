@@ -7,7 +7,13 @@ import {
   type BrowserContext,
   type Page,
 } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
+import {
+  acceptCookies,
+  bundles,
+  expectNoSeriousA11yViolations,
+  hasHorizontalScroll,
+  switchCabinetLocale,
+} from './support';
 
 const ru = bundles.ru;
 const st = ru.student;
@@ -249,11 +255,7 @@ test.describe('Интерфейс ученика: обучение (итерац
     await page.getByRole('tab', { name: st.lesson.quiz }).click();
     expect(await page.evaluate(() => (window as unknown as { __noReload?: boolean }).__noReload)).toBe(true);
 
-    await page
-      .getByTestId('cabinet-header')
-      .getByRole('button', { name: new RegExp(ru.shell.language) })
-      .click();
-    await page.getByRole('menuitem', { name: /KK/ }).click();
+    await switchCabinetLocale(page, 'kk');
     await expect(page).toHaveURL(new RegExp(`/kk/learn/topics/${topicId}\\?tab=quiz$`));
     await expect(page.getByRole('heading', { level: 1, name: 'Жүрек' })).toBeVisible();
     await expect(page.getByTestId('quiz-progress')).toHaveText(
@@ -419,9 +421,9 @@ test.describe('Интерфейс ученика: обучение (итерац
     await page.goto('/ru');
     await expect(page.getByTestId('hero-continue')).toHaveText(ru.home.hero.continue);
     await expect(page.getByTestId('hero-continue')).toHaveAttribute('href', `/ru/learn/topics/${topicId}`);
-    // Шапка публичных страниц у вошедшего — «Кабинет» его роли вместо «Войти».
-    await expect(page.getByTestId('header-cabinet')).toHaveText(ru.footer.cabinet);
-    await expect(page.getByTestId('header-cabinet')).toHaveAttribute('href', '/ru/learn/subjects');
+    // REQ-NAV-04: публичная главная у вошедшего — внутри рабочей среды (хедер кабинета), «Войти» нет.
+    await expect(page.getByTestId('cabinet-header')).toBeVisible();
+    await expect(page.getByTestId('public-header')).toHaveCount(0);
     await expect(page.getByTestId('header-login')).toHaveCount(0);
     await page.goto(`/ru/learn/subjects/${subjectId}`);
     await expect(page.getByTestId('student-topic').first()).toHaveAttribute('data-status', 'started');

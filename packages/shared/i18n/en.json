@@ -772,17 +772,29 @@
     "sidebarLabel": "Cabinet sections",
     "lamp": "Tips",
     "nav": {
+      "home": "Home",
       "courses": "My courses",
       "classes": "Classes",
       "assignments": "Assignments",
       "subjects": "Subjects",
       "myAssignments": "My assignments",
-      "assistant": "Learning assistant",
-      "progress": "My progress",
+      "assistant": "Syntara AI",
+      "battle": "Battle",
+      "progress": "Progress",
       "achievements": "Achievements",
-      "support": "Support",
-      "battle": "Battle"
+      "catalog": "Platform subjects",
+      "ai": "Syntara AI",
+      "about": "About",
+      "schools": "For schools",
+      "help": "Help"
     },
+    "navGroups": {
+      "cabinet": "My dashboard",
+      "platform": "Platform"
+    },
+    "collapseNav": "Collapse sidebar",
+    "expandNav": "Expand sidebar",
+    "toCabinet": "Go to dashboard →",
     "verify": {
       "text": "Confirm your email",
       "resend": "Send the email again",

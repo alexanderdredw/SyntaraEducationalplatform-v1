@@ -27,6 +27,42 @@ export async function acceptCookies(context: BrowserContext, baseURL: string | u
 
 export const isMobile = (page: Page) => (page.viewportSize()?.width ?? 1440) < 1024;
 
+/** Телефон для оболочки кабинета (REQ-NAV-07): < 768 px вместо панели навигации — меню хедера. */
+export const isPhone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768;
+
+/** Навигация кабинета: ≥ 768 px — панель слева, на телефоне — открытое меню хедера (REQ-NAV-03, REQ-NAV-07). */
+export async function cabinetNav(page: Page) {
+  if (!isPhone(page)) return page.getByTestId('cabinet-sidebar');
+  await page.getByTestId('cabinet-header').getByRole('button', { name: ru.shell.menu }).click();
+  return page.getByTestId('cabinet-menu-nav');
+}
+
+/** «Выйти» из кабинета: на телефоне — в «Настройках» меню хедера (REQ-NAV-07). */
+export async function signOut(page: Page) {
+  if (isPhone(page))
+    await page.getByTestId('cabinet-header').getByRole('button', { name: ru.shell.menu }).click();
+  await page.getByTestId('logout').filter({ visible: true }).click();
+}
+
+/** Язык из хедера кабинета: ≥ 768 px — список, на телефоне — сегменты в меню (REQ-NAV-07). */
+export async function switchCabinetLocale(page: Page, code: 'ru' | 'kk' | 'en') {
+  if (isPhone(page)) {
+    await page.getByTestId('cabinet-header').getByRole('button', { name: ru.shell.menu }).click();
+    await page
+      .getByRole('dialog', { name: ru.shell.menu })
+      .getByRole('radio', { name: code.toUpperCase() })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/${code}(/|\\?|#|$)`));
+    await page.keyboard.press('Escape');
+    return;
+  }
+  await page
+    .getByTestId('cabinet-header')
+    .getByRole('button', { name: new RegExp(ru.shell.language) })
+    .click();
+  await page.getByRole('menuitem', { name: new RegExp(code.toUpperCase()) }).click();
+}
+
 /**
  * Смена языка интерфейса из хедера: ≥ 1024 px — выпадающий список, < 1024 px — сегменты RU/KK/EN
  * в мобильном меню (UX-10; меню остаётся открытым — закрываем Escape).

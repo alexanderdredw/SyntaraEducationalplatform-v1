@@ -2,12 +2,11 @@
 
 import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Dialog } from 'radix-ui';
-import { Menu, X } from 'lucide-react';
 import { type Locale } from '@syntara/shared';
-import { BrandMark, Capsule, cn, Header, HeaderBar, Wordmark } from '@syntara/ui';
+import { BrandMark, Capsule, cn, Header, Wordmark } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { AppLink } from '../app-link';
+import { ActiveRowMark, MenuSection, menuRowClass, MobileMenu } from './mobile-menu';
 import { isActive, NAV_ITEMS } from './nav-items';
 import {
   DataSaverToggle,
@@ -23,10 +22,6 @@ import {
  * флаг живёт в памяти вкладки до следующего монтирования хедера.
  */
 let reopenMenuAfterLocaleSwitch = false;
-
-/** Круглая кнопка меню 44 × 44 px с рамкой (UX-10). */
-const menuButtonClass =
-  'inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--capsule-border)] bg-[var(--capsule)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]';
 
 /**
  * Публичный хедер (REQ-GEN-SHELL-01) и мобильное меню (REQ-GEN-SHELL-06, UX-10).
@@ -77,7 +72,6 @@ export function PublicHeader({
     </ul>
   );
 
-  // UX-10, п. 5: строки на всю ширину ≥ 48 px; активная — синеватый фон и рамка, полоса-индикатор слева.
   const mobileLinks = (
     <ul className="flex flex-col gap-2">
       {NAV_ITEMS.map((item, index) => {
@@ -89,19 +83,9 @@ export function PublicHeader({
               href={item.href}
               onClick={() => setMenuOpen(false)}
               aria-current={active ? 'page' : undefined}
-              className={cn(
-                'relative flex min-h-12 w-full items-center rounded-[14px] border px-4 text-[17px] font-semibold',
-                active
-                  ? 'border-[color-mix(in_srgb,var(--accent)_45%,transparent)] bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface))] font-bold text-[var(--text)]'
-                  : 'border-[var(--capsule-border)] bg-[var(--capsule)] text-[color-mix(in_srgb,var(--text)_80%,transparent)] hover:border-[var(--border-strong)] hover:text-[var(--text)]',
-              )}
+              className={menuRowClass(active)}
             >
-              {active ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-1/2 left-1.5 h-5 w-[3px] -translate-y-1/2 rounded-full bg-[var(--accent-bright)]"
-                />
-              ) : null}
+              {active ? <ActiveRowMark /> : null}
               {t(`nav.${item.key}`)}
             </AppLink>
           </li>
@@ -155,84 +139,43 @@ export function PublicHeader({
           <ThemeToggle />
         </Capsule>
         {loginButton(true)}
-        <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
-          <Dialog.Trigger aria-label={t('menu')} className={cn(menuButtonClass, 'lg:hidden')}>
-            <Menu aria-hidden="true" className="size-5" />
-          </Dialog.Trigger>
-          <Dialog.Portal>
-            <Dialog.Overlay className="mobile-menu-overlay fixed inset-0 z-40 bg-black/55 lg:hidden" />
-            <Dialog.Content
-              aria-describedby={undefined}
-              // UX-10, п. 13: при открытии фокус — на первый пункт; при закрытии Radix возвращает его на кнопку меню.
-              // После смены языка фокус остаётся на выбранном языке.
-              onOpenAutoFocus={(event) => {
-                event.preventDefault();
-                const language = reopened
-                  ? languageRef.current?.querySelector<HTMLElement>('[data-state="on"]')
-                  : null;
-                (language ?? firstItemRef.current)?.focus();
+        <MobileMenu
+          open={menuOpen}
+          onOpenChange={setMenuOpen}
+          label={t('menu')}
+          closeLabel={t('closeMenu')}
+          hiddenFrom="lg"
+          logo={logo}
+          actions={loginButton(false)}
+          // UX-10, п. 13: при открытии фокус — на первый пункт; при закрытии Radix возвращает его на кнопку меню.
+          // После смены языка фокус остаётся на выбранном языке.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            const language = reopened
+              ? languageRef.current?.querySelector<HTMLElement>('[data-state="on"]')
+              : null;
+            (language ?? firstItemRef.current)?.focus();
+          }}
+        >
+          <nav aria-label={t('navLabel')}>{mobileLinks}</nav>
+          <hr className="border-[var(--border)]" />
+          <MenuSection ref={languageRef} id="mobile-menu-language" title={t('language')}>
+            <LanguageSegments
+              enabledLocales={enabledLocales}
+              stretch
+              onBeforeSwitch={() => {
+                reopenMenuAfterLocaleSwitch = true;
               }}
-              // Обёртка «прозрачна» для нажатий (важнее встроенного стиля Radix): нажатие между капсулой и панелью
-              // попадает на подложку — это нажатие вне панели (UX-10, п. 12).
-              className="pointer-events-none! fixed inset-0 z-50 flex flex-col px-2 pt-2.5 pb-3 text-[var(--text)] sm:px-4 lg:hidden"
-            >
-              <Dialog.Title className="sr-only">{t('menu')}</Dialog.Title>
-              <HeaderBar className="pointer-events-auto">
-                {logo}
-                <div className="ml-auto flex items-center gap-2">
-                  {loginButton(false)}
-                  <Dialog.Close aria-label={t('closeMenu')} className={menuButtonClass}>
-                    <X aria-hidden="true" className="size-5" />
-                  </Dialog.Close>
-                </div>
-              </HeaderBar>
-              {/* п. 10: прокручивается только панель; прокрутку страницы блокирует Radix Dialog. */}
-              <div
-                data-testid="mobile-menu-panel"
-                className="mobile-menu-panel pointer-events-auto mx-1 mt-2 flex min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain rounded-[24px] border border-[var(--border)] bg-[var(--surface)] px-3 pt-2.5 pb-4 shadow-popover"
-              >
-                <span
-                  aria-hidden="true"
-                  className="mx-auto h-1 w-8 shrink-0 rounded-full bg-[var(--border-strong)]"
-                />
-                <nav aria-label={t('navLabel')}>{mobileLinks}</nav>
-                <hr className="border-[var(--border)]" />
-                <section
-                  ref={languageRef}
-                  aria-labelledby="mobile-menu-language"
-                  className="flex flex-col gap-2.5 px-1"
-                >
-                  <h2
-                    id="mobile-menu-language"
-                    className="text-xs font-semibold tracking-[0.12em] text-[var(--text-muted)] uppercase"
-                  >
-                    {t('language')}
-                  </h2>
-                  <LanguageSegments
-                    enabledLocales={enabledLocales}
-                    stretch
-                    onBeforeSwitch={() => {
-                      reopenMenuAfterLocaleSwitch = true;
-                    }}
-                  />
-                </section>
-                <hr className="border-[var(--border)]" />
-                <section aria-labelledby="mobile-menu-settings" className="flex flex-col gap-2.5 px-1">
-                  <h2
-                    id="mobile-menu-settings"
-                    className="text-xs font-semibold tracking-[0.12em] text-[var(--text-muted)] uppercase"
-                  >
-                    {t('settings')}
-                  </h2>
-                  <div className="flex items-center gap-3">
-                    <MenuThemeButton />
-                    <MenuDataSaverButton />
-                  </div>
-                </section>
-              </div>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
+            />
+          </MenuSection>
+          <hr className="border-[var(--border)]" />
+          <MenuSection id="mobile-menu-settings" title={t('settings')}>
+            <div className="flex items-center gap-3">
+              <MenuThemeButton />
+              <MenuDataSaverButton />
+            </div>
+          </MenuSection>
+        </MobileMenu>
       </div>
     </Header>
   );

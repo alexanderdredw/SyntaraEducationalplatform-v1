@@ -772,17 +772,29 @@
     "sidebarLabel": "Разделы кабинета",
     "lamp": "Подсказки",
     "nav": {
+      "home": "Главная",
       "courses": "Мои курсы",
       "classes": "Классы",
       "assignments": "Задания",
       "subjects": "Предметы",
       "myAssignments": "Мои задания",
-      "assistant": "Учебный помощник",
-      "progress": "Мои показатели",
+      "assistant": "Syntara AI",
+      "battle": "Battle",
+      "progress": "Показатели",
       "achievements": "Достижения",
-      "support": "Поддержка",
-      "battle": "Battle"
+      "catalog": "Предметы платформы",
+      "ai": "Syntara AI",
+      "about": "О проекте",
+      "schools": "Школам",
+      "help": "Помощь"
     },
+    "navGroups": {
+      "cabinet": "Мой кабинет",
+      "platform": "Платформа"
+    },
+    "collapseNav": "Свернуть панель",
+    "expandNav": "Развернуть панель",
+    "toCabinet": "Перейти в кабинет →",
     "verify": {
       "text": "Подтвердите email",
       "resend": "Отправить письмо ещё раз",

@@ -2,10 +2,10 @@ import { BrandMark } from '@syntara/ui';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookOpen, LineChart, School } from 'lucide-react';
 import { type Locale } from '@syntara/shared';
-import { cookies } from 'next/headers';
-import { getMe, getMeStats, getPublicSubjects } from '@/lib/api/server';
+import { getPublicSubjects } from '@/lib/api/server';
 import { CardGrid, InfoCard, LinkButton, Section } from '@/components/public/blocks';
 import { DemoQuestionBlock } from '@/components/public/demo-question';
+import { getSignedInCta } from '@/components/public/signed-in-cta';
 import { SubjectCards } from '@/components/public/subject-cards';
 import { WhySyntara } from '@/components/public/why-syntara';
 import { BattleHomeCard } from '@/components/battle/student-join';
@@ -19,12 +19,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
   setRequestLocale(locale);
   const t = await getTranslations('home');
   const subjects = await getPublicSubjects(locale);
-  // REQ-ST-HOME-01: вошедший ученик видит «Продолжить учёбу →» — последняя открытая тема, иначе каталог (PH-34).
-  const cookieHeader = (await cookies()).toString();
-  const me = await getMe(cookieHeader);
-  const student = me?.activeRole === 'student';
-  const stats = student ? await getMeStats(cookieHeader) : null;
-  const continueHref = stats?.continueTopicId ? `/learn/topics/${stats.continueTopicId}` : '/learn/subjects';
+  // REQ-ST-HOME-01, REQ-NAV-05: у вошедшего кнопки «обложки» заменяются — ученику «Продолжить учёбу →»
+  // (последняя открытая тема, иначе каталог, PH-34), учителю «Перейти в кабинет →».
+  const cta = await getSignedInCta();
+  const student = cta?.role === 'student';
+  const signedInCta = cta ? (
+    <LinkButton href={cta.href} testId="signed-in-cta" variant="blue">
+      {cta.label}
+    </LinkButton>
+  ) : null;
 
   return (
     <>
@@ -66,16 +69,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
             {t('hero.text')}
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            {student ? (
-              <LinkButton href={continueHref} testId="hero-continue" size="lg" variant="white">
+            {cta?.role === 'student' ? (
+              <LinkButton href={cta.href} testId="hero-continue" size="lg" variant="white">
                 {t('hero.continue')}
               </LinkButton>
             ) : (
               <>
                 <LinkButton href="/subjects">{t('hero.cta')}</LinkButton>
-                <LinkButton href="/auth/start?role=teacher" variant="text">
-                  {t('hero.teacher')}
-                </LinkButton>
+                {cta ? (
+                  <LinkButton href={cta.href} variant="text" testId="hero-to-cabinet">
+                    {cta.label}
+                  </LinkButton>
+                ) : (
+                  <LinkButton href="/auth/start?role=teacher" variant="text">
+                    {t('hero.teacher')}
+                  </LinkButton>
+                )}
               </>
             )}
           </div>
@@ -163,9 +172,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
       {/* REQ-PUB-HOME-09 */}
       <Section testId="home-progress" title={t('progress.title')} text={t('progress.text')}>
         <div className="flex flex-wrap gap-4">
-          <LinkButton href="/auth/login" variant="blue">
-            {t('progress.login')}
-          </LinkButton>
+          {signedInCta ?? (
+            <LinkButton href="/auth/login" variant="blue">
+              {t('progress.login')}
+            </LinkButton>
+          )}
           <LinkButton href="/join" variant="secondary">
             {t('progress.join')}
           </LinkButton>

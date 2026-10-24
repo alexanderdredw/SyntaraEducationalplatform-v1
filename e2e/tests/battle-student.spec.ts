@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { expect, request, test, type Page } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
+import {
+  acceptCookies,
+  bundles,
+  cabinetNav,
+  expectNoSeriousA11yViolations,
+  hasHorizontalScroll,
+} from './support';
 
 const ru = bundles.ru;
 const ts = ru.battle.student;
@@ -78,7 +84,7 @@ test.describe('Battle: ученик (B3)', () => {
     await page.goto('/ru');
     await expect(page.getByTestId('home-battle')).toContainText(ts.home.title);
     await page.goto('/ru/learn/subjects');
-    await page.getByTestId('cabinet-sidebar').getByRole('link', { name: ru.cabinet.nav.battle }).click();
+    await (await cabinetNav(page)).getByRole('link', { name: ru.cabinet.nav.battle }).click();
     await expect(page).toHaveURL(/\/ru\/learn\/battles$/);
     await expect(page.getByText(ts.history.empty)).toBeVisible();
 

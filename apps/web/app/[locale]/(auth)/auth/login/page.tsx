@@ -10,7 +10,8 @@ import {
 } from '@/components/auth/password-forms';
 import { AppLink } from '@/components/app-link';
 import { getMe } from '@/lib/api/server';
-import { HOME_BY_ROLE } from '@/lib/auth';
+import { HOME_BY_ROLE, ROLE_HOME } from '@/lib/auth';
+import { redirect } from '@/i18n/navigation';
 
 type Search = {
   returnTo?: string | string[];
@@ -34,12 +35,19 @@ export default async function LoginPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<Search>;
 }) {
-  setRequestLocale((await params).locale);
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('auth');
   const q = await searchParams;
   const resetToken = one(q.resetToken);
   const verifyToken = one(q.verifyToken);
-  const me = one(q.change) ? await getMe((await cookies()).toString()) : null;
+  const signedIn = await getMe((await cookies()).toString());
+  // REQ-NAV-04, п. 4: вход и «Забыли пароль?» вошедшему не нужны — на главную его роли. Смена временного
+  // пароля, новый пароль по ссылке и подтверждение email остаются доступными.
+  if (signedIn && !signedIn.mustChangePassword && !one(q.change) && !resetToken && !verifyToken) {
+    redirect({ href: ROLE_HOME[signedIn.activeRole as UserRole], locale });
+  }
+  const me = one(q.change) ? signedIn : null;
   const mode = verifyToken
     ? 'verify'
     : resetToken

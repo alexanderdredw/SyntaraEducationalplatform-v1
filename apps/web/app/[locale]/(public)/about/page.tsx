@@ -16,6 +16,7 @@ import {
 import { Avatar, cn, Eyebrow, IconTile } from '@syntara/ui';
 import { getPublicConfig } from '@/lib/api/server';
 import { LinkButton, Section } from '@/components/public/blocks';
+import { getSignedInCta } from '@/components/public/signed-in-cta';
 
 /**
  * /about (8.1.3): 11 блоков REQ-PUB-ABOUT-01 по порядку; вёрстка — docs/UX_TZ.md UX-05…UX-08.
@@ -28,6 +29,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const config = await getPublicConfig();
   const atlas = config?.atlasUrls ?? { mendeleev: null, anatomy: null };
   const supportEmail = config?.supportEmail ?? null;
+  const cta = await getSignedInCta();
 
   const initials = (name: string) =>
     name
@@ -55,9 +57,16 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <LinkButton href="/subjects">{t('hero.toSubjects')}</LinkButton>
-              <LinkButton href="/auth/start" variant="secondary">
-                {t('hero.start')}
-              </LinkButton>
+              {/* REQ-NAV-05: у вошедшего вместо «Начать» — «Продолжить учёбу →» / «Перейти в кабинет →». */}
+              {cta ? (
+                <LinkButton href={cta.href} variant="secondary" testId="signed-in-cta">
+                  {cta.label}
+                </LinkButton>
+              ) : (
+                <LinkButton href="/auth/start" variant="secondary">
+                  {t('hero.start')}
+                </LinkButton>
+              )}
             </div>
             {/* Строка показателей. TODO(OWNER): четвёртый показатель и формулировки «бесплатно» / «офлайн»
                 не утверждены (UX-05 ⚠) — выводятся три текущих. */}

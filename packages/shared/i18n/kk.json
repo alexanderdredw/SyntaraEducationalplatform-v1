@@ -772,17 +772,29 @@
     "sidebarLabel": "Кабинет бөлімдері",
     "lamp": "Кеңестер",
     "nav": {
+      "home": "Басты бет",
       "courses": "Менің курстарым",
       "classes": "Сыныптар",
       "assignments": "Тапсырмалар",
       "subjects": "Пәндер",
       "myAssignments": "Менің тапсырмаларым",
-      "assistant": "Оқу көмекшісі",
-      "progress": "Менің көрсеткіштерім",
+      "assistant": "Syntara AI",
+      "battle": "Battle",
+      "progress": "Көрсеткіштер",
       "achievements": "Жетістіктер",
-      "support": "Қолдау",
-      "battle": "Battle"
+      "catalog": "Платформа пәндері",
+      "ai": "Syntara AI",
+      "about": "Жоба туралы",
+      "schools": "Мектептерге",
+      "help": "Көмек"
     },
+    "navGroups": {
+      "cabinet": "Менің кабинетім",
+      "platform": "Платформа"
+    },
+    "collapseNav": "Панельді жию",
+    "expandNav": "Панельді ашу",
+    "toCabinet": "Кабинетке өту →",
     "verify": {
       "text": "Email-ді растаңыз",
       "resend": "Хатты қайта жіберу",

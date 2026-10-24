@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { expect, request, test, type Page } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
+import {
+  acceptCookies,
+  bundles,
+  expectNoSeriousA11yViolations,
+  hasHorizontalScroll,
+  signOut,
+} from './support';
 
 const ru = bundles.ru;
 const sa = ru.studentAuth;
@@ -116,7 +122,7 @@ test.describe('Ученик: вход или регистрация (этало�
     await expect(page).toHaveURL(/\/ru\/learn\/subjects$/);
     await expect(page.getByTestId('student-join')).toBeVisible();
 
-    await page.getByTestId('logout').click();
+    await signOut(page);
     await expect(page).toHaveURL(/\/ru$/);
     await page.goto('/ru/auth/start?role=student');
     await card(page).getByRole('tab', { name: sa.tabLogin }).click();

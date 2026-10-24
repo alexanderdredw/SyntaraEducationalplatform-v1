@@ -2,7 +2,11 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ContinueChoice } from '@/components/auth/continue-choice';
 import { StartChoice } from '@/components/auth/start-choice';
 import { StudentAuthFromJoin } from '@/components/auth/student-auth-entry';
-import { getPublicConfig } from '@/lib/api/server';
+import { cookies } from 'next/headers';
+import { type UserRole } from '@syntara/shared';
+import { redirect } from '@/i18n/navigation';
+import { getMe, getPublicConfig } from '@/lib/api/server';
+import { ROLE_HOME } from '@/lib/auth';
 
 /**
  * /auth/start (REQ-GEN-AUTH-02): без роли — выбор «Как продолжить?» (UX-04; на него ведёт «Войти» в шапке);
@@ -16,7 +20,11 @@ export default async function StartPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ role?: string | string[] }>;
 }) {
-  setRequestLocale((await params).locale);
+  const { locale } = await params;
+  setRequestLocale(locale);
+  // REQ-NAV-04, п. 4: «Как продолжить?» и регистрация вошедшему не нужны — на главную его роли.
+  const me = await getMe((await cookies()).toString());
+  if (me && !me.mustChangePassword) redirect({ href: ROLE_HOME[me.activeRole as UserRole], locale });
   const t = await getTranslations('auth.start');
   const raw = (await searchParams).role;
   const role = Array.isArray(raw) ? raw[0] : raw;

@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
+import {
+  acceptCookies,
+  bundles,
+  cabinetNav,
+  expectNoSeriousA11yViolations,
+  hasHorizontalScroll,
+} from './support';
 
 const ru = bundles.ru;
 const tt = ru.teacher;
@@ -101,8 +107,10 @@ test.describe('Кабинет учителя: контент (итерация 7
     await expect(page.getByText(tt.subject.accessHint)).toBeVisible();
     // «Мои курсы» активен в боковой панели и на странице предмета.
     await expect(
-      page.getByTestId('cabinet-sidebar').getByRole('link', { name: ru.cabinet.nav.courses }),
+      (await cabinetNav(page)).getByRole('link', { name: ru.cabinet.nav.courses }),
     ).toHaveAttribute('aria-current', 'page');
+    // На телефоне пункты — в меню хедера; закрываем его.
+    await page.keyboard.press('Escape');
     const row = page.getByTestId('access-class').filter({ hasText: '7 «А»' });
     await row.getByRole('button', { name: tt.subject.grant }).click();
     await expect(row.getByText(tt.subject.granted)).toBeVisible();

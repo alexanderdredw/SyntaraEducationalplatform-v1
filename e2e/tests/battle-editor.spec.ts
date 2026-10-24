@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from '@playwright/test';
-import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
+import {
+  acceptCookies,
+  bundles,
+  cabinetNav,
+  expectNoSeriousA11yViolations,
+  hasHorizontalScroll,
+} from './support';
 
 const ru = bundles.ru;
 const tb = ru.battle.teacher;
@@ -45,7 +51,7 @@ test.describe('Battle: тесты учителя (B1)', () => {
     page,
   }) => {
     await page.goto('/ru/teacher/courses');
-    await page.getByTestId('cabinet-sidebar').getByRole('link', { name: ru.cabinet.nav.battle }).click();
+    await (await cabinetNav(page)).getByRole('link', { name: ru.cabinet.nav.battle }).click();
     await expect(page).toHaveURL(/\/ru\/teacher\/battles$/);
     await expect(page.getByRole('heading', { level: 1, name: tb.list.title })).toBeVisible();
     await expect(page.getByText(tb.list.emptyTitle)).toBeVisible();

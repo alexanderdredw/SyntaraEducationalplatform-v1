@@ -43,3 +43,28 @@ export function isGuestLearnPath(path: string): boolean {
     ['/learn/sections/', '/learn/subjects/', '/learn/topics/'].some((p) => pathname.startsWith(p))
   );
 }
+
+/**
+ * REQ-NAV-06, REQ-NAV-04 п. 4: главная роли — куда ведёт логотип и куда переадресуются страницы входа у вошедшего.
+ * У ученика — `/` (главная с «Продолжить учёбу», REQ-ST-HOME-01), у учителя — «Мои курсы».
+ */
+export const ROLE_HOME: Record<UserRole, string> = {
+  student: '/',
+  teacher: '/teacher/courses',
+  support_agent: '/staff/tickets',
+  onboarding_agent: '/staff/requests',
+};
+
+/** Кабинеты с панели навигации (REQ-NAV-02); служебные роли — без изменений (публичная оболочка). */
+export type WorkspaceRole = 'student' | 'teacher';
+
+/**
+ * REQ-NAV-04: в какой рабочей среде вошедший видит публичные страницы. Ученик и учитель — в оболочке своего
+ * кабинета; без входа, со служебной ролью или до обязательной смены временного пароля (BR-CLS-05) — в публичной.
+ */
+export function workspaceRole(
+  me: { activeRole: string; mustChangePassword?: boolean } | null | undefined,
+): WorkspaceRole | null {
+  if (!me || me.mustChangePassword) return null;
+  return me.activeRole === 'student' || me.activeRole === 'teacher' ? me.activeRole : null;
+}

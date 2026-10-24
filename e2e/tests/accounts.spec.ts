@@ -3,9 +3,11 @@ import { expect, request, test, type Page } from '@playwright/test';
 import {
   acceptCookies,
   bundles,
+  cabinetNav,
   expectNoSeriousA11yViolations,
   hasHorizontalScroll,
   isMobile,
+  isPhone,
 } from './support';
 
 const ru = bundles.ru;
@@ -68,7 +70,12 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     await expect(page).toHaveURL(/\/ru\/teacher\/courses$/);
     const header = page.getByTestId('cabinet-header');
     await expect(header.getByTestId('cabinet-role')).toContainText(ru.cabinet.roles.teacher);
-    await expect(header.getByRole('link', { name: new RegExp('Айгерим Сапарова') })).toBeVisible();
+    // На телефоне профиль — в меню хедера (REQ-NAV-07).
+    if (isPhone(page)) await cabinetNav(page);
+    await expect(
+      page.getByRole('link', { name: new RegExp('Айгерим Сапарова') }).filter({ visible: true }),
+    ).toHaveCount(1);
+    if (isPhone(page)) await page.keyboard.press('Escape');
     // С итерации 7 «Мои курсы» — список предметов (API-T-01), а не заглушка.
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.teacher.courses.title);
   });
@@ -77,14 +84,14 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     await signUpTeacher(page);
     await page.goto('/ru/teacher/classes');
     const header = page.getByTestId('cabinet-header');
-    for (const name of [ru.cabinet.notifications, ru.cabinet.logout]) {
-      await expect(header.getByRole('button', { name })).toBeVisible();
-    }
+    await expect(header.getByRole('button', { name: ru.cabinet.notifications })).toBeVisible();
+    // «Выйти» на телефоне — в меню хедера (REQ-NAV-07).
+    if (!isPhone(page)) await expect(header.getByRole('button', { name: ru.cabinet.logout })).toBeVisible();
     await header.getByRole('button', { name: ru.cabinet.notifications }).click();
     await expect(page.getByText(ru.cabinet.noNotifications)).toBeVisible();
     await page.keyboard.press('Escape');
 
-    const sidebar = page.getByTestId('cabinet-sidebar');
+    const sidebar = await cabinetNav(page);
     await expect(sidebar.getByRole('link', { name: ru.cabinet.nav.classes })).toHaveAttribute(
       'aria-current',
       'page',

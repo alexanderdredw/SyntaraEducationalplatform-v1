@@ -29,3 +29,13 @@ export function parseConsent(value: string | undefined): Consent | undefined {
  * При ручном выборе тема уже пришла с сервера из cookie; иначе — prefers-color-scheme.
  */
 export const THEME_INIT_SCRIPT = `(function(){try{var d=document.documentElement;if(!d.getAttribute('data-theme')){d.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}}catch(e){}})();`;
+
+/** REQ-NAV-03, п. 3: «свёрнуто/развёрнуто» панели навигации — на устройстве (localStorage). */
+export const SIDEBAR_STORAGE_KEY = 'syntara.sidebar';
+export const SIDEBAR_COLLAPSED = 'collapsed';
+
+/**
+ * Скрипт в <head>: свёрнутая панель — атрибут `data-sidebar` на <html> до отрисовки (без «прыжка» ширины).
+ * localStorage может быть недоступен (приватный режим, запрет сайта) — тогда панель развёрнута.
+ */
+export const SIDEBAR_INIT_SCRIPT = `(function(){try{if(localStorage.getItem('${SIDEBAR_STORAGE_KEY}')==='${SIDEBAR_COLLAPSED}'){document.documentElement.setAttribute('data-sidebar','${SIDEBAR_COLLAPSED}')}}catch(e){}})();`;

@@ -5,7 +5,8 @@ import { CabinetShell } from '@/components/cabinet/cabinet-shell';
 import { LearnViewerProvider } from '@/components/learn/viewer';
 import { PublicShell } from '@/components/shell/public-shell';
 import { getMe } from '@/lib/api/server';
-import { isGuestLearnPath } from '@/lib/auth';
+import { type UserRole } from '@syntara/shared';
+import { HOME_BY_ROLE, isGuestLearnPath, workspaceRole } from '@/lib/auth';
 import { requireUser } from '@/lib/require-user';
 
 /**
@@ -22,12 +23,27 @@ export default async function Layout({
   const { locale } = await params;
   setRequestLocale(locale);
   const path = (await headers()).get('x-pathname') ?? '/';
-  if (isGuestLearnPath(path) && !(await getMe((await cookies()).toString()))) {
-    return (
-      <PublicShell>
-        <LearnViewerProvider guest>{children}</LearnViewerProvider>
-      </PublicShell>
-    );
+  if (isGuestLearnPath(path)) {
+    const me = await getMe((await cookies()).toString());
+    // REQ-NAV-04: каталог и «Обзор» базовых уроков открываются у вошедшего без роли ученика (учитель) как у гостя
+    // (BR-VIS-04), но внутри его рабочей среды; без входа — в публичной оболочке.
+    if (!me?.roles.includes('student')) {
+      const role = workspaceRole(me);
+      const cabinetHref = me ? HOME_BY_ROLE[me.activeRole as UserRole] : undefined;
+      return me && role ? (
+        <CabinetShell me={me} cabinetRole={role}>
+          <LearnViewerProvider guest cabinetHref={cabinetHref}>
+            {children}
+          </LearnViewerProvider>
+        </CabinetShell>
+      ) : (
+        <PublicShell>
+          <LearnViewerProvider guest cabinetHref={cabinetHref}>
+            {children}
+          </LearnViewerProvider>
+        </PublicShell>
+      );
+    }
   }
   const me = await requireUser(locale, 'student');
   return (
