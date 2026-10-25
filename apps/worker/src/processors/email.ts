@@ -151,10 +151,13 @@ export async function sendEmail(job: Job<EmailJobData>, deps: EmailDeps): Promis
         : undefined;
     // BR-PRF-07: «Это не я» — страница поддержки.
     const supportUrl = `${deps.appBaseUrl.replace(/\/$/, '')}/${(email.payload as { locale?: string }).locale ?? 'ru'}/support`;
+    // BR-PRF-20: ссылка на «Безопасность» в настройках аккаунта.
+    const securityUrl = `${deps.appBaseUrl.replace(/[/]$/, '')}/${(email.payload as { locale?: string }).locale ?? 'ru'}/account/settings#security`;
     const rendered = renderEmail(email.template, email.payload, {
       resetUrl,
       verifyUrl: verifyUrl ?? changeUrl,
       supportUrl,
+      securityUrl,
     });
     const replyTo =
       email.template === EMAIL_TEMPLATES.ticketReply

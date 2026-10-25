@@ -16,6 +16,9 @@ import {
   SESSION_TTL_MS,
 } from './auth.types';
 
+/** REQ-PRF-32: как часто обновлять время последней активности сессии. */
+const SESSION_ACTIVITY_EVERY_MS = 5 * 60_000;
+
 /**
  * Сессии (API-GEN-02, REQ-NFR-SEC-02/03): в cookie `sid` — случайный токен, в БД — только его HMAC-SHA256
  * с SESSION_SECRET. Cookie HttpOnly, Secure, SameSite=Lax; срок 14 дней, продлевается при активности.
@@ -53,6 +56,7 @@ export class SessionService {
       .select({
         sessionId: authSessions.id,
         expiresAt: authSessions.expiresAt,
+        updatedAt: authSessions.updatedAt,
         userId: users.id,
         displayName: users.displayName,
       })
@@ -79,8 +83,16 @@ export class SessionService {
         .set({ expiresAt: new Date(Date.now() + SESSION_TTL_MS) })
         .where(eq(authSessions.id, row.sessionId));
       this.setCookies(res, token, csrfCookie ?? randomBytes(32).toString('base64url'));
-    } else if (!csrfCookie) {
-      res.cookie(CSRF_COOKIE, randomBytes(32).toString('base64url'), this.cookieOptions(false));
+    } else {
+      if (!csrfCookie)
+        res.cookie(CSRF_COOKIE, randomBytes(32).toString('base64url'), this.cookieOptions(false));
+      // REQ-PRF-32: «Последняя активность» устройства — updated_at сессии, не чаще раза в 5 минут.
+      if (Date.now() - row.updatedAt.getTime() > SESSION_ACTIVITY_EVERY_MS) {
+        await this.db
+          .update(authSessions)
+          .set({ updatedAt: new Date() })
+          .where(eq(authSessions.id, row.sessionId));
+      }
     }
 
     return {

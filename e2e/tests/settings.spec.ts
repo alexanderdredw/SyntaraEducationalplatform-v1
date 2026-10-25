@@ -55,13 +55,24 @@ test.describe('Настройки аккаунта (docs/PROFILE_TZ.md, REQ-PRF-
     await form.getByLabel(s.currentPassword).fill('wrong-pass');
     await form.getByLabel(new RegExp(`^${s.password.new}`)).fill('abcdefgh');
     await expect(page.getByTestId('password-strength')).toContainText(s.password.strength['1']);
-    await form.getByLabel(new RegExp(`^${s.password.new}`)).fill('Новый-пароль-2026');
+    // REQ-PRF-31: требования с галочками, 4 уровня надёжности, «показать/скрыть».
+    const rules = page.getByTestId('password-rules').getByRole('listitem');
+    await expect(rules.nth(0)).toHaveAttribute('data-ok', 'true');
+    await expect(rules.nth(2)).toHaveAttribute('data-ok', 'false');
+    await form.getByLabel(new RegExp(`^${s.password.new}`)).fill('Abcdefg1!');
     await expect(page.getByTestId('password-strength')).toContainText(s.password.strength['3']);
+    await form.getByLabel(new RegExp(`^${s.password.new}`)).fill('Новый-пароль-2026');
+    await expect(page.getByTestId('password-strength')).toContainText(s.password.strength['4']);
+    const newField = form.getByLabel(new RegExp(`^${s.password.new}`));
+    await expect(newField).toHaveAttribute('type', 'password');
+    await form.getByRole('button', { name: s.password.show }).nth(1).click();
+    await expect(newField).toHaveAttribute('type', 'text');
     await form.getByLabel(s.password.repeat).fill('другой');
     await form.getByRole('button', { name: s.password.change }).click();
     await expect(form.getByText(s.password.mismatch)).toBeVisible();
 
     await form.getByLabel(s.password.repeat).fill('Новый-пароль-2026');
+    await expect(rules.nth(2)).toHaveAttribute('data-ok', 'true');
     await form.getByRole('button', { name: s.password.change }).click();
     await expect(form.getByText(ru.validation.invalidPassword)).toBeVisible();
 
@@ -72,7 +83,7 @@ test.describe('Настройки аккаунта (docs/PROFILE_TZ.md, REQ-PRF-
     expect((await page.request.get('/api/me')).status()).toBe(200);
   });
 
-  test('AC-PRF-08 «Выйти на всех других устройствах»; last sign-in is shown', async ({
+  test('AC-PRF-08 AC-PRF-28 devices: «Это устройство», sign out one with confirmation, «Выйти на всех других устройствах»', async ({
     page,
     context,
     baseURL,
@@ -84,15 +95,29 @@ test.describe('Настройки аккаунта (docs/PROFILE_TZ.md, REQ-PRF-
       password: 'student-pass-1',
     });
     const other = await otherDevice(baseURL!, login, 'student-pass-1');
+    const third = await otherDevice(baseURL!, login, 'student-pass-1');
     await signIn(context, student, baseURL!);
     await page.goto('/ru/account/settings');
-    await expect(page.getByTestId('settings-last-login')).toContainText(
-      s.devices.lastLogin.split('{')[0]!.trim(),
-    );
+    const sessions = page.getByTestId('session');
+    await expect(sessions).toHaveCount(3);
+    await expect(sessions.first()).toContainText(s.security.thisDevice);
+    await expect(sessions.first()).toContainText(s.security.lastActive.split('{')[0]!.trim());
+    await expect(sessions.first().getByRole('button', { name: s.security.signOut })).toHaveCount(0);
+    // Выход на одном устройстве — с подтверждением.
+    await sessions.nth(1).getByRole('button', { name: s.security.signOut }).click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toContainText(s.security.signOutText);
+    await dialog.getByRole('button', { name: s.security.signOut }).click();
+    await expect(page.getByTestId('devices-feedback')).toHaveText(s.security.signedOut);
+    await expect(sessions).toHaveCount(2);
+    const alive = [(await other.get('/api/me')).status(), (await third.get('/api/me')).status()].sort();
+    expect(alive).toEqual([200, 401]);
     await page.getByRole('button', { name: s.devices.revoke }).click();
     await expect(page.getByTestId('devices-feedback')).toHaveText(s.devices.revoked);
     expect((await other.get('/api/me')).status()).toBe(401);
+    expect((await third.get('/api/me')).status()).toBe(401);
     expect((await page.request.get('/api/me')).status()).toBe(200);
+    await expect(sessions).toHaveCount(1);
   });
 
   test('AC-PRF-06 a student without email adds one: the link goes to the new address, the old state stays; remove is confirmed', async ({
@@ -129,7 +154,7 @@ test.describe('Настройки аккаунта (docs/PROFILE_TZ.md, REQ-PRF-
     await expect(section.getByRole('button', { name: s.email.add })).toBeVisible();
   });
 
-  test('REQ-PRF-09 preferences are the header ones: theme and data saver change the page at once; a11y, no horizontal scroll', async ({
+  test('REQ-PRF-09 AC-PRF-30 REQ-PRF-29 REQ-PRF-30 REQ-PRF-33 section menu, email explanation; preferences save at once with «Сохранено»; a11y, no horizontal scroll', async ({
     page,
     context,
     baseURL,
@@ -142,9 +167,30 @@ test.describe('Настройки аккаунта (docs/PROFILE_TZ.md, REQ-PRF-
     await signIn(context, student, baseURL!);
     await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
     await page.goto('/ru/account/settings');
+    await expect(page.getByTestId('settings-email')).toContainText(s.email.why);
+    // REQ-PRF-29: меню разделов — только на широком экране; якоря ведут к блокам.
+    const nav = page.getByTestId('settings-nav');
+    if (isPhone(page)) {
+      await expect(nav).toBeHidden();
+    } else {
+      await expect(nav.getByRole('link')).toHaveText([
+        s.nav.email,
+        s.nav.password,
+        s.nav.security,
+        s.nav.prefs,
+      ]);
+      await nav.getByRole('link', { name: s.nav.security }).click();
+      await expect(page).toHaveURL(/#security$/);
+      await expect(nav.getByRole('link', { name: s.nav.security })).toHaveAttribute(
+        'aria-current',
+        'location',
+      );
+      await expect(page.getByTestId('settings-security')).toBeInViewport();
+    }
     const prefs = page.getByTestId('settings-prefs');
     await prefs.getByRole('radio', { name: s.prefs.themeLight }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(prefs.getByTestId('prefs-saved-theme')).toHaveText(s.prefs.saved);
     await prefs.getByRole('radio', { name: s.prefs.on }).click();
     await expect(page.locator('html')).toHaveAttribute('data-data-saver', 'true');
     if (!isPhone(page)) {

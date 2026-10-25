@@ -2,6 +2,7 @@ import {
   type AccountNoticePayload,
   type AccountRegisteredPayload,
   type EmailChangePayload,
+  type NewDevicePayload,
   type ConfirmationEmailPayload,
   type EmailVerifyPayload,
   type PasswordResetPayload,
@@ -34,7 +35,7 @@ function t(locale: Locale, key: string, values: Record<string, string> = {}): st
 export function renderEmail(
   template: string,
   payload: unknown,
-  extras: { resetUrl?: string; verifyUrl?: string; supportUrl?: string } = {},
+  extras: { resetUrl?: string; verifyUrl?: string; supportUrl?: string; securityUrl?: string } = {},
 ): RenderedEmail {
   switch (template) {
     case EMAIL_TEMPLATES.schoolRequestConfirmation: {
@@ -147,6 +148,18 @@ export function renderEmail(
           t(p.locale, 'email.greeting'),
           t(p.locale, 'email.account.passwordChangedBody'),
           `${t(p.locale, 'email.account.notMe')}: ${extras.supportUrl ?? ''}`,
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.newDevice: {
+      const p = payload as NewDevicePayload;
+      return {
+        subject: t(p.locale, 'email.account.newDeviceSubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.newDeviceBody', { device: p.device, at: p.at }),
+          extras.securityUrl ?? '',
           t(p.locale, 'email.signature'),
         ].join('\n\n'),
       };

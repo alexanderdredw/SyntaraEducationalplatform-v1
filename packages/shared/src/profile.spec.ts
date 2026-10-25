@@ -4,6 +4,7 @@ import {
   AvatarPutDto,
   EmailChangeDto,
   joinDisplayName,
+  parseUserAgent,
   passwordStrength,
   ProfilePatchDto,
   splitDisplayName,
@@ -58,11 +59,30 @@ describe('profile (SPEC 7.15)', () => {
     );
   });
 
-  it('BR-PRF-08 password strength: too short, weak, fair, strong', () => {
-    expect(passwordStrength('abc')).toBe(0);
+  it('AC-PRF-27 REQ-PRF-31 password strength — 4 levels; short or containing the login, email or name is weak', () => {
+    expect(passwordStrength('')).toBe(0);
+    expect(passwordStrength('abc')).toBe(1);
     expect(passwordStrength('abcdefgh')).toBe(1);
     expect(passwordStrength('abcdefg1')).toBe(2);
-    expect(passwordStrength('Abcdefg1!xyz')).toBe(3);
-    expect(passwordStrength('Құпиясөз-2026!')).toBe(3);
+    expect(passwordStrength('Abcdefg1!')).toBe(3);
+    expect(passwordStrength('Abcdefg1!xyz')).toBe(4);
+    expect(passwordStrength('Құпиясөз-2026!')).toBe(4);
+    expect(passwordStrength('Asel.K-2026!x', ['asel.k'])).toBe(1);
+    expect(passwordStrength('Teacher-2026!x', ['teacher@school.kz'])).toBe(1);
+    expect(passwordStrength('Нурова-2026!xx', [null, 'Асель Нурова'])).toBe(1);
+  });
+
+  it('REQ-PRF-32 device names from User-Agent', () => {
+    const chromeWin =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36';
+    const safariIphone =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+    const edge = `${chromeWin} Edg/141.0`;
+    const firefoxMac = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14.6; rv:131.0) Gecko/20100101 Firefox/131.0';
+    expect(parseUserAgent(chromeWin)).toEqual({ browser: 'Chrome', os: 'Windows' });
+    expect(parseUserAgent(safariIphone)).toEqual({ browser: 'Safari', os: 'iPhone' });
+    expect(parseUserAgent(edge)).toEqual({ browser: 'Edge', os: 'Windows' });
+    expect(parseUserAgent(firefoxMac)).toEqual({ browser: 'Firefox', os: 'macOS' });
+    expect(parseUserAgent(null)).toEqual({ browser: null, os: null });
   });
 });

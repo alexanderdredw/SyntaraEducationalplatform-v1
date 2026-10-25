@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { argon2id, hash, verify } from 'argon2';
 import { createHash } from 'node:crypto';
 import { and, eq, isNull, ne } from 'drizzle-orm';
@@ -33,6 +33,7 @@ import { type MeDto } from '../users/me.dto';
 import { MeService } from '../users/me.service';
 import { createAccount } from './accounts';
 import { type AuthUser } from './auth.types';
+import { KnownDevicesService } from './known-devices.service';
 import { SessionService, sortRoles } from './session.service';
 
 /** Пароли — Argon2id (REQ-NFR-SEC-02). */
@@ -53,7 +54,10 @@ export class AuthService {
     private readonly me: MeService,
     private readonly config: AppConfigService,
     private readonly audit: AuditService,
+    private readonly devices: KnownDevicesService,
   ) {}
+
+  private readonly logger = new Logger(AuthService.name);
 
   /**
    * API-AUTH-01. Вход по email или по логину ученика (PH-44). Ошибка одна и та же для неизвестного
@@ -116,6 +120,10 @@ export class AuthService {
     // Новая сессия при каждом входе; прежняя (если была в этом браузере) отзывается.
     if (previousSessionId) await this.sessions.revoke(previousSessionId, res);
     await this.sessions.create(user.id, userAgent, res);
+    // BR-PRF-20: учителю — письмо о входе с нового устройства. Побочное уведомление: вход от него не зависит.
+    await this.devices
+      .onSignIn(user.id, userAgent)
+      .catch((err: unknown) => this.logger.warn(`new-device notice failed: ${(err as Error).message}`));
     // BR-AUTH-01: аккаунт с обеими ролями — активна роль формы.
     if (dto.role) this.sessions.setActiveRole(res, dto.role);
 
@@ -161,6 +169,8 @@ export class AuthService {
       return id;
     });
     await this.sessions.create(userId, userAgent, res);
+    // BR-PRF-20: устройство регистрации — известное (следующий вход с него — без письма).
+    await this.devices.remember(userId, userAgent).catch(() => undefined);
     return this.me.me({ id: userId, displayName: dto.displayName, roles: ['teacher'], sessionId: '' });
   }
 

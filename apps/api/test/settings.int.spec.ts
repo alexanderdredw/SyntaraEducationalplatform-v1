@@ -267,4 +267,98 @@ describe('account settings (integration)', () => {
     // Картинки больше нет — повторный сброс: 404.
     await as(support).send('post', `/api/staff/tickets/${ticket!.id}/user-avatar/reset`).expect(404);
   });
+
+  const CHROME_WIN =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36';
+  const SAFARI_IPHONE =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+  const FIREFOX_MAC = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14.6; rv:131.0) Gecko/20100101 Firefox/131.0';
+
+  /** Вход с заданным User-Agent (устройство). */
+  async function loginAs(identifier: string, password: string, ua: string): Promise<Session> {
+    const res = await http()
+      .post('/api/auth/login')
+      .set('X-Forwarded-For', freshIp())
+      .set('User-Agent', ua)
+      .send({ email: identifier, password })
+      .expect(200);
+    const cookies = Object.fromEntries(
+      (res.headers['set-cookie'] as unknown as string[]).map((line) => {
+        const [pair] = line.split(';');
+        const [name, ...value] = pair!.split('=');
+        return [name!.trim(), value.join('=')];
+      }),
+    );
+    return {
+      cookie: `sid=${cookies.sid}; csrf=${cookies.csrf}`,
+      csrf: cookies.csrf!,
+      userId: res.body.user.id,
+    };
+  }
+
+  it('AC-PRF-28 REQ-PRF-32 sessions: devices by name, «Это устройство», sign out one (not the current), no IP', async () => {
+    const student = await newStudent();
+    const phone = await loginAs(student.login, 'student-pass-1', SAFARI_IPHONE);
+    const desk = await loginAs(student.login, 'student-pass-1', CHROME_WIN);
+    const list = (await as(desk).get('/api/me/sessions').expect(200)).body as Array<{
+      id: string;
+      device: { browser: string | null; os: string | null };
+      current: boolean;
+      lastActiveAt: string;
+    }>;
+    expect(list.length).toBeGreaterThanOrEqual(3);
+    expect(list[0]).toMatchObject({ current: true, device: { browser: 'Chrome', os: 'Windows' } });
+    expect(list.filter((x) => x.current)).toHaveLength(1);
+    const phoneRow = list.find((x) => x.device.os === 'iPhone')!;
+    expect(phoneRow.device.browser).toBe('Safari');
+    // IP-адреса не отдаются: только устройство и время.
+    expect(Object.keys(list[0]!).sort()).toEqual(['createdAt', 'current', 'device', 'id', 'lastActiveAt']);
+
+    await as(desk).send('delete', `/api/me/sessions/${list[0]!.id}`).expect(404);
+    await as(desk).send('delete', `/api/me/sessions/${phoneRow.id}`).expect(204);
+    await as(phone).get('/api/me').expect(401);
+    await as(desk).get('/api/me').expect(200);
+    await as(desk).send('delete', `/api/me/sessions/${phoneRow.id}`).expect(404);
+    // Чужую сессию завершить нельзя.
+    const other = await newStudent();
+    const otherList = (await as(other).get('/api/me/sessions').expect(200)).body as Array<{ id: string }>;
+    await as(desk).send('delete', `/api/me/sessions/${otherList[0]!.id}`).expect(404);
+    await as(other).get('/api/me').expect(200);
+  });
+
+  it('AC-PRF-29 BR-PRF-20 a teacher signing in from a new device gets one email; the same device again — none; a student — none', async () => {
+    const email = `set.device.${++n}@example.com`;
+    await http()
+      .post('/api/auth/register')
+      .set('X-Forwarded-For', freshIp())
+      .set('User-Agent', CHROME_WIN)
+      .send({ role: 'teacher', email, displayName: 'Алия Нурланова', password: 'teacher-pass-1' })
+      .expect(201);
+    await stack.db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.email, email));
+    const notices = async () => (await emails(email)).filter((e) => e.template === EMAIL_TEMPLATES.newDevice);
+
+    // Устройство регистрации уже известно.
+    await loginAs(email, 'teacher-pass-1', CHROME_WIN);
+    expect(await notices()).toHaveLength(0);
+    // Новое устройство — одно письмо с устройством и временем (Алматы).
+    await loginAs(email, 'teacher-pass-1', FIREFOX_MAC);
+    const first = await notices();
+    expect(first).toHaveLength(1);
+    expect(first[0]!.payload).toMatchObject({
+      device: 'Firefox · macOS',
+      at: expect.stringMatching(/^\d\d\.\d\d\.\d{4} \d\d:\d\d$/),
+    });
+    // Тот же браузер и ОС (другая версия) — то же устройство, писем больше нет.
+    await loginAs(email, 'teacher-pass-1', FIREFOX_MAC.replace('131.0', '132.0'));
+    expect(await notices()).toHaveLength(1);
+    const devices = await stack.db.select().from(schema.knownDevices);
+    expect(JSON.stringify(devices)).not.toContain('Firefox');
+
+    // Ученику с подтверждённым email писем о новых устройствах нет.
+    const kidEmail = `set.kid.dev.${++n}@example.com`;
+    const kid = await newStudent(kidEmail);
+    await stack.db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.email, kidEmail));
+    await loginAs(kid.login, 'student-pass-1', SAFARI_IPHONE);
+    expect((await emails(kidEmail)).filter((e) => e.template === EMAIL_TEMPLATES.newDevice)).toHaveLength(0);
+  });
 });

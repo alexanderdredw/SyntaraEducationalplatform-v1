@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { verify } from 'argon2';
-import { and, eq, isNull, ne } from 'drizzle-orm';
+import { and, desc, eq, gt, isNull, ne } from 'drizzle-orm';
 import {
   EMAIL_TEMPLATES,
   type EmailChangeDto,
@@ -8,6 +8,7 @@ import {
   type EmailRemoveDto,
   type Locale,
   OUTBOX_EVENT_TYPES,
+  parseUserAgent,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
@@ -15,6 +16,7 @@ import { enqueueEmail } from '../../common/outbox';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
 import { type AuthUser } from '../auth/auth.types';
+import { type SessionItemDto } from './account.controller';
 
 const { users, userPreferences, authSessions } = schema;
 
@@ -101,6 +103,66 @@ export class AccountService {
           action: 'account.email',
           before: { email: account.email },
           after: { email: null },
+        },
+        tx,
+      );
+    });
+  }
+
+  /** API-ME-16 (REQ-PRF-32): активные сессии — устройство из User-Agent, создана, последняя активность; IP нет. */
+  async sessions(user: AuthUser): Promise<SessionItemDto[]> {
+    const rows = await this.db
+      .select({
+        id: authSessions.id,
+        userAgent: authSessions.userAgent,
+        createdAt: authSessions.createdAt,
+        updatedAt: authSessions.updatedAt,
+      })
+      .from(authSessions)
+      .where(
+        and(
+          eq(authSessions.userId, user.id),
+          isNull(authSessions.revokedAt),
+          gt(authSessions.expiresAt, new Date()),
+        ),
+      )
+      .orderBy(desc(authSessions.updatedAt));
+    return rows
+      .map((r) => ({
+        id: r.id,
+        device: parseUserAgent(r.userAgent),
+        createdAt: r.createdAt.toISOString(),
+        lastActiveAt: r.updatedAt.toISOString(),
+        current: r.id === user.sessionId,
+      }))
+      .sort((a, b) => Number(b.current) - Number(a.current));
+  }
+
+  /** API-ME-17 (REQ-PRF-32): выйти на одном устройстве — своя сессия, кроме текущей; иначе 404. */
+  async revokeSession(user: AuthUser, sessionId: string): Promise<void> {
+    if (sessionId === user.sessionId) {
+      throw new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
+    }
+    await this.db.transaction(async (tx) => {
+      const revoked = await tx
+        .update(authSessions)
+        .set({ revokedAt: new Date() })
+        .where(
+          and(
+            eq(authSessions.id, sessionId),
+            eq(authSessions.userId, user.id),
+            isNull(authSessions.revokedAt),
+          ),
+        )
+        .returning({ id: authSessions.id });
+      if (revoked.length === 0) throw new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
+      await this.audit.record(
+        {
+          actorId: user.id,
+          entityType: 'user',
+          entityId: user.id,
+          action: 'account.sessions',
+          after: { revoked: 1 },
         },
         tx,
       );

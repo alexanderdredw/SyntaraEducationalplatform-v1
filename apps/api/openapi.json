@@ -2012,6 +2012,78 @@
         ]
       }
     },
+    "/api/me/sessions": {
+      "get": {
+        "operationId": "AccountController_sessions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SessionItemDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/sessions/{id}": {
+      "delete": {
+        "operationId": "AccountController_revokeSession",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Чужая, текущая или неизвестная сессия"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/me/sessions/revoke-others": {
       "post": {
         "operationId": "AccountController_revokeOthers",
@@ -8001,6 +8073,54 @@
         },
         "required": [
           "currentPassword"
+        ]
+      },
+      "SessionDeviceDto": {
+        "type": "object",
+        "properties": {
+          "browser": {
+            "type": "string",
+            "nullable": true
+          },
+          "os": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "browser",
+          "os"
+        ]
+      },
+      "SessionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "device": {
+            "$ref": "#/components/schemas/SessionDeviceDto"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastActiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current": {
+            "type": "boolean",
+            "description": "«Это устройство»"
+          }
+        },
+        "required": [
+          "id",
+          "device",
+          "createdAt",
+          "lastActiveAt",
+          "current"
         ]
       },
       "TeacherClassDto": {

@@ -1,6 +1,7 @@
 'use client';
 
-import { type FormEvent, type ReactNode, useState } from 'react';
+import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
+import { Circle, CircleCheck, Eye, EyeOff, Monitor, Smartphone } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { type Locale, passwordStrength } from '@syntara/shared';
@@ -13,6 +14,7 @@ import { LanguageSegments, useCurrentTheme } from '../shell/preference-controls'
 
 type Profile = components['schemas']['ProfileDto'];
 type Feedback = { kind: 'ok' | 'error'; text: string } | null;
+type SessionItem = components['schemas']['SessionItemDto'];
 
 /**
  * «Настройки аккаунта» (REQ-PRF-06…09): email (добавить, изменить, удалить; подтверждение), пароль (текущий,
@@ -41,29 +43,108 @@ export function AccountSettings({
   return (
     <div className="flex flex-col gap-6" data-testid="account-settings">
       <h1 className="text-cabinet-title font-bold">{t('title')}</h1>
-      {profile.data ? (
-        <>
-          <EmailSection profile={profile.data} />
-          <PasswordSection minLength={minPasswordLength} />
-          <DevicesSection lastLoginAt={profile.data.lastLoginAt} timeZone={timeZone} />
-        </>
-      ) : (
-        <Card aria-busy="true" className="flex flex-col gap-4">
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="h-11 w-full" />
-        </Card>
-      )}
-      <PreferencesSection enabledLocales={enabledLocales} />
+      <div className="grid items-start gap-6 lg:grid-cols-[200px_minmax(0,1fr)]">
+        <SettingsNav />
+        <div className="flex min-w-0 flex-col gap-6">
+          {profile.data ? (
+            <>
+              <EmailSection profile={profile.data} />
+              <PasswordSection minLength={minPasswordLength} profile={profile.data} />
+            </>
+          ) : (
+            <Card aria-busy="true" className="flex flex-col gap-4">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-11 w-full" />
+            </Card>
+          )}
+          <SecuritySection timeZone={timeZone} />
+          <PreferencesSection enabledLocales={enabledLocales} />
+        </div>
+      </div>
     </div>
   );
 }
 
-function Section({ title, id, children }: { title: string; id: string; children: ReactNode }) {
+const SECTIONS = ['email', 'password', 'security', 'prefs'] as const;
+
+/**
+ * REQ-PRF-29: ≥ 1024 px — слева закреплённое меню разделов с подсветкой текущего при прокрутке; на телефоне меню нет,
+ * блоки подряд.
+ */
+function SettingsNav() {
+  const t = useTranslations('account.settings.nav');
+  const [active, setActive] = useState<(typeof SECTIONS)[number]>('email');
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const id = visible[0]?.target.getAttribute('data-section') as (typeof SECTIONS)[number] | undefined;
+        if (id) setActive(id);
+      },
+      { rootMargin: '-120px 0px -55% 0px' },
+    );
+    for (const id of SECTIONS) {
+      const el = document.querySelector(`[data-section="${id}"]`);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, []);
   return (
-    <Card className="flex flex-col gap-4" aria-labelledby={id} data-testid={`settings-${id}`}>
-      <h2 id={id} className="text-cabinet-block font-semibold">
-        {title}
-      </h2>
+    <nav
+      aria-label={t('label')}
+      className="hidden lg:sticky lg:top-[calc(var(--header-h)+24px)] lg:block"
+      data-testid="settings-nav"
+    >
+      <ul className="flex flex-col gap-1">
+        {SECTIONS.map((id) => (
+          <li key={id}>
+            <a
+              href={`#${id}`}
+              aria-current={active === id ? 'location' : undefined}
+              onClick={() => setActive(id)}
+              className={cn(
+                'relative flex min-h-11 items-center rounded-[var(--radius-field)] px-3 text-sm',
+                active === id
+                  ? 'bg-[var(--accent-soft)] font-semibold text-[var(--text)] before:absolute before:top-1/2 before:left-1 before:h-5 before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-[var(--accent-bright)]'
+                  : 'text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
+              )}
+            >
+              {t(id)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+function Section({
+  title,
+  id,
+  description,
+  children,
+}: {
+  title: string;
+  id: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Card
+      className="flex scroll-mt-[calc(var(--header-h)+24px)] flex-col gap-4"
+      aria-labelledby={`${id}-title`}
+      data-testid={`settings-${id}`}
+      data-section={id}
+      id={id}
+    >
+      <div className="flex flex-col gap-1">
+        <h2 id={`${id}-title`} className="text-cabinet-block font-semibold">
+          {title}
+        </h2>
+        {description ? <p className="text-sm text-[var(--text-muted)]">{description}</p> : null}
+      </div>
       {children}
     </Card>
   );
@@ -167,7 +248,7 @@ function EmailSection({ profile }: { profile: Profile }) {
   };
 
   return (
-    <Section title={t('email.title')} id="email">
+    <Section title={t('email.title')} id="email" description={t('email.why')}>
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm" data-testid="settings-email-current">
           {profile.email ?? t('email.none')}
@@ -260,7 +341,60 @@ function EmailSection({ profile }: { profile: Profile }) {
   );
 }
 
-function PasswordSection({ minLength }: { minLength: number }) {
+/** Поле пароля с кнопкой «показать/скрыть» (REQ-PRF-31). */
+function PasswordInput({
+  value,
+  onChange,
+  autoComplete,
+  ...a11y
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: 'current-password' | 'new-password';
+  id?: string;
+  'aria-invalid'?: boolean;
+  'aria-describedby'?: string;
+  'aria-required'?: boolean;
+}) {
+  const t = useTranslations('account.settings.password');
+  const [shown, setShown] = useState(false);
+  return (
+    <div className="relative">
+      <Input
+        {...a11y}
+        type={shown ? 'text' : 'password'}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="pr-12"
+      />
+      <button
+        type="button"
+        onClick={() => setShown((v) => !v)}
+        aria-label={shown ? t('hide') : t('show')}
+        aria-pressed={shown}
+        aria-controls={a11y.id}
+        className="absolute top-1/2 right-1 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-[var(--text-muted)] hover:text-[var(--text)]"
+      >
+        {shown ? (
+          <EyeOff aria-hidden="true" className="size-4" />
+        ) : (
+          <Eye aria-hidden="true" className="size-4" />
+        )}
+      </button>
+    </div>
+  );
+}
+
+const STRENGTH_TONE = [
+  '',
+  'bg-[var(--danger)]',
+  'bg-[var(--warning)]',
+  'bg-[var(--accent)]',
+  'bg-[var(--success)]',
+];
+
+function PasswordSection({ minLength, profile }: { minLength: number; profile: Profile }) {
   const t = useTranslations('account.settings');
   const tv = useTranslations('validation');
   const locale = useLocale();
@@ -271,7 +405,17 @@ function PasswordSection({ minLength }: { minLength: number }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [pending, setPending] = useState(false);
-  const strength = passwordStrength(next, minLength);
+  // REQ-PRF-31: не совпадает с логином, email, именем — иначе «слабый».
+  const strength = passwordStrength(
+    next,
+    [profile.login, profile.email, profile.firstName, profile.lastName],
+    minLength,
+  );
+  const rules = [
+    { key: 'length', ok: next.length >= minLength },
+    { key: 'notCurrent', ok: next.length > 0 && next !== current },
+    { key: 'match', ok: next.length > 0 && next === repeat },
+  ] as const;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -306,54 +450,62 @@ function PasswordSection({ minLength }: { minLength: number }) {
     <Section title={t('password.title')} id="password">
       <form onSubmit={submit} noValidate className="flex flex-col gap-4" data-testid="password-form">
         <Field label={t('currentPassword')} error={errors.currentPassword} required>
-          <Input
-            type="password"
-            autoComplete="current-password"
-            value={current}
-            onChange={(e) => setCurrent(e.target.value)}
-          />
+          <PasswordInput value={current} onChange={setCurrent} autoComplete="current-password" />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={t('password.new')} error={errors.password} hint={t('password.hint')} required>
-            <Input
-              type="password"
-              autoComplete="new-password"
-              value={next}
-              onChange={(e) => setNext(e.target.value)}
-            />
+          <Field label={t('password.new')} error={errors.password} required>
+            <PasswordInput value={next} onChange={setNext} autoComplete="new-password" />
           </Field>
           <Field label={t('password.repeat')} error={errors.repeat} required>
-            <Input
-              type="password"
-              autoComplete="new-password"
-              value={repeat}
-              onChange={(e) => setRepeat(e.target.value)}
-            />
+            <PasswordInput value={repeat} onChange={setRepeat} autoComplete="new-password" />
           </Field>
         </div>
-        {next ? (
-          <div className="flex items-center gap-3" data-testid="password-strength">
-            <div aria-hidden="true" className="flex gap-1">
-              {[1, 2, 3].map((level) => (
-                <span
-                  key={level}
-                  className={cn(
-                    'h-1.5 w-10 rounded-full bg-[var(--field)]',
-                    strength >= level &&
-                      (strength === 1
-                        ? 'bg-[var(--danger)]'
-                        : strength === 2
-                          ? 'bg-[var(--warning)]'
-                          : 'bg-[var(--success)]'),
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-[var(--text-muted)]">
-              {t('password.strengthLabel')}: {t(`password.strength.${strength}`)}
-            </span>
+        {/* REQ-PRF-31: 4 уровня надёжности. */}
+        <div
+          className="flex flex-wrap items-center gap-x-3 gap-y-1"
+          data-testid="password-strength"
+          data-level={strength}
+        >
+          <div aria-hidden="true" className="flex gap-1">
+            {[1, 2, 3, 4].map((level) => (
+              <span
+                key={level}
+                className={cn(
+                  'h-1.5 w-10 rounded-full',
+                  strength >= level ? STRENGTH_TONE[strength] : 'bg-[var(--field)]',
+                )}
+              />
+            ))}
           </div>
-        ) : null}
+          <span className="text-xs text-[var(--text-muted)]" aria-live="polite">
+            {strength > 0 ? `${t('password.strengthLabel')}: ${t(`password.strength.${strength}`)}` : null}
+          </span>
+        </div>
+        {/* REQ-PRF-31: требования с галочками по мере ввода. */}
+        <ul
+          aria-label={t('password.rulesLabel')}
+          className="flex flex-col gap-1 text-sm"
+          data-testid="password-rules"
+        >
+          {rules.map((rule) => (
+            <li
+              key={rule.key}
+              data-ok={rule.ok}
+              className={cn(
+                'flex items-center gap-2',
+                rule.ok ? 'text-[var(--success-text)]' : 'text-[var(--text-muted)]',
+              )}
+            >
+              {rule.ok ? (
+                <CircleCheck aria-hidden="true" className="size-4" />
+              ) : (
+                <Circle aria-hidden="true" className="size-4" />
+              )}
+              {t(`password.rules.${rule.key}`)}
+              <span className="sr-only">— {rule.ok ? t('password.ruleDone') : t('password.ruleTodo')}</span>
+            </li>
+          ))}
+        </ul>
         <div>
           <Button type="submit" variant="primary-blue" disabled={pending}>
             {t('password.change')}
@@ -365,41 +517,145 @@ function PasswordSection({ minLength }: { minLength: number }) {
   );
 }
 
-function DevicesSection({ lastLoginAt, timeZone }: { lastLoginAt: string | null; timeZone: string }) {
+/** «Сегодня, 14:32» / «вчера, 09:05» / «12.10.2026 18:00» — часовой пояс платформы. */
+function useWhen(timeZone: string) {
+  const t = useTranslations('account.settings.security');
+  const day = (iso: string | Date) =>
+    new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(
+      new Date(iso),
+    );
+  return (iso: string) => {
+    const full = formatDateTime(iso, timeZone);
+    const time = full.slice(-5);
+    if (day(iso) === day(new Date())) return t('today', { time });
+    if (day(iso) === day(new Date(Date.now() - 86_400_000))) return t('yesterday', { time });
+    return full;
+  };
+}
+
+/** REQ-PRF-32: устройства — список сессий, «Это устройство», выход с одного (с подтверждением) и со всех других. */
+function SecuritySection({ timeZone }: { timeZone: string }) {
   const t = useTranslations('account.settings');
+  const ts = useTranslations('account.settings.security');
   const locale = useLocale();
+  const when = useWhen(timeZone);
+  const queryClient = useQueryClient();
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [pending, setPending] = useState(false);
-  const revoke = async () => {
+  const [confirm, setConfirm] = useState<SessionItem | null>(null);
+  const sessions = useQuery({
+    queryKey: ['me', 'sessions'],
+    queryFn: async () => {
+      const res = await apiRequest<SessionItem[]>('/api/me/sessions', { locale });
+      if (res.kind !== 'ok') throw new Error('sessions');
+      return res.data;
+    },
+  });
+  const label = (s: SessionItem) =>
+    [s.device.browser, s.device.os].filter(Boolean).join(' · ') || ts('unknownDevice');
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['me', 'sessions'] });
+  const revokeAll = async () => {
     setPending(true);
     const res = await apiRequest('/api/me/sessions/revoke-others', { method: 'POST', locale });
     setPending(false);
     setFeedback(
       res.kind === 'ok' ? { kind: 'ok', text: t('devices.revoked') } : { kind: 'error', text: t('failed') },
     );
+    await refresh();
   };
+  const revokeOne = async (s: SessionItem) => {
+    const res = await apiRequest(`/api/me/sessions/${s.id}`, { method: 'DELETE', locale });
+    setConfirm(null);
+    setFeedback(
+      res.kind === 'ok' ? { kind: 'ok', text: ts('signedOut') } : { kind: 'error', text: t('failed') },
+    );
+    await refresh();
+  };
+  const others = (sessions.data ?? []).filter((s) => !s.current).length;
   return (
-    <Section title={t('devices.title')} id="devices">
-      <p className="text-sm" data-testid="settings-last-login">
-        {lastLoginAt
-          ? t('devices.lastLogin', { date: formatDateTime(lastLoginAt, timeZone) })
-          : t('devices.never')}
-      </p>
+    <Section title={ts('title')} id="security">
+      <h3 className="text-sm font-semibold">{ts('devices')}</h3>
+      {sessions.data ? (
+        <ul className="flex flex-col divide-y divide-[var(--border)]" data-testid="sessions">
+          {sessions.data.map((s) => (
+            <li
+              key={s.id}
+              className="flex flex-wrap items-center justify-between gap-3 py-3"
+              data-testid="session"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-[var(--text-muted)]"
+                >
+                  {s.device.os === 'iPhone' || s.device.os === 'Android' ? (
+                    <Smartphone className="size-5" />
+                  ) : (
+                    <Monitor className="size-5" />
+                  )}
+                </span>
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                    {label(s)}
+                    {s.current ? <Badge tone="success">{ts('thisDevice')}</Badge> : null}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {ts('lastActive', { when: when(s.lastActiveAt) })}
+                  </p>
+                </div>
+              </div>
+              {s.current ? null : (
+                <Button variant="secondary" size="sm" onClick={() => setConfirm(s)}>
+                  {ts('signOut')}
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <Skeleton className="h-16 w-full" />
+      )}
       <div>
-        <Button variant="secondary" disabled={pending} onClick={() => void revoke()}>
+        <Button variant="secondary" disabled={pending || others === 0} onClick={() => void revokeAll()}>
           {t('devices.revoke')}
         </Button>
       </div>
       <Message feedback={feedback} testId="devices-feedback" />
+      <Modal
+        open={confirm !== null}
+        onOpenChange={(open) => !open && setConfirm(null)}
+        title={confirm ? ts('signOutTitle', { device: label(confirm) }) : ''}
+        description={ts('signOutText')}
+        closeLabel={t('cancel')}
+      >
+        <div className="flex flex-wrap justify-end gap-3">
+          <Button variant="secondary" onClick={() => setConfirm(null)}>
+            {t('cancel')}
+          </Button>
+          <Button variant="danger" onClick={() => confirm && void revokeOne(confirm)}>
+            {ts('signOut')}
+          </Button>
+        </div>
+      </Modal>
     </Section>
   );
 }
 
-/** REQ-PRF-09: те же настройки, что в хедере (API-ME-02, cookie), — состояние общее с хедером. */
+/**
+ * REQ-PRF-09, REQ-PRF-33: те же настройки, что в хедере (API-ME-02, cookie), — состояние общее с хедером;
+ * сохраняются сразу при переключении, рядом — отметка «Сохранено».
+ */
 function PreferencesSection({ enabledLocales }: { enabledLocales: Locale[] }) {
   const t = useTranslations('account.settings.prefs');
   const { setTheme, dataSaver, setDataSaver } = usePreferences();
   const theme = useCurrentTheme();
+  const [saved, setSaved] = useState<'theme' | 'dataSaver' | null>(null);
+  const mark = (key: 'theme' | 'dataSaver') =>
+    saved === key ? (
+      <span role="status" className="text-xs text-[var(--success-text)]" data-testid={`prefs-saved-${key}`}>
+        {t('saved')}
+      </span>
+    ) : null;
   return (
     <Section title={t('title')} id="prefs">
       <div className="flex flex-col gap-2">
@@ -408,27 +664,39 @@ function PreferencesSection({ enabledLocales }: { enabledLocales: Locale[] }) {
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-[13px] text-[var(--text-muted)]">{t('theme')}</span>
-        <SegmentedControl
-          label={t('theme')}
-          value={theme}
-          onValueChange={(v) => setTheme(v as 'light' | 'dark')}
-          options={[
-            { value: 'dark', label: t('themeDark') },
-            { value: 'light', label: t('themeLight') },
-          ]}
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <SegmentedControl
+            label={t('theme')}
+            value={theme}
+            onValueChange={(v) => {
+              setTheme(v as 'light' | 'dark');
+              setSaved('theme');
+            }}
+            options={[
+              { value: 'dark', label: t('themeDark') },
+              { value: 'light', label: t('themeLight') },
+            ]}
+          />
+          {mark('theme')}
+        </div>
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-[13px] text-[var(--text-muted)]">{t('dataSaver')}</span>
-        <SegmentedControl
-          label={t('dataSaver')}
-          value={dataSaver ? 'on' : 'off'}
-          onValueChange={(v) => setDataSaver(v === 'on')}
-          options={[
-            { value: 'off', label: t('off') },
-            { value: 'on', label: t('on') },
-          ]}
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <SegmentedControl
+            label={t('dataSaver')}
+            value={dataSaver ? 'on' : 'off'}
+            onValueChange={(v) => {
+              setDataSaver(v === 'on');
+              setSaved('dataSaver');
+            }}
+            options={[
+              { value: 'off', label: t('off') },
+              { value: 'on', label: t('on') },
+            ]}
+          />
+          {mark('dataSaver')}
+        </div>
       </div>
     </Section>
   );

@@ -48,6 +48,8 @@ export const EMAIL_TEMPLATES = {
   emailChanged: 'auth.email_changed',
   /** BR-PRF-08: уведомление о смене пароля. */
   passwordChanged: 'auth.password_changed',
+  /** BR-PRF-20: учителю — вход с нового устройства. */
+  newDevice: 'auth.new_device',
 } as const;
 export type EmailTemplate = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
 
@@ -103,6 +105,14 @@ export interface EmailChangePayload {
 /** BR-PRF-07/08: уведомления о смене email и пароля (без ссылок на действие, кроме «Это не я» → /support). */
 export interface AccountNoticePayload {
   locale: Locale;
+}
+
+/** BR-PRF-20: «Новый вход в Syntara: {устройство}, {дата и время (Алматы)}». */
+export interface NewDevicePayload {
+  locale: Locale;
+  device: string;
+  /** Дата и время входа, уже отформатированные в часовом поясе платформы. */
+  at: string;
 }
 
 /** Срок ссылки подтверждения нового email (BR-PRF-07). */

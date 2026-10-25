@@ -170,16 +170,65 @@ export type EmailRemoveDto = z.infer<typeof EmailRemoveDto>;
 export const ACCOUNT_LIMITS = { attempts: 5, windowMs: 15 * 60_000 } as const;
 
 /**
- * BR-PRF-08: простой индикатор надёжности пароля (без библиотек): 0 — слишком короткий, 1 — слабый, 2 — средний,
- * 3 — надёжный. Длина и разнообразие символов.
+ * REQ-PRF-31 (BR-PRF-08): надёжность пароля без библиотек — 4 уровня: 1 слабый, 2 средний, 3 хороший, 4 надёжный;
+ * 0 — пароль не введён. Учитываются длина и классы символов; короче минимума или содержит логин, email или имя
+ * (части от 3 символов) — слабый.
  */
-export function passwordStrength(password: string, minLength = 8): 0 | 1 | 2 | 3 {
-  if (password.length < minLength) return 0;
+export function passwordStrength(
+  password: string,
+  personal: ReadonlyArray<string | null | undefined> = [],
+  minLength = 8,
+): 0 | 1 | 2 | 3 | 4 {
+  if (!password) return 0;
+  const lower = password.toLocaleLowerCase();
+  const parts = personal
+    .flatMap((p) => (p ?? '').toLocaleLowerCase().split(/[\s@._-]+/))
+    .filter((part) => part.length >= 3);
+  if (password.length < minLength || parts.some((part) => lower.includes(part))) return 1;
   const kinds = [/[a-zа-яәғқңөұүһі]/u, /[A-ZА-ЯӘҒҚҢӨҰҮҺІ]/u, /\d/, /[^\p{L}\d]/u].filter((re) =>
     re.test(password),
   ).length;
   const score = kinds + (password.length >= 12 ? 1 : 0) + (password.length >= 16 ? 1 : 0);
-  return score >= 4 ? 3 : score >= 2 ? 2 : 1;
+  return score >= 5 ? 4 : score >= 4 ? 3 : score >= 2 ? 2 : 1;
+}
+
+/**
+ * REQ-PRF-32: устройство сессии в понятном виде («Chrome · Windows», «Safari · iPhone») — разбор User-Agent без
+ * библиотек. Неизвестное — null (интерфейс пишет «Неизвестное устройство»).
+ */
+export function parseUserAgent(ua: string | null | undefined): { browser: string | null; os: string | null } {
+  const s = ua ?? '';
+  const browser = /Edg\//.test(s)
+    ? 'Edge'
+    : /OPR\/|Opera/.test(s)
+      ? 'Opera'
+      : /YaBrowser\//.test(s)
+        ? 'Yandex'
+        : /SamsungBrowser\//.test(s)
+          ? 'Samsung Internet'
+          : /Firefox\/|FxiOS\//.test(s)
+            ? 'Firefox'
+            : /Chrome\/|CriOS\//.test(s)
+              ? 'Chrome'
+              : /Safari\//.test(s)
+                ? 'Safari'
+                : null;
+  const os = /iPhone/.test(s)
+    ? 'iPhone'
+    : /iPad/.test(s)
+      ? 'iPad'
+      : /Android/.test(s)
+        ? 'Android'
+        : /Windows/.test(s)
+          ? 'Windows'
+          : /Mac OS X|Macintosh/.test(s)
+            ? 'macOS'
+            : /CrOS/.test(s)
+              ? 'ChromeOS'
+              : /Linux/.test(s)
+                ? 'Linux'
+                : null;
+  return { browser, os };
 }
 
 /** API-ME-15 (REQ-PRF-21): недель в календаре активности. */

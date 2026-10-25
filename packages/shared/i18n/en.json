@@ -746,7 +746,9 @@
       "changedBody": "The email of your Syntara account has been changed. Emails now go to the new address.",
       "notMe": "This wasn't me",
       "passwordChangedSubject": "Your password has been changed",
-      "passwordChangedBody": "The password of your Syntara account has been changed. Other devices have been signed out."
+      "passwordChangedBody": "The password of your Syntara account has been changed. Other devices have been signed out.",
+      "newDeviceSubject": "New sign-in to Syntara",
+      "newDeviceBody": "New sign-in to Syntara: {device}, {at} (Almaty). If it wasn't you, change your password:"
     }
   },
   "join": {
@@ -1715,7 +1717,8 @@
         "removeText": "Without an email, only your teacher can help you restore the password.",
         "removeConfirm": "Remove",
         "removed": "Email removed",
-        "teacherLogin": "Your email is your login and cannot be removed"
+        "teacherLogin": "Your email is your login and cannot be removed",
+        "why": "Needed to restore your password without a teacher and to get important notifications"
       },
       "cancel": "Cancel",
       "currentPassword": "Current password",
@@ -1731,9 +1734,20 @@
           "0": "Too short",
           "1": "Weak",
           "2": "Fair",
-          "3": "Strong"
+          "3": "Good",
+          "4": "Strong"
         },
-        "changed": "Password changed. Other devices have been signed out."
+        "changed": "Password changed. Other devices have been signed out.",
+        "show": "Show password",
+        "hide": "Hide password",
+        "rulesLabel": "Password requirements",
+        "rules": {
+          "length": "At least 8 characters",
+          "notCurrent": "Differs from the current one",
+          "match": "Passwords match"
+        },
+        "ruleDone": "done",
+        "ruleTodo": "not yet"
       },
       "devices": {
         "title": "Sign-in and devices",
@@ -1750,10 +1764,31 @@
         "themeLight": "Light",
         "dataSaver": "Data saver",
         "on": "On",
-        "off": "Off"
+        "off": "Off",
+        "saved": "Saved"
       },
       "failed": "Something went wrong — please try again",
-      "rateLimited": "Too many attempts. Try again in {minutes} min."
+      "rateLimited": "Too many attempts. Try again in {minutes} min.",
+      "nav": {
+        "label": "Settings sections",
+        "email": "Email",
+        "password": "Password",
+        "security": "Security",
+        "prefs": "Preferences"
+      },
+      "security": {
+        "title": "Security",
+        "devices": "Devices where you are signed in",
+        "thisDevice": "This device",
+        "lastActive": "Last active: {when}",
+        "today": "today, {time}",
+        "yesterday": "yesterday, {time}",
+        "unknownDevice": "Unknown device",
+        "signOut": "Sign out",
+        "signOutTitle": "Sign out on «{device}»?",
+        "signOutText": "You will need to sign in again on that device.",
+        "signedOut": "Signed out on that device"
+      }
     },
     "menu": {
       "label": "Profile menu",

@@ -333,7 +333,7 @@ describe('worker processors', () => {
     expect(JSON.stringify(row!.payload)).not.toContain(token);
   });
 
-  it('AC-PRF-06 BR-PRF-07 email change: a 24-hour link to the new address; «Ваш email изменён» with «Это не я»; password notice', async () => {
+  it('AC-PRF-06 BR-PRF-07 BR-PRF-20 email change: a 24-hour link to the new address; «Ваш email изменён» with «Это не я»; password notice', async () => {
     const userId = '0190a1b2-0000-7000-8000-0000000000cc';
     const send = async (template: string, toEmail: string, payload: object) => {
       const [email] = await db.insert(schema.emailQueue).values({ toEmail, template, payload }).returning();
@@ -368,6 +368,16 @@ describe('worker processors', () => {
     const password = await send(EMAIL_TEMPLATES.passwordChanged, 'old@example.kz', { locale: 'kk' });
     expect(password.subject).toBe('Құпиясөз өзгертілді');
     expect(password.text).toContain('http://localhost:3000/kk/support');
+
+    // BR-PRF-20: письмо о новом устройстве — устройство, время (Алматы), ссылка на «Безопасность».
+    const mail = await send(EMAIL_TEMPLATES.newDevice, 'teacher@example.kz', {
+      locale: 'ru',
+      device: 'Firefox · macOS',
+      at: '25.10.2026 14:32',
+    });
+    expect(mail.subject).toBe('Новый вход в Syntara');
+    expect(mail.text).toContain('Новый вход в Syntara: Firefox · macOS, 25.10.2026 14:32 (Алматы)');
+    expect(mail.text).toContain('http://localhost:3000/ru/account/settings#security');
   });
 
   it('REQ-NFR-SEC-07 worker logs contain neither email addresses nor message text', () => {
