@@ -1690,7 +1690,11 @@
       "saveFailed": "Could not save — please try again",
       "unsaved": "You have unsaved changes. Leave the page?",
       "nameLimit": "You can change your name {date}",
-      "nameNotEditable": "Your teacher or support changes the name"
+      "nameNotEditable": "Your teacher or support changes the name",
+      "unsavedBar": "You have unsaved changes",
+      "discard": "Discard",
+      "savedToast": "Profile saved",
+      "notifications": "Notifications"
     },
     "settings": {
       "title": "Account settings",
@@ -1855,6 +1859,14 @@
         "position": "Add your position",
         "about": "Tell about yourself"
       }
+    },
+    "preview": {
+      "title": "How others see you",
+      "hint": "Updates instantly — save your changes so that others see them",
+      "roster": "In the teacher’s class list",
+      "leaderboard": "In the Battle leaderboard",
+      "lobby": "In the Battle lobby",
+      "classCard": "Teacher card in «My class»"
     }
   }
 }

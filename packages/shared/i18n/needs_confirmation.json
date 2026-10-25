@@ -980,7 +980,17 @@
     "account.overview.teacher.allActive": "REQ-PRF-24: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
     "account.overview.teacher.reasonNever": "REQ-PRF-25: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
     "account.overview.teacher.reasonInactive": "REQ-PRF-25: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
-    "account.overview.teacher.submitted": "REQ-PRF-25: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца"
+    "account.overview.teacher.submitted": "REQ-PRF-25: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.preview.title": "REQ-PRF-26: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.preview.hint": "REQ-PRF-26: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
+    "account.preview.roster": "REQ-PRF-26: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.preview.leaderboard": "REQ-PRF-26: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.preview.lobby": "REQ-PRF-26: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.preview.classCard": "REQ-PRF-26: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.profile.unsavedBar": "REQ-PRF-28: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.profile.discard": "REQ-PRF-28: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.profile.savedToast": "REQ-PRF-28: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.profile.notifications": "REQ-PRF-28: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

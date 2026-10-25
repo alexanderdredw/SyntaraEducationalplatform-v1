@@ -1326,6 +1326,10 @@
     "account.profile.unsaved": "needs_review",
     "account.profile.nameLimit": "needs_review",
     "account.profile.nameNotEditable": "needs_review",
+    "account.profile.unsavedBar": "needs_review",
+    "account.profile.discard": "needs_review",
+    "account.profile.savedToast": "needs_review",
+    "account.profile.notifications": "needs_review",
     "account.settings.title": "needs_review",
     "account.settings.email.title": "needs_review",
     "account.settings.email.none": "needs_review",
@@ -1457,6 +1461,12 @@
     "account.completeness.items.email": "needs_review",
     "account.completeness.items.emailVerified": "needs_review",
     "account.completeness.items.position": "needs_review",
-    "account.completeness.items.about": "needs_review"
+    "account.completeness.items.about": "needs_review",
+    "account.preview.title": "needs_review",
+    "account.preview.hint": "needs_review",
+    "account.preview.roster": "needs_review",
+    "account.preview.leaderboard": "needs_review",
+    "account.preview.lobby": "needs_review",
+    "account.preview.classCard": "needs_review"
   }
 }

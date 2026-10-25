@@ -98,9 +98,11 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
     await page.keyboard.down('ArrowRight');
     await expect(page.getByRole('radio', { name: p.presets.owl })).toBeFocused();
     await page.keyboard.up('ArrowRight');
-    await expect(page.getByRole('radio', { name: p.presets.owl })).toHaveAttribute('data-state', 'checked');
+    await expect(page.getByRole('radio', { name: p.presets.owl })).toHaveAttribute('aria-checked', 'true');
     await page.getByRole('button', { name: p.save }).click();
-    await expect(page.getByTestId('profile-status')).toHaveText(p.saved);
+    // REQ-PRF-28: после сохранения — уведомление «Профиль сохранён», плашка исчезает.
+    await expect(page.locator('li[data-state="open"]', { hasText: p.savedToast })).toBeVisible();
+    await expect(page.getByTestId('unsaved-bar')).toHaveCount(0);
 
     const me = await (await page.request.get('/api/me')).json();
     expect(me.displayName).toBe('Асель-Мария Нурова');
@@ -165,7 +167,9 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
     await page.getByTestId('avatar-crop-apply').click();
     await expect(crop).toBeHidden();
     await page.getByRole('button', { name: p.save }).click();
-    await expect(page.getByTestId('profile-status')).toHaveText(p.saved);
+    // REQ-PRF-28: после сохранения — уведомление «Профиль сохранён», плашка исчезает.
+    await expect(page.locator('li[data-state="open"]', { hasText: p.savedToast })).toBeVisible();
+    await expect(page.getByTestId('unsaved-bar')).toHaveCount(0);
 
     const profile = await (await page.request.get('/api/me/profile')).json();
     expect(profile).toMatchObject({ position: 'Учитель биологии', about: 'Веду уроки биологии' });
@@ -200,5 +204,55 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
     }
     await page.getByRole('radio', { name: p.avatarKinds.preset }).click();
     await expectNoSeriousA11yViolations(page);
+  });
+
+  test('AC-PRF-26 REQ-PRF-27 the preview follows the form at once; preset names on hover and focus; the unsaved bar: discard and save', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await signIn(context, await student(baseURL!), baseURL!);
+    await page.goto('/ru/account/profile');
+    const preview = page.getByTestId('profile-preview');
+    await expect(preview.getByTestId('preview-leaderboard')).toContainText('Асель Н.');
+    await expect(page.getByTestId('unsaved-bar')).toHaveCount(0);
+
+    await page.getByLabel(p.fields.firstName).fill('Мадина');
+    await expect(preview.getByTestId('preview-roster')).toContainText('Мадина Нурова');
+    await expect(preview.getByTestId('preview-leaderboard')).toContainText('Мадина Н.');
+    await expect(preview.getByTestId('preview-chip')).toContainText('Мадина Н.');
+    await expect(page.getByTestId('unsaved-bar')).toContainText(p.unsavedBar);
+
+    // Подсказка с названием аватара при фокусе; выбранный — галочка.
+    await page.getByRole('radio', { name: p.avatarKinds.preset }).click();
+    await page.getByRole('radio', { name: p.presets.owl }).focus();
+    await expect(page.getByTestId('choice-tooltip')).toHaveText(p.presets.owl);
+    await page.getByRole('radio', { name: p.presets.owl }).click();
+    await expect(preview.locator('[data-avatar="preset"]').first()).toBeVisible();
+
+    await page.getByTestId('unsaved-bar').getByRole('button', { name: p.discard }).click();
+    await expect(page.getByLabel(p.fields.firstName)).toHaveValue('Асель');
+    await expect(preview.getByTestId('preview-leaderboard')).toContainText('Асель Н.');
+    await expect(page.getByTestId('unsaved-bar')).toHaveCount(0);
+
+    await page.getByLabel(p.fields.lastName).fill('Касымова');
+    await page.getByTestId('unsaved-bar').getByRole('button', { name: p.save }).click();
+    await expect(page.locator('li[data-state="open"]', { hasText: p.savedToast })).toBeVisible();
+    expect((await (await page.request.get('/api/me')).json()).displayName).toBe('Асель Касымова');
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test('AC-PRF-26 teacher preview shows the class card with position and about', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await signIn(context, await teacher(baseURL!), baseURL!);
+    await page.goto('/ru/account/profile');
+    await page.getByLabel(new RegExp(`^${p.fields.position}`)).fill('Учитель химии');
+    await page.getByLabel(new RegExp(`^${p.fields.about}`)).fill('Люблю опыты');
+    const card = page.getByTestId('preview-teacher-card');
+    await expect(card.getByTestId('preview-position')).toHaveText('Учитель химии');
+    await expect(card.getByTestId('preview-about')).toHaveText('Люблю опыты');
   });
 });

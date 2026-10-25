@@ -2,9 +2,9 @@
 
 import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { RadioGroup } from 'radix-ui';
+import { RadioGroup, Tooltip } from 'radix-ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Camera, Copy } from 'lucide-react';
+import { Camera, Check, Copy } from 'lucide-react';
 import {
   AVATAR_COLORS,
   AVATAR_PHOTO_MIME,
@@ -26,12 +26,15 @@ import {
   SegmentedControl,
   Skeleton,
   Textarea,
+  Toast,
+  ToastProvider,
 } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { AvatarCrop } from './avatar-crop';
+import { ProfilePreview } from './profile-preview';
 import { useUnsavedWarning } from './use-unsaved-warning';
 
 type Profile = components['schemas']['ProfileDto'];
@@ -140,6 +143,13 @@ function ProfileForm({ profile, timeZone }: { profile: Profile; timeZone: string
 
   const update = (patch: Partial<Draft>) => {
     setDraft((d) => ({ ...d, ...patch }));
+    setStatus('idle');
+  };
+  /** REQ-PRF-28: «Отменить» — вернуть сохранённые значения. */
+  const discard = () => {
+    if (draft.previewUrl) URL.revokeObjectURL(draft.previewUrl);
+    setDraft(baseline);
+    setErrors({});
     setStatus('idle');
   };
   const dateText = (seconds: number) =>
@@ -277,208 +287,246 @@ function ProfileForm({ profile, timeZone }: { profile: Profile; timeZone: string
     <form onSubmit={save} noValidate className="flex flex-col gap-6" data-testid="profile-form">
       <h1 className="text-cabinet-title font-bold">{t('title')}</h1>
 
-      <Card className="flex flex-col gap-5">
-        <h2 className="text-cabinet-block font-semibold">{t('avatar')}</h2>
-        <div className="flex flex-wrap items-center gap-5">
-          <Avatar name={name} avatar={preview} size={96} />
-          <SegmentedControl
-            label={t('avatarKindsLabel')}
-            value={draft.kind}
-            onValueChange={(v) => update({ kind: v as Kind })}
-            options={kinds.map((k) => ({ value: k, label: t(`avatarKinds.${k}`) }))}
-          />
-        </div>
-
-        {draft.kind === 'initials' ? (
-          <ChoiceGrid
-            label={t('color')}
-            value={draft.color}
-            onChange={(color) => update({ color })}
-            items={AVATAR_COLORS.map((c) => ({
-              value: c,
-              label: t(`colors.${c}`),
-              render: (
-                <span
-                  aria-hidden="true"
-                  className="inline-flex size-10 items-center justify-center rounded-full text-sm font-semibold"
-                  style={avatarColorStyle(c)}
-                >
-                  {preview.initials}
-                </span>
-              ),
-            }))}
-          />
-        ) : null}
-
-        {draft.kind === 'preset' ? (
-          <ChoiceGrid
-            label={t('presetLabel')}
-            value={draft.preset}
-            onChange={(preset) => update({ preset })}
-            items={AVATAR_PRESETS.map((p) => ({
-              value: p,
-              label: t(`presets.${p}`),
-              render: (
-                <span
-                  aria-hidden="true"
-                  className="inline-flex size-12 items-center justify-center rounded-full"
-                  style={avatarColorStyle(avatarPresetColor(p))}
-                >
-                  <AvatarArt preset={p} className="size-[78%]" />
-                </span>
-              ),
-            }))}
-          />
-        ) : null}
-
-        {draft.kind === 'photo' && isTeacher ? (
-          <div className="flex flex-col gap-2">
-            <input
-              ref={fileRef}
-              type="file"
-              accept={AVATAR_PHOTO_MIME.join(',')}
-              className="sr-only"
-              tabIndex={-1}
-              aria-hidden="true"
-              data-testid="avatar-file"
-              onChange={(e) => {
-                chooseFile(e.target.files?.[0]);
-                e.target.value = '';
-              }}
-            />
-            <div>
-              <Button
-                variant="secondary"
-                onClick={() => fileRef.current?.click()}
-                disabled={upload === 'uploading'}
-                aria-describedby="avatar-upload-hint"
-              >
-                <Camera aria-hidden="true" className="size-4" />
-                {upload === 'uploading' ? t('uploading') : t('upload')}
-              </Button>
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="flex min-w-0 flex-col gap-6">
+          <Card className="flex flex-col gap-5">
+            <h2 className="text-cabinet-block font-semibold">{t('avatar')}</h2>
+            <div className="flex flex-wrap items-center gap-5">
+              <Avatar name={name} avatar={preview} size={96} />
+              <SegmentedControl
+                label={t('avatarKindsLabel')}
+                value={draft.kind}
+                onValueChange={(v) => update({ kind: v as Kind })}
+                options={kinds.map((k) => ({ value: k, label: t(`avatarKinds.${k}`) }))}
+              />
             </div>
-            <p id="avatar-upload-hint" className="text-xs text-[var(--text-muted)]">
-              {t('uploadHint')}
-            </p>
-            {pending && !draft.mediaId ? (
-              <p role="status" className="text-sm text-[var(--text-muted)]">
-                {t('checking')}
-              </p>
-            ) : null}
-            {rejected ? (
-              <p role="alert" className="text-sm text-[var(--danger-text)]">
-                {t('rejected')}
-              </p>
-            ) : null}
-            {errors.photo ? (
-              <p role="alert" className="text-sm text-[var(--danger-text)]">
-                {errors.photo}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-      </Card>
 
-      <Card className="flex flex-col gap-5">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field
-            label={t('fields.firstName')}
-            required
-            error={errors.firstName}
-            hint={
-              !current.nameEditable
-                ? t('nameNotEditable')
-                : current.nameChangeAvailableAt
-                  ? t('nameLimit', { date: formatDateTime(current.nameChangeAvailableAt, timeZone) })
-                  : undefined
-            }
-          >
-            <Input
-              value={draft.firstName}
-              maxLength={PROFILE_LIMITS.nameMax}
-              autoComplete="given-name"
-              readOnly={!current.nameEditable}
-              onChange={(e) => update({ firstName: e.target.value })}
-            />
-          </Field>
-          <Field
-            label={isTeacher ? t('fields.lastName') : `${t('fields.lastName')} (${t('fields.optional')})`}
-            error={errors.lastName}
-          >
-            <Input
-              value={draft.lastName}
-              maxLength={PROFILE_LIMITS.nameMax}
-              autoComplete="family-name"
-              readOnly={!current.nameEditable}
-              onChange={(e) => update({ lastName: e.target.value })}
-            />
-          </Field>
+            {draft.kind === 'initials' ? (
+              <ChoiceGrid
+                label={t('color')}
+                value={draft.color}
+                onChange={(color) => update({ color })}
+                items={AVATAR_COLORS.map((c) => ({
+                  value: c,
+                  label: t(`colors.${c}`),
+                  render: (
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex size-10 items-center justify-center rounded-full text-sm font-semibold"
+                      style={avatarColorStyle(c)}
+                    >
+                      {preview.initials}
+                    </span>
+                  ),
+                }))}
+              />
+            ) : null}
+
+            {draft.kind === 'preset' ? (
+              <ChoiceGrid
+                label={t('presetLabel')}
+                value={draft.preset}
+                onChange={(preset) => update({ preset })}
+                items={AVATAR_PRESETS.map((p) => ({
+                  value: p,
+                  label: t(`presets.${p}`),
+                  render: (
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex size-12 items-center justify-center rounded-full"
+                      style={avatarColorStyle(avatarPresetColor(p))}
+                    >
+                      <AvatarArt preset={p} className="size-[78%]" />
+                    </span>
+                  ),
+                }))}
+              />
+            ) : null}
+
+            {draft.kind === 'photo' && isTeacher ? (
+              <div className="flex flex-col gap-2">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={AVATAR_PHOTO_MIME.join(',')}
+                  className="sr-only"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  data-testid="avatar-file"
+                  onChange={(e) => {
+                    chooseFile(e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
+                />
+                <div>
+                  <Button
+                    variant="secondary"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={upload === 'uploading'}
+                    aria-describedby="avatar-upload-hint"
+                  >
+                    <Camera aria-hidden="true" className="size-4" />
+                    {upload === 'uploading' ? t('uploading') : t('upload')}
+                  </Button>
+                </div>
+                <p id="avatar-upload-hint" className="text-xs text-[var(--text-muted)]">
+                  {t('uploadHint')}
+                </p>
+                {pending && !draft.mediaId ? (
+                  <p role="status" className="text-sm text-[var(--text-muted)]">
+                    {t('checking')}
+                  </p>
+                ) : null}
+                {rejected ? (
+                  <p role="alert" className="text-sm text-[var(--danger-text)]">
+                    {t('rejected')}
+                  </p>
+                ) : null}
+                {errors.photo ? (
+                  <p role="alert" className="text-sm text-[var(--danger-text)]">
+                    {errors.photo}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </Card>
+
+          <Card className="flex flex-col gap-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field
+                label={t('fields.firstName')}
+                required
+                error={errors.firstName}
+                hint={
+                  !current.nameEditable
+                    ? t('nameNotEditable')
+                    : current.nameChangeAvailableAt
+                      ? t('nameLimit', { date: formatDateTime(current.nameChangeAvailableAt, timeZone) })
+                      : undefined
+                }
+              >
+                <Input
+                  value={draft.firstName}
+                  maxLength={PROFILE_LIMITS.nameMax}
+                  autoComplete="given-name"
+                  readOnly={!current.nameEditable}
+                  onChange={(e) => update({ firstName: e.target.value })}
+                />
+              </Field>
+              <Field
+                label={isTeacher ? t('fields.lastName') : `${t('fields.lastName')} (${t('fields.optional')})`}
+                error={errors.lastName}
+              >
+                <Input
+                  value={draft.lastName}
+                  maxLength={PROFILE_LIMITS.nameMax}
+                  autoComplete="family-name"
+                  readOnly={!current.nameEditable}
+                  onChange={(e) => update({ lastName: e.target.value })}
+                />
+              </Field>
+            </div>
+
+            {isTeacher ? (
+              <>
+                <Field label={`${t('fields.position')} (${t('fields.optional')})`} error={errors.position}>
+                  <Input
+                    value={draft.position}
+                    maxLength={PROFILE_LIMITS.positionMax}
+                    placeholder={t('fields.positionPlaceholder')}
+                    onChange={(e) => update({ position: e.target.value })}
+                  />
+                </Field>
+                <Field
+                  label={`${t('fields.about')} (${t('fields.optional')})`}
+                  error={errors.about}
+                  hint={t('fields.aboutCounter', { count: draft.about.length })}
+                >
+                  <Textarea
+                    value={draft.about}
+                    maxLength={PROFILE_LIMITS.aboutMax}
+                    rows={4}
+                    onChange={(e) => update({ about: e.target.value })}
+                  />
+                </Field>
+              </>
+            ) : null}
+
+            {/* FIX-04: логин и школа — текст «только для чтения» (подпись + значение, без рамки поля) с пояснением. */}
+            <dl className="grid gap-5 sm:grid-cols-2" data-testid="profile-readonly">
+              {current.login ? (
+                <ReadOnlyItem
+                  label={t('fields.login')}
+                  value={current.login}
+                  hint={t('fields.loginHint')}
+                  copy={{ label: t('fields.copyLogin'), done: t('fields.copied') }}
+                />
+              ) : null}
+              <ReadOnlyItem
+                label={t('fields.school')}
+                value={current.school?.name ?? t('fields.noSchool')}
+                hint={t('fields.schoolHint')}
+              />
+            </dl>
+          </Card>
         </div>
 
-        {isTeacher ? (
-          <>
-            <Field label={`${t('fields.position')} (${t('fields.optional')})`} error={errors.position}>
-              <Input
-                value={draft.position}
-                maxLength={PROFILE_LIMITS.positionMax}
-                placeholder={t('fields.positionPlaceholder')}
-                onChange={(e) => update({ position: e.target.value })}
-              />
-            </Field>
-            <Field
-              label={`${t('fields.about')} (${t('fields.optional')})`}
-              error={errors.about}
-              hint={t('fields.aboutCounter', { count: draft.about.length })}
-            >
-              <Textarea
-                value={draft.about}
-                maxLength={PROFILE_LIMITS.aboutMax}
-                rows={4}
-                onChange={(e) => update({ about: e.target.value })}
-              />
-            </Field>
-          </>
-        ) : null}
-
-        {/* FIX-04: логин и школа — текст «только для чтения» (подпись + значение, без рамки поля) с пояснением. */}
-        <dl className="grid gap-5 sm:grid-cols-2" data-testid="profile-readonly">
-          {current.login ? (
-            <ReadOnlyItem
-              label={t('fields.login')}
-              value={current.login}
-              hint={t('fields.loginHint')}
-              copy={{ label: t('fields.copyLogin'), done: t('fields.copied') }}
-            />
-          ) : null}
-          <ReadOnlyItem
-            label={t('fields.school')}
-            value={current.school?.name ?? t('fields.noSchool')}
-            hint={t('fields.schoolHint')}
+        {/* REQ-PRF-26: «Как тебя видят другие» — справа от формы (телефон — под ней), сразу при изменениях. */}
+        <aside className="lg:sticky lg:top-[calc(var(--header-h)+24px)]">
+          <ProfilePreview
+            role={isTeacher ? 'teacher' : 'student'}
+            name={name}
+            avatar={preview}
+            login={current.login}
+            position={draft.position.trim()}
+            about={draft.about.trim()}
           />
-        </dl>
-      </Card>
-
-      <div className="flex flex-wrap items-center gap-4">
-        <Button
-          type="submit"
-          variant="primary-blue"
-          disabled={!dirty || status === 'saving' || upload === 'uploading'}
-        >
-          {t('save')}
-        </Button>
-        <p role="status" aria-live="polite" className="text-sm" data-testid="profile-status">
-          {status === 'saved' ? <span className="text-[var(--success-text)]">{t('saved')}</span> : null}
-          {status === 'failed' && Object.keys(errors).length === 0 ? (
-            <span className="text-[var(--danger-text)]">{t('saveFailed')}</span>
-          ) : null}
-        </p>
+        </aside>
       </div>
+
+      {/* REQ-PRF-28: плашка несохранённых изменений, закреплённая внизу экрана. */}
+      {dirty || status === 'saving' || status === 'failed' ? (
+        <div
+          role="region"
+          aria-label={t('unsavedBar')}
+          data-testid="unsaved-bar"
+          className="sticky bottom-4 z-30 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 shadow-popover"
+        >
+          <p role="status" aria-live="polite" className="text-sm font-medium" data-testid="profile-status">
+            {status === 'failed' && Object.keys(errors).length === 0 ? (
+              <span className="text-[var(--danger-text)]">{t('saveFailed')}</span>
+            ) : (
+              t('unsavedBar')
+            )}
+          </p>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={discard} disabled={status === 'saving'}>
+              {t('discard')}
+            </Button>
+            <Button
+              type="submit"
+              variant="primary-blue"
+              disabled={!dirty || status === 'saving' || upload === 'uploading'}
+            >
+              {t('save')}
+            </Button>
+          </div>
+        </div>
+      ) : null}
 
       <AvatarCrop
         file={cropFile}
         onCancel={() => setCropFile(null)}
         onApply={(blob) => void uploadCropped(blob)}
       />
+      <ToastProvider regionLabel={t('notifications')}>
+        <Toast
+          open={status === 'saved'}
+          onOpenChange={(open) => !open && setStatus('idle')}
+          title={t('savedToast')}
+          tone="success"
+        />
+      </ToastProvider>
     </form>
   );
 }
@@ -509,20 +557,40 @@ function ChoiceGrid({
         orientation="horizontal"
         loop
       >
-        {items.map((item) => (
-          <RadioGroup.Item
-            key={item.value}
-            value={item.value}
-            aria-label={item.label}
-            title={item.label}
-            className={cn(
-              'inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-transparent p-0.5',
-              'hover:border-[var(--border-strong)] data-[state=checked]:border-[var(--accent)]',
-            )}
-          >
-            {item.render}
-          </RadioGroup.Item>
-        ))}
+        <Tooltip.Provider delayDuration={200}>
+          {items.map((item) => (
+            // REQ-PRF-27: название — подсказкой при наведении и фокусе; выбранный — обводка и галочка.
+            <Tooltip.Root key={item.value}>
+              <Tooltip.Trigger asChild>
+                <RadioGroup.Item
+                  value={item.value}
+                  aria-label={item.label}
+                  className={cn(
+                    'group relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-transparent p-0.5',
+                    'hover:border-[var(--border-strong)] aria-checked:border-[var(--accent)]',
+                  )}
+                >
+                  {item.render}
+                  <span
+                    aria-hidden="true"
+                    className="absolute -right-0.5 -bottom-0.5 hidden size-4 items-center justify-center rounded-full bg-[var(--accent-strong)] text-white ring-2 ring-[var(--surface)] group-aria-checked:inline-flex"
+                  >
+                    <Check className="size-3" strokeWidth={3} />
+                  </span>
+                </RadioGroup.Item>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  sideOffset={4}
+                  className="z-50 rounded-[var(--radius-item)] bg-[var(--text)] px-2 py-1 text-xs text-[var(--bg)] shadow-popover"
+                  data-testid="choice-tooltip"
+                >
+                  {item.label}
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          ))}
+        </Tooltip.Provider>
       </RadioGroup.Root>
     </div>
   );
