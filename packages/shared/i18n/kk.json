@@ -1071,7 +1071,8 @@
       "leaveYes": "Сыныптан шығу",
       "cancel": "Бас тарту",
       "join": "Сыныпқа қосылу",
-      "joinSubmit": "Қосылу"
+      "joinSubmit": "Қосылу",
+      "teacherAbout": "Өзі туралы"
     },
     "subjects": {
       "title": "Пәндер"
@@ -1746,6 +1747,59 @@
       },
       "failed": "Орындау мүмкін болмады — қайталап көріңіз",
       "rateLimited": "Тым көп әрекет. {minutes} минуттан кейін қайталаңыз."
+    },
+    "menu": {
+      "label": "Профиль мәзірі",
+      "dashboard": "Менің кабинетім",
+      "editProfile": "Профильді өңдеу",
+      "settings": "Баптаулар",
+      "privacy": "Деректер және құпиялылық",
+      "profileRow": "Жеке кабинет: {name}"
+    },
+    "overview": {
+      "title": "Жеке кабинет",
+      "since": "Платформада {date} бастап",
+      "editProfile": "Профильді өңдеу",
+      "loadFailed": "Жиынтықты жүктеу мүмкін болмады — бетті жаңартыңыз",
+      "student": {
+        "achievements": "Жетістіктер",
+        "allAchievements": "Барлық жетістіктер →",
+        "progressTitle": "Менің үлгерімім",
+        "progressPeriod": "30 күнде",
+        "more": "Толығырақ →",
+        "classTitle": "Сынып",
+        "badgesTitle": "Соңғы бейджиктер",
+        "noBadges": "Әзірге бейджик жоқ — алғашқысын алу үшін квизден өт",
+        "battleTitle": "Соңғы Battle",
+        "battleResult": "{place}-орын · {total} ішінен {correct} дұрыс",
+        "battleNoPlace": "{total} ішінен {correct} дұрыс",
+        "myBattles": "Менің Battle ойындарым →",
+        "noBattle": "Сен әлі Battle ойнаған жоқсың"
+      },
+      "teacher": {
+        "summary": "Жиынтық",
+        "counts": {
+          "classes": "Сыныптар",
+          "students": "Оқушылар",
+          "subjects": "Пәндер",
+          "publishedTopics": "Жарияланған тақырыптар"
+        },
+        "attention": "Назар аударуды қажет етеді",
+        "review": "Тексеруге тапсырылғаны: {count}",
+        "lastActivity": "{className} · соңғы белсенділік: {date}",
+        "noActivity": "{className} · әлі оқымаған",
+        "noAttention": "Қазір ешкім назар аударуды қажет етпейді",
+        "deadlines": "Тапсырмалардың жақын мерзімдері",
+        "noDeadlines": "Жақын мерзімдер жоқ",
+        "battles": "Соңғы Battle ойындары",
+        "participants": "Қатысушылар: {count}",
+        "noBattles": "Әлі ойын болған жоқ",
+        "actions": "Жылдам әрекеттер",
+        "newSubject": "Жаңа пән",
+        "assign": "Тапсырма беру",
+        "launchBattle": "Battle бастау",
+        "createClass": "Сынып құру"
+      }
     }
   }
 }

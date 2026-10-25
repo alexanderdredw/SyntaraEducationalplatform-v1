@@ -65,9 +65,12 @@ async function sidebarItems(page: Page) {
     page
       .getByTestId('cabinet-sidebar')
       .getByRole('link')
-      // Подпись без состояния счётчика (после запятой — «есть новое» и т. п., REQ-NAV-14).
+      // Подпись без состояния счётчика (после запятой — «есть новое» и т. п., REQ-NAV-14). Строка профиля
+      // (REQ-PRF-10) — не пункт навигации REQ-NAV-01.
       .evaluateAll((links) =>
-        links.map((a) => `${a.getAttribute('aria-label')!.split(',')[0]} ${a.getAttribute('href')}`),
+        links
+          .filter((a) => a.getAttribute('data-testid') !== 'profile-row')
+          .map((a) => `${a.getAttribute('aria-label')!.split(',')[0]} ${a.getAttribute('href')}`),
       )
   );
 }

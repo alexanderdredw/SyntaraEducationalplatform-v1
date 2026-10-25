@@ -19,8 +19,10 @@ import {
   Zap,
 } from 'lucide-react';
 import { type UserRole } from '@syntara/shared';
-import { cn } from '@syntara/ui';
+import { type AvatarData, cn } from '@syntara/ui';
+import { usePathname } from '@/i18n/navigation';
 import { SIDEBAR_COLLAPSED, SIDEBAR_STORAGE_KEY } from '@/lib/preferences';
+import { ProfileRow } from '../account/profile-menu';
 import { AppLink } from '../app-link';
 import { type NavIcon, type NavItem, type RoleNav } from './nav';
 import { NavBadge, navBadgeState, useNavBadgeLabel } from './nav-badge';
@@ -74,10 +76,20 @@ const rowClass =
  * (~70 px) — иконки с подсказками, подписи групп скрыты, разделители остаются, счётчики — точки на иконках
  * (REQ-NAV-14, REQ-NAV-16). Выделен ровно один пункт (REQ-NAV-13). На телефоне — меню хедера (REQ-NAV-07).
  */
-export function CabinetSidebar({ nav, role }: { nav: RoleNav; role: UserRole }) {
+export function CabinetSidebar({
+  nav,
+  role,
+  profile,
+}: {
+  nav: RoleNav;
+  role: UserRole;
+  /** REQ-PRF-10: строка профиля над «Помощь». */
+  profile: { name: string; avatar: AvatarData };
+}) {
   const t = useTranslations('cabinet');
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
   const { activeHref, badges } = useNavState(nav, role);
+  const activeAccount = usePathname().startsWith('/account');
   const badgeLabel = useNavBadgeLabel();
 
   const link = (item: NavItem) => {
@@ -148,6 +160,19 @@ export function CabinetSidebar({ nav, role }: { nav: RoleNav; role: UserRole }) 
       </div>
       <div className="px-2">
         {divider}
+        <ProfileRow
+          name={profile.name}
+          avatar={profile.avatar}
+          active={activeAccount}
+          compactLabel={collapsed}
+          className={cn(
+            rowClass,
+            'mb-0.5 nav-collapsed:size-auto nav-collapsed:py-1',
+            activeAccount
+              ? 'bg-[var(--accent-soft)] font-semibold text-[var(--text)]'
+              : 'text-[var(--text-muted)] hover:bg-[var(--field)] hover:text-[var(--text)]',
+          )}
+        />
         <ul className="flex flex-col gap-0.5">{link(nav.help)}</ul>
         <button
           type="button"

@@ -181,6 +181,10 @@ describe('classes and joining (integration)', () => {
       className: '12',
       teacherName: 'Demo Teacher',
       schoolName: null,
+      // SPEC 6.7 (PROFILE_TZ): аватар, «Должность» и «О себе» учителя — для карточки «Мой класс» (BR-PRF-04).
+      teacherAvatar: expect.objectContaining({ kind: 'initials', initials: 'DT', photoUrl: null }),
+      teacherPosition: null,
+      teacherAbout: null,
     });
   });
 

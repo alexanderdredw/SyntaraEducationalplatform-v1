@@ -250,9 +250,20 @@ export interface BattleQuestionView {
   correctPosition?: number;
 }
 
+/**
+ * REQ-PRF-11: аватар участника в лобби, рейтинге и на пьедестале — аватар набора или инициалы (по имени в игре).
+ * Своя картинка в Battle не показывается: у учеников её нет (решение владельца 2026-10-25).
+ */
+export interface BattleAvatar {
+  kind: 'initials' | 'preset';
+  preset: string | null;
+  color: string;
+}
+
 export interface BattleRow {
   rank: number;
   displayName: string;
+  avatar: BattleAvatar;
   correctCount: number;
   correctTimeMs: number;
   answeredCount: number;
@@ -263,6 +274,7 @@ export interface BattleRow {
 export interface BattleParticipantView {
   id: string;
   displayName: string;
+  avatar: BattleAvatar;
   joinedAt: string;
   left: boolean;
 }
@@ -286,7 +298,7 @@ export interface BattleStudentReveal {
 
 export interface BattleLeaderboardView {
   index: number;
-  top: Array<{ rank: number; displayName: string; correctCount: number }>;
+  top: Array<{ rank: number; displayName: string; avatar: BattleAvatar; correctCount: number }>;
   me?: { rank: number; correctCount: number } | null;
 }
 

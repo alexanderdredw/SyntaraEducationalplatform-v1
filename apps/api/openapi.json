@@ -5797,6 +5797,38 @@
           "student"
         ]
       }
+    },
+    "/api/me/dashboard": {
+      "get": {
+        "operationId": "DashboardController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
     }
   },
   "info": {
@@ -7908,13 +7940,17 @@
           },
           "hasEmail": {
             "type": "boolean"
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/AvatarDto"
           }
         },
         "required": [
           "id",
           "displayName",
           "login",
-          "hasEmail"
+          "hasEmail",
+          "avatar"
         ]
       },
       "TemporaryPasswordDto": {
@@ -7961,13 +7997,27 @@
           "schoolName": {
             "type": "string",
             "nullable": true
+          },
+          "teacherAvatar": {
+            "$ref": "#/components/schemas/AvatarDto"
+          },
+          "teacherPosition": {
+            "type": "string",
+            "nullable": true
+          },
+          "teacherAbout": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
           "classId",
           "className",
           "teacherName",
-          "schoolName"
+          "schoolName",
+          "teacherAvatar",
+          "teacherPosition",
+          "teacherAbout"
         ]
       },
       "ClassCodeBody": {
@@ -8875,11 +8925,15 @@
           },
           "name": {
             "type": "string"
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/AvatarDto"
           }
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "avatar"
         ]
       },
       "MasteryCellDto": {
@@ -11318,6 +11372,409 @@
         },
         "required": [
           "section"
+        ]
+      },
+      "DashboardAchievementsDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "rankTitle": {
+            "type": "string"
+          },
+          "xpTotal": {
+            "type": "number"
+          },
+          "xpToNext": {
+            "type": "number"
+          },
+          "xpPerLevel": {
+            "type": "number"
+          },
+          "streakDays": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "level",
+          "rankTitle",
+          "xpTotal",
+          "xpToNext",
+          "xpPerLevel",
+          "streakDays"
+        ]
+      },
+      "DashboardProgressDto": {
+        "type": "object",
+        "properties": {
+          "mastered": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "percent": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "mastered",
+          "total",
+          "percent"
+        ]
+      },
+      "DashboardTeacherRef": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/AvatarDto"
+          }
+        },
+        "required": [
+          "name",
+          "avatar"
+        ]
+      },
+      "DashboardClassDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "teacher": {
+            "$ref": "#/components/schemas/DashboardTeacherRef"
+          }
+        },
+        "required": [
+          "name",
+          "teacher"
+        ]
+      },
+      "DashboardBadgeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "earnedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "imageUrl",
+          "earnedAt"
+        ]
+      },
+      "DashboardLastBattleDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "place": {
+            "type": "number",
+            "nullable": true
+          },
+          "correct": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "sessionId",
+          "title",
+          "place",
+          "correct",
+          "total",
+          "finishedAt"
+        ]
+      },
+      "StudentDashboardDto": {
+        "type": "object",
+        "properties": {
+          "achievements": {
+            "$ref": "#/components/schemas/DashboardAchievementsDto"
+          },
+          "progress": {
+            "description": "За 30 дней — как API-S-14 period=30d",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DashboardProgressDto"
+              }
+            ]
+          },
+          "nextStep": {
+            "description": "«С чего начать сейчас?» (BR-ST-06)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NextStepDto"
+              }
+            ]
+          },
+          "class": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DashboardClassDto"
+              }
+            ]
+          },
+          "assignments": {
+            "description": "До 3 несданных, ближайший срок — первым",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentAssignmentDto"
+            }
+          },
+          "badges": {
+            "description": "До 3 последних полученных",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DashboardBadgeDto"
+            }
+          },
+          "lastBattle": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DashboardLastBattleDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "achievements",
+          "progress",
+          "nextStep",
+          "class",
+          "assignments",
+          "badges",
+          "lastBattle"
+        ]
+      },
+      "TeacherCountsDto": {
+        "type": "object",
+        "properties": {
+          "classes": {
+            "type": "number"
+          },
+          "students": {
+            "type": "number"
+          },
+          "subjects": {
+            "type": "number"
+          },
+          "publishedTopics": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "classes",
+          "students",
+          "subjects",
+          "publishedTopics"
+        ]
+      },
+      "TeacherReviewDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Очередь ручной проверки включена (PH-29)"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "enabled",
+          "count"
+        ]
+      },
+      "TeacherAttentionDto": {
+        "type": "object",
+        "properties": {
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "className": {
+            "type": "string"
+          },
+          "studentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/AvatarDto"
+          },
+          "lastActivityAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "classId",
+          "className",
+          "studentId",
+          "name",
+          "avatar",
+          "lastActivityAt"
+        ]
+      },
+      "TeacherDeadlineDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicTitle": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "topicTitle",
+          "className",
+          "dueAt"
+        ]
+      },
+      "TeacherBattleDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "participants": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "sessionId",
+          "title",
+          "finishedAt",
+          "participants"
+        ]
+      },
+      "TeacherDashboardDto": {
+        "type": "object",
+        "properties": {
+          "counts": {
+            "$ref": "#/components/schemas/TeacherCountsDto"
+          },
+          "review": {
+            "$ref": "#/components/schemas/TeacherReviewDto"
+          },
+          "attention": {
+            "description": "До 5 — блок «Требуют внимания» аналитики",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherAttentionDto"
+            }
+          },
+          "deadlines": {
+            "description": "До 5 ближайших сроков",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherDeadlineDto"
+            }
+          },
+          "battles": {
+            "description": "До 3 последних завершённых игр",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherBattleDto"
+            }
+          }
+        },
+        "required": [
+          "counts",
+          "review",
+          "attention",
+          "deadlines",
+          "battles"
+        ]
+      },
+      "DashboardDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "teacher"
+            ]
+          },
+          "student": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StudentDashboardDto"
+              }
+            ]
+          },
+          "teacher": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TeacherDashboardDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "role",
+          "student",
+          "teacher"
         ]
       }
     }

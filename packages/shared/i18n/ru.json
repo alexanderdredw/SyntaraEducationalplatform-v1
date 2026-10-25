@@ -1071,7 +1071,8 @@
       "leaveYes": "Выйти из класса",
       "cancel": "Отмена",
       "join": "Подключиться к классу",
-      "joinSubmit": "Подключиться"
+      "joinSubmit": "Подключиться",
+      "teacherAbout": "О себе"
     },
     "subjects": {
       "title": "Предметы"
@@ -1746,6 +1747,59 @@
       },
       "failed": "Не удалось выполнить — попробуйте ещё раз",
       "rateLimited": "Слишком много попыток. Попробуйте через {minutes} мин."
+    },
+    "menu": {
+      "label": "Меню профиля",
+      "dashboard": "Мой кабинет",
+      "editProfile": "Редактировать профиль",
+      "settings": "Настройки",
+      "privacy": "Данные и конфиденциальность",
+      "profileRow": "Личный кабинет: {name}"
+    },
+    "overview": {
+      "title": "Личный кабинет",
+      "since": "На платформе с {date}",
+      "editProfile": "Редактировать профиль",
+      "loadFailed": "Не удалось загрузить сводку — обновите страницу",
+      "student": {
+        "achievements": "Достижения",
+        "allAchievements": "Все достижения →",
+        "progressTitle": "Мой прогресс",
+        "progressPeriod": "за 30 дней",
+        "more": "Подробнее →",
+        "classTitle": "Класс",
+        "badgesTitle": "Последние бейджи",
+        "noBadges": "Бейджей пока нет — пройди квиз, чтобы получить первый",
+        "battleTitle": "Последний Battle",
+        "battleResult": "{place}-е место · правильных {correct} из {total}",
+        "battleNoPlace": "Правильных {correct} из {total}",
+        "myBattles": "Мои Battle →",
+        "noBattle": "Ты ещё не играл в Battle"
+      },
+      "teacher": {
+        "summary": "Сводка",
+        "counts": {
+          "classes": "Классов",
+          "students": "Учеников",
+          "subjects": "Предметов",
+          "publishedTopics": "Опубликованных тем"
+        },
+        "attention": "Требуют внимания",
+        "review": "Сдачи на проверку: {count}",
+        "lastActivity": "{className} · последняя активность: {date}",
+        "noActivity": "{className} · ещё не занимался",
+        "noAttention": "Сейчас никто не требует внимания",
+        "deadlines": "Ближайшие сроки заданий",
+        "noDeadlines": "Ближайших сроков нет",
+        "battles": "Последние Battle",
+        "participants": "Участников: {count}",
+        "noBattles": "Игр ещё не было",
+        "actions": "Быстрые действия",
+        "newSubject": "Новый предмет",
+        "assign": "Выдать задание",
+        "launchBattle": "Запустить Battle",
+        "createClass": "Создать класс"
+      }
     }
   }
 }

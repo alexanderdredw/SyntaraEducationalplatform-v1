@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
-import { Button, Card, Field, Input, Modal } from '@syntara/ui';
+import { Avatar, Button, Card, Field, Input, Modal } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
@@ -91,13 +91,33 @@ export function StudentClassCard() {
         data-testid="student-class-card"
         className="flex flex-wrap items-center justify-between gap-3 px-4 py-4"
       >
-        <div>
-          <p>{t('inClass', { name: cls.className })}</p>
-          <p className="text-sm text-[var(--text-muted)]">
-            {cls.schoolName
-              ? t('teacherSchool', { teacher: cls.teacherName, school: cls.schoolName })
-              : t('teacher', { teacher: cls.teacherName })}
-          </p>
+        <div className="flex min-w-0 items-start gap-3">
+          {/* REQ-PRF-11, BR-PRF-04: аватар учителя, «Должность» и «О себе» — только здесь, ученикам его класса. */}
+          {cls.teacherAvatar ? (
+            <Avatar name={cls.teacherName} avatar={cls.teacherAvatar} size={40} decorative />
+          ) : null}
+          <div className="min-w-0">
+            <p>{t('inClass', { name: cls.className })}</p>
+            <p className="text-sm text-[var(--text-muted)]">
+              {cls.schoolName
+                ? t('teacherSchool', { teacher: cls.teacherName, school: cls.schoolName })
+                : t('teacher', { teacher: cls.teacherName })}
+            </p>
+            {cls.teacherPosition ? (
+              <p className="text-sm" data-testid="teacher-position">
+                {cls.teacherPosition}
+              </p>
+            ) : null}
+            {cls.teacherAbout ? (
+              <p
+                className="mt-1 text-sm whitespace-pre-line text-[var(--text-muted)]"
+                data-testid="teacher-about"
+              >
+                <span className="sr-only">{t('teacherAbout')}: </span>
+                {cls.teacherAbout}
+              </p>
+            ) : null}
+          </div>
         </div>
         <Button variant="secondary" size="sm" onClick={() => setConfirmLeave(true)}>
           {t('leave')}

@@ -16,6 +16,7 @@ import { SessionService } from '../auth/session.service';
 import { type MeDto } from '../users/me.dto';
 import { MeService } from '../users/me.service';
 import { BattleCodes } from '../battle/battle-codes.service';
+import { AvatarService } from '../profiles/avatar.service';
 import { ClassCodesService } from './class-codes.service';
 import {
   type IssuedCodeDto,
@@ -62,6 +63,7 @@ export class ClassesService {
     private readonly sessions: SessionService,
     private readonly me: MeService,
     private readonly config: AppConfigService,
+    private readonly avatars: AvatarService,
   ) {}
 
   /** API-T-04 */
@@ -246,7 +248,8 @@ export class ClassesService {
       .innerJoin(users, eq(users.id, m.studentId))
       .where(and(eq(m.classId, classId), eq(m.status, 'active')))
       .orderBy(asc(users.displayName), asc(users.id));
-    return rows.map(({ email, ...r }) => ({ ...r, hasEmail: email !== null }));
+    const avatars = await this.avatars.forUsers(rows.map((r) => r.id));
+    return rows.map(({ email, ...r }) => ({ ...r, hasEmail: email !== null, avatar: avatars.get(r.id)! }));
   }
 
   /**
@@ -324,17 +327,29 @@ export class ClassesService {
         className: classes.name,
         teacherName: teacher.displayName,
         schoolName: schools.name,
+        teacherId: classes.teacherId,
+        teacherPosition: schema.userProfiles.position,
+        teacherAbout: schema.userProfiles.about,
       })
       .from(m)
       .innerJoin(classes, eq(classes.id, m.classId))
       .innerJoin(teacher, eq(teacher.id, classes.teacherId))
+      .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, classes.teacherId))
       .leftJoin(schools, eq(schools.id, classes.schoolId))
       .where(
         and(eq(m.studentId, studentId), eq(m.status, 'active'), classId ? eq(m.classId, classId) : undefined),
       )
       .orderBy(desc(m.joinedAt))
       .limit(1);
-    return row ? { ...row, schoolName: row.schoolName ?? null } : null;
+    if (!row) return null;
+    const { teacherId, ...rest } = row;
+    return {
+      ...rest,
+      schoolName: row.schoolName ?? null,
+      teacherAvatar: (await this.avatars.forUser(teacherId))!,
+      teacherPosition: row.teacherPosition ?? null,
+      teacherAbout: row.teacherAbout ?? null,
+    };
   }
 
   /** BR-ACL-02: чужой или несуществующий класс — 404 (API-GEN-08). */

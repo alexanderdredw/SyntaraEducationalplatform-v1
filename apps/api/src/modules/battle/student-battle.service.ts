@@ -9,7 +9,7 @@ import {
   type BattleHistoryQuery,
   type BattleSettings,
 } from '@syntara/shared';
-import { type Database, schema } from '@syntara/db';
+import { type Database, schema, stableAvatarColor } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { ENV, type Env } from '../../config/env';
 import { DB, REDIS } from '../../infra/tokens';
@@ -151,9 +151,11 @@ export class StudentBattleService {
         version: snapshot.version,
         audience: 'all',
         data: {
-          participant: {
+          // Из свежего снимка — с аватаром (REQ-PRF-11); вышедший участник в снимке остаётся с left = true.
+          participant: snapshot.participants.find((x) => x.id === p.id) ?? {
             id: p.id,
             displayName: p.displayName,
+            avatar: { kind: 'initials', preset: null, color: stableAvatarColor(p.studentId) },
             joinedAt: p.joinedAt.toISOString(),
             left: p.leftAt !== null,
           },

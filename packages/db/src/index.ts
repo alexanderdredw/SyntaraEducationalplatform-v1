@@ -11,4 +11,4 @@ export function createDb(url: string, options: { max?: number } = {}): Database 
   const client = postgres(url, { max: options.max ?? 10, prepare: false });
   return drizzle(client, { schema });
 }
-export { profileFor, stableAvatarColor } from './profiles';
+export { battleAvatarOf, profileFor, stableAvatarColor } from './profiles';

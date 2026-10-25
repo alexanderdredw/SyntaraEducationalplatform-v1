@@ -113,12 +113,17 @@ test.describe('Функции ученика (docs/NAV_TZ.md, часть B)', ()
   }) => {
     await signIn(context, await student(baseURL!, true), baseURL!);
     await page.goto('/ru/learn/subjects');
-    // Профиль в хедере (на телефоне — в меню) ведёт в «Мои данные».
-    await cabinetNav(page);
-    await page
-      .getByRole('link', { name: new RegExp(`${ru.cabinet.profile}: Асель Нурова`) })
-      .filter({ visible: true })
-      .click();
+    // Профиль (REQ-PRF-10): в хедере — меню «Данные и конфиденциальность»; на телефоне — строка профиля в меню,
+    // затем вкладка «Данные» личного кабинета.
+    if (isPhone(page)) {
+      await cabinetNav(page);
+      await page.getByTestId('profile-row').filter({ visible: true }).click();
+      await expect(page).toHaveURL(/\/ru\/account$/);
+      await page.getByRole('link', { name: ru.account.tabs.privacy }).click();
+    } else {
+      await page.getByRole('button', { name: new RegExp(`${ru.cabinet.profile}: Асель Нурова`) }).click();
+      await page.getByRole('menuitem', { name: ru.account.menu.privacy }).click();
+    }
     await expect(page).toHaveURL(/\/ru\/account\/privacy$/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(ru.privacy.title);
     await expect(page.getByTestId('privacy-page').getByRole('listitem')).toHaveCount(7);

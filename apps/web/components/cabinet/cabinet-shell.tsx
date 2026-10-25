@@ -34,7 +34,7 @@ export async function CabinetShell({
   return (
     <div className="flex min-h-dvh flex-col">
       <CabinetHeader me={me} role={role} stats={stats} enabledLocales={enabledLocales} nav={nav} />
-      <CabinetSidebar nav={nav} role={role} />
+      <CabinetSidebar nav={nav} role={role} profile={{ name: me.displayName, avatar: me.avatar }} />
       {/* Контент и футер — правее закреплённой панели навигации (эталоны T04, U13: футер начинается у её края). */}
       <div className="flex flex-1 flex-col md:pl-[calc(var(--nav-w)+1rem)]">
         {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}

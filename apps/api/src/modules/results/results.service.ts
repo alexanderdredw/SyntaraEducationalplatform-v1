@@ -22,6 +22,7 @@ import { AppConfigService } from '../../config/app-config.service';
 import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 import { AssignmentsService } from '../assignments/assignments.service';
+import { AvatarService } from '../profiles/avatar.service';
 import { LessonService } from '../content/lesson.service';
 import { VisibilityService } from '../content/visibility.service';
 import {
@@ -51,6 +52,7 @@ export class ResultsService {
     private readonly visibility: VisibilityService,
     private readonly assignments: AssignmentsService,
     private readonly lessons: LessonService,
+    private readonly avatars: AvatarService,
   ) {}
 
   /**
@@ -218,7 +220,8 @@ export class ResultsService {
       subjects: available.map(({ id, title, official }) => ({ id, title, official })),
       subjectId: subject?.id ?? null,
       topics: topicList,
-      students,
+      // REQ-PRF-11: аватар ученика в «Карте освоения».
+      students: await this.withAvatars(students),
       cells,
     };
   }
@@ -449,5 +452,10 @@ export class ResultsService {
       earnedCount: result.filter((b) => b.earned).length,
       totalCount: result.length,
     };
+  }
+
+  private async withAvatars<T extends { id: string }>(students: T[]) {
+    const avatars = await this.avatars.forUsers(students.map((st) => st.id));
+    return students.map((st) => ({ ...st, avatar: avatars.get(st.id)! }));
   }
 }

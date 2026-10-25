@@ -318,6 +318,7 @@ export function HostGame({ sessionId }: { sessionId: string }) {
                         <li key={p.id}>
                           <ParticipantChip
                             name={p.displayName}
+                            avatar={p.avatar}
                             removeLabel={t('lobby.kick', { name: p.displayName })}
                             onRemove={() => setKicking(p)}
                           />

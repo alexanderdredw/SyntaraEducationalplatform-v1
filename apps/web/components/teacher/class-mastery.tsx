@@ -3,7 +3,19 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { Badge, type BadgeTone, Card, EmptyState, Field, Select, Skeleton, Table, Td, Th } from '@syntara/ui';
+import {
+  Avatar,
+  Badge,
+  type BadgeTone,
+  Card,
+  EmptyState,
+  Field,
+  Select,
+  Skeleton,
+  Table,
+  Td,
+  Th,
+} from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 
@@ -97,7 +109,11 @@ export function ClassMastery({ classId }: { classId: string }) {
             {map.students.map((student) => (
               <tr key={student.id} data-testid="mastery-row">
                 <Th scope="row" sticky>
-                  {student.name}
+                  {/* REQ-PRF-11: аватар ученика в «Карте освоения». */}
+                  <span className="inline-flex items-center gap-2">
+                    <Avatar name={student.name} avatar={student.avatar} size={24} decorative />
+                    {student.name}
+                  </span>
                 </Th>
                 {map.topics.map((topic) => {
                   const cell = map.cells.find((c) => c.studentId === student.id && c.topicId === topic.id);

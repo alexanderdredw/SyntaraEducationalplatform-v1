@@ -177,7 +177,14 @@ describe('student self-registration, schools, temporary password, email verifica
 
     const roster = await as(teacher).get(`/api/teacher/classes/${classId}/roster`).expect(200);
     expect(roster.body).toEqual([
-      { id: studentId, displayName: 'Мадина', login: 'madina.t', hasEmail: false },
+      {
+        id: studentId,
+        displayName: 'Мадина',
+        login: 'madina.t',
+        hasEmail: false,
+        // REQ-PRF-11: аватар ученика в «Ростере» (PROFILE_TZ).
+        avatar: expect.objectContaining({ kind: 'initials', initials: 'М', photoUrl: null }),
+      },
     ]);
 
     const temp = await as(teacher)

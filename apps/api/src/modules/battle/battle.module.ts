@@ -27,6 +27,6 @@ import { StudentBattleService } from './student-battle.service';
     StudentBattleService,
     OwnershipGuard,
   ],
-  exports: [BattleRealtime],
+  exports: [BattleRealtime, BattleSessionService, StudentBattleService],
 })
 export class BattleModule {}

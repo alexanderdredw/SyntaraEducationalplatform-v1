@@ -7,10 +7,11 @@ import { Bell, ChevronDown, Flame, Zap } from 'lucide-react';
 import { type Locale, type UserRole } from '@syntara/shared';
 import { BrandMark, Capsule, Header, Wordmark } from '@syntara/ui';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from '@/i18n/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import { HOME_BY_ROLE, ROLE_HOME } from '@/lib/auth';
 import type { components } from '@/lib/api/schema';
+import { ProfileMenu, ProfileRow } from '../account/profile-menu';
 import { AppLink } from '../app-link';
 import { ActiveRowMark, MenuSection, menuRowClass, MobileMenu } from '../shell/mobile-menu';
 import {
@@ -63,6 +64,7 @@ export function CabinetHeader({
   const locale = useLocale();
   const router = useRouter();
   const { activeHref, badges } = useNavState(nav, role);
+  const activeAccount = usePathname().startsWith('/account');
   const badgeLabel = useNavBadgeLabel();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [reopened] = useState(() => {
@@ -246,20 +248,10 @@ export function CabinetHeader({
           </Popover.Portal>
         </Popover.Root>
 
-        <AppLink
-          href="/account/privacy"
-          className={`${pillAction} max-md:hidden`}
-          aria-label={`${t('profile')}: ${me.displayName}`}
-        >
-          <span
-            aria-hidden="true"
-            className="inline-flex size-7 items-center justify-center rounded-full bg-[#f97316] text-xs font-semibold text-[#050505]"
-          >
-            {me.initials.charAt(0)}
-          </span>
-          {/* Роль показывается один раз — в выборе роли (REQ-GEN-SHELL-02, решение владельца 2026-10-16). */}
-          <span className="hidden pr-2 sm:inline">{me.displayName}</span>
-        </AppLink>
+        {/* REQ-PRF-10: аватар и имя → меню профиля. Роль показывается один раз — в выборе роли (REQ-GEN-SHELL-02). */}
+        <span className="max-md:hidden">
+          <ProfileMenu name={me.displayName} avatar={me.avatar} triggerClassName={pillAction} />
+        </span>
         <span className="max-md:hidden">
           <LogoutButton label={t('logout')} />
         </span>
@@ -279,6 +271,15 @@ export function CabinetHeader({
             (language ?? firstItemRef.current)?.focus();
           }}
         >
+          {/* REQ-PRF-10, п. 3: на телефоне первым блоком — строка профиля → «Личный кабинет». */}
+          <ProfileRow
+            name={me.displayName}
+            avatar={me.avatar}
+            active={activeAccount}
+            onNavigate={() => setMenuOpen(false)}
+            className={menuRowClass(activeAccount)}
+          />
+          <hr className="border-[var(--border)]" />
           <nav aria-label={t('sidebarLabel')} data-testid="cabinet-menu-nav" className="flex flex-col gap-4">
             {/* Группы — как в панели; «Главная» — сверху первой группы (REQ-NAV-07, REQ-NAV-10). */}
             {nav.groups.map((group, g) => (
@@ -332,20 +333,6 @@ export function CabinetHeader({
               </div>
             ) : null}
             <div className="flex flex-wrap items-center gap-2">
-              <AppLink
-                href="/account/privacy"
-                onClick={() => setMenuOpen(false)}
-                className={pillAction}
-                aria-label={`${t('profile')}: ${me.displayName}`}
-              >
-                <span
-                  aria-hidden="true"
-                  className="inline-flex size-7 items-center justify-center rounded-full bg-[#f97316] text-xs font-semibold text-[#050505]"
-                >
-                  {me.initials.charAt(0)}
-                </span>
-                <span className="pr-2">{me.displayName}</span>
-              </AppLink>
               <LogoutButton label={t('logout')} />
             </div>
           </MenuSection>

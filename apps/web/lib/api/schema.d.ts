@@ -1924,6 +1924,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DashboardController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2519,6 +2535,7 @@ export interface components {
             displayName: string;
             login: string | null;
             hasEmail: boolean;
+            avatar: components["schemas"]["AvatarDto"];
         };
         TemporaryPasswordDto: {
             temporaryPassword: string;
@@ -2535,6 +2552,9 @@ export interface components {
             className: string;
             teacherName: string;
             schoolName: string | null;
+            teacherAvatar: components["schemas"]["AvatarDto"];
+            teacherPosition: string | null;
+            teacherAbout: string | null;
         };
         ClassCodeBody: {
             /** @description Код класса; нормализуется (BR-CLS-01) */
@@ -2816,6 +2836,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             name: string;
+            avatar: components["schemas"]["AvatarDto"];
         };
         MasteryCellDto: {
             /** Format: uuid */
@@ -3499,6 +3520,111 @@ export interface components {
         NavSeenBody: {
             /** @enum {string} */
             section: "class" | "achievements";
+        };
+        DashboardAchievementsDto: {
+            level: number;
+            rankTitle: string;
+            xpTotal: number;
+            xpToNext: number;
+            xpPerLevel: number;
+            streakDays: number;
+        };
+        DashboardProgressDto: {
+            mastered: number;
+            total: number;
+            percent: number;
+        };
+        DashboardTeacherRef: {
+            name: string;
+            avatar: components["schemas"]["AvatarDto"];
+        };
+        DashboardClassDto: {
+            name: string;
+            teacher: components["schemas"]["DashboardTeacherRef"];
+        };
+        DashboardBadgeDto: {
+            code: string;
+            title: string;
+            imageUrl: string | null;
+            /** Format: date-time */
+            earnedAt: string;
+        };
+        DashboardLastBattleDto: {
+            /** Format: uuid */
+            sessionId: string;
+            title: string;
+            place: number | null;
+            correct: number;
+            total: number;
+            /** Format: date-time */
+            finishedAt: string;
+        };
+        StudentDashboardDto: {
+            achievements: components["schemas"]["DashboardAchievementsDto"];
+            /** @description За 30 дней — как API-S-14 period=30d */
+            progress: components["schemas"]["DashboardProgressDto"];
+            /** @description «С чего начать сейчас?» (BR-ST-06) */
+            nextStep: components["schemas"]["NextStepDto"];
+            class: components["schemas"]["DashboardClassDto"] | null;
+            /** @description До 3 несданных, ближайший срок — первым */
+            assignments: components["schemas"]["StudentAssignmentDto"][];
+            /** @description До 3 последних полученных */
+            badges: components["schemas"]["DashboardBadgeDto"][];
+            lastBattle: components["schemas"]["DashboardLastBattleDto"] | null;
+        };
+        TeacherCountsDto: {
+            classes: number;
+            students: number;
+            subjects: number;
+            publishedTopics: number;
+        };
+        TeacherReviewDto: {
+            /** @description Очередь ручной проверки включена (PH-29) */
+            enabled: boolean;
+            count: number;
+        };
+        TeacherAttentionDto: {
+            /** Format: uuid */
+            classId: string;
+            className: string;
+            /** Format: uuid */
+            studentId: string;
+            name: string;
+            avatar: components["schemas"]["AvatarDto"];
+            /** Format: date-time */
+            lastActivityAt: string | null;
+        };
+        TeacherDeadlineDto: {
+            /** Format: uuid */
+            id: string;
+            topicTitle: string;
+            className: string;
+            /** Format: date-time */
+            dueAt: string;
+        };
+        TeacherBattleDto: {
+            /** Format: uuid */
+            sessionId: string;
+            title: string;
+            /** Format: date-time */
+            finishedAt: string | null;
+            participants: number;
+        };
+        TeacherDashboardDto: {
+            counts: components["schemas"]["TeacherCountsDto"];
+            review: components["schemas"]["TeacherReviewDto"];
+            /** @description До 5 — блок «Требуют внимания» аналитики */
+            attention: components["schemas"]["TeacherAttentionDto"][];
+            /** @description До 5 ближайших сроков */
+            deadlines: components["schemas"]["TeacherDeadlineDto"][];
+            /** @description До 3 последних завершённых игр */
+            battles: components["schemas"]["TeacherBattleDto"][];
+        };
+        DashboardDto: {
+            /** @enum {string} */
+            role: "student" | "teacher";
+            student: components["schemas"]["StudentDashboardDto"] | null;
+            teacher: components["schemas"]["TeacherDashboardDto"] | null;
         };
     };
     responses: never;
@@ -8955,6 +9081,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DashboardController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardDto"];
+                };
             };
             /** @description Нет сессии */
             401: {

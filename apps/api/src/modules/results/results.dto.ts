@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AvatarDto } from '../profiles/profile.dto';
 import { PROGRESS_PERIODS, type ProgressPeriod, type TopicColor } from '@syntara/shared';
 
 class EngagementDto {
@@ -115,6 +116,7 @@ class MasteryTopicDto {
 class MasteryStudentDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() name: string;
+  @ApiProperty({ type: AvatarDto }) avatar: AvatarDto;
 }
 
 class MasteryCellDto {

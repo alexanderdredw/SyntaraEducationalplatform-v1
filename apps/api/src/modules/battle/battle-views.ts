@@ -17,6 +17,7 @@ export const toRows = (table: Standing[], meParticipantId?: string | null): Batt
   table.map((s) => ({
     rank: s.rank,
     displayName: s.displayName,
+    avatar: s.avatar,
     correctCount: s.correctCount,
     correctTimeMs: s.correctTimeMs,
     answeredCount: s.answeredCount,
@@ -37,9 +38,12 @@ export function leaderboardView(index: number, table: Standing[], me?: string | 
   const mine = me ? table.find((s) => s.participantId === me) : undefined;
   return {
     index,
-    top: table
-      .slice(0, BATTLE_TOP)
-      .map((s) => ({ rank: s.rank, displayName: s.displayName, correctCount: s.correctCount })),
+    top: table.slice(0, BATTLE_TOP).map((s) => ({
+      rank: s.rank,
+      displayName: s.displayName,
+      avatar: s.avatar,
+      correctCount: s.correctCount,
+    })),
     ...(me !== undefined ? { me: mine ? { rank: mine.rank, correctCount: mine.correctCount } : null } : {}),
   };
 }

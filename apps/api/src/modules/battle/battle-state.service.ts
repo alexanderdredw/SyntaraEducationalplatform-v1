@@ -9,7 +9,7 @@ import {
   type BattleSettings,
   type BattleStudentSnapshot,
 } from '@syntara/shared';
-import { type Database, schema } from '@syntara/db';
+import { battleAvatarOf, type Database, schema } from '@syntara/db';
 import { questionStats, type SessionRow, standings } from '@syntara/db/battle';
 import { AppConfigService } from '../../config/app-config.service';
 import { DB } from '../../infra/tokens';
@@ -65,12 +65,23 @@ export class BattleStateService {
     };
   }
 
+  /** Участники с аватаром (REQ-PRF-11: лобби ведущего). */
   private async participants(sessionId: string) {
-    return this.db
-      .select()
+    const rows = await this.db
+      .select({
+        participant: battleParticipants,
+        kind: schema.userProfiles.avatarKind,
+        preset: schema.userProfiles.avatarPreset,
+        color: schema.userProfiles.avatarColor,
+      })
       .from(battleParticipants)
+      .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, battleParticipants.studentId))
       .where(and(eq(battleParticipants.sessionId, sessionId), isNull(battleParticipants.kickedAt)))
       .orderBy(asc(battleParticipants.joinedAt));
+    return rows.map(({ participant, ...profile }) => ({
+      ...participant,
+      avatar: battleAvatarOf(participant.studentId, profile),
+    }));
   }
 
   /** API-BTL-21 */
@@ -96,6 +107,7 @@ export class BattleStateService {
       participants: people.map((p) => ({
         id: p.id,
         displayName: p.displayName,
+        avatar: p.avatar,
         joinedAt: p.joinedAt.toISOString(),
         left: p.leftAt !== null,
       })),

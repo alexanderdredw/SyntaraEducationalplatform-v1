@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode, useEffect, useRef, useState } from 'react';
 import { Circle, Diamond, Square, Triangle, WifiOff, X } from 'lucide-react';
 import { cn } from './cn';
+import { Avatar } from './display';
 
 /**
  * Battle (итерация 10.5, REQ-BTL-GEN-02): общие элементы игры. Вариант ответа всегда показывается цветом,
@@ -321,9 +322,43 @@ export function CountdownBar({
   );
 }
 
+/** REQ-PRF-11: аватар участника Battle — набор или инициалы (по имени в игре). */
+export interface BattleAvatarData {
+  kind: 'initials' | 'preset';
+  preset: string | null;
+  color: string;
+}
+
+function ParticipantAvatar({
+  name,
+  avatar,
+  size,
+}: {
+  name: string;
+  avatar?: BattleAvatarData;
+  size: 24 | 32 | 40 | 64;
+}) {
+  if (!avatar) return null;
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join('');
+  return (
+    <Avatar
+      name={name}
+      avatar={{ ...avatar, initials, photoUrl: null, photoUrlSmall: null }}
+      size={size}
+      decorative
+    />
+  );
+}
+
 export interface PodiumRow {
   rank: number;
   displayName: string;
+  avatar?: BattleAvatarData;
   correctCount: number;
   correctTimeMs: number;
   me?: boolean;
@@ -374,6 +409,7 @@ export function Podium({
                   key={`${p.displayName}-${p.correctTimeMs}`}
                   className="flex w-full flex-col items-center"
                 >
+                  <ParticipantAvatar name={p.displayName} avatar={p.avatar} size={rank === 1 ? 64 : 40} />
                   <span
                     className={cn(
                       'max-w-full truncate font-bold sm:text-lg',
@@ -415,6 +451,7 @@ export function LeaderboardTable({
   rows: Array<{
     rank: number;
     displayName: string;
+    avatar?: BattleAvatarData;
     correctCount: number;
     correctTimeMs?: number;
     me?: boolean;
@@ -466,10 +503,15 @@ export function LeaderboardTable({
             >
               <td className="px-4 py-3 tabular-nums">{r.rank}</td>
               <td className="px-4 py-3 [overflow-wrap:anywhere]">
-                {r.displayName}
-                {r.me && meLabel ? (
-                  <span className="ml-2 text-xs font-bold text-[var(--text)]">{meLabel}</span>
-                ) : null}
+                <span className="inline-flex items-center gap-2">
+                  <ParticipantAvatar name={r.displayName} avatar={r.avatar} size={24} />
+                  <span>
+                    {r.displayName}
+                    {r.me && meLabel ? (
+                      <span className="ml-2 text-xs font-bold text-[var(--text)]">{meLabel}</span>
+                    ) : null}
+                  </span>
+                </span>
               </td>
               <td className="px-4 py-3 text-right tabular-nums">{r.correctCount}</td>
               {columns.time ? (
@@ -488,15 +530,23 @@ export function LeaderboardTable({
 /** ParticipantChip (BT-T04): участник лобби; «×» — выгнать (подтверждение — у страницы). */
 export function ParticipantChip({
   name,
+  avatar,
   removeLabel,
   onRemove,
 }: {
   name: string;
+  avatar?: BattleAvatarData;
   removeLabel?: string;
   onRemove?: () => void;
 }) {
   return (
-    <span className="battle-chip inline-flex min-h-11 items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--border)] bg-[var(--capsule)] py-1 pl-4 pr-1 text-sm font-semibold">
+    <span
+      className={cn(
+        'battle-chip inline-flex min-h-11 items-center gap-1 rounded-[var(--radius-pill)] border border-[var(--border)] bg-[var(--capsule)] py-1 pr-1 text-sm font-semibold',
+        avatar ? 'pl-1.5' : 'pl-4',
+      )}
+    >
+      <ParticipantAvatar name={name} avatar={avatar} size={32} />
       <span className="max-w-48 truncate">{name}</span>
       {onRemove && removeLabel ? (
         <button

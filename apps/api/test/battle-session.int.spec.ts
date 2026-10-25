@@ -188,6 +188,12 @@ describe('Battle engine and realtime (integration)', () => {
     // Повторный вход — та же строка.
     await as(bots[1]!).post('/api/student/battles/join', { code }).expect(200);
     expect((await snapshot(sid)).participantsCount).toBe(30);
+    // REQ-PRF-11: в лобби у участника — аватар (набор или инициалы), без картинки и ссылок.
+    expect((joined.data as { participant: { avatar: unknown } }).participant.avatar).toEqual({
+      kind: 'initials',
+      preset: null,
+      color: expect.any(String),
+    });
 
     // Три бота смотрят игру через SSE.
     const watchers = bots.slice(0, 3).map((b) => sse(b, `/api/student/battle-sessions/${sid}/events`));
@@ -264,6 +270,7 @@ describe('Battle engine and realtime (integration)', () => {
     await await goOk(sid, 'next');
     const board = await watchers[2]!.next(ofType('leaderboard'));
     expect((board.data as { top: unknown[] }).top).toHaveLength(5);
+    expect((board.data as { top: Array<{ avatar: { kind: string } }> }).top[0]!.avatar.kind).toBe('initials');
     expect((board.data as { me: { rank: number } }).me.rank).toBe(3);
 
     // Вопрос 2: отвечают не все; ведущий закрывает вопрос; поздний ответ — 409 questionClosed (AC-BTL-08).
@@ -290,6 +297,9 @@ describe('Battle engine and realtime (integration)', () => {
     };
     expect(final.table).toHaveLength(30);
     expect(final.podium.every((r) => r.rank <= 3)).toBe(true);
+    expect((final.podium as unknown as Array<{ avatar: { color: string } }>)[0]!.avatar.color).toMatch(
+      /^[a-z]+$/,
+    );
     expect(final.me).toMatchObject({ me: true });
 
     // AC-BTL-12: итоги в battle_participants совпадают с эталонным расчётом по battle_answers.

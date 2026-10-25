@@ -1071,7 +1071,8 @@
       "leaveYes": "Leave",
       "cancel": "Cancel",
       "join": "Join a class",
-      "joinSubmit": "Join"
+      "joinSubmit": "Join",
+      "teacherAbout": "About"
     },
     "subjects": {
       "title": "Subjects"
@@ -1746,6 +1747,59 @@
       },
       "failed": "Something went wrong — please try again",
       "rateLimited": "Too many attempts. Try again in {minutes} min."
+    },
+    "menu": {
+      "label": "Profile menu",
+      "dashboard": "My dashboard",
+      "editProfile": "Edit profile",
+      "settings": "Settings",
+      "privacy": "Data and privacy",
+      "profileRow": "Personal dashboard: {name}"
+    },
+    "overview": {
+      "title": "Personal dashboard",
+      "since": "On the platform since {date}",
+      "editProfile": "Edit profile",
+      "loadFailed": "Could not load the summary — refresh the page",
+      "student": {
+        "achievements": "Achievements",
+        "allAchievements": "All achievements →",
+        "progressTitle": "My progress",
+        "progressPeriod": "in 30 days",
+        "more": "More →",
+        "classTitle": "Class",
+        "badgesTitle": "Latest badges",
+        "noBadges": "No badges yet — pass a quiz to get the first one",
+        "battleTitle": "Latest Battle",
+        "battleResult": "Place {place} · {correct} of {total} correct",
+        "battleNoPlace": "{correct} of {total} correct",
+        "myBattles": "My Battles →",
+        "noBattle": "You have not played a Battle yet"
+      },
+      "teacher": {
+        "summary": "Summary",
+        "counts": {
+          "classes": "Classes",
+          "students": "Students",
+          "subjects": "Subjects",
+          "publishedTopics": "Published topics"
+        },
+        "attention": "Need attention",
+        "review": "Submissions to review: {count}",
+        "lastActivity": "{className} · last activity: {date}",
+        "noActivity": "{className} · no activity yet",
+        "noAttention": "Nobody needs attention right now",
+        "deadlines": "Upcoming deadlines",
+        "noDeadlines": "No upcoming deadlines",
+        "battles": "Latest Battles",
+        "participants": "Participants: {count}",
+        "noBattles": "No games yet",
+        "actions": "Quick actions",
+        "newSubject": "New subject",
+        "assign": "Give an assignment",
+        "launchBattle": "Launch Battle",
+        "createClass": "Create a class"
+      }
     }
   }
 }

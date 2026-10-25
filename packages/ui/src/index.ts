@@ -68,6 +68,7 @@ export {
   CountdownBar,
   Podium,
   type PodiumRow,
+  type BattleAvatarData,
   LeaderboardTable,
   ParticipantChip,
   ConnectionBanner,

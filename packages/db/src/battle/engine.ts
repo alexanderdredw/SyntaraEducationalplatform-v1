@@ -1,5 +1,11 @@
 import { and, asc, eq, gte, inArray, isNull, lt, or, sql } from 'drizzle-orm';
-import { BATTLE_ANSWER_GRACE_MS, rankBattle, scoreBattleAnswers, type BattleSettings } from '@syntara/shared';
+import {
+  BATTLE_ANSWER_GRACE_MS,
+  type BattleAvatar,
+  rankBattle,
+  scoreBattleAnswers,
+  type BattleSettings,
+} from '@syntara/shared';
 import { type Database } from '../index';
 import {
   battleAnswers,
@@ -7,6 +13,8 @@ import {
   battleSessions,
   type BattleSnapshotQuestion,
 } from '../schema/battle';
+import { userProfiles } from '../schema/profiles';
+import { battleAvatarOf } from '../profiles';
 
 /**
  * Переходы автомата SM-BTL (SPEC 9, BR-BTL-08) — единственная реализация: её вызывают api (BattleEngine)
@@ -62,6 +70,7 @@ export interface TransitionResult {
 export interface Standing {
   participantId: string;
   displayName: string;
+  avatar: BattleAvatar;
   correctCount: number;
   correctTimeMs: number;
   answeredCount: number;
@@ -103,8 +112,16 @@ export async function standings(
   uptoIndex: number | null,
 ): Promise<Standing[]> {
   const participants = await db
-    .select({ id: battleParticipants.id, displayName: battleParticipants.displayName })
+    .select({
+      id: battleParticipants.id,
+      displayName: battleParticipants.displayName,
+      studentId: battleParticipants.studentId,
+      kind: userProfiles.avatarKind,
+      preset: userProfiles.avatarPreset,
+      color: userProfiles.avatarColor,
+    })
     .from(battleParticipants)
+    .leftJoin(userProfiles, eq(userProfiles.userId, battleParticipants.studentId))
     .where(ranked(sessionId))
     .orderBy(asc(battleParticipants.joinedAt), asc(battleParticipants.id));
   if (participants.length === 0) return [];
@@ -122,6 +139,7 @@ export async function standings(
     participants.map((p) => ({
       participantId: p.id,
       displayName: p.displayName,
+      avatar: battleAvatarOf(p.studentId, p),
       ...scoreBattleAnswers(relevant.filter((a) => a.participantId === p.id)),
     })),
   );

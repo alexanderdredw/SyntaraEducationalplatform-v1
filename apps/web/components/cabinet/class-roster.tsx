@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Modal } from '@syntara/ui';
+import { Avatar, Button, Modal } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 
@@ -49,9 +49,13 @@ export function ClassRoster({ classId }: { classId: string }) {
       <ul className="flex flex-col divide-y divide-[var(--border)]">
         {roster.data.map((student) => (
           <li key={student.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
-            <span>
-              {student.displayName}
-              {student.login ? <span className="text-[var(--text-muted)]"> · {student.login}</span> : null}
+            <span className="flex items-center gap-2.5">
+              {/* REQ-PRF-11: аватар ученика в «Ростере». */}
+              <Avatar name={student.displayName} avatar={student.avatar} size={32} decorative />
+              <span>
+                {student.displayName}
+                {student.login ? <span className="text-[var(--text-muted)]"> · {student.login}</span> : null}
+              </span>
             </span>
             {student.hasEmail ? (
               <span className="text-xs text-[var(--text-muted)]">{t('hasEmail')}</span>
