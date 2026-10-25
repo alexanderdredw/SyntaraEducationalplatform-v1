@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
-import { check, pgTable, text, uuid } from 'drizzle-orm/pg-core';
-import { timestamps } from './_common';
+import { check, pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
+import { bytea, timestamps, tstz } from './_common';
 import { mediaFiles } from './content';
 import { users } from './users';
 
@@ -37,4 +37,21 @@ export const userProfiles = pgTable(
     check('user_profiles_preset_set', sql`${t.avatarKind} <> 'preset' OR ${t.avatarPreset} IS NOT NULL`),
     check('user_profiles_photo_set', sql`${t.avatarKind} <> 'photo' OR ${t.avatarMediaId} IS NOT NULL`),
   ],
+);
+
+/**
+ * BR-PRF-20 (docs/PROFILE_TZ_2.md): устройства, с которых входил учитель, — для письма о входе с нового устройства.
+ * device_hash — HMAC (браузер + ОС); сам User-Agent и IP здесь не хранятся. RLS «только свои» — миграция 0011.
+ */
+export const knownDevices = pgTable(
+  'known_devices',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    deviceHash: bytea('device_hash').notNull(),
+    firstSeenAt: tstz('first_seen_at').notNull().defaultNow(),
+    lastSeenAt: tstz('last_seen_at').notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.deviceHash] })],
 );

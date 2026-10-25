@@ -1777,7 +1777,13 @@
         "battleResult": "{place}-орын · {total} ішінен {correct} дұрыс",
         "battleNoPlace": "{total} ішінен {correct} дұрыс",
         "myBattles": "Менің Battle ойындарым →",
-        "noBattle": "Сен әлі Battle ойнаған жоқсың"
+        "noBattle": "Сен әлі Battle ойнаған жоқсың",
+        "noBattleAction": "Мұғалімнен код бар ма? Ойынға кіру →",
+        "noAssignmentsAction": "Каталогтағы тақырыптарды қайталау →",
+        "noBadgesTitle": "Әзірге бейджик жоқ",
+        "noBadgesAction": "Алғашқы квизден өт — «Алғашқы қадам» аласың →",
+        "noClass": "Сен әзірге сыныпта емессің",
+        "noClassAction": "Сыныпқа қосылу →"
       },
       "teacher": {
         "summary": "Жиынтық",
@@ -1801,7 +1807,53 @@
         "newSubject": "Жаңа пән",
         "assign": "Тапсырма беру",
         "launchBattle": "Battle бастау",
-        "createClass": "Сынып құру"
+        "createClass": "Сынып құру",
+        "noBattlesAction": "Battle бастау →",
+        "allActive": "Барлық оқушылар оқып жүр — керемет",
+        "reasonNever": "{className} · әлі оқымаған",
+        "reasonInactive": "{className} · {days, plural, other {# күн}} белсенділік жоқ",
+        "submitted": "{total} ішінен {submitted} тапсырылды"
+      }
+    },
+    "header": {
+      "stats": {
+        "level": "Деңгей",
+        "xp": "XP",
+        "streak": "Серия, күн",
+        "mastered": "Меңгерілген тақырып",
+        "badges": "Бейджиктер",
+        "badgesValue": "{total} ішінен {earned}",
+        "classes": "Сынып",
+        "students": "Оқушы",
+        "publishedTopics": "Жарияланған тақырып",
+        "battles": "Өткізілген Battle"
+      },
+      "statsLabel": "Негізгі көрсеткіштер"
+    },
+    "calendar": {
+      "title": "Белсенділік күнтізбесі",
+      "day": "{date}: {count, plural, other {# сабақ}}",
+      "summary": "{weeks, plural, other {# аптадағы}} белсенділік күнтізбесі: белсенді күндер — {active}, ең ұзақ серия — {streak, plural, other {# күн}}",
+      "activeDays": "{weeks, plural, other {# аптадағы}} белсенді күндер: {active}",
+      "longestStreak": "Ең ұзақ серия: {days} күн",
+      "less": "Аз",
+      "more": "Көп",
+      "tableCaption": "Күндер бойынша сабақтар",
+      "dateCol": "Күні",
+      "countCol": "Сабақтар",
+      "keyboardHint": "Көрсеткілер — күндер бойынша жылжу"
+    },
+    "completeness": {
+      "title": "Профиль {percent} % толтырылған",
+      "hide": "Жасыру",
+      "items": {
+        "avatar": "Аватар таңда",
+        "photoOrAvatar": "Фото немесе аватар қосыңыз",
+        "lastName": "Тегіңді көрсет",
+        "email": "Email қос — құпиясөзді өзің қалпына келтіре аласың",
+        "emailVerified": "Email-ді растаңыз",
+        "position": "Лауазымыңызды көрсетіңіз",
+        "about": "Өзіңіз туралы жазыңыз"
       }
     }
   }

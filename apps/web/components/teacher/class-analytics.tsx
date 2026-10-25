@@ -2,9 +2,11 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 import {
   Badge,
   Card,
+  cn,
   EmptyState,
   ProgressBar,
   progressTextTones,
@@ -30,6 +32,7 @@ const TONES: Record<'red' | 'blue' | 'green', ProgressTone> = {
 export function ClassAnalytics({ classId }: { classId: string }) {
   const t = useTranslations('teacher.analytics');
   const locale = useLocale();
+  const highlight = useSearchParams().get('student');
   const data = useQuery({
     queryKey: ['teacher', 'analytics', classId, locale],
     queryFn: async () => {
@@ -109,8 +112,14 @@ export function ClassAnalytics({ classId }: { classId: string }) {
           {a.attention.map((s) => (
             <li
               key={s.studentId}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-field)] border border-[color-mix(in_srgb,var(--danger)_35%,transparent)] bg-[color-mix(in_srgb,var(--danger)_7%,transparent)] px-3 py-2"
+              // REQ-PRF-25: переход из «Обзора» учителя (?student=…) — ученик подсвечен.
+              className={cn(
+                'flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-field)] border border-[color-mix(in_srgb,var(--danger)_35%,transparent)] bg-[color-mix(in_srgb,var(--danger)_7%,transparent)] px-3 py-2',
+                highlight === s.studentId && 'ring-2 ring-[var(--accent)]',
+              )}
               data-testid="attention-student"
+              data-highlighted={highlight === s.studentId ? 'true' : undefined}
+              aria-current={highlight === s.studentId ? 'true' : undefined}
             >
               <span>{s.name}</span>
               <span className="flex items-center gap-3 text-sm text-[var(--text-muted)]">

@@ -207,7 +207,7 @@ export interface AvatarData {
 }
 
 /** REQ-PRF-11: размеры аватара. */
-export type AvatarSize = 24 | 32 | 40 | 64 | 96;
+export type AvatarSize = 24 | 32 | 40 | 64 | 88 | 96 | 112;
 
 /** Цвета подложки и знака аватара (BR-PRF-02): токены --avatar-* обеих тем. */
 export function avatarColorStyle(color: string): CSSProperties {

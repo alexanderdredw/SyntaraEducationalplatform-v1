@@ -77,3 +77,24 @@ export async function givePhotoAvatar(userId: string): Promise<void> {
     await sql.end();
   }
 }
+
+/** События обучения ученика за день `daysAgo` назад (полдень Алматы) — календарь активности (REQ-PRF-21). */
+export async function addLearningEvents(
+  studentId: string,
+  type: 'lesson_opened' | 'quiz_finished',
+  daysAgo: number,
+  count: number,
+): Promise<void> {
+  const sql = postgres(env('DATABASE_URL'), { max: 1, prepare: false });
+  try {
+    const at = new Date(Date.now() - daysAgo * 86_400_000);
+    at.setUTCHours(7, 0, 0, 0);
+    for (let i = 0; i < count; i++) {
+      await sql`
+        INSERT INTO learning_events (id, student_id, type, occurred_at, idempotency_key)
+        VALUES (gen_random_uuid(), ${studentId}, ${type}, ${at}, ${crypto.randomUUID()})`;
+    }
+  } finally {
+    await sql.end();
+  }
+}

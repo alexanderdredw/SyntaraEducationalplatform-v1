@@ -119,7 +119,7 @@ test.describe('Функции ученика (docs/NAV_TZ.md, часть B)', ()
       await cabinetNav(page);
       await page.getByTestId('profile-row').filter({ visible: true }).click();
       await expect(page).toHaveURL(/\/ru\/account$/);
-      await page.getByRole('link', { name: ru.account.tabs.privacy }).click();
+      await page.getByRole('tab', { name: ru.account.tabs.privacy }).click();
     } else {
       await page.getByRole('button', { name: new RegExp(`${ru.cabinet.profile}: Асель Нурова`) }).click();
       await page.getByRole('menuitem', { name: ru.account.menu.privacy }).click();

@@ -1777,7 +1777,13 @@
         "battleResult": "Place {place} · {correct} of {total} correct",
         "battleNoPlace": "{correct} of {total} correct",
         "myBattles": "My Battles →",
-        "noBattle": "You have not played a Battle yet"
+        "noBattle": "You have not played a Battle yet",
+        "noBattleAction": "Got a code from your teacher? Join the game →",
+        "noAssignmentsAction": "Review topics in the catalog →",
+        "noBadgesTitle": "No badges yet",
+        "noBadgesAction": "Pass your first quiz to get «First step» →",
+        "noClass": "You are not in a class yet",
+        "noClassAction": "Join a class →"
       },
       "teacher": {
         "summary": "Summary",
@@ -1801,7 +1807,53 @@
         "newSubject": "New subject",
         "assign": "Give an assignment",
         "launchBattle": "Launch Battle",
-        "createClass": "Create a class"
+        "createClass": "Create a class",
+        "noBattlesAction": "Launch Battle →",
+        "allActive": "All students are studying — great",
+        "reasonNever": "{className} · no activity yet",
+        "reasonInactive": "{className} · no activity for {days, plural, one {# day} other {# days}}",
+        "submitted": "Submitted {submitted} of {total}"
+      }
+    },
+    "header": {
+      "stats": {
+        "level": "Level",
+        "xp": "XP",
+        "streak": "Streak, days",
+        "mastered": "Topics mastered",
+        "badges": "Badges",
+        "badgesValue": "{earned} of {total}",
+        "classes": "Classes",
+        "students": "Students",
+        "publishedTopics": "Published topics",
+        "battles": "Battles held"
+      },
+      "statsLabel": "Key numbers"
+    },
+    "calendar": {
+      "title": "Activity calendar",
+      "day": "{date}: {count, plural, one {# activity} other {# activities}}",
+      "summary": "Activity calendar for {weeks, plural, one {# week} other {# weeks}}: {active, plural, one {# active day} other {# active days}}, longest streak — {streak, plural, one {# day} other {# days}}",
+      "activeDays": "Active days in {weeks, plural, one {# week} other {# weeks}}: {active}",
+      "longestStreak": "Longest streak: {days, plural, one {# day} other {# days}}",
+      "less": "Less",
+      "more": "More",
+      "tableCaption": "Activities by day",
+      "dateCol": "Date",
+      "countCol": "Activities",
+      "keyboardHint": "Arrow keys move between days"
+    },
+    "completeness": {
+      "title": "Profile {percent}% complete",
+      "hide": "Hide",
+      "items": {
+        "avatar": "Choose an avatar",
+        "photoOrAvatar": "Add a photo or an avatar",
+        "lastName": "Add your last name",
+        "email": "Add an email — you can restore your password yourself",
+        "emailVerified": "Confirm your email",
+        "position": "Add your position",
+        "about": "Tell about yourself"
       }
     }
   }

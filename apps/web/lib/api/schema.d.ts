@@ -676,6 +676,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/profile-completeness/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProfileController_hideCompleteness"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me/avatar": {
         parameters: {
             query?: never;
@@ -1924,6 +1940,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DashboardController_activity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me/dashboard": {
         parameters: {
             query?: never;
@@ -2460,6 +2492,16 @@ export interface components {
         SchoolRef: {
             name: string;
         };
+        CompletenessDto: {
+            /** @description Процент (вниз) */
+            percent: number;
+            missing: ("avatar" | "lastName" | "email" | "emailVerified" | "photoOrAvatar" | "position" | "about")[];
+            /**
+             * Format: date-time
+             * @description «Скрыть» — до этого времени
+             */
+            hiddenUntil: string | null;
+        };
         ProfileDto: {
             firstName: string;
             lastName: string | null;
@@ -2489,6 +2531,7 @@ export interface components {
             canRemoveEmail: boolean;
             /** @description Своя картинка — только учитель (BR-PRF-03) */
             canUploadPhoto: boolean;
+            completeness: components["schemas"]["CompletenessDto"];
         };
         ProfilePatchBody: {
             firstName?: string;
@@ -3521,6 +3564,21 @@ export interface components {
             /** @enum {string} */
             section: "class" | "achievements";
         };
+        ActivityDayDto: {
+            /** Format: date */
+            date: string;
+            count: number;
+        };
+        ActivityDto: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+            days: components["schemas"]["ActivityDayDto"][];
+            activeDays: number;
+            /** @description Самая длинная серия активных дней в окне */
+            longestStreak: number;
+        };
         DashboardAchievementsDto: {
             level: number;
             rankTitle: string;
@@ -3528,6 +3586,10 @@ export interface components {
             xpToNext: number;
             xpPerLevel: number;
             streakDays: number;
+            /** @description Освоено тем (mastered_at) — всего */
+            masteredTopics: number;
+            badgesEarned: number;
+            badgesTotal: number;
         };
         DashboardProgressDto: {
             mastered: number;
@@ -3577,6 +3639,8 @@ export interface components {
             students: number;
             subjects: number;
             publishedTopics: number;
+            /** @description Завершённых игр Battle (ведущий) */
+            battlesHosted: number;
         };
         TeacherReviewDto: {
             /** @description Очередь ручной проверки включена (PH-29) */
@@ -3593,10 +3657,18 @@ export interface components {
             avatar: components["schemas"]["AvatarDto"];
             /** Format: date-time */
             lastActivityAt: string | null;
+            /** @description Дней без активности; null — ещё не занимался (REQ-PRF-25) */
+            daysInactive: number | null;
         };
         TeacherDeadlineDto: {
             /** Format: uuid */
             id: string;
+            /** Format: uuid */
+            classId: string;
+            /** @description Сдано (REQ-PRF-25: «Сдано X из Y») */
+            submitted: number;
+            /** @description Учеников в классе */
+            total: number;
             topicTitle: string;
             className: string;
             /** Format: date-time */
@@ -5487,6 +5559,37 @@ export interface operations {
             };
             /** @description 5 загрузок за 24 часа */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProfileController_hideCompleteness: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -9081,6 +9184,41 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DashboardController_activity: {
+        parameters: {
+            query?: {
+                weeks?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityDto"];
+                };
             };
             /** @description Нет сессии */
             401: {

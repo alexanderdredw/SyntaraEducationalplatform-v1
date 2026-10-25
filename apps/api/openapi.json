@@ -1868,6 +1868,31 @@
         ]
       }
     },
+    "/api/me/profile-completeness/hide": {
+      "post": {
+        "operationId": "ProfileController_hideCompleteness",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/me/avatar": {
       "put": {
         "operationId": "ProfileController_putAvatar",
@@ -5798,6 +5823,53 @@
         ]
       }
     },
+    "/api/me/activity": {
+      "get": {
+        "operationId": "DashboardController_activity",
+        "parameters": [
+          {
+            "name": "weeks",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 26,
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          },
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/me/dashboard": {
       "get": {
         "operationId": "DashboardController_get",
@@ -7655,6 +7727,41 @@
           "name"
         ]
       },
+      "CompletenessDto": {
+        "type": "object",
+        "properties": {
+          "percent": {
+            "type": "number",
+            "description": "Процент (вниз)"
+          },
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "avatar",
+                "lastName",
+                "email",
+                "emailVerified",
+                "photoOrAvatar",
+                "position",
+                "about"
+              ]
+            }
+          },
+          "hiddenUntil": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time",
+            "description": "«Скрыть» — до этого времени"
+          }
+        },
+        "required": [
+          "percent",
+          "missing",
+          "hiddenUntil"
+        ]
+      },
       "ProfileDto": {
         "type": "object",
         "properties": {
@@ -7736,6 +7843,9 @@
           "canUploadPhoto": {
             "type": "boolean",
             "description": "Своя картинка — только учитель (BR-PRF-03)"
+          },
+          "completeness": {
+            "$ref": "#/components/schemas/CompletenessDto"
           }
         },
         "required": [
@@ -7755,7 +7865,8 @@
           "nameChangesLeft",
           "nameChangeAvailableAt",
           "canRemoveEmail",
-          "canUploadPhoto"
+          "canUploadPhoto",
+          "completeness"
         ]
       },
       "ProfilePatchBody": {
@@ -11374,6 +11485,55 @@
           "section"
         ]
       },
+      "ActivityDayDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "count"
+        ]
+      },
+      "ActivityDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActivityDayDto"
+            }
+          },
+          "activeDays": {
+            "type": "number"
+          },
+          "longestStreak": {
+            "type": "number",
+            "description": "Самая длинная серия активных дней в окне"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "days",
+          "activeDays",
+          "longestStreak"
+        ]
+      },
       "DashboardAchievementsDto": {
         "type": "object",
         "properties": {
@@ -11394,6 +11554,16 @@
           },
           "streakDays": {
             "type": "number"
+          },
+          "masteredTopics": {
+            "type": "number",
+            "description": "Освоено тем (mastered_at) — всего"
+          },
+          "badgesEarned": {
+            "type": "number"
+          },
+          "badgesTotal": {
+            "type": "number"
           }
         },
         "required": [
@@ -11402,7 +11572,10 @@
           "xpTotal",
           "xpToNext",
           "xpPerLevel",
-          "streakDays"
+          "streakDays",
+          "masteredTopics",
+          "badgesEarned",
+          "badgesTotal"
         ]
       },
       "DashboardProgressDto": {
@@ -11592,13 +11765,18 @@
           },
           "publishedTopics": {
             "type": "number"
+          },
+          "battlesHosted": {
+            "type": "number",
+            "description": "Завершённых игр Battle (ведущий)"
           }
         },
         "required": [
           "classes",
           "students",
           "subjects",
-          "publishedTopics"
+          "publishedTopics",
+          "battlesHosted"
         ]
       },
       "TeacherReviewDto": {
@@ -11641,6 +11819,11 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "daysInactive": {
+            "type": "number",
+            "nullable": true,
+            "description": "Дней без активности; null — ещё не занимался (REQ-PRF-25)"
           }
         },
         "required": [
@@ -11649,7 +11832,8 @@
           "studentId",
           "name",
           "avatar",
-          "lastActivityAt"
+          "lastActivityAt",
+          "daysInactive"
         ]
       },
       "TeacherDeadlineDto": {
@@ -11658,6 +11842,18 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "classId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "submitted": {
+            "type": "number",
+            "description": "Сдано (REQ-PRF-25: «Сдано X из Y»)"
+          },
+          "total": {
+            "type": "number",
+            "description": "Учеников в классе"
           },
           "topicTitle": {
             "type": "string"
@@ -11672,6 +11868,9 @@
         },
         "required": [
           "id",
+          "classId",
+          "submitted",
+          "total",
           "topicTitle",
           "className",
           "dueAt"

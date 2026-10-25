@@ -181,3 +181,7 @@ export function passwordStrength(password: string, minLength = 8): 0 | 1 | 2 | 3
   const score = kinds + (password.length >= 12 ? 1 : 0) + (password.length >= 16 ? 1 : 0);
   return score >= 4 ? 3 : score >= 2 ? 2 : 1;
 }
+
+/** API-ME-15 (REQ-PRF-21): недель в календаре активности. */
+export const ActivityQuery = z.object({ weeks: z.coerce.number().int().min(1).max(26).default(12) });
+export type ActivityQuery = z.infer<typeof ActivityQuery>;

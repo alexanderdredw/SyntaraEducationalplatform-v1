@@ -139,6 +139,12 @@
   --avatar-bg-mix: 24%;
   --avatar-ink-base: #ffffff;
   --avatar-ink-mix: 50%;
+  /* Календарь активности (REQ-PRF-21): 5 уровней синего — 0, 1, 2–3, 4–6, 7+. */
+  --activity-0: color-mix(in srgb, var(--text) 10%, var(--surface));
+  --activity-1: color-mix(in srgb, var(--accent) 30%, var(--surface));
+  --activity-2: color-mix(in srgb, var(--accent) 52%, var(--surface));
+  --activity-3: color-mix(in srgb, var(--accent) 76%, var(--surface));
+  --activity-4: var(--accent-bright);
 
   color-scheme: dark;
 }
@@ -182,6 +188,11 @@
   --avatar-bg-mix: 18%;
   --avatar-ink-base: #000000;
   --avatar-ink-mix: 52%;
+  --activity-0: #ebedf0;
+  --activity-1: color-mix(in srgb, var(--accent) 22%, #ffffff);
+  --activity-2: color-mix(in srgb, var(--accent) 45%, #ffffff);
+  --activity-3: color-mix(in srgb, var(--accent) 70%, #ffffff);
+  --activity-4: var(--accent);
   color-scheme: light;
 }
 

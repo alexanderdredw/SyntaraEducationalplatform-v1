@@ -19,7 +19,9 @@ import { type UploadUrlResponse } from '../files/files.dto';
 import { AvatarService } from './avatar.service';
 import { type ProfileDto } from './profile.dto';
 
-const { users, userProfiles, userRoles, mediaFiles, auditLog, classes, classMemberships, schools } = schema;
+const { users, userProfiles, userRoles, mediaFiles, auditLog, classes, classMemberships, schools, navSeen } =
+  schema;
+const COMPLETENESS_HIDE_DAYS = 30;
 
 /** PH-46 (SPEC 11): значения по умолчанию вопросов PROFILE_TZ 2–6 — TODO(OWNER). */
 export interface ProfileConfig {
@@ -106,6 +108,19 @@ export class ProfileService {
           : null,
       canRemoveEmail: !isTeacher && account!.login !== null && account!.email !== null,
       canUploadPhoto: isTeacher,
+      completeness: await this.completeness(
+        user.id,
+        isTeacher,
+        profile.avatarKind,
+        {
+          lastName: profile.lastName ?? null,
+          position: profile.position ?? null,
+          about: profile.about ?? null,
+          email: account!.email,
+          verified: account!.verifiedAt !== null,
+        },
+        db,
+      ),
     };
   }
 
@@ -318,6 +333,57 @@ export class ProfileService {
       .from(userProfiles)
       .where(eq(userProfiles.userId, userId));
     return row?.kind === 'photo' && row.mediaId !== null;
+  }
+
+  /**
+   * BR-PRF-22 (REQ-PRF-22): заполненность — ученик: аватар выбран (не инициалы), фамилия, email, email подтверждён;
+   * учитель: аватар или фото (не инициалы), должность, «О себе», email подтверждён. Скрытие — 30 дней (nav_seen).
+   */
+  private async completeness(
+    userId: string,
+    isTeacher: boolean,
+    avatarKind: string | null | undefined,
+    p: {
+      lastName: string | null;
+      position: string | null;
+      about: string | null;
+      email: string | null;
+      verified: boolean;
+    },
+    db: Tx | Database,
+  ): Promise<ProfileDto['completeness']> {
+    const chosen = avatarKind === 'preset' || avatarKind === 'photo';
+    const checks: Array<[ProfileDto['completeness']['missing'][number], boolean]> = isTeacher
+      ? [
+          ['photoOrAvatar', chosen],
+          ['position', Boolean(p.position)],
+          ['about', Boolean(p.about)],
+          ['emailVerified', Boolean(p.email) && p.verified],
+        ]
+      : [
+          ['avatar', chosen],
+          ['lastName', Boolean(p.lastName)],
+          ['email', Boolean(p.email)],
+          ['emailVerified', Boolean(p.email) && p.verified],
+        ];
+    const [hidden] = await db
+      .select({ at: navSeen.seenAt })
+      .from(navSeen)
+      .where(and(eq(navSeen.userId, userId), eq(navSeen.section, 'profile_completeness')));
+    const until = hidden ? hidden.at.getTime() + COMPLETENESS_HIDE_DAYS * DAY_MS : 0;
+    return {
+      percent: Math.floor((checks.filter(([, ok]) => ok).length / checks.length) * 100),
+      missing: checks.filter(([, ok]) => !ok).map(([key]) => key),
+      hiddenUntil: until > Date.now() ? new Date(until).toISOString() : null,
+    };
+  }
+
+  /** API-ME-18 (REQ-PRF-22): «Скрыть» карточку заполненности на 30 дней. */
+  async hideCompleteness(userId: string): Promise<void> {
+    await this.db
+      .insert(navSeen)
+      .values({ userId, section: 'profile_completeness', seenAt: new Date() })
+      .onConflictDoUpdate({ target: [navSeen.userId, navSeen.section], set: { seenAt: new Date() } });
   }
 
   /** Картинка больше не аватар: запись удаляется, объекты 256 и 64 px — задачей worker после фиксации. */

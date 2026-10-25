@@ -3,6 +3,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiPayloadTooLargeResponse,
   ApiTags,
@@ -63,6 +64,14 @@ export class ProfileController {
     @Req() req: AuthRequest,
   ): Promise<UploadUrlResponse> {
     return this.profiles.uploadUrl(req.user!, dto);
+  }
+
+  /** API-ME-18 (REQ-PRF-22): скрыть карточку «Профиль заполнен на N %» на 30 дней. */
+  @Post('profile-completeness/hide')
+  @HttpCode(204)
+  @ApiNoContentResponse()
+  async hideCompleteness(@Req() req: AuthRequest): Promise<void> {
+    await this.profiles.hideCompleteness(req.user!.id);
   }
 
   /** API-ME-09 (BR-PRF-02/03) */

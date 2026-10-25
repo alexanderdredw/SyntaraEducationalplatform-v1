@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { schema } from '@syntara/db';
 import { freshIp, login, type Session } from './support/session';
 import { startStack, type TestStack } from './support/stack';
 
@@ -140,7 +141,7 @@ describe('personal dashboard (integration)', () => {
       id: string;
       status: string;
     }>;
-    expect(d.achievements).toEqual({
+    expect(d.achievements).toMatchObject({
       level: achievements.level,
       rankTitle: achievements.rankTitle,
       xpTotal: achievements.xpTotal,
@@ -198,7 +199,7 @@ describe('personal dashboard (integration)', () => {
     expect(dash.role).toBe('teacher');
     expect(dash.student).toBeNull();
     const d = dash.teacher;
-    expect(d.counts).toEqual({ classes: 1, students: 2, subjects: 1, publishedTopics: 1 });
+    expect(d.counts).toEqual({ classes: 1, students: 2, subjects: 1, publishedTopics: 1, battlesHosted: 0 });
     expect(d.review).toEqual({ enabled: false, count: 0 });
     const analytics = (await as(teacher).get(`/api/teacher/classes/${t.classId}/analytics`).expect(200)).body;
     expect(d.attention.map((a: { studentId: string }) => a.studentId)).toEqual(
@@ -236,5 +237,130 @@ describe('personal dashboard (integration)', () => {
     await http().get('/api/me/dashboard').expect(401);
     const support = await login(http, 'support@syntara.local');
     await as(support).get('/api/me/dashboard').expect(403);
+  });
+
+  it('AC-PRF-22 API-ME-15 activity: 12 weeks from Monday, lesson_opened + quiz_finished per Almaty day, active days and the longest run', async () => {
+    const student = await newStudent();
+    const now = Date.now();
+    // UTC+5: 2026-…T20:00Z — уже следующий день в Алматы; ai_question не считается (BR-ST-02).
+    const at = (daysAgo: number, hourUtc = 6) => {
+      const d = new Date(now - daysAgo * DAY);
+      d.setUTCHours(hourUtc, 0, 0, 0);
+      return d;
+    };
+    const event = (type: string, occurredAt: Date) => ({
+      studentId: student.userId,
+      type,
+      occurredAt,
+      idempotencyKey: crypto.randomUUID(),
+    });
+    await stack.db
+      .insert(schema.learningEvents)
+      .values([
+        event('lesson_opened', at(3)),
+        event('quiz_finished', at(3)),
+        event('lesson_opened', at(3)),
+        event('lesson_opened', at(2)),
+        event('lesson_opened', at(1)),
+        event('ai_question', at(1)),
+        event('lesson_opened', at(40)),
+        event('lesson_opened', at(200)),
+      ]);
+    const body = (await as(student).get('/api/me/activity').expect(200)).body;
+    const days = body.days as Array<{ date: string; count: number }>;
+    expect(new Date(`${body.from}T00:00:00Z`).getUTCDay()).toBe(1);
+    expect(days.length).toBeGreaterThan(77);
+    expect(days.length).toBeLessThanOrEqual(84);
+    expect(days.at(-1)!.date).toBe(body.to);
+    const local = (d: Date) => new Date(d.getTime() + 5 * 3_600_000).toISOString().slice(0, 10);
+    const countOn = (d: Date) => days.find((x) => x.date === local(d))?.count;
+    expect(countOn(at(3))).toBe(3);
+    expect(countOn(at(2))).toBe(1);
+    expect(countOn(at(1))).toBe(1);
+    expect(countOn(at(40))).toBe(1);
+    expect(days.some((d) => d.date === local(at(200)))).toBe(false);
+    expect(body).toMatchObject({ activeDays: 4, longestStreak: 3 });
+    expect(
+      (await as(student).get('/api/me/activity?weeks=8').expect(200)).body.days.length,
+    ).toBeLessThanOrEqual(56);
+    await as(student).get('/api/me/activity?weeks=30').expect(400);
+    // Только ученик и только свои данные.
+    await as(await newTeacher())
+      .get('/api/me/activity')
+      .expect(403);
+  });
+
+  it('AC-PRF-23 completeness: student and teacher items, percent; «Скрыть» hides for 30 days', async () => {
+    const student = await newStudent();
+    const p1 = (await as(student).get('/api/me/profile').expect(200)).body.completeness;
+    expect(p1).toEqual({ percent: 25, missing: ['avatar', 'email', 'emailVerified'], hiddenUntil: null });
+    await as(student).send('put', '/api/me/avatar', { kind: 'preset', preset: 'owl' }).expect(200);
+    expect((await as(student).get('/api/me/profile').expect(200)).body.completeness.percent).toBe(50);
+    await as(student).send('post', '/api/me/profile-completeness/hide').expect(204);
+    const hidden = (await as(student).get('/api/me/profile').expect(200)).body.completeness
+      .hiddenUntil as string;
+    expect(new Date(hidden).getTime()).toBeGreaterThan(Date.now() + 29 * DAY);
+    expect(new Date(hidden).getTime()).toBeLessThanOrEqual(Date.now() + 30 * DAY + 60_000);
+
+    const teacher = await newTeacher();
+    expect((await as(teacher).get('/api/me/profile').expect(200)).body.completeness).toEqual({
+      percent: 0,
+      missing: ['photoOrAvatar', 'position', 'about', 'emailVerified'],
+      hiddenUntil: null,
+    });
+    await as(teacher)
+      .send('patch', '/api/me/profile', { position: 'Учитель биологии', about: 'О себе' })
+      .expect(200);
+    expect((await as(teacher).get('/api/me/profile').expect(200)).body.completeness).toMatchObject({
+      percent: 50,
+      missing: ['photoOrAvatar', 'emailVerified'],
+    });
+    // API-S-21 по-прежнему принимает только «class» и «achievements».
+    await as(student).send('post', '/api/student/nav-seen', { section: 'profile_completeness' }).expect(400);
+  });
+
+  it('AC-PRF-21 AC-PRF-25 header numbers; «Сдано X из Y» for deadlines; days without activity for «Требуют внимания»', async () => {
+    const teacher = await newTeacher();
+    const t = await setup(teacher);
+    await as(teacher)
+      .send('post', '/api/teacher/assignments', {
+        classId: t.classId,
+        subjectId: t.subjectId,
+        topicId: t.topicId,
+        dueAt: new Date(Date.now() + 4 * DAY).toISOString(),
+      })
+      .expect(201);
+    const s1 = await newStudent(t.code);
+    await newStudent(t.code);
+    const lesson = (await as(s1).get(`/api/student/topics/${t.topicId}`).expect(200)).body;
+    const attempt = (
+      await as(s1)
+        .send('post', `/api/student/quizzes/${lesson.quizId}/attempts`)
+        .expect((r) => expect(r.status).toBeLessThan(300))
+    ).body;
+    for (const q of attempt.questions) {
+      await as(s1)
+        .send('post', `/api/student/attempts/${attempt.attemptId}/answers`, {
+          questionId: q.id,
+          optionId: q.options.find((o: { text: string }) => o.text.endsWith('0')).id,
+        })
+        .expect((r) => expect(r.status).toBeLessThan(300));
+    }
+    await as(s1)
+      .send('post', `/api/student/attempts/${attempt.attemptId}/finish`)
+      .expect((r) => expect(r.status).toBeLessThan(300));
+
+    const d = (await as(teacher).get('/api/me/dashboard').expect(200)).body.teacher;
+    expect(d.counts).toMatchObject({ classes: 1, students: 2, publishedTopics: 1, battlesHosted: 0 });
+    expect(d.deadlines[0]).toMatchObject({ classId: t.classId, submitted: 1, total: 2 });
+    for (const a of d.attention) expect(a.daysInactive === null || a.daysInactive >= 0).toBe(true);
+
+    const st = (await as(s1).get('/api/me/dashboard').expect(200)).body.student;
+    const achievements = (await as(s1).get('/api/student/achievements').expect(200)).body;
+    expect(st.achievements).toMatchObject({
+      masteredTopics: 1,
+      badgesEarned: achievements.earnedCount,
+      badgesTotal: achievements.totalCount,
+    });
   });
 });

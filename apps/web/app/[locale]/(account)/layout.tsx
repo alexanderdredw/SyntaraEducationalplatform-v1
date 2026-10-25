@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import { setRequestLocale } from 'next-intl/server';
-import { AccountTabs } from '@/components/account/account-tabs';
+import { AccountHeader } from '@/components/account/account-header';
 import { CabinetShell } from '@/components/cabinet/cabinet-shell';
 import { PublicShell } from '@/components/shell/public-shell';
 import { workspaceRole } from '@/lib/auth';
@@ -34,7 +34,8 @@ export default async function Layout({
   return (
     <CabinetShell me={me} cabinetRole={role}>
       <section className="mx-auto flex max-w-[880px] flex-col gap-6 px-4 py-8">
-        <AccountTabs />
+        {/* REQ-PRF-20: шапка профиля с вкладками — одинаковая на четырёх страницах. */}
+        <AccountHeader timeZone={process.env.PLATFORM_TZ ?? 'Asia/Almaty'} />
         {children}
       </section>
     </CabinetShell>

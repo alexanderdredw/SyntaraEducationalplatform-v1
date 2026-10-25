@@ -76,11 +76,10 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
     await signIn(context, await student(baseURL!), baseURL!);
     await page.goto('/ru/account/profile');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(p.title);
-    await expect(
-      page
-        .getByRole('navigation', { name: ru.account.tabsLabel })
-        .getByRole('link', { name: ru.account.tabs.profile }),
-    ).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('tab', { name: ru.account.tabs.profile })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
     // Ученик: только набор и инициалы (решение владельца 2026-10-25); логин — только просмотр.
     await expect(page.getByRole('radio', { name: p.avatarKinds.photo })).toHaveCount(0);
     // FIX-04: логин и школа — текст «только для чтения», не поле; у логина — «Копировать» и пояснение.
@@ -139,7 +138,7 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
       asked = dialog.message();
       void dialog.dismiss();
     });
-    await page.getByRole('link', { name: ru.account.tabs.privacy }).click();
+    await page.getByRole('tab', { name: ru.account.tabs.privacy }).click();
     expect(asked).toBe(p.unsaved);
     await expect(page).toHaveURL(/\/account\/profile$/);
   });

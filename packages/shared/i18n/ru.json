@@ -1777,7 +1777,13 @@
         "battleResult": "{place}-е место · правильных {correct} из {total}",
         "battleNoPlace": "Правильных {correct} из {total}",
         "myBattles": "Мои Battle →",
-        "noBattle": "Ты ещё не играл в Battle"
+        "noBattle": "Ты ещё не играл в Battle",
+        "noBattleAction": "Есть код от учителя? Войти в игру →",
+        "noAssignmentsAction": "Повторить темы в каталоге →",
+        "noBadgesTitle": "Пока нет бейджей",
+        "noBadgesAction": "Пройди первый квиз — получишь «Первый шаг» →",
+        "noClass": "Ты пока не в классе",
+        "noClassAction": "Подключиться к классу →"
       },
       "teacher": {
         "summary": "Сводка",
@@ -1801,7 +1807,53 @@
         "newSubject": "Новый предмет",
         "assign": "Выдать задание",
         "launchBattle": "Запустить Battle",
-        "createClass": "Создать класс"
+        "createClass": "Создать класс",
+        "noBattlesAction": "Запустить Battle →",
+        "allActive": "Все ученики занимаются — отлично",
+        "reasonNever": "{className} · ещё не занимался",
+        "reasonInactive": "{className} · нет активности {days, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
+        "submitted": "Сдано {submitted} из {total}"
+      }
+    },
+    "header": {
+      "stats": {
+        "level": "Уровень",
+        "xp": "XP",
+        "streak": "Серия, дн.",
+        "mastered": "Освоено тем",
+        "badges": "Бейджи",
+        "badgesValue": "{earned} из {total}",
+        "classes": "Классов",
+        "students": "Учеников",
+        "publishedTopics": "Опубликованных тем",
+        "battles": "Battle проведено"
+      },
+      "statsLabel": "Ключевые цифры"
+    },
+    "calendar": {
+      "title": "Календарь активности",
+      "day": "{date}: {count, plural, one {# занятие} few {# занятия} many {# занятий} other {# занятия}}",
+      "summary": "Календарь активности за {weeks, plural, one {# неделю} few {# недели} many {# недель} other {# недели}}: активных дней — {active}, самая длинная серия — {streak, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
+      "activeDays": "Активных дней за {weeks, plural, one {# неделю} few {# недели} many {# недель} other {# недели}}: {active}",
+      "longestStreak": "Самая длинная серия: {days} дн.",
+      "less": "Меньше",
+      "more": "Больше",
+      "tableCaption": "Занятия по дням",
+      "dateCol": "Дата",
+      "countCol": "Занятий",
+      "keyboardHint": "Стрелки — переход по дням"
+    },
+    "completeness": {
+      "title": "Профиль заполнен на {percent} %",
+      "hide": "Скрыть",
+      "items": {
+        "avatar": "Выбери аватар",
+        "photoOrAvatar": "Добавьте фото или аватар",
+        "lastName": "Укажи фамилию",
+        "email": "Добавь email — сможешь сам восстановить пароль",
+        "emailVerified": "Подтвердите email",
+        "position": "Укажите должность",
+        "about": "Расскажите о себе"
       }
     }
   }

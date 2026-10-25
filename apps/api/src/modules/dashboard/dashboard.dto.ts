@@ -10,6 +10,10 @@ class DashboardAchievementsDto {
   @ApiProperty() xpToNext: number;
   @ApiProperty() xpPerLevel: number;
   @ApiProperty() streakDays: number;
+  /** REQ-PRF-20.4: строка цифр шапки. */
+  @ApiProperty({ description: 'Освоено тем (mastered_at) — всего' }) masteredTopics: number;
+  @ApiProperty() badgesEarned: number;
+  @ApiProperty() badgesTotal: number;
 }
 
 class DashboardProgressDto {
@@ -68,6 +72,7 @@ class TeacherCountsDto {
   @ApiProperty() students: number;
   @ApiProperty() subjects: number;
   @ApiProperty() publishedTopics: number;
+  @ApiProperty({ description: 'Завершённых игр Battle (ведущий)' }) battlesHosted: number;
 }
 
 class TeacherReviewDto {
@@ -82,10 +87,19 @@ class TeacherAttentionDto {
   @ApiProperty() name: string;
   @ApiProperty({ type: AvatarDto }) avatar: AvatarDto;
   @ApiProperty({ type: String, format: 'date-time', nullable: true }) lastActivityAt: string | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Дней без активности; null — ещё не занимался (REQ-PRF-25)',
+  })
+  daysInactive: number | null;
 }
 
 class TeacherDeadlineDto {
   @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ format: 'uuid' }) classId: string;
+  @ApiProperty({ description: 'Сдано (REQ-PRF-25: «Сдано X из Y»)' }) submitted: number;
+  @ApiProperty({ description: 'Учеников в классе' }) total: number;
   @ApiProperty() topicTitle: string;
   @ApiProperty() className: string;
   @ApiProperty({ format: 'date-time' }) dueAt: string;
@@ -119,4 +133,18 @@ export class DashboardDto {
   @ApiProperty({ enum: ['student', 'teacher'] }) role: 'student' | 'teacher';
   @ApiProperty({ type: StudentDashboardDto, nullable: true }) student: StudentDashboardDto | null;
   @ApiProperty({ type: TeacherDashboardDto, nullable: true }) teacher: TeacherDashboardDto | null;
+}
+
+class ActivityDayDto {
+  @ApiProperty({ format: 'date' }) date: string;
+  @ApiProperty() count: number;
+}
+
+/** API-ME-15 (REQ-PRF-21) */
+export class ActivityDto {
+  @ApiProperty({ format: 'date' }) from: string;
+  @ApiProperty({ format: 'date' }) to: string;
+  @ApiProperty({ type: ActivityDayDto, isArray: true }) days: ActivityDayDto[];
+  @ApiProperty() activeDays: number;
+  @ApiProperty({ description: 'Самая длинная серия активных дней в окне' }) longestStreak: number;
 }

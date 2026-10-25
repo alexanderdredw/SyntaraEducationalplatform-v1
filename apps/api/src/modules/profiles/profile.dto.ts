@@ -23,6 +23,23 @@ export class ProfileAvatarDto extends AvatarDto {
   photoStatus: 'pending' | 'clean' | 'rejected' | null;
 }
 
+/** BR-PRF-22 (REQ-PRF-22): заполненность профиля. */
+class CompletenessDto {
+  @ApiProperty({ description: 'Процент (вниз)' }) percent: number;
+  @ApiProperty({
+    enum: ['avatar', 'lastName', 'email', 'emailVerified', 'photoOrAvatar', 'position', 'about'],
+    isArray: true,
+  })
+  missing: Array<'avatar' | 'lastName' | 'email' | 'emailVerified' | 'photoOrAvatar' | 'position' | 'about'>;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    format: 'date-time',
+    description: '«Скрыть» — до этого времени',
+  })
+  hiddenUntil: string | null;
+}
+
 class SchoolRef {
   @ApiProperty() name: string;
 }
@@ -50,6 +67,7 @@ export class ProfileDto {
   @ApiProperty({ type: String, nullable: true, format: 'date-time' }) nameChangeAvailableAt: string | null;
   @ApiProperty({ description: 'Ученик с логином и email (BR-PRF-07)' }) canRemoveEmail: boolean;
   @ApiProperty({ description: 'Своя картинка — только учитель (BR-PRF-03)' }) canUploadPhoto: boolean;
+  @ApiProperty({ type: CompletenessDto }) completeness: CompletenessDto;
 }
 
 export class ProfilePatchBody {

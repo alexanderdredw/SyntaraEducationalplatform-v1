@@ -18,6 +18,7 @@ export const navSeen = pgTable(
   },
   (t) => [
     primaryKey({ columns: [t.userId, t.section] }),
-    check('nav_seen_section', sql`${t.section} IN ('class','achievements')`),
+    // PROFILE_TZ_2 (REQ-PRF-22): 'profile_completeness' — «Скрыть» карточку заполненности на 30 дней (миграция 0011).
+    check('nav_seen_section', sql`${t.section} IN ('class','achievements','profile_completeness')`),
   ],
 );
