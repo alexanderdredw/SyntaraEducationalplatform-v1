@@ -118,7 +118,6 @@ export class AuthService {
     await this.sessions.create(user.id, userAgent, res);
     // BR-AUTH-01: аккаунт с обеими ролями — активна роль формы.
     if (dto.role) this.sessions.setActiveRole(res, dto.role);
-    await this.db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
 
     return this.me.me(
       {

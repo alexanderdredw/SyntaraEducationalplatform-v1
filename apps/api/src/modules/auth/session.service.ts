@@ -41,6 +41,8 @@ export class SessionService {
       expiresAt,
       userAgent: userAgent?.slice(0, 300) ?? null,
     });
+    // FIX-03 (PROFILE_TZ_2): каждая новая сессия — вход (в том числе регистрация со входом) — время последнего входа.
+    await this.db.update(schema.users).set({ lastLoginAt: new Date() }).where(eq(schema.users.id, userId));
     this.setCookies(res, token, randomBytes(32).toString('base64url'));
   }
 

@@ -322,4 +322,22 @@ describe('profile (integration)', () => {
       .where(eq(userProfiles.userId, support.userId));
     expect(profile?.firstName).not.toBe('Чужой');
   });
+
+  it('AC-PRF-20 FIX-03 the last sign-in is recorded at registration and at every sign-in', async () => {
+    const student = await newStudent();
+    const first = (await as(student).get('/api/me/profile').expect(200)).body.lastLoginAt as string;
+    expect(first).toEqual(expect.any(String));
+    const teacher = await newTeacher();
+    expect((await as(teacher).get('/api/me/profile').expect(200)).body.lastLoginAt).toEqual(
+      expect.any(String),
+    );
+    await new Promise((r) => setTimeout(r, 20));
+    const again = await login(
+      http,
+      (await as(student).get('/api/me/profile').expect(200)).body.login,
+      'student-pass-1',
+    );
+    const second = (await as(again).get('/api/me/profile').expect(200)).body.lastLoginAt as string;
+    expect(new Date(second).getTime()).toBeGreaterThan(new Date(first).getTime());
+  });
 });

@@ -815,7 +815,7 @@
     "account.profile.fields.about": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
     "account.profile.fields.aboutCounter": "AC-PRF-11: текста нет в docs/PROFILE_TZ.md — заглушка, ждёт подтверждения владельца",
     "account.profile.fields.login": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
-    "account.profile.fields.loginHint": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
+    "account.profile.fields.loginHint": "FIX-04: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
     "account.profile.fields.school": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
     "account.profile.fields.noSchool": "AC-PRF-11: текста нет в docs/PROFILE_TZ.md — заглушка, ждёт подтверждения владельца",
     "account.profile.fields.optional": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
@@ -933,7 +933,12 @@
     "account.overview.teacher.assign": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
     "account.overview.teacher.launchBattle": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
     "account.overview.teacher.createClass": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
-    "student.class.teacherAbout": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца"
+    "student.class.teacherAbout": "AC-PRF-11: текст из docs/PROFILE_TZ.md — ждёт подтверждения владельца",
+    "teacher.analytics.window": "FIX-02 (docs/PROFILE_TZ_2.md): склонение по числу — ICU plural; формы ждут подтверждения владельца",
+    "student.progress.progressValue": "FIX-02 (docs/PROFILE_TZ_2.md): склонение по числу — ICU plural; формы ждут подтверждения владельца",
+    "account.profile.fields.copyLogin": "FIX-04: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "account.profile.fields.copied": "FIX-04: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
+    "account.profile.fields.schoolHint": "FIX-04: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

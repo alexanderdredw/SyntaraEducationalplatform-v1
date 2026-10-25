@@ -73,3 +73,4 @@ export {
   ParticipantChip,
   ConnectionBanner,
 } from './battle';
+export { BadgeIcon, BADGE_LOOK } from './badge-icon';

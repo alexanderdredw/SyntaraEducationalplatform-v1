@@ -4,7 +4,8 @@ import { type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { BookOpen, ClipboardList, Flame, Plus, Trophy, Users, Zap } from 'lucide-react';
-import { Avatar, Badge, Button, Card, ProgressBar, Skeleton } from '@syntara/ui';
+import { Avatar, Badge, BadgeIcon, Button, Card, ProgressBar, Skeleton } from '@syntara/ui';
+import { formatSinceMonth, type Locale } from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
@@ -90,9 +91,8 @@ function ProfileCard({ profile, timeZone }: { profile: Profile; timeZone: string
   const tr = useTranslations('cabinet.roles');
   const locale = useLocale();
   const name = [profile.firstName, profile.lastName].filter(Boolean).join(' ');
-  const since = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone }).format(
-    new Date(profile.createdAt),
-  );
+  // FIX-01: «с октября 2026 г.» — общая функция packages/shared (BR-PRF-21).
+  const since = formatSinceMonth(profile.createdAt, locale as Locale, timeZone);
   return (
     <Card className="flex flex-col gap-5 sm:flex-row sm:items-center" data-testid="profile-card">
       <Avatar name={name} avatar={profile.avatar} size={96} />
@@ -251,11 +251,8 @@ function StudentOverview({ data, timeZone }: { data: StudentDashboard; timeZone:
           <ul className="flex flex-wrap gap-3">
             {data.badges.map((b) => (
               <li key={b.code} className="flex items-center gap-2 text-sm" data-testid="overview-badge">
-                {b.imageUrl ? (
-                  <img src={b.imageUrl} alt="" width={32} height={32} className="size-8 rounded-full" />
-                ) : (
-                  <Trophy aria-hidden="true" className="size-6 text-[var(--warning)]" />
-                )}
+                {/* FIX-05: та же иконка и цвет, что в «Достижениях». */}
+                <BadgeIcon code={b.code} imageUrl={b.imageUrl} size={40} />
                 {b.title}
               </li>
             ))}

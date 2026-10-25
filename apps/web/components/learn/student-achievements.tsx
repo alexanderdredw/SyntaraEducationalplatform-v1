@@ -2,8 +2,8 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { Award, Flame, Lock } from 'lucide-react';
-import { Card, Pill, ProgressBar, Skeleton } from '@syntara/ui';
+import { Flame, Lock } from 'lucide-react';
+import { BadgeIcon, Card, Pill, ProgressBar, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { useMarkSectionSeen } from './my-class';
@@ -84,21 +84,10 @@ export function StudentAchievements() {
                     data-testid="badge"
                     data-earned={b.earned}
                   >
-                    {b.imageUrl ? (
-                      <img src={b.imageUrl} alt="" className="size-14" />
-                    ) : (
-                      // TODO(OWNER): картинки бейджей (медали эталона U10) не предоставлены — значок в плитке.
-                      <span
-                        aria-hidden="true"
-                        className={
-                          b.earned
-                            ? 'inline-flex size-14 items-center justify-center rounded-[14px] bg-[var(--accent-soft)] text-[var(--accent-bright)]'
-                            : 'inline-flex size-14 items-center justify-center rounded-full bg-[var(--field)] text-[var(--text-muted)]'
-                        }
-                      >
-                        <Award className="size-8" strokeWidth={1.5} />
-                      </span>
-                    )}
+                    {/* FIX-05: своя иконка и цвет бейджа — общий BadgeIcon (тот же в «Обзоре»).
+                        TODO(OWNER): картинки бейджей (медали эталона U10) не предоставлены. */}
+                    <BadgeIcon code={b.code} earned={b.earned} imageUrl={b.imageUrl} />
+
                     <p className="mt-1 text-[13px] font-semibold leading-snug">{b.title}</p>
                     <p className="text-[11px] leading-snug text-[var(--text-muted)]">{b.condition}</p>
                     {b.earned ? null : (

@@ -132,7 +132,8 @@ test.describe('Панель ученика: «Мой класс», группы,
     await expect(subjects).toHaveCount(2);
     const botanyCard = subjects.filter({ hasText: 'Ботаника' });
     await expect(botanyCard).toContainText('Ботаника: описание');
-    await expect(botanyCard).toContainText(mc.progress.replace('{mastered}', '1').replace('{total}', '1'));
+    // FIX-02: склонение по числу — «из 1 темы».
+    await expect(botanyCard).toContainText('Освоено 1 из 1 темы');
     await expect(botanyCard).toContainText(mc.new);
     await expect(botanyCard).toHaveAttribute('href', `/ru/learn/subjects/${botany.subjectId}`);
     const upcoming = page.getByTestId('class-upcoming-item');

@@ -4,7 +4,7 @@ import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } fr
 import { useLocale, useTranslations } from 'next-intl';
 import { RadioGroup } from 'radix-ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Camera } from 'lucide-react';
+import { Camera, Copy } from 'lucide-react';
 import {
   AVATAR_COLORS,
   AVATAR_PHOTO_MIME,
@@ -440,16 +440,22 @@ function ProfileForm({ profile, timeZone }: { profile: Profile; timeZone: string
           </>
         ) : null}
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        {/* FIX-04: логин и школа — текст «только для чтения» (подпись + значение, без рамки поля) с пояснением. */}
+        <dl className="grid gap-5 sm:grid-cols-2" data-testid="profile-readonly">
           {current.login ? (
-            <Field label={t('fields.login')} hint={t('fields.loginHint')}>
-              <Input value={current.login} readOnly />
-            </Field>
+            <ReadOnlyItem
+              label={t('fields.login')}
+              value={current.login}
+              hint={t('fields.loginHint')}
+              copy={{ label: t('fields.copyLogin'), done: t('fields.copied') }}
+            />
           ) : null}
-          <Field label={t('fields.school')}>
-            <Input value={current.school?.name ?? t('fields.noSchool')} readOnly />
-          </Field>
-        </div>
+          <ReadOnlyItem
+            label={t('fields.school')}
+            value={current.school?.name ?? t('fields.noSchool')}
+            hint={t('fields.schoolHint')}
+          />
+        </dl>
       </Card>
 
       <div className="flex flex-wrap items-center gap-4">
@@ -518,6 +524,42 @@ function ChoiceGrid({
           </RadioGroup.Item>
         ))}
       </RadioGroup.Root>
+    </div>
+  );
+}
+
+/** FIX-04: значение без рамки поля, пояснение «почему нельзя изменить»; у логина — «Копировать». */
+function ReadOnlyItem({
+  label,
+  value,
+  hint,
+  copy,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  copy?: { label: string; done: string };
+}) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="flex flex-col gap-1">
+      <dt className="text-[13px] text-[var(--text-muted)]">{label}</dt>
+      <dd className="flex flex-wrap items-center gap-2 text-base font-medium break-all">
+        {value}
+        {copy ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              void navigator.clipboard?.writeText(value).then(() => setCopied(true));
+            }}
+          >
+            <Copy aria-hidden="true" className="size-3.5" />
+            {copied ? copy.done : copy.label}
+          </Button>
+        ) : null}
+      </dd>
+      <dd className="text-xs text-[var(--text-muted)]">{hint}</dd>
     </div>
   );
 }

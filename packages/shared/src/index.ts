@@ -14,3 +14,4 @@ export * from './progress';
 export * from './battle';
 export * from './nav';
 export * from './profile';
+export * from './format';

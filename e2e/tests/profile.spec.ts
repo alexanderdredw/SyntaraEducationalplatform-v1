@@ -83,7 +83,12 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
     ).toHaveAttribute('aria-current', 'page');
     // Ученик: только набор и инициалы (решение владельца 2026-10-25); логин — только просмотр.
     await expect(page.getByRole('radio', { name: p.avatarKinds.photo })).toHaveCount(0);
-    await expect(page.getByLabel(p.fields.login)).toHaveAttribute('readonly', '');
+    // FIX-04: логин и школа — текст «только для чтения», не поле; у логина — «Копировать» и пояснение.
+    const readonly = page.getByTestId('profile-readonly');
+    await expect(readonly.getByRole('textbox')).toHaveCount(0);
+    await expect(readonly).toContainText(p.fields.loginHint);
+    await expect(readonly).toContainText(p.fields.schoolHint);
+    await expect(readonly.getByRole('button', { name: p.fields.copyLogin })).toBeVisible();
     await expect(page.getByLabel(p.fields.position, { exact: false })).toHaveCount(0);
 
     await page.getByLabel(p.fields.firstName).fill('Асель-Мария');
