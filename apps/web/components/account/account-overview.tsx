@@ -125,13 +125,16 @@ function Completeness({ profile }: { profile: Profile }) {
       </div>
       <ProgressBar value={c.percent} label={t('title', { percent: c.percent })} />
       <ul className="flex flex-col gap-1.5">
-        {c.missing.map((key) => (
-          <li key={key}>
-            <AppLink href={href(key)} className={linkClass} data-testid={`completeness-${key}`}>
-              {t(`items.${key}`)} →
-            </AppLink>
-          </li>
-        ))}
+        {/* Без email подтверждать нечего: остаётся одна ссылка «Добавь email» (процент считается как есть). */}
+        {c.missing
+          .filter((key) => !(key === 'emailVerified' && c.missing.includes('email')))
+          .map((key) => (
+            <li key={key}>
+              <AppLink href={href(key)} className={linkClass} data-testid={`completeness-${key}`}>
+                {t(`items.${key}`)} →
+              </AppLink>
+            </li>
+          ))}
       </ul>
     </Card>
   );

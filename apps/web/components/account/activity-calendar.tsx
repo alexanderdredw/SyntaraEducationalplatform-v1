@@ -109,7 +109,8 @@ export function ActivityCalendar({ data, timeZone }: { data: Activity; timeZone:
           <div className="flex gap-1">
             <div
               aria-hidden="true"
-              className="grid w-6 text-[10px] text-[var(--text-muted)]"
+              // Подписи дней закреплены слева: на телефоне сетка прокручена к последним неделям.
+              className="sticky left-0 z-10 grid w-6 bg-[var(--surface)] text-[10px] text-[var(--text-muted)]"
               style={{ gridTemplateRows: `repeat(7, ${CELL}px)`, rowGap: GAP }}
             >
               {[0, 1, 2, 3, 4, 5, 6].map((d) => (
