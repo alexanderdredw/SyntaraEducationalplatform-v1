@@ -796,7 +796,7 @@ CREATE TABLE known_devices (
 | API-ME-02 | PATCH /api/me/preferences | `{ locale?, theme?, dataSaver? }` | 200 |
 | API-ME-03 | POST /api/me/active-role | `{ role }` | 200 |
 | API-ME-04 | GET /api/me/notifications | — | список (PH-32) |
-| API-ME-05 | POST /api/me/data-requests | `{ type: 'export'|'delete' }` | 201; создаёт обращение категории data_privacy (PH-08) |
+| API-ME-05 | POST, GET /api/me/data-requests | POST `{ type: 'export'|'delete' }` | POST → 201; создаёт обращение категории data_privacy (PH-08). GET (REQ-PRF-34) → свои запросы, новые сверху (≤ 20): `[{ id, type, status, createdAt, completedAt }]`; обработка запросов не меняется |
 
 ## 6.4 Учитель
 

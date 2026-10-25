@@ -1,5 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import {
   type DataRequestDto,
   getMessage,
@@ -22,7 +22,13 @@ import { type AuthUser } from '../auth/auth.types';
 import { VisibilityService } from '../content/visibility.service';
 import { AvatarService } from '../profiles/avatar.service';
 import { generatePublicNumber } from '../support/public-number';
-import { type DataRequestResponse, type MeDto, type MeStatsDto, type NotificationDto } from './me.dto';
+import {
+  type DataRequestItemDto,
+  type DataRequestResponse,
+  type MeDto,
+  type MeStatsDto,
+  type NotificationDto,
+} from './me.dto';
 
 const BUNDLES: Record<Locale, Messages> = { ru, kk, en };
 
@@ -100,6 +106,30 @@ export class MeService {
       payload: n.payload as Record<string, unknown>,
       readAt: n.readAt?.toISOString() ?? null,
       createdAt: n.createdAt.toISOString(),
+    }));
+  }
+
+  /** API-ME-05 GET (REQ-PRF-34): свои запросы копии и удаления данных, новые сверху (не больше 20). */
+  async dataRequests(user: AuthUser): Promise<DataRequestItemDto[]> {
+    const { dataSubjectRequests: dsr } = schema;
+    const rows = await this.db
+      .select({
+        id: dsr.id,
+        type: dsr.type,
+        status: dsr.status,
+        createdAt: dsr.createdAt,
+        completedAt: dsr.completedAt,
+      })
+      .from(dsr)
+      .where(and(eq(dsr.userId, user.id), inArray(dsr.type, ['export', 'delete'])))
+      .orderBy(desc(dsr.createdAt), desc(dsr.id))
+      .limit(20);
+    return rows.map((r) => ({
+      id: r.id,
+      type: r.type as 'export' | 'delete',
+      status: r.status,
+      createdAt: r.createdAt.toISOString(),
+      completedAt: r.completedAt?.toISOString() ?? null,
     }));
   }
 

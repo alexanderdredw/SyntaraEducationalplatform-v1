@@ -135,6 +135,13 @@ test.describe('Функции ученика (docs/NAV_TZ.md, часть B)', ()
         /Запрос принят\. Номер обращения: T-\d{6}-\d{4}\./,
       );
     }
+    // REQ-PRF-34 (AC-PRF-31): запросы с датой и статусом, новые сверху.
+    const items = page.getByTestId('privacy-request');
+    await expect(items).toHaveCount(2);
+    await expect(items.nth(0)).toHaveAttribute('data-type', 'delete');
+    await expect(items.nth(0)).toContainText(ru.privacy.requests.deleteSent);
+    await expect(items.nth(1)).toContainText(ru.privacy.requests.export);
+    await expect(items.nth(1)).toContainText(/Запрос принят \d\d\.\d\d\.\d{4} \d\d:\d\d/);
     await expectNoSeriousA11yViolations(page);
 
     // Ученик без email: запрос записывается, обращения нет — ответить некуда (TODO(OWNER) в API-ME-05, SPEC 8.4.9).

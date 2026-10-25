@@ -22,7 +22,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
           <li key={item}>{t(`items.${item}`)}</li>
         ))}
       </ul>
-      <PrivacyRequests />
+      <PrivacyRequests timeZone={process.env.PLATFORM_TZ ?? 'Asia/Almaty'} />
     </div>
   );
 }

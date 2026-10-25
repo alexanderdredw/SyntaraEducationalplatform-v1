@@ -219,7 +219,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["MeController_dataRequests"];
         put?: never;
         post: operations["MeController_dataRequest"];
         delete?: never;
@@ -2110,6 +2110,17 @@ export interface components {
             readAt: string | null;
             /** Format: date-time */
             createdAt: string;
+        };
+        DataRequestItemDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            type: "export" | "delete";
+            status: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            completedAt: string | null;
         };
         DataRequestBody: {
             /** @enum {string} */
@@ -4172,6 +4183,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NotificationDto"][];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MeController_dataRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataRequestItemDto"][];
                 };
             };
             /** @description Нет сессии */

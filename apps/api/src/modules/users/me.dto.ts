@@ -50,6 +50,15 @@ export class DataRequestBody {
   @ApiProperty({ enum: ['export', 'delete'] }) type: 'export' | 'delete';
 }
 
+/** API-ME-05 GET (REQ-PRF-34): свой запрос копии или удаления данных — дата и статус. */
+export class DataRequestItemDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ enum: ['export', 'delete'] }) type: 'export' | 'delete';
+  @ApiProperty() status: string;
+  @ApiProperty({ format: 'date-time' }) createdAt: string;
+  @ApiProperty({ type: String, format: 'date-time', nullable: true }) completedAt: string | null;
+}
+
 /** API-ME-05: номер обращения data_privacy (PH-08), если оно создано. */
 export class DataRequestResponse {
   @ApiProperty({ format: 'uuid' }) id: string;

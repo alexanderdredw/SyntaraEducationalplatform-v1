@@ -11,6 +11,7 @@ import { ACTIVE_ROLE_COOKIE, type AuthRequest, SESSION_TTL_MS } from '../auth/au
 import {
   ActiveRoleBody,
   DataRequestBody,
+  DataRequestItemDto,
   DataRequestResponse,
   MeDto,
   MeStatsDto,
@@ -74,6 +75,13 @@ export class MeController {
   @ApiOkResponse({ type: NotificationDto, isArray: true })
   notifications(@Req() req: AuthRequest): Promise<NotificationDto[]> {
     return this.service.notifications(req.user!);
+  }
+
+  /** API-ME-05 GET (REQ-PRF-34): свои запросы с датой и статусом. */
+  @Get('data-requests')
+  @ApiOkResponse({ type: DataRequestItemDto, isArray: true })
+  dataRequests(@Req() req: AuthRequest): Promise<DataRequestItemDto[]> {
+    return this.service.dataRequests(req.user!);
   }
 
   /** API-ME-05 */

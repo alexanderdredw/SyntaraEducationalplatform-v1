@@ -1287,6 +1287,13 @@
     "ticket": {
       "export": "Request for a copy of personal data",
       "delete": "Request to delete personal data"
+    },
+    "requests": {
+      "title": "Your requests",
+      "export": "Copy of data",
+      "delete": "Data deletion",
+      "accepted": "Request accepted {date}",
+      "deleteSent": "Deletion request sent — we will contact you"
     }
   },
   "studentAuth": {

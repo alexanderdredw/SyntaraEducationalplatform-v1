@@ -361,4 +361,21 @@ describe('account settings (integration)', () => {
     await loginAs(kid.login, 'student-pass-1', SAFARI_IPHONE);
     expect((await emails(kidEmail)).filter((e) => e.template === EMAIL_TEMPLATES.newDevice)).toHaveLength(0);
   });
+
+  it('AC-PRF-31 REQ-PRF-34 own data requests with date and status, newest first; nobody else sees them', async () => {
+    const student = await newStudent();
+    await as(student).send('post', '/api/me/data-requests', { type: 'export' }).expect(201);
+    await as(student).send('post', '/api/me/data-requests', { type: 'delete' }).expect(201);
+    const list = (await as(student).get('/api/me/data-requests').expect(200)).body as Array<{
+      type: string;
+      status: string;
+      createdAt: string;
+      completedAt: string | null;
+    }>;
+    expect(list.map((r) => r.type)).toEqual(['delete', 'export']);
+    expect(list[0]).toMatchObject({ status: 'new', completedAt: null });
+    expect(Date.parse(list[0]!.createdAt)).not.toBeNaN();
+    const other = await newStudent();
+    expect((await as(other).get('/api/me/data-requests').expect(200)).body).toEqual([]);
+  });
 });

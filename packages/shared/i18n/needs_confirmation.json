@@ -1019,7 +1019,12 @@
     "account.settings.security.signOutTitle": "REQ-PRF-32: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
     "account.settings.security.signOutText": "REQ-PRF-32: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
     "account.settings.security.signedOut": "REQ-PRF-32: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
-    "account.settings.prefs.saved": "REQ-PRF-33: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца"
+    "account.settings.prefs.saved": "REQ-PRF-33: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "privacy.requests.title": "REQ-PRF-34: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
+    "privacy.requests.export": "REQ-PRF-34: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
+    "privacy.requests.delete": "REQ-PRF-34: текста нет в docs/PROFILE_TZ.md и PROFILE_TZ_2.md — заглушка, ждёт подтверждения владельца",
+    "privacy.requests.accepted": "REQ-PRF-34: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца",
+    "privacy.requests.deleteSent": "REQ-PRF-34: текст из docs/PROFILE_TZ.md или PROFILE_TZ_2.md — ждёт подтверждения владельца"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",
