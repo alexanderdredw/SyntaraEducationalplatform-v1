@@ -30,7 +30,7 @@ describe('migrations (integration)', () => {
                   where n.nspname = 'public' and t.typtype = 'e'`,
     );
 
-  it('AG-09 applies all migrations on a clean database (section 5: 62 tables, 18 enums)', async () => {
+  it('AG-09 applies all migrations on a clean database (section 5: 63 tables, 18 enums)', async () => {
     await migrateUp(db);
     expect(await appliedMigrations(db)).toEqual([
       '0000_extensions_roles',
@@ -43,13 +43,15 @@ describe('migrations (integration)', () => {
       '0007_battle',
       '0008_battle_class_optional',
       '0009_nav_seen',
+      '0010_profiles',
     ]);
-    expect(await tables()).toBe(62);
+    expect(await tables()).toBe(63);
     expect(await enums()).toBe(18);
   });
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0010_profiles',
       '0009_nav_seen',
       '0008_battle_class_optional',
       '0007_battle',
@@ -74,7 +76,18 @@ describe('migrations (integration)', () => {
 
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
+    expect(await tables()).toBe(63);
+    // 0010: профили (5.11) — откат удаляет таблицу и значение 'avatar' перечисления media_kind.
+    const avatarKind = () =>
+      count(
+        db,
+        sql`select count(*) as n from pg_enum e join pg_type t on t.oid = e.enumtypid
+                     where t.typname = 'media_kind' and e.enumlabel = 'avatar'`,
+      );
+    expect(await avatarKind()).toBe(1);
+    expect(await rollback(db, 1)).toEqual(['0010_profiles']);
     expect(await tables()).toBe(62);
+    expect(await avatarKind()).toBe(0);
     // 0009: nav_seen (REQ-NAV-14) с RLS «только свои»; откат удаляет только её.
     expect(
       await count(
@@ -129,6 +142,50 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(10);
+    expect(await appliedMigrations(db)).toHaveLength(11);
+  });
+
+  it('AC-PRF-01 0010 moves every existing name into the profile and keeps display_name; rollback keeps names', async () => {
+    expect(await rollback(db, 1)).toEqual(['0010_profiles']);
+    const names = [
+      'Асель',
+      'Ерлан Сапарович Нурланов',
+      '  Айгерім   Қасымова ',
+      "O'Brien Mary-Jane",
+      'Ж'.repeat(45) + ' Б',
+    ];
+    for (const [i, name] of names.entries()) {
+      await db.execute(
+        sql`insert into users (id, email, display_name) values (gen_random_uuid(), ${`prf${i}@example.com`}, ${name})`,
+      );
+    }
+    await migrateUp(db);
+    const rows = await db.execute<{
+      display_name: string;
+      first_name: string;
+      last_name: string | null;
+      avatar_kind: string;
+      avatar_color: string;
+    }>(
+      sql`select u.display_name, p.first_name, p.last_name, p.avatar_kind, p.avatar_color
+          from users u join user_profiles p on p.user_id = u.id where u.email like 'prf%' order by u.email`,
+    );
+    expect(rows.map((r) => [r.display_name, r.first_name, r.last_name])).toEqual([
+      ['Асель', 'Асель', null],
+      ['Ерлан Сапарович Нурланов', 'Ерлан', 'Сапарович Нурланов'],
+      ['  Айгерім   Қасымова ', 'Айгерім', 'Қасымова'],
+      ["O'Brien Mary-Jane", "O'Brien", 'Mary-Jane'],
+      ['Ж'.repeat(45) + ' Б', 'Ж'.repeat(40), 'Б'],
+    ]);
+    expect(rows.every((r) => r.avatar_kind === 'initials' && r.avatar_color.length > 0)).toBe(true);
+    expect(
+      await count(
+        db,
+        sql`select count(*) as n from users u left join user_profiles p on p.user_id = u.id where p.user_id is null`,
+      ),
+    ).toBe(0);
+    await rollback(db, 1);
+    expect(await count(db, sql`select count(*) as n from users where email like 'prf%'`)).toBe(names.length);
+    await migrateUp(db);
   });
 });

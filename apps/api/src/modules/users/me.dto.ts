@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LOCALES, type Locale, UserRole } from '@syntara/shared';
+import { AvatarDto } from '../profiles/profile.dto';
 
 class PreferencesDto {
   @ApiProperty({ enum: LOCALES }) locale: Locale;
@@ -7,7 +8,7 @@ class PreferencesDto {
   @ApiProperty() dataSaver: boolean;
 }
 
-/** API-ME-01: MeDto { id, displayName, initials, roles[], activeRole, preferences }. */
+/** API-ME-01: MeDto { id, displayName, initials, roles[], activeRole, preferences, avatar }. */
 export class MeDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() displayName: string;
@@ -23,6 +24,8 @@ export class MeDto {
   emailVerified: boolean | null;
   @ApiProperty({ description: 'Временный пароль от учителя — нужно сменить (API-AUTH-05)' })
   mustChangePassword: boolean;
+  @ApiProperty({ type: AvatarDto, description: 'Аватар (REQ-PRF-11): хедер, панель, меню профиля' })
+  avatar: AvatarDto;
 }
 
 export class PreferencesBody {

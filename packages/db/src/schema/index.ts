@@ -9,3 +9,4 @@ export * from './support';
 export * from './system';
 export * from './battle';
 export * from './nav';
+export * from './profiles';

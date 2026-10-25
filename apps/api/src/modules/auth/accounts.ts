@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { type Locale, type UserRole } from '@syntara/shared';
-import { schema } from '@syntara/db';
+import { profileFor, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { isUniqueViolation, type Tx } from '../../common/idempotency';
 
@@ -19,12 +19,12 @@ export interface NewAccount {
 export const CONSENT_TERMS_PRIVACY = 'terms_privacy';
 
 /**
- * Создание аккаунта в транзакции: пользователь, роль, предпочтения (язык регистрации) и согласие.
+ * Создание аккаунта в транзакции: пользователь, роль, предпочтения (язык регистрации), профиль и согласие.
  * Аккаунт без email — child-safe (5.3 CHECK users_email_or_child_safe, PH-44).
  * Занятый email/логин → 409 с ключом ошибки поля.
  */
 export async function createAccount(tx: Tx, account: NewAccount): Promise<string> {
-  const { users, userRoles, userPreferences, consents } = schema;
+  const { users, userRoles, userPreferences, userProfiles, consents } = schema;
   let userId: string;
   try {
     // Точка сохранения: нарушение уникальности не должно обрывать внешнюю транзакцию.
@@ -51,6 +51,8 @@ export async function createAccount(tx: Tx, account: NewAccount): Promise<string
   }
   await tx.insert(userRoles).values({ userId, role: account.role, schoolId: account.schoolId ?? null });
   await tx.insert(userPreferences).values({ userId, locale: account.locale });
+  // 5.11: профиль — имя и фамилия из введённого имени, аватар — инициалы случайного цвета (BR-PRF-02).
+  await tx.insert(userProfiles).values(profileFor(userId, account.displayName));
   // TODO(OWNER): согласие родителя для учеников-детей (PH-44 «требует уточнения»); сейчас фиксируется согласие самого пользователя.
   await tx.insert(consents).values({
     userId,

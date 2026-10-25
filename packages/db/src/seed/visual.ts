@@ -25,12 +25,14 @@ import {
   topicTranslations,
   topicVersions,
   userPreferences,
+  userProfiles,
   userRoles,
   users,
   xpLedger,
 } from '../schema';
 import { baseIds } from './demo';
 import { assertNotProduction, hashPassword, rows } from './helpers';
+import { profileFor, stableAvatarColor } from '../profiles';
 import { seedId } from './ids';
 
 /**
@@ -96,6 +98,10 @@ export async function seedVisual(db: Database): Promise<void> {
         .onConflictDoNothing();
     }
     await tx.insert(userPreferences).values({ userId: I.alexandr, theme: 'dark' }).onConflictDoNothing();
+    await tx
+      .insert(userProfiles)
+      .values(profileFor(I.alexandr, 'Alexandr', stableAvatarColor(I.alexandr)))
+      .onConflictDoNothing();
 
     // T04: классы «9» (1 ученик), «5», «7».
     for (const [id, name] of [

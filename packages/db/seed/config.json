@@ -424,6 +424,17 @@
           "digits": "123456789"
         }
       }
+    },
+    {
+      "key": "profile",
+      "note": "PH-46",
+      "value": {
+        "student_can_change_name": true,
+        "student_can_change_login": false,
+        "student_about": false,
+        "school_editable": false,
+        "notifications_section": false
+      }
     }
   ]
 }

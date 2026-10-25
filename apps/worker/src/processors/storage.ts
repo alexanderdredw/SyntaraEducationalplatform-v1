@@ -1,4 +1,4 @@
-import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { type ObjectStorage } from './file-scan';
 
 /** S3-совместимое хранилище (MinIO локально); ключи доступа — только в окружении worker (AG-10). */
@@ -18,6 +18,11 @@ export function createS3Storage(env: {
     async read(key) {
       const res = await client.send(new GetObjectCommand({ Bucket: env.S3_BUCKET, Key: key }));
       return Buffer.from(await res.Body!.transformToByteArray());
+    },
+    async put(key, data, contentType) {
+      await client.send(
+        new PutObjectCommand({ Bucket: env.S3_BUCKET, Key: key, Body: data, ContentType: contentType }),
+      );
     },
     async remove(key) {
       await client.send(new DeleteObjectCommand({ Bucket: env.S3_BUCKET, Key: key }));

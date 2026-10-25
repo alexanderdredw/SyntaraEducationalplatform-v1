@@ -15,7 +15,7 @@ describe('worker queues', () => {
     mailFrom: 'noreply@syntara-edu.me',
     tokens: { set: async () => 'OK' },
     appBaseUrl: 'http://localhost:3000',
-    storage: { read: async () => Buffer.alloc(0), remove: async () => undefined },
+    storage: { read: async () => Buffer.alloc(0), put: async () => undefined, remove: async () => undefined },
     scanners: { antivirus: async () => ({ infected: false }), macros: async () => ({ macros: false }) },
     publish: async () => 0,
   };

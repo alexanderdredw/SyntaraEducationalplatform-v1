@@ -1739,6 +1739,174 @@
         ]
       }
     },
+    "/api/me/profile": {
+      "get": {
+        "operationId": "ProfileController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      },
+      "patch": {
+        "operationId": "ProfileController_patch",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfilePatchBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "429": {
+            "description": "Имя меняли 3 раза за 30 дней (fieldErrors.firstName = nameChangeLimit)"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/avatar/upload-url": {
+      "post": {
+        "operationId": "ProfileController_uploadUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvatarUploadUrlBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUrlResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Ученик не загружает картинку (решение владельца 2026-10-25)"
+          },
+          "413": {
+            "description": "Больше 2 МБ"
+          },
+          "422": {
+            "description": "Не JPG/PNG/WEBP"
+          },
+          "429": {
+            "description": "5 загрузок за 24 часа"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/avatar": {
+      "put": {
+        "operationId": "ProfileController_putAvatar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvatarPutBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Своя картинка — только учитель"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/teacher/classes": {
       "get": {
         "operationId": "TeacherClassesController_list",
@@ -5596,6 +5764,81 @@
           "dataSaver"
         ]
       },
+      "AvatarDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "initials",
+              "preset",
+              "photo"
+            ]
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "fox",
+              "owl",
+              "cat",
+              "bear",
+              "rabbit",
+              "penguin",
+              "whale",
+              "turtle",
+              "rocket",
+              "book",
+              "planet",
+              "atom",
+              "compass",
+              "leaf",
+              "bulb",
+              "palette",
+              "robot",
+              "ghost",
+              "blob",
+              "star",
+              "cube",
+              "wave",
+              "sun",
+              "gem"
+            ],
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "blue",
+              "violet",
+              "teal",
+              "green",
+              "amber",
+              "orange",
+              "pink",
+              "slate"
+            ]
+          },
+          "initials": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "photoUrlSmall": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "kind",
+          "preset",
+          "color",
+          "initials",
+          "photoUrl",
+          "photoUrlSmall"
+        ]
+      },
       "MeDto": {
         "type": "object",
         "properties": {
@@ -5641,6 +5884,14 @@
           "mustChangePassword": {
             "type": "boolean",
             "description": "Временный пароль от учителя — нужно сменить (API-AUTH-05)"
+          },
+          "avatar": {
+            "description": "Аватар (REQ-PRF-11): хедер, панель, меню профиля",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AvatarDto"
+              }
+            ]
           }
         },
         "required": [
@@ -5651,7 +5902,8 @@
           "activeRole",
           "preferences",
           "emailVerified",
-          "mustChangePassword"
+          "mustChangePassword",
+          "avatar"
         ]
       },
       "LoginResponse": {
@@ -7123,6 +7375,314 @@
         },
         "required": [
           "message"
+        ]
+      },
+      "ProfileAvatarDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "initials",
+              "preset",
+              "photo"
+            ]
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "fox",
+              "owl",
+              "cat",
+              "bear",
+              "rabbit",
+              "penguin",
+              "whale",
+              "turtle",
+              "rocket",
+              "book",
+              "planet",
+              "atom",
+              "compass",
+              "leaf",
+              "bulb",
+              "palette",
+              "robot",
+              "ghost",
+              "blob",
+              "star",
+              "cube",
+              "wave",
+              "sun",
+              "gem"
+            ],
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "blue",
+              "violet",
+              "teal",
+              "green",
+              "amber",
+              "orange",
+              "pink",
+              "slate"
+            ]
+          },
+          "initials": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "photoUrlSmall": {
+            "type": "string",
+            "nullable": true
+          },
+          "photoStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "clean",
+              "rejected"
+            ],
+            "nullable": true,
+            "description": "Статус картинки учителя (BR-PRF-03): pending — показываются инициалы; rejected — «Картинка не прошла проверку»"
+          }
+        },
+        "required": [
+          "kind",
+          "preset",
+          "color",
+          "initials",
+          "photoUrl",
+          "photoUrlSmall",
+          "photoStatus"
+        ]
+      },
+      "SchoolRef": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "position": {
+            "type": "string",
+            "nullable": true,
+            "description": "Только учитель (BR-PRF-04)"
+          },
+          "about": {
+            "type": "string",
+            "nullable": true,
+            "description": "Только учитель (BR-PRF-04)"
+          },
+          "avatar": {
+            "$ref": "#/components/schemas/ProfileAvatarDto"
+          },
+          "login": {
+            "type": "string",
+            "nullable": true,
+            "description": "Логин ученика — только просмотр (BR-PRF-05)"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "school": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolRef"
+              }
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "teacher"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "nameEditable": {
+            "type": "boolean",
+            "description": "Можно менять имя (PH-46 student_can_change_name)"
+          },
+          "nameChangesLeft": {
+            "type": "number",
+            "description": "Осталось изменений имени в окне 30 дней (BR-PRF-01)"
+          },
+          "nameChangeAvailableAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "canRemoveEmail": {
+            "type": "boolean",
+            "description": "Ученик с логином и email (BR-PRF-07)"
+          },
+          "canUploadPhoto": {
+            "type": "boolean",
+            "description": "Своя картинка — только учитель (BR-PRF-03)"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "position",
+          "about",
+          "avatar",
+          "login",
+          "email",
+          "emailVerified",
+          "school",
+          "role",
+          "createdAt",
+          "lastLoginAt",
+          "nameEditable",
+          "nameChangesLeft",
+          "nameChangeAvailableAt",
+          "canRemoveEmail",
+          "canUploadPhoto"
+        ]
+      },
+      "ProfilePatchBody": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "position": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "about": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      },
+      "AvatarUploadUrlBody": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/webp"
+            ]
+          },
+          "size": {
+            "type": "number",
+            "description": "Байты, ≤ 2 МБ"
+          }
+        },
+        "required": [
+          "fileName",
+          "mime",
+          "size"
+        ]
+      },
+      "AvatarPutBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "initials",
+              "preset",
+              "photo"
+            ]
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "fox",
+              "owl",
+              "cat",
+              "bear",
+              "rabbit",
+              "penguin",
+              "whale",
+              "turtle",
+              "rocket",
+              "book",
+              "planet",
+              "atom",
+              "compass",
+              "leaf",
+              "bulb",
+              "palette",
+              "robot",
+              "ghost",
+              "blob",
+              "star",
+              "cube",
+              "wave",
+              "sun",
+              "gem"
+            ]
+          },
+          "mediaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "color": {
+            "type": "string",
+            "enum": [
+              "blue",
+              "violet",
+              "teal",
+              "green",
+              "amber",
+              "orange",
+              "pink",
+              "slate"
+            ]
+          }
+        },
+        "required": [
+          "kind"
         ]
       },
       "TeacherClassDto": {

@@ -31,7 +31,7 @@ export const SupportCategory = z.enum([
   'other',
 ]);
 export const RequestStatus = z.enum(['new', 'in_progress', 'contacted', 'onboarded', 'rejected']);
-export const MediaKind = z.enum(['cover', 'material', 'illustration', 'brand']);
+export const MediaKind = z.enum(['cover', 'material', 'illustration', 'brand', 'avatar']);
 export const ScanStatus = z.enum(['pending', 'clean', 'rejected']);
 export const AiContext = z.enum(['topic_tutor', 'general_tutor']);
 export const AiRole = z.enum(['user', 'assistant']);

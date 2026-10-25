@@ -71,6 +71,13 @@
       "when": 1792835486552,
       "tag": "0009_nav_seen",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792916607082,
+      "tag": "0010_profiles",
+      "breakpoints": true
     }
   ]
 }

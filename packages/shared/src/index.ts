@@ -13,3 +13,4 @@ export * from './gamification';
 export * from './progress';
 export * from './battle';
 export * from './nav';
+export * from './profile';

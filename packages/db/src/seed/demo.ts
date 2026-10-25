@@ -13,12 +13,14 @@ import {
   subjects,
   topics,
   userPreferences,
+  userProfiles,
   userRoles,
   schools,
   users,
 } from '../schema';
 import { seedId } from './ids';
 import { assertNotProduction, hashPassword, rows, type Tr } from './helpers';
+import { profileFor, stableAvatarColor } from '../profiles';
 
 /**
  * Seed `demo`: справочники, учётные записи для разработки и базовая программа платформы — импортом файлов
@@ -344,6 +346,11 @@ export async function seedDemo(db: Database, media: MediaStore | null = null): P
         .values({ id: seedId(`role:${user.id}:${role}`), userId: user.id, role })
         .onConflictDoNothing();
       await tx.insert(userPreferences).values({ userId: user.id }).onConflictDoNothing();
+      // 5.11: профиль (имя из display_name, инициалы).
+      await tx
+        .insert(userProfiles)
+        .values(profileFor(user.id, user.displayName, stableAvatarColor(user.id)))
+        .onConflictDoNothing();
     }
   });
 

@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import sharp from 'sharp';
 import { type Job } from 'bullmq';
 import { and, eq } from 'drizzle-orm';
 import { type Logger } from 'pino';
@@ -7,6 +8,8 @@ import {
   OFFICE_EXTENSIONS,
   type OutboxFileDeletePayload,
   type OutboxFileScanPayload,
+  avatarSmallKey,
+  PROFILE_LIMITS,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { type Scanners } from './scanners';
@@ -14,6 +17,7 @@ import { type Scanners } from './scanners';
 /** Чтение и удаление объектов хранилища (S3, раздел 2.1). */
 export interface ObjectStorage {
   read(key: string): Promise<Buffer>;
+  put(key: string, data: Buffer, contentType: string): Promise<void>;
   remove(key: string): Promise<void>;
 }
 
@@ -61,6 +65,20 @@ export function hasMacroParts(data: Buffer): boolean {
   });
 }
 
+/**
+ * BR-PRF-03: картинка-аватар учителя перекодируется в WEBP 256×256 и 64×64 (обрезка по центру в квадрат). Поворот по
+ * EXIF применяется к пикселям, затем все метаданные отбрасываются (sharp не переносит EXIF, XMP, ICC и GPS без
+ * withMetadata). Не картинка или битый файл — исключение (файл отклоняется).
+ */
+export async function reencodeAvatar(data: Buffer): Promise<{ large: Buffer; small: Buffer }> {
+  const [big, little] = PROFILE_LIMITS.photoSizes;
+  const source = sharp(data, { failOn: 'error', limitInputPixels: 40_000_000, pages: 1 }).rotate();
+  const encode = (size: number) =>
+    source.clone().resize(size, size, { fit: 'cover', position: 'centre' }).webp({ quality: 85 }).toBuffer();
+  const [large, small] = await Promise.all([encode(big), encode(little)]);
+  return { large, small };
+}
+
 export interface FileScanDeps {
   db: Database;
   storage: ObjectStorage;
@@ -83,18 +101,38 @@ export async function scanFile(
 
   const data = await deps.storage.read(media.storageKey);
   const office = (OFFICE_EXTENSIONS as readonly string[]).includes(extensionOf(media.originalName));
-  let reason: 'macro' | 'virus' | null = null;
+  let reason: 'macro' | 'virus' | 'image' | null = null;
   if (office && (hasMacroParts(data) || (await deps.scanners.macros(data)).macros)) reason = 'macro';
   if (!reason && (await deps.scanners.antivirus(data)).infected) reason = 'virus';
+
+  // BR-PRF-03: хранится только перекодированная картинка — исходный объект перезаписывается версией 256 px.
+  let stored = data;
+  if (!reason && media.kind === 'avatar') {
+    try {
+      const { large, small } = await reencodeAvatar(data);
+      await deps.storage.put(avatarSmallKey(media.storageKey), small, 'image/webp');
+      await deps.storage.put(media.storageKey, large, 'image/webp');
+      stored = large;
+    } catch {
+      reason = 'image';
+    }
+  }
 
   const status = reason ? 'rejected' : 'clean';
   const updated = await deps.db
     .update(mediaFiles)
-    .set({ scanStatus: status, sha256: createHash('sha256').update(data).digest() })
+    .set({
+      scanStatus: status,
+      sha256: createHash('sha256').update(stored).digest(),
+      ...(media.kind === 'avatar' && !reason ? { mime: 'image/webp', sizeBytes: stored.length } : {}),
+    })
     .where(and(eq(mediaFiles.id, media.id), eq(mediaFiles.scanStatus, 'pending')))
     .returning({ id: mediaFiles.id });
   if (updated.length === 0) return 'skipped';
-  if (reason) await deps.storage.remove(media.storageKey);
+  if (reason) {
+    await deps.storage.remove(media.storageKey);
+    if (media.kind === 'avatar') await deps.storage.remove(avatarSmallKey(media.storageKey));
+  }
   deps.logger.info({ mediaId: media.id, status, reason }, 'file scanned');
   return status;
 }

@@ -113,7 +113,7 @@ export function SegmentedControl({
           value={o.value}
           disabled={o.disabled}
           className={cn(
-            'min-h-[var(--control-h)] rounded-[var(--radius-pill)] px-3.5 text-sm text-[var(--text-muted)] not-disabled:hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=on]:bg-[var(--accent-strong)] data-[state=on]:text-white',
+            'min-h-[var(--control-h)] rounded-[var(--radius-pill)] px-3.5 text-sm text-[var(--text-muted)] not-disabled:data-[state=off]:hover:text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=on]:bg-[var(--accent-strong)] data-[state=on]:text-white',
             // Градиент к более светлому синему (референс UX-10), белый текст остаётся читаемым.
             stretch &&
               'flex-1 text-[15px] font-semibold data-[state=on]:bg-[linear-gradient(90deg,var(--accent-strong),var(--accent))]',

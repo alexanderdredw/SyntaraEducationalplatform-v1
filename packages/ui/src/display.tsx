@@ -1,7 +1,8 @@
 'use client';
 
-import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
+import { type CSSProperties, forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { Progress } from 'radix-ui';
+import { AVATAR_ART } from './avatar-presets';
 import { cn } from './cn';
 
 /**
@@ -195,25 +196,128 @@ export function IconTile({ children, size = 'md' }: { children: ReactNode; size?
   );
 }
 
+/** Аватар пользователя в ответах API (6.7 AvatarDto). */
+export interface AvatarData {
+  kind: 'initials' | 'preset' | 'photo';
+  preset: string | null;
+  color: string;
+  initials: string;
+  photoUrl: string | null;
+  photoUrlSmall: string | null;
+}
+
+/** REQ-PRF-11: размеры аватара. */
+export type AvatarSize = 24 | 32 | 40 | 64 | 96;
+
+/** Цвета подложки и знака аватара (BR-PRF-02): токены --avatar-* обеих тем. */
+export function avatarColorStyle(color: string): CSSProperties {
+  const tone = `var(--avatar-${color}, var(--avatar-slate))`;
+  const background = `color-mix(in srgb, ${tone} var(--avatar-bg-mix), var(--surface))`;
+  return {
+    background,
+    color: `color-mix(in srgb, ${tone} var(--avatar-ink-mix), var(--avatar-ink-base))`,
+    ['--avatar-cut' as string]: background,
+  };
+}
+
+/** Рисунок аватара набора без подложки — для выбора аватара и самого Avatar. */
+export function AvatarArt({ preset, className }: { preset: string; className?: string }) {
+  const item = AVATAR_ART[preset];
+  if (!item) return null;
+  return (
+    <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" className={className}>
+      {item.art}
+    </svg>
+  );
+}
+
+/** Цвет подложки аватара набора (у каждого рисунка — свой из 8 токенов). */
+export const avatarPresetColor = (preset: string) => AVATAR_ART[preset]?.color ?? 'slate';
+
 /**
- * Avatar — фото участника или запасной вариант с инициалами на цветной подложке (UX-08): при отсутствии
- * фото или ошибке загрузки не показывается значок битой картинки. `alt` — имя человека.
+ * Avatar (REQ-PRF-11): `avatar` — аватар пользователя (круг): своя картинка, рисунок набора или инициалы на цветной
+ * подложке; при ошибке загрузки картинки — инициалы (без значка битой картинки). `alt`/`aria-label` — имя;
+ * `decorative` — имя уже написано рядом, аватар скрыт от экранного диктора.
+ * Без `avatar` — фото участника команды или инициалы на квадрате (UX-08, страница «О проекте»).
  */
 export function Avatar({
   src,
   name,
   initials,
   tone = 'accent',
+  avatar,
+  size = 64,
+  decorative = false,
+  className,
 }: {
   src?: string | null;
   name: string;
-  initials: string;
+  initials?: string;
   tone?: 'accent' | 'warning' | 'success';
+  avatar?: AvatarData | null;
+  size?: AvatarSize;
+  decorative?: boolean;
+  className?: string;
 }) {
-  const [failed, setFailed] = useState(false);
-  const box = 'inline-flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[14px]';
-  if (src && !failed) {
-    return <img src={src} alt={name} className={cn(box, 'object-cover')} onError={() => setFailed(true)} />;
+  const [failed, setFailed] = useState<string | null>(null);
+  if (avatar) {
+    const label = decorative ? { 'aria-hidden': true as const } : { role: 'img', 'aria-label': name };
+    const box = cn(
+      'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full',
+      className,
+    );
+    const dims = { width: size, height: size };
+    const photo =
+      avatar.kind === 'photo'
+        ? size <= 40
+          ? (avatar.photoUrlSmall ?? avatar.photoUrl)
+          : avatar.photoUrl
+        : null;
+    if (photo && failed !== photo) {
+      return (
+        <img
+          src={photo}
+          alt={decorative ? '' : name}
+          width={size}
+          height={size}
+          loading="lazy"
+          decoding="async"
+          className={cn(box, 'object-cover')}
+          style={dims}
+          onError={() => setFailed(photo)}
+        />
+      );
+    }
+    if (avatar.kind === 'preset' && avatar.preset && AVATAR_ART[avatar.preset]) {
+      return (
+        <span
+          {...label}
+          data-avatar="preset"
+          className={box}
+          style={{ ...dims, ...avatarColorStyle(avatarPresetColor(avatar.preset)) }}
+        >
+          <AvatarArt preset={avatar.preset} className="size-[78%]" />
+        </span>
+      );
+    }
+    return (
+      <span
+        {...label}
+        data-avatar="initials"
+        className={cn(box, 'font-semibold leading-none select-none')}
+        style={{ ...dims, fontSize: Math.max(10, Math.round(size * 0.4)), ...avatarColorStyle(avatar.color) }}
+      >
+        {size <= 24 ? avatar.initials.charAt(0) : avatar.initials}
+      </span>
+    );
+  }
+
+  const box = cn(
+    'inline-flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-[14px]',
+    className,
+  );
+  if (src && failed !== src) {
+    return <img src={src} alt={name} className={cn(box, 'object-cover')} onError={() => setFailed(src)} />;
   }
   const tones = {
     accent: 'bg-[var(--accent-soft)] text-[var(--accent-bright)]',

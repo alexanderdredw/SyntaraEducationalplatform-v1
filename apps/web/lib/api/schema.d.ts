@@ -644,6 +644,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ProfileController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["ProfileController_patch"];
+        trace?: never;
+    };
+    "/api/me/avatar/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProfileController_uploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["ProfileController_putAvatar"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/teacher/classes": {
         parameters: {
             query?: never;
@@ -1860,6 +1908,17 @@ export interface components {
             theme: "system" | "light" | "dark";
             dataSaver: boolean;
         };
+        AvatarDto: {
+            /** @enum {string} */
+            kind: "initials" | "preset" | "photo";
+            /** @enum {string|null} */
+            preset: "fox" | "owl" | "cat" | "bear" | "rabbit" | "penguin" | "whale" | "turtle" | "rocket" | "book" | "planet" | "atom" | "compass" | "leaf" | "bulb" | "palette" | "robot" | "ghost" | "blob" | "star" | "cube" | "wave" | "sun" | "gem" | null;
+            /** @enum {string} */
+            color: "blue" | "violet" | "teal" | "green" | "amber" | "orange" | "pink" | "slate";
+            initials: string;
+            photoUrl: string | null;
+            photoUrlSmall: string | null;
+        };
         MeDto: {
             /** Format: uuid */
             id: string;
@@ -1873,6 +1932,8 @@ export interface components {
             emailVerified: boolean | null;
             /** @description Временный пароль от учителя — нужно сменить (API-AUTH-05) */
             mustChangePassword: boolean;
+            /** @description Аватар (REQ-PRF-11): хедер, панель, меню профиля */
+            avatar: components["schemas"]["AvatarDto"];
         };
         LoginResponse: {
             user: components["schemas"]["MeDto"];
@@ -2315,6 +2376,78 @@ export interface components {
         PublicAssistantBody: {
             message: string;
             history?: components["schemas"]["ChatMessageBody"][];
+        };
+        ProfileAvatarDto: {
+            /** @enum {string} */
+            kind: "initials" | "preset" | "photo";
+            /** @enum {string|null} */
+            preset: "fox" | "owl" | "cat" | "bear" | "rabbit" | "penguin" | "whale" | "turtle" | "rocket" | "book" | "planet" | "atom" | "compass" | "leaf" | "bulb" | "palette" | "robot" | "ghost" | "blob" | "star" | "cube" | "wave" | "sun" | "gem" | null;
+            /** @enum {string} */
+            color: "blue" | "violet" | "teal" | "green" | "amber" | "orange" | "pink" | "slate";
+            initials: string;
+            photoUrl: string | null;
+            photoUrlSmall: string | null;
+            /**
+             * @description Статус картинки учителя (BR-PRF-03): pending — показываются инициалы; rejected — «Картинка не прошла проверку»
+             * @enum {string|null}
+             */
+            photoStatus: "pending" | "clean" | "rejected" | null;
+        };
+        SchoolRef: {
+            name: string;
+        };
+        ProfileDto: {
+            firstName: string;
+            lastName: string | null;
+            /** @description Только учитель (BR-PRF-04) */
+            position: string | null;
+            /** @description Только учитель (BR-PRF-04) */
+            about: string | null;
+            avatar: components["schemas"]["ProfileAvatarDto"];
+            /** @description Логин ученика — только просмотр (BR-PRF-05) */
+            login: string | null;
+            email: string | null;
+            emailVerified: boolean | null;
+            school: components["schemas"]["SchoolRef"] | null;
+            /** @enum {string} */
+            role: "student" | "teacher";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            lastLoginAt: string | null;
+            /** @description Можно менять имя (PH-46 student_can_change_name) */
+            nameEditable: boolean;
+            /** @description Осталось изменений имени в окне 30 дней (BR-PRF-01) */
+            nameChangesLeft: number;
+            /** Format: date-time */
+            nameChangeAvailableAt: string | null;
+            /** @description Ученик с логином и email (BR-PRF-07) */
+            canRemoveEmail: boolean;
+            /** @description Своя картинка — только учитель (BR-PRF-03) */
+            canUploadPhoto: boolean;
+        };
+        ProfilePatchBody: {
+            firstName?: string;
+            lastName?: string;
+            position?: string;
+            about?: string;
+        };
+        AvatarUploadUrlBody: {
+            fileName: string;
+            /** @enum {string} */
+            mime: "image/jpeg" | "image/png" | "image/webp";
+            /** @description Байты, ≤ 2 МБ */
+            size: number;
+        };
+        AvatarPutBody: {
+            /** @enum {string} */
+            kind: "initials" | "preset" | "photo";
+            /** @enum {string} */
+            preset?: "fox" | "owl" | "cat" | "bear" | "rabbit" | "penguin" | "whale" | "turtle" | "rocket" | "book" | "planet" | "atom" | "compass" | "leaf" | "bulb" | "palette" | "robot" | "ghost" | "blob" | "star" | "cube" | "wave" | "sun" | "gem";
+            /** Format: uuid */
+            mediaId?: string;
+            /** @enum {string} */
+            color?: "blue" | "violet" | "teal" | "green" | "amber" | "orange" | "pink" | "slate";
         };
         TeacherClassDto: {
             /** Format: uuid */
@@ -5025,6 +5158,178 @@ export interface operations {
             };
             /** @description Превышен лимит; retryAfterSeconds в теле */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProfileController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProfileController_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfilePatchBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Имя меняли 3 раза за 30 дней (fieldErrors.firstName = nameChangeLimit) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProfileController_uploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvatarUploadUrlBody"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadUrlResponse"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ученик не загружает картинку (решение владельца 2026-10-25) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Больше 2 МБ */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Не JPG/PNG/WEBP */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 5 загрузок за 24 часа */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProfileController_putAvatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvatarPutBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Своя картинка — только учитель */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

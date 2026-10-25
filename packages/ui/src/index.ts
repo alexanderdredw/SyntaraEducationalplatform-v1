@@ -14,7 +14,13 @@ export {
   Eyebrow,
   IconTile,
   Avatar,
+  type AvatarData,
+  type AvatarSize,
+  AvatarArt,
+  avatarColorStyle,
+  avatarPresetColor,
 } from './display';
+export { AVATAR_ART } from './avatar-presets';
 export {
   Tabs,
   type TabItem,

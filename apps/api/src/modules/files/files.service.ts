@@ -4,6 +4,7 @@ import {
   coverSignatureOk,
   extensionOf,
   FILE_LIMITS,
+  isAvatarPhotoMime,
   isCoverMime,
   isMaterialExtension,
   MATERIAL_TYPES,
@@ -11,6 +12,7 @@ import {
   OUTBOX_EVENT_TYPES,
   type OutboxFileDeletePayload,
   type OutboxFileScanPayload,
+  PROFILE_LIMITS,
   type UploadUrlDto,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
@@ -131,6 +133,37 @@ export class FilesService {
     return {
       mediaId: media.id,
       uploadUrl: await this.storage.uploadUrl(media.storageKey, mime),
+      headers: { 'Content-Type': mime },
+    };
+  }
+
+  /**
+   * API-ME-08 (BR-PRF-03): ссылка на загрузку картинки-аватара учителя. Тип и размер — до выдачи ссылки; лимит
+   * загрузок за 24 часа проверяет ProfileService. Дальше — тот же API-T-17 и проверка file-scan; worker после
+   * ClamAV перекодирует картинку в WEBP 256 и 64 px без метаданных.
+   */
+  async avatarUploadUrl(
+    tx: Tx,
+    ownerId: string,
+    dto: { fileName: string; mime: string; size: number },
+  ): Promise<UploadUrlResponse> {
+    const mime = dto.mime.toLowerCase();
+    if (!isAvatarPhotoMime(mime)) throw unprocessable('mime', 'fileType');
+    if (dto.size > PROFILE_LIMITS.photoMaxBytes) throw tooLarge('size', 'fileTooLarge');
+    const [media] = await tx
+      .insert(mediaFiles)
+      .values({
+        ownerId,
+        kind: 'avatar',
+        originalName: dto.fileName,
+        mime,
+        sizeBytes: dto.size,
+        storageKey: `avatar/${crypto.randomUUID()}`,
+      })
+      .returning();
+    return {
+      mediaId: media!.id,
+      uploadUrl: await this.storage.uploadUrl(media!.storageKey, mime),
       headers: { 'Content-Type': mime },
     };
   }
@@ -298,6 +331,14 @@ export class FilesService {
   }
 
   private async problem(media: Media, size: number): Promise<ApiException | null> {
+    if (media.kind === 'avatar') {
+      // BR-PRF-03: картинка-аватар учителя — JPG/PNG/WEBP ≤ 2 МБ, сигнатура как у обложек.
+      if (size > PROFILE_LIMITS.photoMaxBytes) return tooLarge('size', 'fileTooLarge');
+      const head = size > 0 ? await this.storage.head(media.storageKey) : Buffer.alloc(0);
+      return isAvatarPhotoMime(media.mime) && coverSignatureOk(media.mime, head)
+        ? null
+        : unprocessable('file', 'fileSignature');
+    }
     if (media.kind === 'cover') {
       if (size > FILE_LIMITS.coverMaxBytes) return tooLarge('size', 'fileTooLarge');
     } else {

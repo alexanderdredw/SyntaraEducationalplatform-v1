@@ -64,6 +64,8 @@ export const CONFIG_KEYS = {
   'routes.legal': { ph: 'PH-43' },
   'auth.student_registration_by_class_code': { ph: 'PH-44' },
   battle: { ph: 'PH-45' },
+  // Итерация 10.7: значения по умолчанию вопросов PROFILE_TZ 2–6 (SPEC 8.7) — TODO(OWNER).
+  profile: { ph: 'PH-46' },
 } as const satisfies Record<string, ConfigKeyMeta>;
 
 export type ConfigKey = keyof typeof CONFIG_KEYS;

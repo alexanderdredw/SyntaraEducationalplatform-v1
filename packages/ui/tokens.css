@@ -126,6 +126,20 @@
   --duration-base: 200ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
 
+  /* ---- Аватары (BR-PRF-02): 8 цветов инициалов и аватаров набора. Подложка — цвет на поверхности,
+     знак — цвет, смешанный со светлым (тёмная тема) или тёмным (светлая тема) для контраста ≥ 4.5:1. ---- */
+  --avatar-blue: #4a8cf5;
+  --avatar-violet: #9271f2;
+  --avatar-teal: #1fb3a5;
+  --avatar-green: #3fb763;
+  --avatar-amber: #f0b22a;
+  --avatar-orange: #f2803a;
+  --avatar-pink: #e9629c;
+  --avatar-slate: #8a94a6;
+  --avatar-bg-mix: 24%;
+  --avatar-ink-base: #ffffff;
+  --avatar-ink-mix: 50%;
+
   color-scheme: dark;
 }
 
@@ -165,6 +179,9 @@
   --shadow-chrome: 0 6px 20px rgb(16 24 40 / 0.08);
   --shadow-popover: 0 12px 32px rgb(16 24 40 / 0.12), 0 2px 6px rgb(16 24 40 / 0.08);
   --shadow-fab: 0 6px 16px rgb(16 24 40 / 0.16);
+  --avatar-bg-mix: 18%;
+  --avatar-ink-base: #000000;
+  --avatar-ink-mix: 52%;
   color-scheme: light;
 }
 

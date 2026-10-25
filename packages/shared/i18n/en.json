@@ -59,7 +59,12 @@
     "invalidTimeLimit": "Choose a time from the list",
     "tooManyQuestions": "No more than 50 questions in a test",
     "invalidOrder": "The question order is out of date — reload the page",
-    "notEligible": "This question cannot be imported"
+    "notEligible": "This question cannot be imported",
+    "nameChars": "Letters, spaces, hyphens and apostrophes only",
+    "noLinks": "No links",
+    "notAllowed": "This field is not available",
+    "nameChangeLimit": "You can change your name no more than 3 times in 30 days",
+    "avatarUploadLimit": "No more than 5 uploads in 24 hours"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -1582,6 +1587,93 @@
         "details": "Detailed results",
         "csv": "Export CSV"
       }
+    }
+  },
+  "account": {
+    "tabsLabel": "Personal dashboard",
+    "tabs": {
+      "overview": "Overview",
+      "profile": "Profile",
+      "settings": "Settings",
+      "privacy": "Data"
+    },
+    "profile": {
+      "title": "Edit profile",
+      "avatar": "Avatar",
+      "avatarKinds": {
+        "initials": "Initials",
+        "preset": "From the set",
+        "photo": "My picture"
+      },
+      "avatarKindsLabel": "Avatar type",
+      "color": "Colour",
+      "presetLabel": "Avatar from the set",
+      "colors": {
+        "blue": "Blue",
+        "violet": "Violet",
+        "teal": "Teal",
+        "green": "Green",
+        "amber": "Amber",
+        "orange": "Orange",
+        "pink": "Pink",
+        "slate": "Grey"
+      },
+      "presets": {
+        "fox": "Fox",
+        "owl": "Owl",
+        "cat": "Cat",
+        "bear": "Bear",
+        "rabbit": "Rabbit",
+        "penguin": "Penguin",
+        "whale": "Whale",
+        "turtle": "Turtle",
+        "rocket": "Rocket",
+        "book": "Book",
+        "planet": "Planet",
+        "atom": "Atom",
+        "compass": "Compass",
+        "leaf": "Leaf",
+        "bulb": "Light bulb",
+        "palette": "Palette",
+        "robot": "Robot",
+        "ghost": "Ghost",
+        "blob": "Blob",
+        "star": "Star",
+        "cube": "Cube",
+        "wave": "Wave",
+        "sun": "Sun",
+        "gem": "Gem"
+      },
+      "upload": "Upload a picture",
+      "uploadHint": "JPG, PNG or WEBP, up to 2 MB",
+      "crop": "Choose a square — this is how the picture will look in the avatar",
+      "cropZoom": "Zoom",
+      "cropApply": "Upload",
+      "cropCancel": "Cancel",
+      "uploading": "Uploading…",
+      "checking": "The picture is being checked — initials are shown for now",
+      "rejected": "The picture did not pass the check",
+      "uploadFailed": "Could not upload the picture — please try again",
+      "uploadLimit": "No more than 5 uploads in 24 hours. You can upload again {date}",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "position": "Position",
+        "positionPlaceholder": "Biology teacher",
+        "about": "About me",
+        "aboutCounter": "{count} of 300",
+        "login": "Login",
+        "loginHint": "A student login does not change",
+        "school": "School",
+        "noSchool": "Not set",
+        "optional": "optional"
+      },
+      "save": "Save",
+      "saved": "Saved",
+      "saveFailed": "Could not save — please try again",
+      "unsaved": "You have unsaved changes. Leave the page?",
+      "nameLimit": "You can change your name {date}",
+      "nameNotEditable": "Your teacher or support changes the name"
     }
   }
 }

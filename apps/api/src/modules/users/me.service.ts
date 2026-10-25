@@ -7,6 +7,7 @@ import {
   type Messages,
   type PreferencesPatchDto,
   type UserRole,
+  initialsOf,
   localDate,
 } from '@syntara/shared';
 import ru from '@syntara/shared/i18n/ru.json';
@@ -19,20 +20,14 @@ import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 import { type AuthUser } from '../auth/auth.types';
 import { VisibilityService } from '../content/visibility.service';
+import { AvatarService } from '../profiles/avatar.service';
 import { generatePublicNumber } from '../support/public-number';
 import { type DataRequestResponse, type MeDto, type MeStatsDto, type NotificationDto } from './me.dto';
 
 const BUNDLES: Record<Locale, Messages> = { ru, kk, en };
 
-/** Инициалы для аватара: первые буквы первых двух слов имени. */
-export function initialsOf(displayName: string): string {
-  return displayName
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w.charAt(0).toUpperCase())
-    .join('');
-}
+/** Инициалы для аватара — общая функция packages/shared (5.11). */
+export { initialsOf };
 
 /** Активная роль (API-ME-03): выбранная пользователем, если она у него есть, иначе первая по порядку 5.2. */
 export function activeRoleOf(roles: UserRole[], preferred: string | undefined): UserRole {
@@ -46,6 +41,7 @@ export class MeService {
     private readonly config: AppConfigService,
     @Inject(ENV) private readonly env: Env,
     private readonly visibility: VisibilityService,
+    private readonly avatars: AvatarService,
   ) {}
 
   /** API-ME-01 */
@@ -75,6 +71,7 @@ export class MeService {
       },
       emailVerified: account?.email ? account.verifiedAt !== null : null,
       mustChangePassword: account?.mustChange ?? false,
+      avatar: (await this.avatars.forUser(user.id))!,
     };
   }
 

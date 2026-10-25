@@ -9,6 +9,7 @@ import { createDb, type Database, schema } from '@syntara/db';
 import { migrateUp } from '@syntara/db/migrator';
 import { runSeed } from '@syntara/db/seed';
 import { DEMO_IDS } from '@syntara/db/seed';
+import sharp from 'sharp';
 import {
   deleteObjects,
   FILE_SCAN_JOB_OPTIONS,
@@ -111,6 +112,9 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
   const removed: string[] = [];
   const storage = {
     read: async (key: string) => objects.get(key)!,
+    put: async (key: string, data: Buffer) => {
+      objects.set(key, data);
+    },
     remove: async (key: string) => {
       removed.push(key);
       objects.delete(key);
@@ -127,7 +131,7 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
   async function pending(
     name: string,
     data: Buffer,
-    kind: 'material' | 'cover' = 'material',
+    kind: 'material' | 'cover' | 'avatar' = 'material',
   ): Promise<string> {
     const key = `${kind}/${crypto.randomUUID()}`;
     objects.set(key, data);
@@ -230,6 +234,55 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
     ).rejects.toThrow();
     expect((await status(id)).scanStatus).toBe('pending');
     expect(FILE_SCAN_JOB_OPTIONS.attempts).toBeGreaterThan(1);
+  });
+
+  it('AC-PRF-04 a teacher avatar is re-encoded to WEBP 256 and 64 px; EXIF, GPS and the phone model are removed; the original is not kept', async () => {
+    // Портретная JPEG 300×200 с EXIF: модель телефона, геолокация, поворот (orientation 6 — на 90°).
+    const original = await sharp({ create: { width: 300, height: 200, channels: 3, background: '#3366cc' } })
+      .jpeg()
+      .withExif({
+        IFD0: { Make: 'PhoneMaker', Model: 'SecretPhone 12', Orientation: '6' },
+        IFD3: { GPSLatitudeRef: 'N', GPSLatitude: '43/1 15/1 0/1', GPSLongitudeRef: 'E', GPSLongitude: '76/1 57/1 0/1' },
+      })
+      .toBuffer();
+    expect((await sharp(original).metadata()).exif).toBeDefined();
+    expect(original.includes('SecretPhone')).toBe(true);
+
+    const id = await pending('я.jpg', original, 'avatar');
+    const key = (await status(id)).storageKey;
+    expect(await scan(id)).toBe('clean');
+    const row = await status(id);
+    expect(row.mime).toBe('image/webp');
+
+    const large = objects.get(key)!;
+    const small = objects.get(`${key}-64`)!;
+    for (const [data, size] of [
+      [large, 256],
+      [small, 64],
+    ] as const) {
+      const meta = await sharp(data).metadata();
+      expect(meta.format).toBe('webp');
+      expect([meta.width, meta.height]).toEqual([size, size]);
+      expect(meta.exif).toBeUndefined();
+      expect(meta.xmp).toBeUndefined();
+      expect(meta.icc).toBeUndefined();
+      expect(data.includes('SecretPhone')).toBe(false);
+      expect(data.includes('PhoneMaker')).toBe(false);
+      expect(data.includes('GPS')).toBe(false);
+    }
+    // Исходный JPEG не хранится: по ключу картинки — только перекодированная версия.
+    expect(large.equals(original)).toBe(false);
+    expect(row.sizeBytes).toBe(large.length);
+  });
+
+  it('BR-PRF-03 a broken or non-image avatar → rejected, both objects removed', async () => {
+    const id = await pending('fake.png', Buffer.from('PNG not really a picture'), 'avatar');
+    const key = (await status(id)).storageKey;
+    expect(await scan(id)).toBe('rejected');
+    expect(objects.has(key)).toBe(false);
+    expect(removed).toContain(`${key}-64`);
+    // Аватар с вирусом — тоже отклонён (ClamAV раньше перекодирования).
+    expect(await scan(await pending('eicar.png', EICAR, 'avatar'))).toBe('rejected');
   });
 
   it('REQ-NFR-SEC-07 file names and contents are not logged', () => {
