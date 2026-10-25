@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { expect, request, test, type APIRequestContext, type BrowserContext } from '@playwright/test';
+import { givePhotoAvatar } from './db';
 import {
   acceptCookies,
   bundles,
@@ -157,5 +158,57 @@ test.describe('Настройки аккаунта (docs/PROFILE_TZ.md, REQ-PRF-
     await prefs.getByRole('radio', { name: s.prefs.themeDark }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expectNoSeriousA11yViolations(page);
+  });
+});
+
+test.describe('Модерация картинки-аватара (BR-PRF-06, API-SUP-09)', () => {
+  test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
+
+  test('AC-PRF-05 support resets a teacher picture from the ticket card (with confirmation)', async ({
+    page,
+    baseURL,
+  }) => {
+    const email = `photo.${uid()}@example.kz`;
+    const teacher = await account(baseURL!, '/api/auth/register', {
+      role: 'teacher',
+      email,
+      displayName: 'Алия Сапарова',
+      password: 'teacher-pass-1',
+    });
+    const me = await (await teacher.get('/api/me')).json();
+    await givePhotoAvatar(me.id);
+    const csrf = (await teacher.storageState()).cookies.find((c) => c.name === 'csrf')!.value;
+    const ticket = await (
+      await teacher.post('/api/me/data-requests', {
+        data: { type: 'export' },
+        headers: { 'X-CSRF-Token': csrf },
+      })
+    ).json();
+    expect((await (await teacher.get('/api/me/profile')).json()).avatar.kind).toBe('photo');
+
+    await page.goto('/ru/auth/login?role=staff');
+    await page.getByRole('textbox', { name: ru.auth.login.email }).fill('support@syntara.local');
+    await page
+      .getByLabel(ru.auth.login.password)
+      .fill(process.env.SEED_DEV_PASSWORD ?? 'syntara-dev-password');
+    await page.getByRole('button', { name: ru.auth.login.submit }).click();
+    await expect(page).toHaveURL(/\/ru\/staff\/tickets$/);
+    await page.getByLabel(ru.staff.filters.search).fill(ticket.publicNumber);
+    await page.getByRole('link', { name: ticket.publicNumber }).click();
+
+    const reset = page.getByTestId('ticket-reset-avatar');
+    await expect(reset).toHaveText(ru.staff.ticketActions.resetAvatar);
+    let asked = '';
+    page.once('dialog', (dialog) => {
+      asked = dialog.message();
+      void dialog.accept();
+    });
+    await reset.click();
+    await expect(reset).toBeHidden();
+    expect(asked).toBe(ru.staff.ticketActions.resetAvatarConfirm);
+    expect((await (await teacher.get('/api/me')).json()).avatar).toMatchObject({
+      kind: 'initials',
+      photoUrl: null,
+    });
   });
 });

@@ -179,4 +179,27 @@ test.describe('Личный кабинет и меню профиля (docs/PROF
     ]);
     await expect(tabs.first()).toHaveAttribute('aria-current', 'page');
   });
+
+  test('AC-PRF-11 the account pages are translated: RU, KK, EN (texts from i18n)', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await signIn(context, await student(baseURL!), baseURL!);
+    for (const locale of ['ru', 'kk', 'en'] as const) {
+      const b = bundles[locale].account;
+      await page.goto(`/${locale}/account`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(b.overview.title);
+      await page.goto(`/${locale}/account/profile`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(b.profile.title);
+      await page.goto(`/${locale}/account/settings`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(b.settings.title);
+      await expect(page.getByRole('navigation', { name: b.tabsLabel }).getByRole('link')).toHaveText([
+        b.tabs.overview,
+        b.tabs.profile,
+        b.tabs.settings,
+        b.tabs.privacy,
+      ]);
+    }
+  });
 });

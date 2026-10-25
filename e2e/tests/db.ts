@@ -56,3 +56,24 @@ export async function mediaFilesOf(
     await sql.end();
   }
 }
+
+/**
+ * Картинка-аватар учителя (BR-PRF-03) без загрузки и проверки worker — для сценария сброса поддержкой
+ * (API-SUP-09): запись media_files (kind = 'avatar', clean) и профиль с avatar_kind = 'photo'.
+ */
+export async function givePhotoAvatar(userId: string): Promise<void> {
+  // prepare: false — как в api: локально DATABASE_URL ведёт через PgBouncer (режим transaction).
+  const sql = postgres(env('DATABASE_URL'), { max: 1, prepare: false });
+  try {
+    await sql`
+      WITH m AS (
+        INSERT INTO media_files (id, owner_id, kind, original_name, mime, size_bytes, storage_key, scan_status)
+        VALUES (gen_random_uuid(), ${userId}, 'avatar', 'e2e.webp', 'image/webp', 100,
+                ${`avatar/e2e-${userId}-${Date.now()}`}, 'clean')
+        RETURNING id
+      )
+      UPDATE user_profiles SET avatar_kind = 'photo', avatar_media_id = (SELECT id FROM m) WHERE user_id = ${userId}`;
+  } finally {
+    await sql.end();
+  }
+}
