@@ -39,7 +39,9 @@ export class ProfileController {
   @Patch('profile')
   @ApiBody({ type: ProfilePatchBody })
   @ApiOkResponse({ type: ProfileDto })
-  @ApiTooManyRequestsResponse({ description: 'Имя меняли 3 раза за 30 дней (fieldErrors.firstName = nameChangeLimit)' })
+  @ApiTooManyRequestsResponse({
+    description: 'Имя меняли 3 раза за 30 дней (fieldErrors.firstName = nameChangeLimit)',
+  })
   patch(
     @Body(new ZodValidationPipe(ProfilePatchDto)) dto: Dto<typeof ProfilePatchDto>,
     @Req() req: AuthRequest,

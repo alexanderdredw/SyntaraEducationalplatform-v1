@@ -111,10 +111,11 @@ export class AuthController {
     return this.auth.resetPassword(dto);
   }
 
-  /** API-AUTH-05: смена пароля (временный пароль от учителя — без текущего). */
+  /** API-AUTH-05: смена пароля (временный пароль от учителя — без текущего). Лимит — 5 за 15 минут (BR-PRF-08). */
   @Post('password/change')
   @HttpCode(204)
   @Roles()
+  @RateLimit('password')
   @ApiBody({ type: ChangePasswordBody })
   @ApiNoContentResponse()
   changePassword(

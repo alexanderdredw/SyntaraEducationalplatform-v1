@@ -64,7 +64,9 @@
     "noLinks": "No links",
     "notAllowed": "This field is not available",
     "nameChangeLimit": "You can change your name no more than 3 times in 30 days",
-    "avatarUploadLimit": "No more than 5 uploads in 24 hours"
+    "avatarUploadLimit": "No more than 5 uploads in 24 hours",
+    "emailUnavailable": "This address cannot be used",
+    "samePassword": "The new password is the same as the current one"
   },
   "shell": {
     "logoLabel": "Syntara — home",
@@ -701,7 +703,10 @@
       "waiting_user": "Ask for details",
       "waiting_internal": "Escalate",
       "in_progress": "Back to work",
-      "resolved": "Resolved"
+      "resolved": "Resolved",
+      "resetAvatar": "Reset avatar",
+      "resetAvatarConfirm": "Reset the user’s picture avatar to initials?",
+      "resetAvatarDone": "Avatar reset"
     },
     "requestActions": {
       "in_progress": "Take into work",
@@ -733,7 +738,15 @@
       "resetBody": "To set a new password, open the link:",
       "resetIgnore": "If you did not request a password reset, just ignore this email.",
       "verifySubject": "Confirm your email",
-      "verifyBody": "To confirm your email, open the link:"
+      "verifyBody": "To confirm your email, open the link:",
+      "changeSubject": "Confirm your new email",
+      "changeBody": "To make this address the email of your Syntara account, open the link. It is valid for 24 hours.",
+      "changeIgnore": "If you did not change your email, just do not open the link.",
+      "changedSubject": "Your email has been changed",
+      "changedBody": "The email of your Syntara account has been changed. Emails now go to the new address.",
+      "notMe": "This wasn't me",
+      "passwordChangedSubject": "Your password has been changed",
+      "passwordChangedBody": "The password of your Syntara account has been changed. Other devices have been signed out."
     }
   },
   "join": {
@@ -1674,6 +1687,65 @@
       "unsaved": "You have unsaved changes. Leave the page?",
       "nameLimit": "You can change your name {date}",
       "nameNotEditable": "Your teacher or support changes the name"
+    },
+    "settings": {
+      "title": "Account settings",
+      "email": {
+        "title": "Email",
+        "none": "No email yet",
+        "verified": "Confirmed",
+        "unverified": "Not confirmed",
+        "resend": "Send the email again",
+        "resent": "Email sent",
+        "add": "Add email",
+        "change": "Change email",
+        "newEmail": "New email",
+        "submit": "Send link",
+        "sent": "We sent a link to {email}. It is valid for 24 hours; until you open it, the current address stays.",
+        "remove": "Remove email",
+        "removeTitle": "Remove the email?",
+        "removeText": "Without an email, only your teacher can help you restore the password.",
+        "removeConfirm": "Remove",
+        "removed": "Email removed",
+        "teacherLogin": "Your email is your login and cannot be removed"
+      },
+      "cancel": "Cancel",
+      "currentPassword": "Current password",
+      "password": {
+        "title": "Password",
+        "change": "Change password",
+        "new": "New password",
+        "repeat": "Repeat the new password",
+        "hint": "At least 8 characters",
+        "mismatch": "Passwords do not match",
+        "strengthLabel": "Password strength",
+        "strength": {
+          "0": "Too short",
+          "1": "Weak",
+          "2": "Fair",
+          "3": "Strong"
+        },
+        "changed": "Password changed. Other devices have been signed out."
+      },
+      "devices": {
+        "title": "Sign-in and devices",
+        "lastLogin": "Last sign-in: {date}",
+        "never": "Last sign-in: —",
+        "revoke": "Sign out on all other devices",
+        "revoked": "Done: other devices have been signed out"
+      },
+      "prefs": {
+        "title": "Preferences",
+        "language": "Interface language",
+        "theme": "Theme",
+        "themeDark": "Dark",
+        "themeLight": "Light",
+        "dataSaver": "Data saver",
+        "on": "On",
+        "off": "Off"
+      },
+      "failed": "Something went wrong — please try again",
+      "rateLimited": "Too many attempts. Try again in {minutes} min."
     }
   }
 }

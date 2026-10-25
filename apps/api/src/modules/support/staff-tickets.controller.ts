@@ -64,6 +64,15 @@ export class StaffTicketsController {
     return this.tickets.get(id);
   }
 
+  /** API-SUP-09 (BR-PRF-06): сбросить картинку-аватар пользователя обращения на инициалы. */
+  @Post(':id/user-avatar/reset')
+  @HttpCode(200)
+  @ApiOkResponse({ type: TicketDetail })
+  @ApiNotFoundResponse({ description: 'У обращения нет пользователя или у пользователя нет картинки' })
+  resetUserAvatar(@Param('id', uuid) id: string, @Req() req: AuthRequest): Promise<TicketDetail> {
+    return this.tickets.resetUserAvatar(id, req.user!.id);
+  }
+
   /** API-SUP-03 */
   @Post(':id/assign')
   @HttpCode(200)

@@ -692,6 +692,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccountController_requestEmailChange"];
+        delete: operations["AccountController_removeEmail"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/sessions/revoke-others": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccountController_revokeOthers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/teacher/classes": {
         parameters: {
             query?: never;
@@ -1166,6 +1198,22 @@ export interface paths {
         get: operations["StaffTicketsController_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/staff/tickets/{id}/user-avatar/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StaffTicketsController_resetUserAvatar"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2449,6 +2497,13 @@ export interface components {
             /** @enum {string} */
             color?: "blue" | "violet" | "teal" | "green" | "amber" | "orange" | "pink" | "slate";
         };
+        EmailChangeBody: {
+            email: string;
+            currentPassword: string;
+        };
+        EmailRemoveBody: {
+            currentPassword: string;
+        };
         TeacherClassDto: {
             /** Format: uuid */
             id: string;
@@ -2959,6 +3014,11 @@ export interface components {
             items: components["schemas"]["TicketListItem"][];
             nextCursor: string | null;
         };
+        TicketUserRef: {
+            /** Format: uuid */
+            id: string;
+            hasPhotoAvatar: boolean;
+        };
         TicketMessageDto: {
             /** Format: uuid */
             id: string;
@@ -3005,6 +3065,7 @@ export interface components {
              * @description Срок первого ответа (PH-22), только для сотрудников
              */
             dueAt: string;
+            user: components["schemas"]["TicketUserRef"] | null;
             name: string | null;
             phone: string | null;
             description: string;
@@ -3633,6 +3694,13 @@ export interface operations {
             };
             /** @description Нет роли или неверный X-CSRF-Token */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5337,6 +5405,130 @@ export interface operations {
             };
         };
     };
+    AccountController_requestEmailChange: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailChangeBody"];
+            };
+        };
+        responses: {
+            /** @description Письмо отправлено на новый адрес; до подтверждения действует прежний */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description invalidPassword; emailUnavailable — «Этот адрес нельзя использовать» */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AccountController_removeEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailRemoveBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Учитель или ученик без логина */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Превышен лимит; retryAfterSeconds в теле */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AccountController_revokeOthers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Все сессии, кроме текущей, завершены */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     TeacherClassesController_list: {
         parameters: {
             query?: never;
@@ -6757,6 +6949,48 @@ export interface operations {
                 };
                 content?: never;
             };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StaffTicketsController_resetUserAvatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketDetail"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description У обращения нет пользователя или у пользователя нет картинки */
             404: {
                 headers: {
                     [name: string]: unknown;

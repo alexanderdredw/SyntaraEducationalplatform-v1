@@ -28,8 +28,10 @@ export interface AvatarSource {
   photoStatus: 'pending' | 'clean' | 'rejected' | null;
 }
 
-const isPreset = (v: string | null): v is AvatarPreset => (AVATAR_PRESETS as readonly string[]).includes(v ?? '');
-const isColor = (v: string | null): v is AvatarColor => (AVATAR_COLORS as readonly string[]).includes(v ?? '');
+const isPreset = (v: string | null): v is AvatarPreset =>
+  (AVATAR_PRESETS as readonly string[]).includes(v ?? '');
+const isColor = (v: string | null): v is AvatarColor =>
+  (AVATAR_COLORS as readonly string[]).includes(v ?? '');
 
 /**
  * Аватары для ответов API (6.7 AvatarDto, REQ-PRF-11): инициалы, аватар набора или картинка учителя. Картинка —

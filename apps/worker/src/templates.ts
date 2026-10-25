@@ -1,5 +1,7 @@
 import {
+  type AccountNoticePayload,
   type AccountRegisteredPayload,
+  type EmailChangePayload,
   type ConfirmationEmailPayload,
   type EmailVerifyPayload,
   type PasswordResetPayload,
@@ -32,7 +34,7 @@ function t(locale: Locale, key: string, values: Record<string, string> = {}): st
 export function renderEmail(
   template: string,
   payload: unknown,
-  extras: { resetUrl?: string; verifyUrl?: string } = {},
+  extras: { resetUrl?: string; verifyUrl?: string; supportUrl?: string } = {},
 ): RenderedEmail {
   switch (template) {
     case EMAIL_TEMPLATES.schoolRequestConfirmation: {
@@ -107,6 +109,44 @@ export function renderEmail(
           t(p.locale, 'email.greeting'),
           t(p.locale, 'email.account.verifyBody'),
           extras.verifyUrl,
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.emailChange: {
+      const p = payload as EmailChangePayload;
+      if (!extras.verifyUrl) throw new Error('verifyUrl is required');
+      return {
+        subject: t(p.locale, 'email.account.changeSubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.changeBody'),
+          extras.verifyUrl,
+          t(p.locale, 'email.account.changeIgnore'),
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.emailChanged: {
+      const p = payload as AccountNoticePayload;
+      return {
+        subject: t(p.locale, 'email.account.changedSubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.changedBody'),
+          `${t(p.locale, 'email.account.notMe')}: ${extras.supportUrl ?? ''}`,
+          t(p.locale, 'email.signature'),
+        ].join('\n\n'),
+      };
+    }
+    case EMAIL_TEMPLATES.passwordChanged: {
+      const p = payload as AccountNoticePayload;
+      return {
+        subject: t(p.locale, 'email.account.passwordChangedSubject'),
+        text: [
+          t(p.locale, 'email.greeting'),
+          t(p.locale, 'email.account.passwordChangedBody'),
+          `${t(p.locale, 'email.account.notMe')}: ${extras.supportUrl ?? ''}`,
           t(p.locale, 'email.signature'),
         ].join('\n\n'),
       };

@@ -17,7 +17,7 @@ function subscribeTheme(onChange: () => void) {
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   return () => observer.disconnect();
 }
-function useCurrentTheme(): 'light' | 'dark' {
+export function useCurrentTheme(): 'light' | 'dark' {
   return useSyncExternalStore(
     subscribeTheme,
     () => (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'),

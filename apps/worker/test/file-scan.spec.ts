@@ -242,7 +242,12 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
       .jpeg()
       .withExif({
         IFD0: { Make: 'PhoneMaker', Model: 'SecretPhone 12', Orientation: '6' },
-        IFD3: { GPSLatitudeRef: 'N', GPSLatitude: '43/1 15/1 0/1', GPSLongitudeRef: 'E', GPSLongitude: '76/1 57/1 0/1' },
+        IFD3: {
+          GPSLatitudeRef: 'N',
+          GPSLatitude: '43/1 15/1 0/1',
+          GPSLongitudeRef: 'E',
+          GPSLongitude: '76/1 57/1 0/1',
+        },
       })
       .toBuffer();
     expect((await sharp(original).metadata()).exif).toBeDefined();

@@ -82,7 +82,14 @@ export class ReplyTemplateDto {
   @ApiProperty({ description: 'Текст шаблона с подставленным номером обращения' }) body: string;
 }
 
+/** API-SUP-02: пользователь обращения — для сброса картинки-аватара (API-SUP-09, BR-PRF-06). */
+export class TicketUserRef {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() hasPhotoAvatar: boolean;
+}
+
 export class TicketDetail extends TicketListItem {
+  @ApiProperty({ type: TicketUserRef, nullable: true }) user: TicketUserRef | null;
   @ApiProperty({ type: String, nullable: true }) name: string | null;
   @ApiProperty({ type: String, nullable: true }) phone: string | null;
   @ApiProperty() description: string;

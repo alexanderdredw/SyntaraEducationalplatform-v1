@@ -42,6 +42,12 @@ export const EMAIL_TEMPLATES = {
   accountRegistered: 'auth.registered',
   passwordReset: 'auth.password_reset',
   emailVerify: 'auth.email_verify',
+  /** BR-PRF-07: ссылка подтверждения нового адреса (24 ч). */
+  emailChange: 'auth.email_change',
+  /** BR-PRF-07: уведомление на прежний адрес «Ваш email изменён» со ссылкой «Это не я». */
+  emailChanged: 'auth.email_changed',
+  /** BR-PRF-08: уведомление о смене пароля. */
+  passwordChanged: 'auth.password_changed',
 } as const;
 export type EmailTemplate = (typeof EMAIL_TEMPLATES)[keyof typeof EMAIL_TEMPLATES];
 
@@ -86,6 +92,24 @@ export interface PasswordResetPayload {
 
 /** Ключ Redis для хеша токена сброса пароля (sha256 hex). */
 export const passwordResetKey = (tokenHash: string) => `pwreset:${tokenHash}`;
+
+/** BR-PRF-07: смена email — ссылку создаёт worker при отправке; в Redis — хеш токена → { userId, email }, 24 ч. */
+export interface EmailChangePayload {
+  locale: Locale;
+  userId: string;
+  email: string;
+}
+
+/** BR-PRF-07/08: уведомления о смене email и пароля (без ссылок на действие, кроме «Это не я» → /support). */
+export interface AccountNoticePayload {
+  locale: Locale;
+}
+
+/** Срок ссылки подтверждения нового email (BR-PRF-07). */
+export const EMAIL_CHANGE_TTL_SECONDS = 24 * 60 * 60;
+
+/** Ключ Redis для хеша токена смены email (sha256 hex); значение — JSON { userId, email }. */
+export const emailChangeKey = (tokenHash: string) => `emailchange:${tokenHash}`;
 
 /** Ключ Redis для хеша токена подтверждения email (sha256 hex). */
 export const emailVerifyKey = (tokenHash: string) => `emailverify:${tokenHash}`;

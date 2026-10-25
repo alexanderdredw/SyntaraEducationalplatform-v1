@@ -183,6 +183,9 @@
           },
           "403": {
             "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
           }
         },
         "security": [
@@ -1907,6 +1910,108 @@
         ]
       }
     },
+    "/api/me/email": {
+      "post": {
+        "operationId": "AccountController_requestEmailChange",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailChangeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Письмо отправлено на новый адрес; до подтверждения действует прежний"
+          },
+          "400": {
+            "description": "invalidPassword; emailUnavailable — «Этот адрес нельзя использовать»"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      },
+      "delete": {
+        "operationId": "AccountController_removeEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRemoveBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Учитель или ученик без логина"
+          },
+          "429": {
+            "description": "Превышен лимит; retryAfterSeconds в теле"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/sessions/revoke-others": {
+      "post": {
+        "operationId": "AccountController_revokeOthers",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Все сессии, кроме текущей, завершены"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/teacher/classes": {
       "get": {
         "operationId": "TeacherClassesController_list",
@@ -3450,6 +3555,50 @@
           },
           "404": {
             "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/api/staff/tickets/{id}/user-avatar/reset": {
+      "post": {
+        "operationId": "StaffTicketsController_resetUserAvatar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "У обращения нет пользователя или у пользователя нет картинки"
           }
         },
         "security": [
@@ -7685,6 +7834,32 @@
           "kind"
         ]
       },
+      "EmailChangeBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "currentPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "currentPassword"
+        ]
+      },
+      "EmailRemoveBody": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "currentPassword"
+        ]
+      },
       "TeacherClassDto": {
         "type": "object",
         "properties": {
@@ -9422,6 +9597,22 @@
           "nextCursor"
         ]
       },
+      "TicketUserRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "hasPhotoAvatar": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "hasPhotoAvatar"
+        ]
+      },
       "TicketMessageDto": {
         "type": "object",
         "properties": {
@@ -9595,6 +9786,15 @@
             "format": "date-time",
             "description": "Срок первого ответа (PH-22), только для сотрудников"
           },
+          "user": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketUserRef"
+              }
+            ]
+          },
           "name": {
             "type": "string",
             "nullable": true
@@ -9679,6 +9879,7 @@
           "assignee",
           "createdAt",
           "dueAt",
+          "user",
           "name",
           "phone",
           "description",

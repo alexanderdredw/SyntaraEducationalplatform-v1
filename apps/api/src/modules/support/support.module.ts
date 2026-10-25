@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuditModule } from '../audit/audit.module';
+import { ProfilesModule } from '../profiles/profiles.module';
 import { FormsController } from './forms.controller';
 import { FormsService } from './forms.service';
 import { InboundController } from './inbound.controller';
@@ -14,7 +15,7 @@ import { TicketsService } from './tickets.service';
  * входящие письма (API-SUP-08).
  */
 @Module({
-  imports: [AuditModule],
+  imports: [AuditModule, ProfilesModule],
   controllers: [FormsController, StaffTicketsController, StaffRequestsController, InboundController],
   providers: [FormsService, TicketsService, RequestsService, InboundService],
 })

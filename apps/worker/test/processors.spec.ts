@@ -333,6 +333,43 @@ describe('worker processors', () => {
     expect(JSON.stringify(row!.payload)).not.toContain(token);
   });
 
+  it('AC-PRF-06 BR-PRF-07 email change: a 24-hour link to the new address; «Ваш email изменён» with «Это не я»; password notice', async () => {
+    const userId = '0190a1b2-0000-7000-8000-0000000000cc';
+    const send = async (template: string, toEmail: string, payload: object) => {
+      const [email] = await db.insert(schema.emailQueue).values({ toEmail, template, payload }).returning();
+      await sendEmail(job(email!.id), {
+        db,
+        transport: okTransport,
+        mailFrom: 'noreply@syntara-edu.me',
+        logger,
+        ...extra(),
+      });
+      return sent.at(-1)!;
+    };
+
+    const change = await send(EMAIL_TEMPLATES.emailChange, 'new@example.kz', {
+      locale: 'ru',
+      userId,
+      email: 'new@example.kz',
+    });
+    expect(change.to).toBe('new@example.kz');
+    expect(change.subject).toBe('Подтвердите новый email');
+    const token = /\/ru\/auth\/login\?verifyToken=([A-Za-z0-9_-]+)/.exec(change.text)![1]!;
+    const key = `emailchange:${createHash('sha256').update(token).digest('hex')}`;
+    expect(JSON.parse((await connection.get(key))!)).toEqual({ userId, email: 'new@example.kz' });
+    const ttl = await connection.ttl(key);
+    expect(ttl).toBeGreaterThan(23 * 60 * 60);
+    expect(ttl).toBeLessThanOrEqual(24 * 60 * 60);
+
+    const changed = await send(EMAIL_TEMPLATES.emailChanged, 'old@example.kz', { locale: 'ru' });
+    expect(changed.subject).toBe('Ваш email изменён');
+    expect(changed.text).toContain('Это не я: http://localhost:3000/ru/support');
+
+    const password = await send(EMAIL_TEMPLATES.passwordChanged, 'old@example.kz', { locale: 'kk' });
+    expect(password.subject).toBe('Құпиясөз өзгертілді');
+    expect(password.text).toContain('http://localhost:3000/kk/support');
+  });
+
   it('REQ-NFR-SEC-07 worker logs contain neither email addresses nor message text', () => {
     const log = lines.join('');
     expect(log).not.toContain('user@example.kz');

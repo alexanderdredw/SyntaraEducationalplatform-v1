@@ -100,8 +100,10 @@ export const AvatarPutDto = z
     color: z.enum(AVATAR_COLORS, 'invalidColor').optional(),
   })
   .superRefine((d, ctx) => {
-    if (d.kind === 'preset' && !d.preset) ctx.addIssue({ code: 'custom', path: ['preset'], message: 'required' });
-    if (d.kind === 'photo' && !d.mediaId) ctx.addIssue({ code: 'custom', path: ['mediaId'], message: 'required' });
+    if (d.kind === 'preset' && !d.preset)
+      ctx.addIssue({ code: 'custom', path: ['preset'], message: 'required' });
+    if (d.kind === 'photo' && !d.mediaId)
+      ctx.addIssue({ code: 'custom', path: ['mediaId'], message: 'required' });
   });
 export type AvatarPutDto = z.infer<typeof AvatarPutDto>;
 
@@ -149,4 +151,33 @@ export interface AvatarView {
   initials: string;
   photoUrl: string | null;
   photoUrlSmall: string | null;
+}
+
+/** API-ME-10 (BR-PRF-07): новый email и текущий пароль. */
+export const EmailChangeDto = z.object({
+  email: z.string().trim().toLowerCase().email('email').max(254, 'tooLong'),
+  currentPassword: z.string().min(1, 'required').max(200, 'tooLong'),
+});
+export type EmailChangeDto = z.infer<typeof EmailChangeDto>;
+
+/** API-ME-10 DELETE: удалить email (только ученик с логином) — текущий пароль. */
+export const EmailRemoveDto = z.object({
+  currentPassword: z.string().min(1, 'required').max(200, 'tooLong'),
+});
+export type EmailRemoveDto = z.infer<typeof EmailRemoveDto>;
+
+/** BR-PRF-07/08: попыток смены email или пароля — 5 за 15 минут на пользователя. */
+export const ACCOUNT_LIMITS = { attempts: 5, windowMs: 15 * 60_000 } as const;
+
+/**
+ * BR-PRF-08: простой индикатор надёжности пароля (без библиотек): 0 — слишком короткий, 1 — слабый, 2 — средний,
+ * 3 — надёжный. Длина и разнообразие символов.
+ */
+export function passwordStrength(password: string, minLength = 8): 0 | 1 | 2 | 3 {
+  if (password.length < minLength) return 0;
+  const kinds = [/[a-zа-яәғқңөұүһі]/u, /[A-ZА-ЯӘҒҚҢӨҰҮҺІ]/u, /\d/, /[^\p{L}\d]/u].filter((re) =>
+    re.test(password),
+  ).length;
+  const score = kinds + (password.length >= 12 ? 1 : 0) + (password.length >= 16 ? 1 : 0);
+  return score >= 4 ? 3 : score >= 2 ? 2 : 1;
 }

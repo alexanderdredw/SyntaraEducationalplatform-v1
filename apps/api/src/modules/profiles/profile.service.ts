@@ -101,7 +101,9 @@ export class ProfileService {
       nameEditable: isTeacher || settings.student_can_change_name,
       nameChangesLeft: left,
       nameChangeAvailableAt:
-        left === 0 ? new Date(changes[0]!.getTime() + PROFILE_LIMITS.nameChangeWindowDays * DAY_MS).toISOString() : null,
+        left === 0
+          ? new Date(changes[0]!.getTime() + PROFILE_LIMITS.nameChangeWindowDays * DAY_MS).toISOString()
+          : null,
       canRemoveEmail: !isTeacher && account!.login !== null && account!.email !== null,
       canUploadPhoto: isTeacher,
     };
@@ -211,7 +213,13 @@ export class ProfileService {
       }
       const response = await this.files.avatarUploadUrl(tx, user.id, dto);
       await this.audit.record(
-        { actorId: user.id, entityType: 'user', entityId: user.id, action: AUDIT.upload, after: { mediaId: response.mediaId } },
+        {
+          actorId: user.id,
+          entityType: 'user',
+          entityId: user.id,
+          action: AUDIT.upload,
+          after: { mediaId: response.mediaId },
+        },
         tx,
       );
       return response;
@@ -270,6 +278,48 @@ export class ProfileService {
     });
   }
 
+  /**
+   * BR-PRF-06 (API-SUP-09): сотрудник поддержки сбрасывает картинку-аватар пользователя на инициалы; картинка
+   * удаляется вместе с объектами, запись — в журнал аудита. Картинки нет — 404.
+   */
+  async resetPhoto(userId: string, actorId: string, reason: { ticketId: string }): Promise<void> {
+    await this.db.transaction(async (tx) => {
+      const [profile] = await tx
+        .select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, userId))
+        .for('update');
+      if (!profile || profile.avatarKind !== 'photo' || !profile.avatarMediaId) {
+        throw new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
+      }
+      await tx
+        .update(userProfiles)
+        .set({ avatarKind: 'initials', avatarPreset: null, avatarMediaId: null })
+        .where(eq(userProfiles.userId, userId));
+      await this.dropPhoto(tx, profile.avatarMediaId);
+      await this.audit.record(
+        {
+          actorId,
+          entityType: 'user',
+          entityId: userId,
+          action: 'profile.avatar_reset',
+          before: { kind: 'photo', mediaId: profile.avatarMediaId },
+          after: { kind: 'initials', ticketId: reason.ticketId },
+        },
+        tx,
+      );
+    });
+  }
+
+  /** Есть ли у пользователя картинка-аватар (карточка обращения, API-SUP-02). */
+  async hasPhoto(userId: string): Promise<boolean> {
+    const [row] = await this.db
+      .select({ kind: userProfiles.avatarKind, mediaId: userProfiles.avatarMediaId })
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId));
+    return row?.kind === 'photo' && row.mediaId !== null;
+  }
+
   /** Картинка больше не аватар: запись удаляется, объекты 256 и 64 px — задачей worker после фиксации. */
   async dropPhoto(tx: Tx, mediaId: string): Promise<void> {
     const [media] = await tx.delete(mediaFiles).where(eq(mediaFiles.id, mediaId)).returning();
@@ -278,11 +328,22 @@ export class ProfileService {
 
   /** Строка профиля под блокировкой; нет строки (служебный пользователь, импорт) — создаётся из display_name. */
   async lockRow(tx: Tx, userId: string): Promise<ProfileRow> {
-    const [existing] = await tx.select().from(userProfiles).where(eq(userProfiles.userId, userId)).for('update');
+    const [existing] = await tx
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId))
+      .for('update');
     if (existing) return existing;
-    const [account] = await tx.select({ displayName: users.displayName }).from(users).where(eq(users.id, userId));
+    const [account] = await tx
+      .select({ displayName: users.displayName })
+      .from(users)
+      .where(eq(users.id, userId));
     await tx.insert(userProfiles).values(profileFor(userId, account!.displayName)).onConflictDoNothing();
-    const [created] = await tx.select().from(userProfiles).where(eq(userProfiles.userId, userId)).for('update');
+    const [created] = await tx
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId))
+      .for('update');
     return created!;
   }
 
@@ -334,4 +395,3 @@ export class ProfileService {
     return fromRole ?? null;
   }
 }
-

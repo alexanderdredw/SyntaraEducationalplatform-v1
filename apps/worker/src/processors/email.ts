@@ -3,6 +3,9 @@ import { type Job } from 'bullmq';
 import { eq, sql } from 'drizzle-orm';
 import { type Logger } from 'pino';
 import {
+  EMAIL_CHANGE_TTL_SECONDS,
+  type EmailChangePayload,
+  emailChangeKey,
   EMAIL_TEMPLATES,
   emailVerifyKey,
   passwordResetKey,
@@ -67,6 +70,23 @@ async function verifyLinkFor(deps: EmailDeps, payload: { locale: string; userId:
   return `${base}/${payload.locale}/auth/login?verifyToken=${encodeURIComponent(token)}`;
 }
 
+/**
+ * BR-PRF-07: ссылка подтверждения нового email — на новый адрес, срок 24 часа. В Redis — хеш токена → { userId, email };
+ * страница та же, что у подтверждения email (API-AUTH-06).
+ */
+async function changeLinkFor(deps: EmailDeps, payload: EmailChangePayload): Promise<string> {
+  const token = randomBytes(32).toString('base64url');
+  const hash = createHash('sha256').update(token).digest('hex');
+  await deps.tokens.set(
+    emailChangeKey(hash),
+    JSON.stringify({ userId: payload.userId, email: payload.email }),
+    'EX',
+    EMAIL_CHANGE_TTL_SECONDS,
+  );
+  const base = deps.appBaseUrl.replace(/\/$/, '');
+  return `${base}/${payload.locale}/auth/login?verifyToken=${encodeURIComponent(token)}`;
+}
+
 export interface EmailJobData {
   emailQueueId: string;
 }
@@ -125,7 +145,17 @@ export async function sendEmail(job: Job<EmailJobData>, deps: EmailDeps): Promis
       email.template === EMAIL_TEMPLATES.accountRegistered || email.template === EMAIL_TEMPLATES.emailVerify
         ? await verifyLinkFor(deps, email.payload as { locale: string; userId: string })
         : undefined;
-    const rendered = renderEmail(email.template, email.payload, { resetUrl, verifyUrl });
+    const changeUrl =
+      email.template === EMAIL_TEMPLATES.emailChange
+        ? await changeLinkFor(deps, email.payload as EmailChangePayload)
+        : undefined;
+    // BR-PRF-07: «Это не я» — страница поддержки.
+    const supportUrl = `${deps.appBaseUrl.replace(/\/$/, '')}/${(email.payload as { locale?: string }).locale ?? 'ru'}/support`;
+    const rendered = renderEmail(email.template, email.payload, {
+      resetUrl,
+      verifyUrl: verifyUrl ?? changeUrl,
+      supportUrl,
+    });
     const replyTo =
       email.template === EMAIL_TEMPLATES.ticketReply
         ? await replyToFor(db, email.payload as TicketReplyEmailPayload)

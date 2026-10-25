@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { AuditModule } from '../audit/audit.module';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { RolesGuard, SessionGuard } from './auth.guards';
@@ -8,7 +9,7 @@ import { SessionService } from './session.service';
 
 /** Модуль «auth» (раздел 2.2 SPEC): вход, сессии, CSRF, роли (итерация 4 — минимальное ядро, Q-01). */
 @Module({
-  imports: [UsersModule],
+  imports: [UsersModule, AuditModule],
   controllers: [AuthController],
   providers: [
     AuthService,

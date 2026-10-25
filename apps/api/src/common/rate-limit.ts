@@ -33,6 +33,9 @@ export const RATE_LIMITS = {
   // BR-BTL-01: ввод кода Battle — 10 за 10 минут на ученика и 30 на IP.
   battleJoinStudent: { limit: 10, ttl: 10 * 60_000 },
   battleJoinIp: { limit: 30, ttl: 10 * 60_000 },
+  // BR-PRF-07/08: смена пароля и email — 5 попыток за 15 минут на пользователя (счётчики раздельные).
+  password: { limit: 5, ttl: 15 * 60_000 },
+  email: { limit: 5, ttl: 15 * 60_000 },
 } as const;
 
 /** Группа лимитов маршрута → имена счётчиков (у ИИ — два окна). */
@@ -43,6 +46,8 @@ export const RATE_LIMIT_GROUPS = {
   ai: ['ai_minute', 'ai_day'],
   aiStudent: ['ai_student_minute', 'ai_student_day'],
   battleJoin: ['battle_join_student', 'battle_join_ip'],
+  password: ['password_user'],
+  email: ['email_user'],
 } as const;
 export type RateLimitName = keyof typeof RATE_LIMIT_GROUPS;
 const ALL_THROTTLERS = Object.values(RATE_LIMIT_GROUPS).flat();
@@ -53,7 +58,7 @@ interface AiLimits {
 }
 
 const ip = (req: Record<string, unknown>) => String(req.ip ?? 'unknown');
-/** Ученик сессии (SessionGuard выполняется раньше); без сессии маршрут всё равно отдаст 401. */
+/** Пользователь сессии (SessionGuard выполняется раньше); без сессии маршрут всё равно отдаст 401. */
 const student = (req: Record<string, unknown>) => (req.user as { id?: string } | undefined)?.id ?? ip(req);
 /** Счётчик общий для всех маршрутов лимита (например, обе публичные формы — 5 в минуту на IP вместе). */
 const sharedKey = (_context: ExecutionContext, tracker: string, name: string) => `${name}:${tracker}`;
@@ -132,6 +137,8 @@ export function throttlerOptions(
         generateKey: sharedKey,
       },
       { name: 'battle_join_ip', ...RATE_LIMITS.battleJoinIp, getTracker: ip, generateKey: sharedKey },
+      { name: 'password_user', ...RATE_LIMITS.password, getTracker: student, generateKey: sharedKey },
+      { name: 'email_user', ...RATE_LIMITS.email, getTracker: student, generateKey: sharedKey },
       {
         name: 'ai_minute',
         ttl: 60_000,

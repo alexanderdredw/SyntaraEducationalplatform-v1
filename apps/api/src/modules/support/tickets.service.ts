@@ -24,6 +24,7 @@ import { AppConfigService } from '../../config/app-config.service';
 import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
+import { ProfileService } from '../profiles/profile.service';
 import { cursorCondition, likeEscape, newestFirst, page } from './pagination';
 import {
   type TicketDetail,
@@ -59,7 +60,16 @@ export class TicketsService {
     @Inject(ENV) private readonly env: Env,
     private readonly config: AppConfigService,
     private readonly audit: AuditService,
+    private readonly profiles: ProfileService,
   ) {}
+
+  /** API-SUP-09 (BR-PRF-06): сбросить картинку-аватар пользователя обращения на инициалы. */
+  async resetUserAvatar(id: string, actorId: string): Promise<TicketDetail> {
+    const [ticket] = await this.db.select({ userId: t.userId }).from(t).where(eq(t.id, id));
+    if (!ticket?.userId) throw notFound();
+    await this.profiles.resetPhoto(ticket.userId, actorId, { ticketId: id });
+    return this.get(id);
+  }
 
   /** API-SUP-01: фильтры status, assigneeId, category, dueBefore, q (номер или email); новые — первыми. */
   async list(query: TicketListQuery): Promise<TicketListResponse> {
@@ -152,6 +162,9 @@ export class TicketsService {
 
     return {
       ...toListItem(ticket, row.assigneeName, hours, this.env.PLATFORM_TZ),
+      user: ticket.userId
+        ? { id: ticket.userId, hasPhotoAvatar: await this.profiles.hasPhoto(ticket.userId) }
+        : null,
       name: ticket.name,
       phone: ticket.phone,
       description: ticket.description,

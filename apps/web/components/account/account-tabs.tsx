@@ -5,9 +5,10 @@ import { NavTabs } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { AppLink } from '../app-link';
 
-/** Вкладки личного кабинета (REQ-PRF-01). Страницы «Обзор» и «Настройки» появляются на этапах P3 и P2. */
+/** Вкладки личного кабинета (REQ-PRF-01). Страница «Обзор» появляется на этапе P3. */
 export const ACCOUNT_TABS = [
   { key: 'profile', href: '/account/profile' },
+  { key: 'settings', href: '/account/settings' },
   { key: 'privacy', href: '/account/privacy' },
 ] as const;
 

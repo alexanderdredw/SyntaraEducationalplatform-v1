@@ -89,6 +89,20 @@ export function TicketCard({ id, meId, timeZone }: { id: string; meId: string; t
               {t(`ticketActions.${to}`)}
             </Button>
           ))}
+          {/* BR-PRF-06, API-SUP-09: картинка-аватар пользователя обращения → инициалы (с подтверждением). */}
+          {ticket.user?.hasPhotoAvatar ? (
+            <Button
+              variant="danger-text"
+              disabled={action.pending}
+              data-testid="ticket-reset-avatar"
+              onClick={() => {
+                if (window.confirm(t('ticketActions.resetAvatarConfirm')))
+                  action.run(`${base}/user-avatar/reset`, {});
+              }}
+            >
+              {t('ticketActions.resetAvatar')}
+            </Button>
+          ) : null}
         </div>
         {ticket.allowedStatuses.length === 0 ? (
           <p className="mt-2 text-xs text-[var(--text-muted)]">{t('actions.noStatusActions')}</p>

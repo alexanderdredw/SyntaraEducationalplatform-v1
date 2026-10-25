@@ -5,8 +5,10 @@ import { and, eq, isNull, ne } from 'drizzle-orm';
 import { type Response } from 'express';
 import Redis from 'ioredis';
 import {
+  type AccountNoticePayload,
   type AccountRegisteredPayload,
   type ChangePasswordDto,
+  emailChangeKey,
   emailVerifyKey,
   type EmailVerifyPayload,
   EMAIL_TEMPLATES,
@@ -22,7 +24,9 @@ import {
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
+import { isUniqueViolation } from '../../common/idempotency';
 import { enqueueEmail } from '../../common/outbox';
+import { AuditService } from '../audit/audit.service';
 import { AppConfigService } from '../../config/app-config.service';
 import { DB, REDIS } from '../../infra/tokens';
 import { type MeDto } from '../users/me.dto';
@@ -48,6 +52,7 @@ export class AuthService {
     private readonly sessions: SessionService,
     private readonly me: MeService,
     private readonly config: AppConfigService,
+    private readonly audit: AuditService,
   ) {}
 
   /**
@@ -206,29 +211,59 @@ export class AuthService {
 
   /**
    * API-AUTH-05: смена пароля вошедшим пользователем. При временном пароле от учителя (mustChangePassword)
-   * текущий пароль не нужен; иначе он проверяется. Остальные сессии пользователя завершаются.
+   * текущий пароль не нужен; иначе он обязателен и проверяется, новый не равен текущему (BR-PRF-08).
+   * Остальные сессии пользователя завершаются, текущая остаётся; письмо «Пароль изменён», если есть email.
    */
   async changePassword(user: AuthUser, dto: ChangePasswordDto): Promise<void> {
     await this.assertPasswordLength(dto.password);
-    const { users, authSessions } = schema;
+    const { users, authSessions, userPreferences } = schema;
     const [row] = await this.db
-      .select({ passwordHash: users.passwordHash, mustChange: users.mustChangePassword })
+      .select({ passwordHash: users.passwordHash, mustChange: users.mustChangePassword, email: users.email })
       .from(users)
       .where(eq(users.id, user.id));
     if (!row) throw invalidCredentials();
     if (!row.mustChange) {
+      if (!dto.currentPassword) {
+        throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Current password is required', {
+          currentPassword: 'required',
+        });
+      }
       const ok = row.passwordHash
-        ? await verify(row.passwordHash, dto.currentPassword ?? '').catch(() => false)
+        ? await verify(row.passwordHash, dto.currentPassword).catch(() => false)
         : false;
       if (!ok) {
         throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Current password is wrong', {
           currentPassword: 'invalidPassword',
         });
       }
+      if (dto.password === dto.currentPassword) {
+        throw new ApiException(
+          HttpStatus.BAD_REQUEST,
+          'VALIDATION_FAILED',
+          'New password equals the current one',
+          {
+            password: 'samePassword',
+          },
+        );
+      }
     }
     const passwordHash = await hashPassword(dto.password);
+    const [prefs] = await this.db
+      .select({ locale: userPreferences.locale })
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, user.id));
     await this.db.transaction(async (tx) => {
       await tx.update(users).set({ passwordHash, mustChangePassword: false }).where(eq(users.id, user.id));
+      await this.audit.record(
+        { actorId: user.id, entityType: 'user', entityId: user.id, action: 'account.password' },
+        tx,
+      );
+      // Временный пароль от учителя — не «смена по желанию»: уведомление только при обычной смене.
+      if (row.email && !row.mustChange) {
+        await enqueueEmail(tx, OUTBOX_EVENT_TYPES.emailAccount, EMAIL_TEMPLATES.passwordChanged, row.email, {
+          locale: (prefs?.locale ?? 'ru') as Locale,
+        } satisfies AccountNoticePayload);
+      }
       await tx
         .update(authSessions)
         .set({ revokedAt: new Date() })
@@ -242,20 +277,79 @@ export class AuthService {
     });
   }
 
-  /** API-AUTH-06: подтверждение email по одноразовому токену из письма. */
+  /**
+   * API-AUTH-06: подтверждение email по одноразовому токену из письма. Токен смены email (BR-PRF-07, API-ME-10)
+   * подтверждает новый адрес: он становится email аккаунта, на прежний уходит «Ваш email изменён». Адрес, занятый
+   * к моменту подтверждения, — 400 emailUnavailable (существование аккаунта не раскрывается).
+   */
   async verifyEmail(dto: VerifyEmailDto): Promise<void> {
     if (this.redis.status === 'wait') await this.redis.connect();
     const tokenHash = createHash('sha256').update(dto.token).digest('hex');
     const userId = await this.redis.getdel(emailVerifyKey(tokenHash));
-    if (!userId) {
+    if (userId) {
+      await this.db
+        .update(schema.users)
+        .set({ emailVerifiedAt: new Date() })
+        .where(eq(schema.users.id, userId));
+      return;
+    }
+    const change = await this.redis.getdel(emailChangeKey(tokenHash));
+    if (!change) {
       throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Invalid or expired token', {
         token: 'invalidToken',
       });
     }
-    await this.db
-      .update(schema.users)
-      .set({ emailVerifiedAt: new Date() })
-      .where(eq(schema.users.id, userId));
+    await this.confirmEmailChange(JSON.parse(change) as { userId: string; email: string });
+  }
+
+  /** BR-PRF-07: новый адрес подтверждён — меняется email аккаунта, уведомление на прежний адрес. */
+  private async confirmEmailChange({ userId, email }: { userId: string; email: string }): Promise<void> {
+    const { users, userPreferences } = schema;
+    const [prefs] = await this.db
+      .select({ locale: userPreferences.locale })
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId));
+    const unavailable = () =>
+      new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Email cannot be used', {
+        email: 'emailUnavailable',
+      });
+    await this.db.transaction(async (tx) => {
+      const [before] = await tx
+        .select({ email: users.email })
+        .from(users)
+        .where(and(eq(users.id, userId), eq(users.status, 'active')))
+        .for('update');
+      if (!before) throw unavailable();
+      const [taken] = await tx
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.email, email), ne(users.id, userId)));
+      if (taken) throw unavailable();
+      try {
+        await tx.transaction((sp) =>
+          sp.update(users).set({ email, emailVerifiedAt: new Date() }).where(eq(users.id, userId)),
+        );
+      } catch (err) {
+        if (isUniqueViolation(err)) throw unavailable();
+        throw err;
+      }
+      await this.audit.record(
+        {
+          actorId: userId,
+          entityType: 'user',
+          entityId: userId,
+          action: 'account.email',
+          before: { email: before.email },
+          after: { email },
+        },
+        tx,
+      );
+      if (before.email && before.email.toLowerCase() !== email.toLowerCase()) {
+        await enqueueEmail(tx, OUTBOX_EVENT_TYPES.emailAccount, EMAIL_TEMPLATES.emailChanged, before.email, {
+          locale: (prefs?.locale ?? 'ru') as Locale,
+        } satisfies AccountNoticePayload);
+      }
+    });
   }
 
   /** API-AUTH-06: повторная отправка ссылки — только вошедшему пользователю с неподтверждённым email. */
