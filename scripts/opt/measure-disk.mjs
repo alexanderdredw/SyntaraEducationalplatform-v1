@@ -62,8 +62,10 @@ function findDirs(dir, names, out = []) {
   for (const e of entries) {
     if (!e.isDirectory() || e.isSymbolicLink()) continue;
     const p = join(dir, e.name);
-    if (names.includes(e.name)) out.push(p);
-    if (e.name === 'node_modules' || e.name === '.git' || names.includes(e.name)) continue;
+    // Любая сборка Next в отдельном каталоге (NEXT_DIST_DIR=.next-*) — тоже генерируемая.
+    const match = names.includes(e.name) || (names.includes('.next') && e.name.startsWith('.next-'));
+    if (match) out.push(p);
+    if (e.name === 'node_modules' || e.name === '.git' || match) continue;
     findDirs(p, names, out);
   }
   return out;
@@ -81,7 +83,7 @@ function findFiles(dir, re, out = []) {
     const p = join(dir, e.name);
     if (e.isDirectory()) {
       // Логи внутри .turbo уже учтены размером самой папки.
-      if (['node_modules', '.git', '.next', '.next-e2e', '.turbo', 'dist'].includes(e.name)) continue;
+      if (['node_modules', '.git', '.turbo', 'dist'].includes(e.name) || e.name.startsWith('.next')) continue;
       findFiles(p, re, out);
     } else if (re.test(e.name)) out.push(p);
   }

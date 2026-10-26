@@ -447,6 +447,45 @@ TanStack Query — `staleTime` 30 с по умолчанию; опрос `nav-ba
 
 ---
 
+## 11. Этап O2 — выполнено (2026-10-26)
+
+Решения владельца: О2-1…О2-10, D-1…D-4 одобрены; пункт 5 раздела 10 — уязвимые пакеты обновляются только в пределах патч- и минорных версий.
+
+| № | Сделано | Результат |
+|---|---|---|
+| О2-1 | `pnpm clean` → `scripts/clean.mjs` (сборки `.next`, `.next-*`, `.turbo`, `dist`, `*.tsbuildinfo`, `test-results`, `playwright-report`, `coverage`); выполнено | удалено 25 папок, **≈ 2,47 ГБ** |
+| О2-2 | `pnpm clean:deep` = `clean --deep` (+ все `node_modules`) и `pnpm install`; выполнено | `node_modules` 842,1 → 822,8 МБ (ушли «осиротевшие» старые версии `next`, `sharp`) |
+| О2-3 | `pnpm store prune` (до и после обновлений) | −24 МБ; хранилище (1 023 МБ) общее с другими проектами компьютера — дальше не уменьшается |
+| О2-4 | Описание `pnpm clean` (раз в неделю) и `clean:deep` — `START.md` | — |
+| О2-5 | `apps/web/tsconfig.json`: явно `.next-opt/types` (Next не понимает шаблон `.next-*` и переписывает файл — проверено); `apps/web/next-env.d.ts` убран из git и добавлен в `.gitignore` (его создают `next build` и `next typegen` перед `typecheck`, содержимое зависит от `NEXT_DIST_DIR`) | сборки в `.next`, `.next-e2e`, `.next-opt` больше не меняют отслеживаемые файлы (проверено) |
+| О2-6 | `.gitignore`: `*.log` | — |
+| О2-7 | `apps/worker`: удалён `@testcontainers/minio` | — |
+| О2-8 | `sharp` ^0.34.5 → ^0.35.5 (worker), `pnpm dedupe` | одна копия sharp; `pnpm dedupe --check` — без изменений |
+| О2-9 | `next` ^15.5.27 → ^15.5.28 | критическая уязвимость закрыта |
+| п. 5 | `nodemailer` ^10.2.1; `@nestjs/common`, `core`, `platform-express`, `testing` ^11.2.8; `@hookform/resolvers` ^5.9.2; `overrides` в `pnpm-workspace.yaml`: `multer` ^2.5.0, `body-parser@2` ^2.4.0, `fast-uri@3` ^3.1.9, `@nestjs/swagger>js-yaml` ^5.4.1, `next>postcss` ^8.5.23 (родители фиксируют уязвимые версии точно; подъём — минорный) | **`pnpm audit --prod`: 19 → 0 уязвимостей** |
+| О2-10 | `git gc` (без `--aggressive`, история не переписана) | `.git` 90,0 → 86,0 МБ (меньше оценки 10–15 МБ: PNG почти не сжимаются при упаковке) |
+| D-1, D-3 | удалены образы `bitnamilegacy/minio`, `bitnamilegacy/minio-client`, `pgsty/minio`, `cgr.dev/chainguard/minio-client`, `nginx:1.27-alpine`, `grafana/k6:0.54.0` | образы 2,488 → 1,392 ГБ (**−1,10 ГБ**) |
+| D-2 | `docker builder prune -a` | кеш сборки 223 МБ → 0 |
+| D-4 | `mem_limit` в `infra/docker-compose.yml`: clamav 2g, redis/pgbouncer/mailpit 256m, olevba **512m** (не 256m: разбор документа до 25 МБ, BR-FILE-02 — с запасом) | применено (`pnpm infra:up`); ClamAV 950 МиБ из 2 ГиБ |
+
+Тома `syntara_pgdata`, `syntara_miniodata`, `syntara_clamdb` и анонимный — на месте; в БД те же 5 792 пользователя и 813 тем (AC-OPT-03).
+
+**Время работы «было» (до изменений зависимостей):** `pnpm install` с нуля (хранилище заполнено) — 21 с; холодный `pnpm build` — 31 с (turbo 28,9 с, 5 задач, 0 из кеша).
+После: `pnpm clean:deep` (удаление + установка) — 19,5 с установки.
+
+**Проверки (AC-OPT-04):** `pnpm lint`, `pnpm typecheck` — без ошибок; `pnpm test` — 563 теста (api 317, shared 103, db 59, worker 39, web 29, ui 16) — все зелёные;
+`pnpm e2e` — 469 passed, 15 skipped, **4 failed**: `public-pages.spec.ts` (REQ-PUB-HOME-06, REQ-PUB-SUBJ-01..03, ширины 1440 и 320) ждут демо-предмет «Химия»,
+а в локальной базе загружен базовый контент (13 публичных предметов). Те же падения записаны в PLAN после S6 (2026-10-26) — к O2 не относятся; в CI база создаётся заново.
+
+**Мажорные обновления — не делались (решение владельца), список:** `next` 15 → 16; `@nestjs/*` 11 → 12 (`common`, `core`, `platform-express`, `testing`, `cli`, `swagger`);
+`@sentry/nextjs`, `@sentry/node` 10 → 11; `bullmq` 5 → 6; `ioredis` 5 → 6; `pino` 9 → 10; `pino-http` 10 → 11; `nestjs-pino` 4 → 5; `typescript` 5 → 7;
+`vitest` 3 → 5; `eslint`, `@eslint/js` 9 → 10; `globals` 16 → 17; `@hookform/resolvers` 5 → 6; `intl-messageformat` 11 → 12; `lucide-react` 0.577 → 1.x;
+`@opentelemetry/sdk-node`, `exporter-trace-otlp-http` 0.223 → 0.300; `argon2` 0.44 → 0.45; `uuid` 11 → 14; `jsdom` 26 → 30; `@vitejs/plugin-react` 5 → 6;
+`@testing-library/jest-dom` 6 → 7; `@types/node` 22 → 26; `@types/supertest` 6 → 7; `unplugin-swc` 1 → 2. После обновления `@nestjs/*` 12 и `next` 16 `overrides` можно убрать.
+Замена `@opentelemetry/auto-instrumentations-node` (4.4) не одобрялась — не делалась.
+
+---
+
 ## Приложение А. Пофайловая классификация `docs/media`
 
 <details><summary>406 файлов</summary>

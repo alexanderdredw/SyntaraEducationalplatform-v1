@@ -10,3 +10,11 @@ onlyBuiltDependencies:
   - sharp
   - protobufjs
   - unrs-resolver
+# Уязвимые транзитивные пакеты — подъём в пределах минорной версии (OPTIMIZATION_REPORT, 4.6; решение владельца 2026-10-26).
+# Убрать строку, когда родительский пакет сам потянет исправленную версию.
+overrides:
+  multer: ^2.5.0 # @nestjs/platform-express 11 фиксирует 2.4.0 (DoS)
+  body-parser@2: ^2.4.0 # express 5 (DoS)
+  fast-uri@3: ^3.1.9 # ajv ← @hookform/resolvers
+  '@nestjs/swagger>js-yaml': ^5.4.1 # @nestjs/swagger 11 фиксирует 5.3.0
+  'next>postcss': ^8.5.23 # next 15 фиксирует 8.4.31

@@ -28,6 +28,7 @@ services:
       POOL_MODE: session
       MAX_CLIENT_CONN: 200
     ports: ['6432:5432']
+    mem_limit: 256m
     depends_on:
       postgres: { condition: service_healthy }
     healthcheck:
@@ -39,6 +40,7 @@ services:
   redis:
     image: redis:7-alpine
     ports: ['6379:6379']
+    mem_limit: 256m
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
@@ -75,6 +77,8 @@ services:
     ports: ['3310:3310']
     volumes: ['clamdb:/var/lib/clamav']
     # Первая загрузка сигнатур занимает несколько минут; ~1–2 ГБ ОЗУ.
+    # Лимит для разработки (OPT-04, D-4): ~1 ГБ в работе, при обновлении баз — кратковременно больше.
+    mem_limit: 2g
     healthcheck:
       test: ['CMD', 'clamdcheck.sh']
       interval: 30s
@@ -85,6 +89,8 @@ services:
   olevba:
     build: ./olevba
     ports: ['8080:8080']
+    # Разбор документа до 25 МБ (BR-FILE-02) — с запасом.
+    mem_limit: 512m
     healthcheck:
       test:
         [
@@ -101,6 +107,7 @@ services:
   mailpit:
     image: axllent/mailpit:latest
     ports: ['1025:1025', '8025:8025']
+    mem_limit: 256m
 
 volumes:
   pgdata:

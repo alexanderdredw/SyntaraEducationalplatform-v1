@@ -10,3 +10,8 @@ playwright-report/
 .turbo/
 test-results/
 *.tsbuildinfo
+
+# Журналы (OPT-01)
+*.log
+# Генерирует Next при сборке/typegen (путь зависит от NEXT_DIST_DIR) — не хранить в git (OPT, О2-5)
+apps/web/next-env.d.ts

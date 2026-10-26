@@ -10,3 +10,12 @@
    Выполни итерацию 2 из раздела 12 docs/SPEC.md. В конце дай отчёт.
 
 4. Если есть скриншоты публичной части S01–S26 — положите их в docs/media/public/ до итерации 3.
+
+## Очистка места на диске (docs/OPTIMIZATION_TZ.md, OPT-01)
+
+- `pnpm clean` — удаляет генерируемые папки: сборки Next (`apps/web/.next`, `.next-e2e`, другие `.next-*`), кеши Turborepo (`.turbo`),
+  `dist`, `*.tsbuildinfo`, `test-results`, `playwright-report`, `coverage`. Исходники, `content/`, `docs/`, `.env` и тома Docker не затрагиваются.
+  Всё восстанавливается само: `pnpm dev`, `pnpm build`, `pnpm e2e` (первый запуск после очистки дольше на 1–2 минуты).
+  Кеши webpack в `.next-e2e` и кеш `.turbo` растут без ограничения (≈ 0,5 ГБ за неделю активной работы) — запускайте `pnpm clean` раз в неделю.
+- `pnpm clean:deep` — то же плюс все `node_modules`, затем `pnpm install`. Места почти не освобождает (файлы — жёсткие ссылки на хранилище pnpm),
+  нужен, если установка сломалась. Освободить само хранилище pnpm (общее для всех проектов): `pnpm store prune`.
