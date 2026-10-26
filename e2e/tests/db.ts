@@ -87,7 +87,8 @@ export async function addLearningEvents(
 ): Promise<void> {
   const sql = postgres(env('DATABASE_URL'), { max: 1, prepare: false });
   try {
-    const at = new Date(Date.now() - daysAgo * 86_400_000);
+    // День считается по Алматы (UTC+5): с 19:00 до 24:00 UTC там уже следующие сутки.
+    const at = new Date(Date.now() + 5 * 3_600_000 - daysAgo * 86_400_000);
     at.setUTCHours(7, 0, 0, 0);
     for (let i = 0; i < count; i++) {
       await sql`
