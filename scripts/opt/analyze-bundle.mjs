@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // OPT-05 (docs/OPTIMIZATION_TZ.md, раздел 8): JS первой загрузки по страницам production-сборки и состав чанков.
 // Только чтение. Запуск из корня после сборки: node scripts/opt/analyze-bundle.mjs [distDir=apps/web/.next] [--json out.json]
+//   [--budget КБ] — проверка бюджета для CI (выход 1 при превышении).
 // Размеры — gzip (как «First Load JS» в выводе next build) и brotli. Библиотеки в чанке определяются по характерным
 // строкам, которые переживают минификацию, — это оценка; точная карта модулей — @next/bundle-analyzer (решение O4).
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
@@ -99,3 +100,19 @@ print(`\nCSS: ${css.map((c) => `${c.file} — ${kb(c.raw)} КБ, gzip ${kb(c.gz)
 
 const ji = process.argv.indexOf('--json');
 if (ji > 0) writeFileSync(process.argv[ji + 1], JSON.stringify({ rows, chunks, css }, null, 2));
+
+// OPT-06 (О5, раздел 9 ТЗ): `--budget 500` — сборка не проходит, если JS первой загрузки (gzip) любой страницы больше
+// бюджета в КБ (REQ-NFR-PERF-01). Тот же расчёт, что в таблице выше.
+const bi = process.argv.indexOf('--budget');
+if (bi > 0) {
+  const budget = Number(process.argv[bi + 1]) * 1024;
+  const over = rows.filter((r) => r.gz > budget);
+  if (over.length) {
+    print(`\nБюджет JS первой загрузки ${kb(budget)} КБ превышен:`);
+    for (const r of over) print(`  ${r.page} — ${kb(r.gz)} КБ`);
+    process.exit(1);
+  }
+  print(
+    `\nБюджет JS первой загрузки ${kb(budget)} КБ: все ${rows.length} страниц в пределах (максимум ${kb(rows[0].gz)} КБ).`,
+  );
+}

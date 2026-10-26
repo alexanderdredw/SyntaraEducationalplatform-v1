@@ -1,0 +1,38 @@
+// OPT-06 (раздел 9.5 ТЗ оптимизации): `pnpm deps:check` = `knip --dependencies` — неиспользуемые и неуказанные
+// зависимости. Точки входа Next.js, NestJS, Vitest, Playwright, ESLint knip находит сам (плагины); ниже — только то,
+// чего он не видит. Каждое исключение проверено вручную (docs/OPTIMIZATION_REPORT.md, 4.2 и раздел 14).
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/**/*.mjs"],
+      // Скрипты замеров берут Playwright и Lighthouse из пакета e2e (createRequire), lhci вызывается командой.
+      "ignoreDependencies": ["@playwright/test", "lighthouse", "@lhci/cli"],
+    },
+    "apps/api": {
+      "entry": ["src/instrument.ts", "src/generate-openapi.ts"],
+      // testcontainers — зависимость @testcontainers/*, напрямую не импортируется (решение O1, 4.2);
+      // @nestjs/schematics — только коллекция для `nest generate` в nest-cli.json.
+      "ignoreDependencies": ["testcontainers", "@nestjs/schematics"],
+    },
+    "apps/web": {
+      "entry": ["instrumentation*.ts"],
+      // Файлы шрифта Inter подключаются путём в next/font/local (app/fonts.ts), а не импортом.
+      "ignoreDependencies": ["@fontsource-variable/inter"],
+    },
+    "apps/worker": {
+      "ignoreDependencies": ["testcontainers"],
+    },
+    "packages/db": {
+      "ignoreDependencies": ["testcontainers"],
+    },
+    "packages/shared": {
+      "entry": ["scripts/*.mjs"],
+    },
+    "e2e": {
+      "entry": ["scripts/**/*.mjs"],
+      // lighthouse — для scripts/opt/lighthouse.mjs (разрешается из этого пакета).
+      "ignoreDependencies": ["lighthouse"],
+    },
+  },
+}

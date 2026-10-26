@@ -8,7 +8,15 @@ import { join, relative } from 'node:path';
 
 const root = process.cwd();
 const deep = process.argv.includes('--deep');
-const DIRS = new Set(['.turbo', 'dist', 'coverage', 'test-results', 'playwright-report']);
+const DIRS = new Set([
+  '.turbo',
+  'dist',
+  'coverage',
+  'test-results',
+  'playwright-report',
+  '.lighthouseci',
+  'lighthouse-report',
+]);
 const SKIP = new Set(['.git', 'content', 'docs', 'node_modules']);
 const removed = [];
 

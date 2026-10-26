@@ -13,7 +13,7 @@ jobs:
   checks:
     name: lint · typecheck · test · build · e2e
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     # Postgres и Redis для e2e (api + web). Unit/integration-тесты поднимают свои контейнеры (Testcontainers).
     services:
       postgres:
@@ -55,6 +55,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # OPT-06 (раздел 9.2 ТЗ оптимизации): в git нет генерируемых файлов и файлов больше 1 МБ (кроме эталонов).
+      - name: Repository files
+        run: node scripts/opt/check-repo-files.mjs
+
       # BR-FILE-03: настоящая проверка файлов для e2e — ClamAV и olevba (как в infra/docker-compose.yml).
       # Запускаются заранее: ClamAV скачивает базы сигнатур, пока идут lint, тесты и сборка.
       - name: ClamAV and olevba for e2e (start)
@@ -68,6 +72,10 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      # OPT-06 (раздел 9.5): неиспользуемые и неуказанные зависимости (knip).
+      - name: Dependencies check
+        run: pnpm deps:check
 
       # BR-CNT-03, BR-CNT-06: файлы базовой программы content/ (формат, картинки WEBP/PNG/JPG ≤ 300 КБ, лицензии).
       - name: Content check
@@ -91,6 +99,10 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      # OPT-06 (раздел 9.1), REQ-NFR-PERF-05: JS первой загрузки каждой страницы — не больше 500 КБ (gzip).
+      - name: JS budget
+        run: node scripts/opt/analyze-bundle.mjs apps/web/.next --budget 500
 
       - name: Install Playwright browsers
         run: pnpm --filter @syntara/e2e exec playwright install --with-deps chromium
@@ -128,6 +140,23 @@ jobs:
 
       - name: E2E
         run: pnpm e2e
+
+      # OPT-06, О4-8 (REQ-NFR-PERF-01/02, REQ-NFR-PERF-06): Lighthouse CI — страницы гостя и урок базового предмета
+      # на production-сборке; пороги — lighthouserc.json, отчёты — артефакт lighthouse-report.
+      - name: Lighthouse CI
+        run: |
+          nohup env RATE_LIMITS_DISABLED=true pnpm --filter @syntara/api start > api-lhci.log 2>&1 &
+          nohup pnpm --filter @syntara/web start > web-lhci.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3001/api/health >/dev/null && curl -sf -o /dev/null http://localhost:3000/ru && break; sleep 2; done
+          node scripts/opt/lhci.mjs http://localhost:3000
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse-report
+          path: e2e/lighthouse-report
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: Worker log
         if: failure()

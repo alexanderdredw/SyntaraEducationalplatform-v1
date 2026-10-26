@@ -7,6 +7,9 @@ dist/
 !.env.example
 coverage/
 playwright-report/
+# Lighthouse CI (OPT-06): рабочие файлы и отчёты
+.lighthouseci/
+lighthouse-report/
 .turbo/
 test-results/
 *.tsbuildinfo

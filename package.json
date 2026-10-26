@@ -25,15 +25,18 @@
     "content:check": "pnpm --filter @syntara/db content:check",
     "content:import": "pnpm --filter @syntara/db content:import",
     "battle:anonymize": "pnpm --filter @syntara/db battle:anonymize",
-    "db:studio": "pnpm --filter @syntara/db db:studio"
+    "db:studio": "pnpm --filter @syntara/db db:studio",
+    "deps:check": "knip --dependencies"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@lhci/cli": "0.15.1",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^16.4.0",
+    "knip": "6.41.0",
     "prettier": "^3.9.10",
     "turbo": "^2.11.7",
     "typescript": "^5.9.3",
