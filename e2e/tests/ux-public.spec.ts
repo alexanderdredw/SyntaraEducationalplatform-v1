@@ -156,6 +156,9 @@ test.describe('UX публичных страниц', () => {
     await expect(page).toHaveURL(/\/kk\/schools$/);
     const kkDialog = page.getByRole('dialog', { name: bundles.kk.shell.menu });
     await expect(kkDialog.getByRole('radio', { name: 'KK' })).toHaveAttribute('aria-checked', 'true');
+    // Смена языка перемонтирует хедер: Esc — только когда новая панель смонтирована и забрала фокус
+    // (иначе под нагрузкой нажатие приходит раньше её обработчиков).
+    await expect.poll(() => kkDialog.evaluate((el) => el.contains(document.activeElement))).toBe(true);
 
     // Esc закрывает, фокус возвращается на кнопку меню.
     await page.keyboard.press('Escape');
@@ -166,6 +169,7 @@ test.describe('UX публичных страниц', () => {
     // Нажатие вне панели закрывает меню.
     await kkMenuButton.click();
     await expect(kkDialog).toBeVisible();
+    await expect.poll(() => kkDialog.evaluate((el) => el.contains(document.activeElement))).toBe(true);
     const viewport = page.viewportSize()!;
     // Левый отступ 8 px — всегда вне панели (у нижнего края на 640 px зазор всего 12 px).
     await page.mouse.click(3, viewport.height / 2);

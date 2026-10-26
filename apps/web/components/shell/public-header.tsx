@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { type Locale } from '@syntara/shared';
 import { BrandMark, Capsule, cn, Header, Wordmark } from '@syntara/ui';
@@ -39,11 +39,11 @@ export function PublicHeader({
   const t = useTranslations('shell');
   const tFooter = useTranslations('footer');
   const pathname = usePathname();
-  const [reopened] = useState(() => {
-    const value = reopenMenuAfterLocaleSwitch;
+  // Флаг сбрасывается после монтирования, а не при рендере: прерванный рендер (переход) не должен его «съесть».
+  const [reopened] = useState(() => reopenMenuAfterLocaleSwitch);
+  useEffect(() => {
     reopenMenuAfterLocaleSwitch = false;
-    return value;
-  });
+  }, []);
   const [menuOpen, setMenuOpen] = useState(reopened);
   const firstItemRef = useRef<HTMLAnchorElement>(null);
   const languageRef = useRef<HTMLElement>(null);

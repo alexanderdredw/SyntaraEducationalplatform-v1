@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { DropdownMenu, Popover } from 'radix-ui';
 import { Bell, ChevronDown, Flame, Zap } from 'lucide-react';
@@ -67,11 +67,11 @@ export function CabinetHeader({
   const activeAccount = usePathname().startsWith('/account');
   const badgeLabel = useNavBadgeLabel();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [reopened] = useState(() => {
-    const value = reopenMenuAfterLocaleSwitch;
+  // Флаг сбрасывается после монтирования, а не при рендере: прерванный рендер (переход) не должен его «съесть».
+  const [reopened] = useState(() => reopenMenuAfterLocaleSwitch);
+  useEffect(() => {
     reopenMenuAfterLocaleSwitch = false;
-    return value;
-  });
+  }, []);
   const [menuOpen, setMenuOpen] = useState(reopened);
   const firstItemRef = useRef<HTMLAnchorElement>(null);
   const languageRef = useRef<HTMLElement>(null);

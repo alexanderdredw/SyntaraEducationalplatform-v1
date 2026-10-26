@@ -1,7 +1,29 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { acceptCookies, bundles, isMobile } from './support';
 
 const ru = bundles.ru;
+
+/**
+ * Базовые предметы в порядке API-PUB-01: открытые первыми, дальше — порядок content/ (BR-CNT-02). Какие открыты,
+ * зависит от опубликованных тем в базе (BR-CNT-08): в content/ темы есть только у «Биологии», seed `visual`
+ * добавляет темы «Математике» и «Английскому языку» — поэтому статусы берутся из API, а не из теста.
+ * Всего предметов — 12 (PH-01), и предметы «Естественных наук» идут в порядке content/.
+ */
+async function baseSubjects(page: Page): Promise<{ title: string; status: string }[]> {
+  const res = await page.request.get('/api/public/subjects', { headers: { 'Accept-Language': 'ru' } });
+  expect(res.ok()).toBe(true);
+  const subjects = (await res.json()) as { title: string; status: string }[];
+  expect(subjects).toHaveLength(12);
+  const statuses = subjects.map((s) => s.status);
+  const rank = (s: string) => (s === 'open' ? 0 : 1);
+  expect(statuses).toEqual([...statuses].sort((a, b) => rank(a) - rank(b)));
+  expect(subjects[0]!.title).toBe('Биология');
+  const titles = subjects.map((s) => s.title);
+  const natural = ['Химия', 'Физика', 'География'].map((t) => titles.indexOf(t));
+  expect(natural).toEqual([...natural].sort((a, b) => a - b));
+  expect(natural[0]).toBeGreaterThan(0);
+  return subjects;
+}
 
 test.describe('Публичные страницы', () => {
   test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
@@ -84,13 +106,17 @@ test.describe('Публичные страницы', () => {
   test('REQ-PUB-HOME-06 subjects on home: open first, at most 6 cards, «Все предметы →», status badge on every card (UX-03)', async ({
     page,
   }) => {
+    const subjects = await baseSubjects(page);
     await page.goto('/ru');
     const cards = page.getByTestId('home-subjects').getByTestId('subject-card');
     // PH-01 — 12 базовых предметов; на главной — 6, открытые первыми, остальные — по «Все предметы →»
     // (решение владельца 2026-10-17). Порядок — из content/: Биология, затем Химия, Физика, География…
     await expect(cards).toHaveCount(6);
     await expect(cards.first()).toContainText('Биология');
-    await expect(cards.nth(1)).toContainText('Химия');
+    await expect(cards).toHaveText(subjects.slice(0, 6).map((s) => new RegExp(s.title)));
+    expect(await cards.evaluateAll((els) => els.map((e) => e.getAttribute('data-status')))).toEqual(
+      subjects.slice(0, 6).map((s) => s.status),
+    );
     const all = page.getByTestId('subjects-all');
     await expect(all).toHaveText(ru.home.subjects.all);
     await expect(all).toHaveAttribute('href', '/ru/subjects');
@@ -111,6 +137,7 @@ test.describe('Публичные страницы', () => {
   test('REQ-PUB-SUBJ-01..03, BR-VIS-04 /subjects: «Открыт для знакомства» → catalog for a guest, «Скоро» group last, no search', async ({
     page,
   }) => {
+    const subjects = await baseSubjects(page);
     await page.goto('/ru/subjects');
     const available = page.getByTestId('subject-card');
     await expect(available.first()).toHaveAttribute('data-status', 'open');
@@ -121,7 +148,9 @@ test.describe('Публичные страницы', () => {
     );
     const soon = page.getByTestId('subjects-soon');
     await expect(soon.getByRole('heading', { name: ru.subjects.soonGroup })).toBeVisible();
-    await expect(soon.getByTestId('subject-card')).toHaveCount(11);
+    await expect(soon.getByTestId('subject-card')).toHaveCount(
+      subjects.filter((s) => s.status === 'soon').length,
+    );
     await expect(soon.getByRole('link')).toHaveCount(0);
     await expect(page.locator('main input, main [role="search"]')).toHaveCount(0);
   });
