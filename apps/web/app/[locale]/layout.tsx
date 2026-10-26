@@ -8,6 +8,7 @@ import { routing } from '@/i18n/routing';
 import { Providers } from '@/components/providers';
 import { PreferencesProvider } from '@/components/preferences/preferences-provider';
 import { COOKIE, parseConsent, parseTheme, SIDEBAR_INIT_SCRIPT, THEME_INIT_SCRIPT } from '@/lib/preferences';
+import { fontVariables } from '../fonts';
 import '../globals.css';
 
 export async function generateMetadata({
@@ -41,7 +42,13 @@ export default async function LocaleLayout({
   const nonce = (await headers()).get('x-nonce') ?? undefined;
 
   return (
-    <html lang={locale} data-theme={theme} data-data-saver={String(dataSaver)} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={fontVariables}
+      data-theme={theme}
+      data-data-saver={String(dataSaver)}
+      suppressHydrationWarning
+    >
       <head>
         <script
           nonce={nonce}

@@ -2,10 +2,10 @@
  * Токены дизайна (REQ-GEN-DS-01, раздел 3.1 SPEC). Значения — стартовые; критерий — совпадение с эталонами.
  * Единственный источник цветов, шрифтов, размеров текста, отступов, радиусов, теней и длительностей:
  * компоненты packages/ui и страницы apps/web берут значения только отсюда.
- * Шрифт: Inter (решение Q-14), self-hosted через @fontsource, font-display: swap,
- * подмножества cyrillic и cyrillic-ext содержат казахские буквы Ә Ғ Қ Ң Ө Ұ Ү Һ І.
+ * Шрифт: Inter (решение Q-14) — файлы @fontsource, подключаются в apps/web через next/font/local
+ * (apps/web/app/fonts.ts: font-display: swap, preload, запасной шрифт по метрикам Inter); наборы cyrillic и
+ * cyrillic-ext содержат казахские буквы Ә Ғ Қ Ң Ө Ұ Ү Һ І. Без переменных next/font — системный шрифт.
  */
-@import '@fontsource-variable/inter/wght.css';
 
 :root,
 [data-theme='dark'] {
@@ -97,7 +97,10 @@
   --illustration-w: 336px; /* иллюстрация раздела урока на десктопе; на мобильном — во всю ширину (решение владельца 2026-10-17) */
 
   /* ---- Шрифт и размеры текста (3.1) ---- */
-  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:
+    var(--font-inter-cyrillic, 'Inter Variable'), var(--font-inter-cyrillic-ext, 'Inter Variable'),
+    var(--font-inter-latin-ext, 'Inter Variable'), var(--font-inter-latin, 'Inter Variable'), system-ui,
+    -apple-system, 'Segoe UI', Roboto, sans-serif;
   /* Публичные страницы: H1 главной 72–112; заголовки секций 28–64; текст 16–20; подписи 12–14. */
   --text-hero: clamp(3rem, 1.5rem + 5vw, 6rem); /* 48 на 320 px → 96 на ≥ 1440 px */
   --text-section: clamp(1.875rem, 1.25rem + 2vw, 3rem); /* 30 → 48 */

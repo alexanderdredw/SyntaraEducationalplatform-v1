@@ -6,7 +6,8 @@ import { ArrowRight, BookOpen, FileText, Lightbulb, PencilLine } from 'lucide-re
 import { Accordion, Card } from '@syntara/ui';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
-import { SafeMarkdown } from '../markdown/safe-markdown';
+import { LazyMarkdown } from '../markdown/lazy-markdown';
+import type { LessonMarkdown } from '../markdown/lesson-markdown';
 
 export type Lesson = components['schemas']['LessonDto'];
 
@@ -79,11 +80,13 @@ export function LessonHeader({
 
 /**
  * Вкладка «Обзор» (REQ-ST-LES-02): описание; карточка «Интересный факт» — после описания, перед текстом урока
- * (решение владельца 2026-10-16); текст (SafeMarkdown, REQ-NFR-SEC-06); материалы (только прошедшие проверку);
+ * (решение владельца 2026-10-16); текст (SafeMarkdown, REQ-NFR-SEC-06; на сервере — `markdown`); материалы (только прошедшие проверку);
  * иллюстрация справа; аккордеон разделов — все свёрнуты, можно раскрыть несколько (PH-36).
  */
-export function LessonOverview({ lesson }: { lesson: Lesson }) {
+export function LessonOverview({ lesson, markdown }: { lesson: Lesson; markdown?: LessonMarkdown }) {
   const t = useTranslations('teacher.lesson');
+  // Markdown, отрисованный на сервере (О4-4), иначе — тот же SafeMarkdown с ленивой загрузкой.
+  const md = (text: string) => markdown?.[text] ?? <LazyMarkdown>{text}</LazyMarkdown>;
   return (
     <div className="@container flex flex-col gap-5" data-testid="lesson-overview">
       {/* Ширина колонок — по ширине самого урока (окно предпросмотра, страница ученика). */}
@@ -100,7 +103,7 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
               <p>{lesson.funFact}</p>
             </Card>
           ) : null}
-          {lesson.bodyMd ? <SafeMarkdown>{lesson.bodyMd}</SafeMarkdown> : null}
+          {lesson.bodyMd ? md(lesson.bodyMd) : null}
           {lesson.sections.length ? (
             <Accordion
               items={lesson.sections.map((s) => ({
@@ -126,7 +129,7 @@ export function LessonOverview({ lesson }: { lesson: Lesson }) {
                           data-testid="section-illustration"
                         />
                       ) : null}
-                      {s.body ? <SafeMarkdown>{s.body}</SafeMarkdown> : null}
+                      {s.body ? md(s.body) : null}
                     </div>
                   ) : null,
               }))}

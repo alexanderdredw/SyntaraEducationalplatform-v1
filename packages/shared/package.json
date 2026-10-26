@@ -3,18 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "description": "Zod-схемы DTO, перечисления, ключи конфигурации и i18n (раздел 2.2 SPEC)",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "browser": "./dist/esm/index.js",
       "default": "./dist/index.js"
     },
     "./i18n/*": "./i18n/*"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "build": "tsc -p tsconfig.build.json && tsc -p tsconfig.build.esm.json",
+    "dev": "node scripts/dev.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

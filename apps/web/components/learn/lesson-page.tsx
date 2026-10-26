@@ -10,6 +10,8 @@ import { Pill, Skeleton, Tabs } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import { loginEntryHref } from '@/lib/auth';
 import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../lesson/lesson-view';
+import type { LessonMarkdown } from '../markdown/lesson-markdown';
+import { lessonQueryKey } from './query-keys';
 import { LinkButton } from '../public/blocks';
 import { StudentQuiz } from './quiz';
 import { TutorChatLoader } from './tutor-chat-loader';
@@ -27,7 +29,16 @@ const tabOf = (value: string | null): LessonTab =>
  * «Квиз», «Syntara AI» в параметре `?tab=` — без перезагрузки и без потери состояния при смене языка или темы
  * оформления (REQ-ST-LES-01, REQ-ST-LES-05, AC-ST-01). Открытие — событие lesson_opened (REQ-ST-LES-04).
  */
-export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: string }) {
+export function LessonPage({
+  topicId,
+  timeZone,
+  markdown,
+}: {
+  topicId: string;
+  timeZone: string;
+  /** Markdown урока, отрисованный на сервере вместе с данными урока (OPT-05, О4-2, О4-4). */
+  markdown?: LessonMarkdown;
+}) {
   const t = useTranslations('student.lesson');
   const locale = useLocale();
   const params = useSearchParams();
@@ -40,7 +51,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
   const tm = useTranslations('student.myClass');
 
   const lesson = useQuery({
-    queryKey: ['student', 'lesson', topicId, guest, locale],
+    queryKey: lessonQueryKey(topicId, guest, locale),
     queryFn: async () => {
       // Гость — «Обзор» базового урока (API-PUB-13), ученик — API-S-06.
       const res = await apiRequest<Lesson>(`${api}/topics/${topicId}`, { locale });
@@ -143,7 +154,7 @@ export function LessonPage({ topicId, timeZone }: { topicId: string; timeZone: s
             value: 'overview',
             label: t('overview'),
             icon: <BookOpen />,
-            content: <LessonOverview lesson={data} />,
+            content: <LessonOverview lesson={data} markdown={markdown} />,
           },
           {
             value: 'quiz',

@@ -1,8 +1,14 @@
 import type { NextConfig } from 'next';
+import createBundleAnalyzer from '@next/bundle-analyzer';
 import createNextIntlPlugin from 'next-intl/plugin';
 import pkg from './package.json' with { type: 'json' };
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
+// OPT-05 (О4-7): карта бандла — `ANALYZE=1 pnpm --filter @syntara/web build`, отчёты в <distDir>/analyze/.
+const withBundleAnalyzer = createBundleAnalyzer({
+  enabled: process.env.ANALYZE === '1',
+  openAnalyzer: false,
+});
 
 const API_INTERNAL_URL = process.env.API_INTERNAL_URL ?? 'http://localhost:3001';
 
@@ -37,4 +43,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withBundleAnalyzer(withNextIntl(nextConfig));

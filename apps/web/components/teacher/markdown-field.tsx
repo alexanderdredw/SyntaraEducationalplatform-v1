@@ -3,10 +3,11 @@
 import { forwardRef, useState, type TextareaHTMLAttributes } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn, fieldBaseClass } from '@syntara/ui';
-import { SafeMarkdown } from '../markdown/safe-markdown';
+import { LazyMarkdown } from '../markdown/lazy-markdown';
 
 /**
- * «Текст урока» (REQ-TCH-TOP-03): Markdown с вкладкой «Просмотр»; рендер — тот же SafeMarkdown, что у ученика.
+ * «Текст урока» (REQ-TCH-TOP-03): Markdown с вкладкой «Просмотр»; рендер — тот же SafeMarkdown, что у ученика
+ * (загружается лениво — только когда открыт «Просмотр», О4-4).
  * Вкладки — кнопки с aria-pressed: поле ввода остаётся в форме, пока открыт просмотр.
  */
 export const MarkdownField = forwardRef<
@@ -64,7 +65,7 @@ export const MarkdownField = forwardRef<
           className="min-h-56 rounded-[var(--radius-field)] border border-[var(--border)] bg-[var(--field)] p-4"
         >
           {value.trim() ? (
-            <SafeMarkdown>{value}</SafeMarkdown>
+            <LazyMarkdown>{value}</LazyMarkdown>
           ) : (
             <p className="text-sm text-[var(--text-muted)]">{t('emptyPreview')}</p>
           )}
