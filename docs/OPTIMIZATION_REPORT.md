@@ -484,6 +484,30 @@ TanStack Query — `staleTime` 30 с по умолчанию; опрос `nav-ba
 `@testing-library/jest-dom` 6 → 7; `@types/node` 22 → 26; `@types/supertest` 6 → 7; `unplugin-swc` 1 → 2. После обновления `@nestjs/*` 12 и `next` 16 `overrides` можно убрать.
 Замена `@opentelemetry/auto-instrumentations-node` (4.4) не одобрялась — не делалась.
 
+## 12. Этап O3 — выполнено (2026-10-26)
+
+Решения владельца: только О3-3 и О3-4; О3-1, О3-2 (пережатие) и О3-5 (удаление устаревших) — не делать; ссылка PLAN/ТЗ на папку защищает её файлы.
+
+**О3-3 — точные копии: удалено 0 файлов.** Правило владельца: из пары одинаковых файлов оставить тот, на который ссылаются документы; если ссылаются на оба — не удалять.
+Проверены все 31 пара (`node scripts/opt/media-inventory.mjs`, ссылки из `docs/*.md` и `CLAUDE.md`, сам отчёт оптимизации не учитывается):
+
+| Пары | На первый файл | На второй файл | Итог |
+|---|---|---|---|
+| 25 × `profile/*` = `profile/v2/before/*` | папка `docs/media/profile/` — PLAN (P4), PROFILE_TZ | папка `docs/media/profile/v2/before/` — PLAN (S0), PROFILE_TZ_2; 17 из 25 — ещё и шаблоны `before/…-*` в `profile/v2/REPORT.md` | оба защищены — оставлены |
+| 4 × `nav/footer-before-*` = `nav/footer-after-*` | шаблон в PLAN | шаблон в PLAN | оставлены |
+| `iteration8/u01-home-continue-before.png` = `u01-home-continue.png` | папка `iteration8` — PLAN | та же папка | оставлены |
+| `iteration10/s-03-quiz-result.png` = `iteration8.6/student-03-quiz-result-xp.png` | папка `iteration10` — PLAN | папка `iteration8.6` — PLAN | оставлены |
+
+Выигрыш — 0 МБ (в `.git` копии и так хранятся одним объектом).
+
+**О3-4 — правило в `CLAUDE.md`** (раздел «Скриншоты отчётов»): новые скриншоты — WebP q≈85, ширина ≤ 1600 px, коммитить только итоговые;
+эталоны и файлы со ссылками не менять; после правок документов — `node scripts/opt/check-doc-paths.mjs`.
+
+**Проверка путей (AC-OPT-02):** новый скрипт `scripts/opt/check-doc-paths.mjs` — все пути `docs/media/…` (файлы, папки, шаблоны `<ID>`, `*`, `NN`)
+и ссылки Markdown из `docs/*.md` и `CLAUDE.md`: проверено 511, отсутствуют 0. Примеры картинок `media/heart.png` в CONTENT_GUIDE относятся к папке темы в `content/` и не проверяются.
+
+Эталоны (30 файлов) и `content/` не менялись; `git diff --stat` этапа — только `CLAUDE.md`, отчёт, PLAN, скрипты.
+
 ---
 
 ## Приложение А. Пофайловая классификация `docs/media`

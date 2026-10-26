@@ -25,11 +25,18 @@ const REFERENCE = [
 
 // Документы, ссылки из которых защищают файл (раздел 2.1): SPEC, PLAN, *_TZ*, UX_AUDIT, CLAUDE.md.
 // Осторожно берём все docs/*.md и корневые *.md — лишняя защита безопаснее.
-const protectedDocs = tracked.filter((f) => /^docs\/[^/]+\.md$/.test(f) || /^[^/]+\.md$/.test(f));
+// Сам отчёт оптимизации не считается: его приложение перечисляет все файлы.
+const SELF = 'docs/OPTIMIZATION_REPORT.md';
+const protectedDocs = tracked.filter(
+  (f) => f !== SELF && (/^docs\/[^/]+\.md$/.test(f) || /^[^/]+\.md$/.test(f)),
+);
 // Прочие тексты в git (отчёты в docs/media, код, тесты, скрипты) — ссылка делает файл «актуальным результатом».
 const otherTexts = tracked.filter(
   (f) =>
-    !protectedDocs.includes(f) && /\.(md|ts|tsx|mjs|js|json|ya?ml)$/.test(f) && !f.endsWith('pnpm-lock.yaml'),
+    f !== SELF &&
+    !protectedDocs.includes(f) &&
+    /\.(md|ts|tsx|mjs|js|json|ya?ml)$/.test(f) &&
+    !f.endsWith('pnpm-lock.yaml'),
 );
 const read = (f) => {
   try {

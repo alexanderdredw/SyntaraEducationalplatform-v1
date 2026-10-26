@@ -14,6 +14,11 @@
 - Схема БД меняется только миграциями (раздел 5). Не удаляй ограничения целостности.
 - Указывай ID требований (REQ-*, BR-*, AC-*) в названиях тестов и в сообщениях коммитов.
 
+## Скриншоты отчётов (docs/OPTIMIZATION_TZ.md, 6.5)
+- Новые скриншоты — только WebP (quality ≈ 85), ширина ≤ 1600 px.
+- Коммитить только итоговые снимки; промежуточные «до/после» рабочих прогонов не коммитить.
+- Эталоны (`docs/media/image*`, `student-auth*`, `ux/*-ref.png`, `public/`) и файлы, на которые ссылаются документы, не менять. После правок документов — `node scripts/opt/check-doc-paths.mjs`.
+
 ## Стек (раздел 2)
 TypeScript strict · pnpm + Turborepo · Next.js 15 + React 19 + Tailwind 4 + Radix UI · NestJS 11 + Drizzle ORM · PostgreSQL 16 · Redis/BullMQ · S3 (MinIO) · Vitest + Playwright.
 
