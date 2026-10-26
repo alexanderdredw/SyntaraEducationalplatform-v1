@@ -85,6 +85,8 @@ export class MaterialDto {
   @ApiProperty({ enum: ['pending', 'clean', 'rejected'] }) scanStatus: 'pending' | 'clean' | 'rejected';
   @ApiProperty({ type: String, nullable: true, description: 'Подписанная ссылка на 10 минут, только clean' })
   url: string | null;
+  @ApiProperty({ description: 'BR-FILE-09: таблица, загруженная до запрета; ученикам не выдаётся' })
+  formatNotSupported: boolean;
 }
 
 /** API-T-10 PUT */

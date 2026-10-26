@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { expect, request, test } from '@playwright/test';
-import { mediaFilesOf } from './db';
-import { makePng, makePptx } from './files';
+import { attachLegacySpreadsheet, mediaFilesOf } from './db';
+import { makePng, makePptx, makeXlsx } from './files';
 import { acceptCookies, bundles } from './support';
 
 const ru = bundles.ru;
@@ -107,5 +107,58 @@ test.describe('Загрузка файлов учителем (7.8)', () => {
     const encoded = /filename\*=UTF-8''([^;]+)/.exec(disposition)![1]!;
     expect(decodeURIComponent(encoded)).toBe(ruName);
     expect((await download.body()).subarray(0, 2).toString()).toBe('PK');
+  });
+
+  test('BR-FILE-09 spreadsheets: not offered in the file picker, refused at once before upload; an old one is marked for the teacher', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const email = `sheets.${randomUUID().slice(0, 8)}@example.kz`;
+    const teacher = await request.newContext({ baseURL });
+    await teacher.post('/api/auth/register', {
+      data: { role: 'teacher', email, displayName: 'Учитель', password: 'teacher-pass-1' },
+    });
+    const csrf = (await teacher.storageState()).cookies.find((c) => c.name === 'csrf')!.value;
+    const post = async (path: string, data: object = {}) =>
+      (await teacher.post(path, { data, headers: { 'X-CSRF-Token': csrf } })).json();
+    const subject = await post('/api/teacher/subjects', {
+      translations: { ru: { title: 'Таблицы' } },
+      inPublicCatalog: false,
+    });
+    const topic = await post(`/api/teacher/subjects/${subject.id}/topics`);
+    await attachLegacySpreadsheet(topic.id, email);
+    const { cookies } = await teacher.storageState();
+    await context.addCookies(cookies.map(({ name, value }) => ({ name, value, url: baseURL! })));
+
+    const uploadRequests: string[] = [];
+    page.on('request', (r) => {
+      if (r.url().includes('/api/files/upload-url')) uploadRequests.push(r.url());
+    });
+    await page.goto(`/ru/teacher/topics/${topic.id}`);
+
+    // Окно выбора файла: только PDF, DOCX, PPTX, ODT, TXT; обложка и картинки — только изображения.
+    expect(await page.getByTestId('material-file').getAttribute('accept')).toBe('.pdf,.docx,.pptx,.odt,.txt');
+    expect(await page.getByTestId('cover-file').getAttribute('accept')).not.toMatch(/xls|csv|ods|sheet/);
+    await expect(page.getByTestId('topic-materials')).toContainText(tt.topic.materialsHint);
+
+    // Таблица, выбранная в обход фильтра, и книга Excel под видом .docx — сообщение сразу, запроса нет.
+    const docxMime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    await page.getByTestId('material-file').setInputFiles([
+      { name: 'Оценки.xlsx', mimeType: 'application/vnd.ms-excel', buffer: makeXlsx() },
+      { name: 'Список.csv', mimeType: 'text/csv', buffer: Buffer.from('a;b\n1;2\n') },
+      { name: 'Конспект.docx', mimeType: docxMime, buffer: makeXlsx() },
+    ]);
+    const errors = page.getByTestId('material-errors');
+    for (const name of ['Оценки.xlsx', 'Список.csv', 'Конспект.docx']) {
+      await expect(errors).toContainText(`${name}: ${ru.validation.fileTypeNotAllowed}`);
+    }
+    expect(uploadRequests).toEqual([]);
+
+    // Старая таблица: пометка «Формат больше не поддерживается» и «✕».
+    const legacy = page.getByTestId('material').filter({ hasText: 'Оценки.xlsx' });
+    await expect(legacy.getByTestId('material-not-supported')).toHaveText(tt.topic.formatNotSupported);
+    await legacy.getByRole('button', { name: tt.topic.removeFile.replace('{name}', 'Оценки.xlsx') }).click();
+    await expect(page.getByTestId('material')).toHaveCount(0);
   });
 });

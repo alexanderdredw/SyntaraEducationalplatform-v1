@@ -11,6 +11,7 @@ import {
   AVATAR_PRESETS,
   initialsOf,
   PROFILE_LIMITS,
+  SPREADSHEET_ERROR,
 } from '@syntara/shared';
 import {
   Avatar,
@@ -31,6 +32,7 @@ import {
 } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
+import { isSpreadsheetUpload } from '@/lib/upload';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { AvatarCrop } from './avatar-crop';
@@ -168,9 +170,14 @@ function ProfileForm({ profile, timeZone }: { profile: Profile; timeZone: string
   };
   const name = `${draft.firstName} ${draft.lastName}`.trim() || current.firstName;
 
-  const chooseFile = (file: File | undefined) => {
+  const chooseFile = async (file: File | undefined) => {
     setErrors((e) => ({ ...e, photo: '' }));
     if (!file) return;
+    // BR-FILE-09: таблица — сразу то же сообщение, что вернёт сервер.
+    if (await isSpreadsheetUpload(file)) {
+      setErrors((e) => ({ ...e, photo: tv(SPREADSHEET_ERROR) }));
+      return;
+    }
     if (!(AVATAR_PHOTO_MIME as readonly string[]).includes(file.type)) {
       setErrors((e) => ({ ...e, photo: tv('fileType') }));
       return;
@@ -354,7 +361,7 @@ function ProfileForm({ profile, timeZone }: { profile: Profile; timeZone: string
                   aria-hidden="true"
                   data-testid="avatar-file"
                   onChange={(e) => {
-                    chooseFile(e.target.files?.[0]);
+                    void chooseFile(e.target.files?.[0]);
                     e.target.value = '';
                   }}
                 />

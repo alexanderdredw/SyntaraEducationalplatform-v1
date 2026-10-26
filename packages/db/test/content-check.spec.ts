@@ -133,4 +133,27 @@ describe('content check', () => {
       ]),
     );
   });
+
+  it('BR-FILE-09 content:check rejects spreadsheet files: by extension and an Excel workbook under another name', () => {
+    write(`${CARDIO}/media/data.xlsx`, 'x');
+    write(`${CARDIO}/grades.csv`, 'a;b\n1;2\n');
+    write(`${CARDIO}/media/table.ods`, 'x');
+    // Книга Excel 97 (CFB с потоком Workbook) под видом картинки.
+    const workbook = Buffer.alloc(1024);
+    Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]).copy(workbook);
+    Buffer.from('Workbook', 'utf16le').copy(workbook, 640);
+    workbook[640 + 64] = 18;
+    workbook[640 + 66] = 2;
+    writeFileSync(join(dir, CARDIO, 'media', 'scheme.png'), workbook);
+    const spreadsheet = (file: string) =>
+      expect.stringContaining(`${CARDIO}/${file} — табличный файл запрещён (BR-FILE-09)`);
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        spreadsheet('media/data.xlsx'),
+        spreadsheet('grades.csv'),
+        spreadsheet('media/table.ods'),
+        spreadsheet('media/scheme.png'),
+      ]),
+    );
+  });
 });

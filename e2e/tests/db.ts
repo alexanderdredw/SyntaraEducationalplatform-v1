@@ -98,3 +98,27 @@ export async function addLearningEvents(
     await sql.end();
   }
 }
+
+/**
+ * Таблица, загруженная до запрета BR-FILE-09 (clean), прикреплённая к теме учителя последней — без загрузки:
+ * новые таблицы сайт не принимает.
+ */
+export async function attachLegacySpreadsheet(topicId: string, ownerEmail: string): Promise<void> {
+  const sql = postgres(env('DATABASE_URL'), { max: 1, prepare: false });
+  try {
+    await sql`
+      WITH m AS (
+        INSERT INTO media_files (id, owner_id, kind, original_name, mime, size_bytes, storage_key, scan_status)
+        SELECT gen_random_uuid(), u.id, 'material', 'Оценки.xlsx',
+               'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 100,
+               ${`material/e2e-legacy-${Date.now()}`}, 'clean'
+        FROM users u WHERE u.email = ${ownerEmail}
+        RETURNING id
+      )
+      INSERT INTO topic_materials (topic_id, media_id, position)
+      SELECT ${topicId}, m.id, COALESCE((SELECT max(position) FROM topic_materials WHERE topic_id = ${topicId}), 0) + 1
+      FROM m`;
+  } finally {
+    await sql.end();
+  }
+}

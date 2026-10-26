@@ -930,7 +930,7 @@
             "description": "Объект не найден или принадлежит другому учителю"
           },
           "422": {
-            "description": "Лимиты материалов BR-FILE-02"
+            "description": "Лимиты материалов BR-FILE-02; обложка-таблица по ссылке — fileTypeNotAllowed (BR-FILE-09)"
           }
         },
         "security": [
@@ -1590,7 +1590,7 @@
             "description": "Файл или сумма файлов темы больше лимита"
           },
           "422": {
-            "description": "Недопустимый тип или 20 файлов на тему"
+            "description": "Недопустимый тип, таблица (fileTypeNotAllowed, BR-FILE-09) или 20 файлов на тему"
           }
         },
         "security": [
@@ -1640,7 +1640,7 @@
             "description": ""
           },
           "422": {
-            "description": "Сигнатура не совпала или объект не загружен"
+            "description": "Сигнатура не совпала, таблица по содержимому (fileTypeNotAllowed, BR-FILE-09) или объект не загружен"
           }
         },
         "security": [
@@ -1885,7 +1885,7 @@
             "description": "Больше 2 МБ"
           },
           "422": {
-            "description": "Не JPG/PNG/WEBP"
+            "description": "Не JPG/PNG/WEBP; таблица — fileTypeNotAllowed (BR-FILE-09)"
           },
           "429": {
             "description": "5 загрузок за 24 часа"
@@ -6797,6 +6797,10 @@
             "type": "string",
             "nullable": true,
             "description": "Подписанная ссылка на 10 минут, только clean"
+          },
+          "formatNotSupported": {
+            "type": "boolean",
+            "description": "BR-FILE-09: таблица, загруженная до запрета; ученикам не выдаётся"
           }
         },
         "required": [
@@ -6805,7 +6809,8 @@
           "mime",
           "size",
           "scanStatus",
-          "url"
+          "url",
+          "formatNotSupported"
         ]
       },
       "TopicDetailDto": {

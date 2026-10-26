@@ -76,3 +76,11 @@ export function makePptx(): Buffer {
     'ppt/presentation.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:p="${ns}/presentationml/2006/main"><p:sldSz cx="9144000" cy="6858000"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>`,
   });
 }
+
+/** BR-FILE-09: минимальная книга Excel (.xlsx) — для проверки, что таблицы не загружаются. */
+export function makeXlsx(): Buffer {
+  return zip({
+    '[Content_Types].xml': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types/>',
+    'xl/workbook.xml': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook/>',
+  });
+}

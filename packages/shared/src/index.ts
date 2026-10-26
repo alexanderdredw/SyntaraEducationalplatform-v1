@@ -9,6 +9,7 @@ export * from './ai';
 export * from './accounts';
 export * from './content';
 export * from './file-signature';
+export * from './spreadsheet';
 export * from './gamification';
 export * from './progress';
 export * from './battle';

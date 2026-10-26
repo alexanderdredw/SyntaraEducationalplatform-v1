@@ -4,19 +4,13 @@ import { type Queue } from 'bullmq';
 import { eq } from 'drizzle-orm';
 import pino from 'pino';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { OUTBOX_EVENT_TYPES } from '@syntara/shared';
+import { OUTBOX_EVENT_TYPES, zipEntryNames } from '@syntara/shared';
 import { createDb, type Database, schema } from '@syntara/db';
 import { migrateUp } from '@syntara/db/migrator';
 import { runSeed } from '@syntara/db/seed';
 import { DEMO_IDS } from '@syntara/db/seed';
 import sharp from 'sharp';
-import {
-  deleteObjects,
-  FILE_SCAN_JOB_OPTIONS,
-  hasMacroParts,
-  scanFile,
-  zipEntryNames,
-} from '../src/processors/file-scan';
+import { deleteObjects, FILE_SCAN_JOB_OPTIONS, hasMacroParts, scanFile } from '../src/processors/file-scan';
 import { abandonStaleAttempts, cleanupStaleUploads, requeueStuckScans } from '../src/processors/maintenance';
 import { processOutbox } from '../src/processors/outbox';
 import { clamdScan, type Scanners } from '../src/processors/scanners';
@@ -67,6 +61,12 @@ const DOCX = {
 /** Фикстура AC-TCH-05: DOCX с проектом макросов. */
 const MACRO_DOCX = makeZip({ ...DOCX, 'word/vbaProject.bin': 'Attribute VB_Name = "Module1"' });
 const CLEAN_DOCX = makeZip(DOCX);
+/** BR-FILE-09: книга Excel (OOXML) и таблица ODF. */
+const XLSX = makeZip({ '[Content_Types].xml': '<Types/>', 'xl/workbook.xml': '<workbook/>' });
+const ODS = makeZip({
+  mimetype: 'application/vnd.oasis.opendocument.spreadsheet',
+  'content.xml': '<office/>',
+});
 /** Стандартный тестовый файл EICAR (не вредоносный); в base64 — чтобы антивирус машины не трогал сам тест. */
 const EICAR = Buffer.from(
   'WDVPIVAlQEFQWzRcUFpYNTQoUF4pN0NDKTd9JEVJQ0FSLVNUQU5EQVJELUFOVElWSVJVUy1URVNULUZJTEUhJEgrSCo=',
@@ -194,8 +194,33 @@ describe('worker file-scan (BR-FILE-03, SM-FILE)', () => {
 
   it('BR-FILE-03 olevba finding macros also rejects an office document', async () => {
     olevbaMacros = true;
-    const id = await pending('Таблица.xlsx', CLEAN_DOCX);
+    const id = await pending('Презентация.pptx', CLEAN_DOCX);
     expect(await scan(id)).toBe('rejected');
+  });
+
+  it.each(['xlsx', 'xls', 'xlsm', 'xlsb', 'csv', 'ods'])(
+    'BR-FILE-09 a spreadsheet .%s is rejected by the worker, the object is deleted',
+    async (ext) => {
+      const id = await pending(`Таблица.${ext}`, Buffer.from('a;b\n1;2\n'));
+      const key = (await status(id)).storageKey;
+      expect(await scan(id)).toBe('rejected');
+      expect(objects.has(key)).toBe(false);
+    },
+  );
+
+  it('BR-FILE-09 a spreadsheet by content under another extension is rejected (xlsx as .docx, ods as .odt)', async () => {
+    expect(await scan(await pending('Конспект.docx', XLSX))).toBe('rejected');
+    expect(await scan(await pending('Конспект.odt', ODS))).toBe('rejected');
+  });
+
+  it('BR-FILE-09 PDF, DOCX, PPTX, ODT and TXT stay clean', async () => {
+    const odt = makeZip({ mimetype: 'application/vnd.oasis.opendocument.text', 'content.xml': '<office/>' });
+    const pptx = makeZip({ '[Content_Types].xml': '<Types/>', 'ppt/presentation.xml': '<p/>' });
+    expect(await scan(await pending('a.pdf', Buffer.from('%PDF-1.4')))).toBe('clean');
+    expect(await scan(await pending('a.docx', CLEAN_DOCX))).toBe('clean');
+    expect(await scan(await pending('a.pptx', pptx))).toBe('clean');
+    expect(await scan(await pending('a.odt', odt))).toBe('clean');
+    expect(await scan(await pending('a.txt', Buffer.from('Текст урока, 1, 2, 3')))).toBe('clean');
   });
 
   it('BR-FILE-03 the EICAR test file → rejected by ClamAV (INSTREAM protocol)', async () => {

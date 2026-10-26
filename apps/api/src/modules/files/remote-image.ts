@@ -3,7 +3,15 @@ import { lookup } from 'node:dns/promises';
 import http from 'node:http';
 import https from 'node:https';
 import { BlockList, isIP, type LookupFunction } from 'node:net';
-import { COVER_MIME, coverSignatureOk, FILE_LIMITS, isCoverMime } from '@syntara/shared';
+import {
+  COVER_MIME,
+  coverSignatureOk,
+  FILE_LIMITS,
+  isCoverMime,
+  isSpreadsheetContent,
+  isSpreadsheetFile,
+  SPREADSHEET_ERROR,
+} from '@syntara/shared';
 import { ApiException } from '../../common/api-exception';
 
 /** Адреса, куда сервер не ходит (SSRF): локальные, частные, служебные, зарезервированные. */
@@ -106,11 +114,17 @@ export class RemoteImageFetcher {
         throw download('coverDownload');
       }
       const mime = (res.contentType ?? '').split(';')[0]!.trim().toLowerCase();
+      // BR-FILE-09: таблица по ссылке — та же ошибка, что при загрузке файла.
+      if (isSpreadsheetFile(url.pathname, mime)) {
+        res.body.destroy();
+        throw rejected(422, SPREADSHEET_ERROR);
+      }
       if (!isCoverMime(mime)) {
         res.body.destroy();
         throw rejected(422, 'fileType');
       }
       const data = await this.read(res.body, res.length);
+      if (isSpreadsheetContent(data)) throw rejected(422, SPREADSHEET_ERROR);
       if (!coverSignatureOk(mime, data)) throw rejected(422, 'fileSignature');
       const name = decodeURIComponent(url.pathname.split('/').pop() || '').slice(0, 200) || 'cover';
       return { data, mime, fileName: name };

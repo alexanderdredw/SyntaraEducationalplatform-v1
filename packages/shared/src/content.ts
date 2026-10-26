@@ -35,15 +35,16 @@ export const FILE_LIMITS = {
 /** BR-FILE-01 */
 export const COVER_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] as const;
 
-/** BR-FILE-02: расширение → допустимые MIME (сигнатура проверяется отдельно). */
+/**
+ * BR-FILE-02: расширение → допустимые MIME (сигнатура проверяется отдельно). Таблиц (XLSX, CSV и др.) нет —
+ * BR-FILE-09, `spreadsheet.ts`.
+ */
 export const MATERIAL_TYPES = {
   pdf: ['application/pdf'],
   docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-  xlsx: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
   pptx: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
   odt: ['application/vnd.oasis.opendocument.text'],
   txt: ['text/plain'],
-  csv: ['text/csv', 'text/plain', 'application/vnd.ms-excel'],
 } as const satisfies Record<string, readonly string[]>;
 export type MaterialExtension = keyof typeof MATERIAL_TYPES;
 

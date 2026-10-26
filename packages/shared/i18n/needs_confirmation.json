@@ -366,7 +366,7 @@
     "teacher.topic.coverHint": "Подсказка под обложкой — текст из эталона T07",
     "teacher.topic.gallery": "Доступное имя галереи (API-T-18) — текст не задан",
     "teacher.topic.chooseCover": "Доступное имя миниатюры — текст не задан",
-    "teacher.topic.materialsHint": "Подсказка под материалами — текст из эталона T07",
+    "teacher.topic.materialsHint": "Подсказка под материалами — текст из эталона T07; перечень форматов — решение владельца 2026-10-26 (BR-FILE-02, BR-FILE-09)",
     "teacher.topic.removeFile": "Удаление материала из темы — текст не задан",
     "teacher.topic.uploading": "Состояние загрузки файла — текст не задан",
     "teacher.topic.publication": "Заголовок блока публикации — текст из эталона T07",

@@ -17,8 +17,10 @@ const ACCEPT = Object.keys(MATERIAL_TYPES)
   .join(',');
 
 /**
- * «Материалы урока» (REQ-TCH-TOP-05): PDF, DOCX, XLSX, PPTX, ODT, TXT, CSV до 25 МБ, до 20 файлов и 200 МБ на
- * тему (BR-FILE-02); статус проверки «Проверяется / Готов / Отклонён» (SM-FILE, BR-FILE-03).
+ * «Материалы урока» (REQ-TCH-TOP-05): PDF, DOCX, PPTX, ODT, TXT до 25 МБ, до 20 файлов и 200 МБ на тему
+ * (BR-FILE-02); таблицы не принимаются (BR-FILE-09) — в окне выбора их нет, выбранная сразу получает ошибку.
+ * Статус проверки «Проверяется / Готов / Отклонён» (SM-FILE, BR-FILE-03); таблица, загруженная до запрета, —
+ * «Формат больше не поддерживается» (ученикам не выдаётся), её можно убрать «✕».
  * Порядок и состав сохраняются кнопкой «Сохранить» (API-T-10).
  */
 export function MaterialsList({
@@ -59,6 +61,7 @@ export function MaterialsList({
             size: file.size,
             scanStatus: res.media.scanStatus,
             url: res.media.url,
+            formatNotSupported: false,
           },
         ];
         onChange(list);
@@ -135,6 +138,11 @@ export function MaterialsList({
               </div>
               {m.scanStatus === 'rejected' ? (
                 <p className="text-xs text-[var(--danger-text)]">{t('rejected')}</p>
+              ) : null}
+              {m.formatNotSupported ? (
+                <p className="text-xs text-[var(--danger-text)]" data-testid="material-not-supported">
+                  {t('formatNotSupported')}
+                </p>
               ) : null}
             </li>
           ))}

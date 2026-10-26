@@ -15,6 +15,50 @@ const MB = 1_048_576;
 const PDF = Buffer.from('%PDF-1.4\n%test\n');
 const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
 
+/** Минимальный ZIP (метод stored; CRC разбором не проверяется) — фикстуры DOCX/PPTX/ODT и книги Excel. */
+function makeZip(entries: Record<string, string>): Buffer {
+  const local: Buffer[] = [];
+  const central: Buffer[] = [];
+  let offset = 0;
+  for (const [name, content] of Object.entries(entries)) {
+    const data = Buffer.from(content);
+    const nameBuf = Buffer.from(name);
+    const header = Buffer.alloc(30);
+    header.writeUInt32LE(0x04034b50, 0);
+    header.writeUInt32LE(data.length, 18);
+    header.writeUInt32LE(data.length, 22);
+    header.writeUInt16LE(nameBuf.length, 26);
+    local.push(header, nameBuf, data);
+    const entry = Buffer.alloc(46);
+    entry.writeUInt32LE(0x02014b50, 0);
+    entry.writeUInt32LE(data.length, 20);
+    entry.writeUInt32LE(data.length, 24);
+    entry.writeUInt16LE(nameBuf.length, 28);
+    entry.writeUInt32LE(offset, 42);
+    central.push(entry, nameBuf);
+    offset += 30 + nameBuf.length + data.length;
+  }
+  const count = Object.keys(entries).length;
+  const cd = Buffer.concat(central);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(count, 8);
+  end.writeUInt16LE(count, 10);
+  end.writeUInt32LE(cd.length, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...local, cd, end]);
+}
+/** BR-FILE-09: книга Excel (OOXML). */
+const XLSX = makeZip({ '[Content_Types].xml': '<Types/>', 'xl/workbook.xml': '<workbook/>' });
+const SPREADSHEETS: Array<[string, string]> = [
+  ['xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+  ['xls', 'application/vnd.ms-excel'],
+  ['xlsm', 'application/vnd.ms-excel.sheet.macroEnabled.12'],
+  ['xlsb', 'application/vnd.ms-excel.sheet.binary.macroEnabled.12'],
+  ['csv', 'text/csv'],
+  ['ods', 'application/vnd.oasis.opendocument.spreadsheet'],
+];
+
 /** Итерация 7: файлы (7.8, SM-FILE) на настоящем S3-совместимом хранилище (MinIO). */
 describe('files (integration, MinIO)', () => {
   let minio: StartedMinioContainer;
@@ -93,6 +137,13 @@ describe('files (integration, MinIO)', () => {
       if (req.url === '/heart.png') {
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(PNG);
+      } else if (req.url === '/marks.xlsx') {
+        res.writeHead(200, { 'Content-Type': SPREADSHEETS[0]![1] });
+        res.end(XLSX);
+      } else if (req.url === '/table.png') {
+        // Книга Excel, выданная сервером как картинка.
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(XLSX);
       } else {
         res.writeHead(404);
         res.end();
@@ -218,6 +269,7 @@ describe('files (integration, MinIO)', () => {
       size: PDF.length,
       scanStatus: 'pending',
       url: null,
+      formatNotSupported: false,
     });
   });
 
@@ -373,5 +425,154 @@ describe('files (integration, MinIO)', () => {
     const failed = await save(`${imageBase}/missing.png`).expect(422);
     expect(failed.body.fieldErrors).toEqual({ coverUrl: 'coverDownload' });
     expect((await get(teacher, `/api/teacher/topics/${topic}`)).body.coverMediaId).toBe(cover.id);
+  });
+
+  describe('BR-FILE-09 spreadsheets are not uploaded anywhere', () => {
+    const notAllowed = { code: 'UNPROCESSABLE', fieldErrors: { file: 'fileTypeNotAllowed' } };
+
+    it.each(SPREADSHEETS)(
+      'BR-FILE-09 .%s is refused before an upload link: material, cover (Battle image) and avatar',
+      async (ext, mime) => {
+        const before = (await stack.db.select().from(schema.mediaFiles)).length;
+        const asMaterial = await post(
+          teacher,
+          '/api/files/upload-url',
+          material({ fileName: `Оценки.${ext}`, mime }),
+        ).expect(422);
+        expect(asMaterial.body).toMatchObject(notAllowed);
+        expect(asMaterial.body.uploadUrl).toBeUndefined();
+        const asCover = await post(teacher, '/api/files/upload-url', {
+          kind: 'cover',
+          fileName: `table.${ext}`,
+          mime,
+          size: 100,
+        }).expect(422);
+        expect(asCover.body).toMatchObject(notAllowed);
+        const asAvatar = await post(teacher, '/api/me/avatar/upload-url', {
+          fileName: `me.${ext}`,
+          mime,
+          size: 100,
+        }).expect(422);
+        expect(asAvatar.body).toMatchObject(notAllowed);
+        expect((await stack.db.select().from(schema.mediaFiles)).length).toBe(before);
+      },
+    );
+
+    it('BR-FILE-09 a spreadsheet MIME under an allowed extension (CSV as .txt) is refused', async () => {
+      const res = await post(
+        teacher,
+        '/api/files/upload-url',
+        material({ fileName: 'notes.txt', mime: 'text/csv' }),
+      ).expect(422);
+      expect(res.body).toMatchObject(notAllowed);
+    });
+
+    it('BR-FILE-09 an xlsx renamed to .docx is refused on upload confirmation: rejected, object deleted', async () => {
+      const docxMime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      const id = await upload(
+        material({ fileName: 'Конспект.docx', mime: docxMime, size: XLSX.length }),
+        XLSX,
+      );
+      const res = await post(teacher, `/api/files/${id}/complete`).expect(422);
+      expect(res.body).toMatchObject(notAllowed);
+      const row = await media(id);
+      expect(row.scanStatus).toBe('rejected');
+      expect(await exists(row.storageKey)).toBe(false);
+      // Картинка Battle или обложка с книгой Excel внутри — то же.
+      const cover = await upload(
+        { kind: 'cover', fileName: 'q.png', mime: 'image/png', size: XLSX.length },
+        XLSX,
+      );
+      const coverRes = await post(teacher, `/api/files/${cover}/complete`).expect(422);
+      expect(coverRes.body).toMatchObject(notAllowed);
+    });
+
+    it('BR-FILE-09 a cover link to a spreadsheet is refused (by type and by content)', async () => {
+      const topic = await newTopic(teacher);
+      for (const path of ['/marks.xlsx', '/table.png']) {
+        const res = await http()
+          .put(`/api/teacher/topics/${topic}`)
+          .set('Cookie', teacher.cookie)
+          .set('X-CSRF-Token', teacher.csrf)
+          .send({ translations: { ru: { title: 'Ссылка' } }, coverUrl: imageBase + path, materialIds: [] })
+          .expect(422);
+        expect(res.body.fieldErrors).toEqual({ coverUrl: 'fileTypeNotAllowed' });
+      }
+    });
+
+    it('BR-FILE-02 PDF, DOCX, PPTX, ODT and TXT are uploaded as before', async () => {
+      const topic = await newTopic(teacher);
+      const files: Array<[string, string, Buffer]> = [
+        ['a.pdf', 'application/pdf', PDF],
+        [
+          'a.docx',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          makeZip({ '[Content_Types].xml': '<Types/>', 'word/document.xml': '<w:document/>' }),
+        ],
+        [
+          'a.pptx',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          makeZip({ '[Content_Types].xml': '<Types/>', 'ppt/presentation.xml': '<p/>' }),
+        ],
+        [
+          'a.odt',
+          'application/vnd.oasis.opendocument.text',
+          makeZip({ mimetype: 'application/vnd.oasis.opendocument.text', 'content.xml': '<office/>' }),
+        ],
+        ['a.txt', 'text/plain', Buffer.from('Текст урока: 1, 2, 3')],
+      ];
+      for (const [fileName, mime, bytes] of files) {
+        const id = await upload(material({ topicId: topic, fileName, mime, size: bytes.length }), bytes);
+        const done = await post(teacher, `/api/files/${id}/complete`).expect(200);
+        expect(done.body).toEqual({ id, scanStatus: 'pending', url: null });
+      }
+    });
+
+    it('BR-FILE-09 a spreadsheet uploaded before the ban is not given to students; the teacher sees «format not supported»', async () => {
+      const topic = await newTopic(teacher, true);
+      const pdfId = await upload(material({ topicId: topic, fileName: 'ok.pdf' }), PDF);
+      // Файл, загруженный до запрета: проверен (clean), объект в хранилище остаётся.
+      const [legacy] = await stack.db
+        .insert(schema.mediaFiles)
+        .values({
+          ownerId: (await media(pdfId)).ownerId,
+          kind: 'material',
+          originalName: 'Оценки.xlsx',
+          mime: SPREADSHEETS[0]![1],
+          sizeBytes: XLSX.length,
+          storageKey: `material/${crypto.randomUUID()}`,
+          scanStatus: 'clean',
+        })
+        .returning();
+      await stack.db
+        .update(schema.mediaFiles)
+        .set({ scanStatus: 'clean' })
+        .where(eq(schema.mediaFiles.id, pdfId));
+      await http()
+        .put(`/api/teacher/topics/${topic}`)
+        .set('Cookie', teacher.cookie)
+        .set('X-CSRF-Token', teacher.csrf)
+        .send({ translations: { ru: { title: 'Старая таблица' } }, materialIds: [pdfId, legacy!.id] })
+        .expect(204);
+      await post(teacher, `/api/teacher/topics/${topic}/publish`).expect(200);
+
+      const student = await login(http, 'files.student', 'student-pass-1');
+      const lesson = await get(student, `/api/student/topics/${topic}`).expect(200);
+      expect(lesson.body.materials.map((m: { id: string }) => m.id)).toEqual([pdfId]);
+      expect(JSON.stringify(lesson.body)).not.toContain(legacy!.storageKey);
+
+      const teacherView = await get(teacher, `/api/teacher/topics/${topic}`).expect(200);
+      expect(
+        teacherView.body.materials.map((m: { id: string; formatNotSupported: boolean }) => [
+          m.id,
+          m.formatNotSupported,
+        ]),
+      ).toEqual([
+        [pdfId, false],
+        [legacy!.id, true],
+      ]);
+      // Автоматически не удаляется: учитель убирает «✕» и сохраняет.
+      expect((await media(legacy!.id)).scanStatus).toBe('clean');
+    });
   });
 });

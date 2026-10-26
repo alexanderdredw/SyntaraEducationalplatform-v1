@@ -195,6 +195,23 @@ describe('content import (integration)', () => {
     );
   });
 
+  it('BR-FILE-09 content:import refuses a spreadsheet file in content/: nothing is written', async () => {
+    const before = await rowCounts();
+    writeFileSync(join(dir, CARDIO, 'media', 'marks.xlsx'), 'x');
+    const result = await importContent(db, { dir, media: store });
+    expect(result.summary).toBeNull();
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          file: expect.stringContaining('media/marks.xlsx'),
+          message: expect.stringContaining('табличный файл запрещён'),
+        }),
+      ]),
+    );
+    expect(await rowCounts()).toEqual(before);
+    rmSync(join(dir, CARDIO, 'media', 'marks.xlsx'));
+  });
+
   it('BR-CNT-04 a removed question is archived; dry run reports changes without writing', async () => {
     const quiz = readFileSync(join(dir, CARDIO, 'quiz.yaml'), 'utf8');
     writeFileSync(join(dir, CARDIO, 'quiz.yaml'), quiz.slice(0, quiz.indexOf('  - code: pulmonary')));

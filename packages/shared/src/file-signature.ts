@@ -10,7 +10,7 @@ const ascii = (s: string) => [...s].map((c) => c.charCodeAt(0));
 
 const ZIP = [0x50, 0x4b, 0x03, 0x04];
 
-/** Текст: без NUL-байтов и управляющих символов, кроме табуляции и переводов строк (TXT, CSV). */
+/** Текст: без NUL-байтов и управляющих символов, кроме табуляции и переводов строк (TXT). */
 function looksLikeText(head: Uint8Array): boolean {
   for (const b of head) {
     if (b === 0) return false;
@@ -25,12 +25,10 @@ export function materialSignatureOk(ext: MaterialExtension, head: Uint8Array): b
       return startsWith(head, ascii('%PDF-'));
     // OOXML и ODF — ZIP-контейнеры.
     case 'docx':
-    case 'xlsx':
     case 'pptx':
     case 'odt':
       return startsWith(head, ZIP);
     case 'txt':
-    case 'csv':
       return looksLikeText(head);
   }
 }
@@ -53,4 +51,4 @@ export const isCoverMime = (mime: string): mime is (typeof COVER_MIME)[number] =
   (COVER_MIME as readonly string[]).includes(mime);
 
 /** Офисные форматы, которые проверяет olevba (BR-FILE-03). */
-export const OFFICE_EXTENSIONS: readonly MaterialExtension[] = ['docx', 'xlsx', 'pptx', 'odt'];
+export const OFFICE_EXTENSIONS: readonly MaterialExtension[] = ['docx', 'pptx', 'odt'];

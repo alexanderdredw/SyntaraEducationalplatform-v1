@@ -5,11 +5,14 @@ import { and, eq } from 'drizzle-orm';
 import { type Logger } from 'pino';
 import {
   extensionOf,
+  isSpreadsheetContent,
+  isSpreadsheetFile,
   OFFICE_EXTENSIONS,
   type OutboxFileDeletePayload,
   type OutboxFileScanPayload,
   avatarSmallKey,
   PROFILE_LIMITS,
+  zipEntryNames,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { type Scanners } from './scanners';
@@ -28,31 +31,6 @@ export const FILE_SCAN_JOB_OPTIONS = {
   removeOnComplete: 1000,
   removeOnFail: 5000,
 };
-
-/** Имена записей ZIP из центрального каталога (без распаковки); не ZIP — пустой список. */
-export function zipEntryNames(data: Buffer): string[] {
-  // Конец центрального каталога (EOCD): сигнатура 0x06054b50, комментарий архива — до 65 535 байт.
-  const min = Math.max(0, data.length - 22 - 65_535);
-  let eocd = -1;
-  for (let i = data.length - 22; i >= min; i--) {
-    if (data.readUInt32LE(i) === 0x06054b50) {
-      eocd = i;
-      break;
-    }
-  }
-  if (eocd < 0) return [];
-  const count = data.readUInt16LE(eocd + 10);
-  let p = data.readUInt32LE(eocd + 16);
-  const names: string[] = [];
-  for (let n = 0; n < count && p + 46 <= data.length && data.readUInt32LE(p) === 0x02014b50; n++) {
-    const nameLen = data.readUInt16LE(p + 28);
-    const extraLen = data.readUInt16LE(p + 30);
-    const commentLen = data.readUInt16LE(p + 32);
-    names.push(data.subarray(p + 46, p + 46 + nameLen).toString('utf8'));
-    p += 46 + nameLen + extraLen + commentLen;
-  }
-  return names;
-}
 
 /**
  * Макросы в OOXML (`vbaProject.bin`, `vbaData.xml`) и ODF (каталог `Basic/`) — по записям ZIP. Документ с
@@ -87,8 +65,9 @@ export interface FileScanDeps {
 }
 
 /**
- * SM-FILE (BR-FILE-03): pending --scan ok--> clean; pending --virus|macro--> rejected (объект удаляется).
- * Офисные документы проверяются olevba и по структуре; все файлы — ClamAV. Повторная обработка того же
+ * SM-FILE (BR-FILE-03): pending --scan ok--> clean; pending --virus|macro|spreadsheet--> rejected (объект удаляется).
+ * Таблица по имени, MIME или содержимому отклоняется до проверок (BR-FILE-09); офисные документы проверяются
+ * olevba и по структуре; все файлы — ClamAV. Повторная обработка того же
  * файла ничего не меняет. Имя и содержимое файла в журнал не пишутся (REQ-NFR-SEC-07).
  */
 export async function scanFile(
@@ -101,8 +80,10 @@ export async function scanFile(
 
   const data = await deps.storage.read(media.storageKey);
   const office = (OFFICE_EXTENSIONS as readonly string[]).includes(extensionOf(media.originalName));
-  let reason: 'macro' | 'virus' | 'image' | null = null;
-  if (office && (hasMacroParts(data) || (await deps.scanners.macros(data)).macros)) reason = 'macro';
+  let reason: 'spreadsheet' | 'macro' | 'virus' | 'image' | null = null;
+  if (isSpreadsheetFile(media.originalName, media.mime) || isSpreadsheetContent(data)) reason = 'spreadsheet';
+  if (!reason && office && (hasMacroParts(data) || (await deps.scanners.macros(data)).macros))
+    reason = 'macro';
   if (!reason && (await deps.scanners.antivirus(data)).infected) reason = 'virus';
 
   // BR-PRF-03: хранится только перекодированная картинка — исходный объект перезаписывается версией 256 px.

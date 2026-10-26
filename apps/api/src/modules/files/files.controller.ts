@@ -33,7 +33,9 @@ export class FilesController {
   @ApiBody({ type: UploadUrlBody })
   @ApiCreatedResponse({ type: UploadUrlResponse })
   @ApiPayloadTooLargeResponse({ description: 'Файл или сумма файлов темы больше лимита' })
-  @ApiUnprocessableEntityResponse({ description: 'Недопустимый тип или 20 файлов на тему' })
+  @ApiUnprocessableEntityResponse({
+    description: 'Недопустимый тип, таблица (fileTypeNotAllowed, BR-FILE-09) или 20 файлов на тему',
+  })
   uploadUrl(
     @Body(new ZodValidationPipe(UploadUrlDto)) dto: Dto<typeof UploadUrlDto>,
     @Req() req: AuthRequest,
@@ -47,7 +49,10 @@ export class FilesController {
   @HttpCode(200)
   @ApiOkResponse({ type: MediaStatusDto })
   @ApiPayloadTooLargeResponse()
-  @ApiUnprocessableEntityResponse({ description: 'Сигнатура не совпала или объект не загружен' })
+  @ApiUnprocessableEntityResponse({
+    description:
+      'Сигнатура не совпала, таблица по содержимому (fileTypeNotAllowed, BR-FILE-09) или объект не загружен',
+  })
   complete(@Param('mediaId', new UuidParamPipe()) mediaId: string): Promise<MediaStatusDto> {
     return this.files.complete(mediaId);
   }

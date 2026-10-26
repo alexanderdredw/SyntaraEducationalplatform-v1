@@ -7,12 +7,16 @@ import {
   isAvatarPhotoMime,
   isCoverMime,
   isMaterialExtension,
+  isSpreadsheetContent,
+  isSpreadsheetFile,
   MATERIAL_TYPES,
   materialSignatureOk,
+  mayHideSpreadsheet,
   OUTBOX_EVENT_TYPES,
   type OutboxFileDeletePayload,
   type OutboxFileScanPayload,
   PROFILE_LIMITS,
+  SPREADSHEET_ERROR,
   type UploadUrlDto,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
@@ -41,6 +45,8 @@ const tooLarge = (field: string, key: string) =>
   });
 const unprocessable = (field: string, key: string) =>
   new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, 'UNPROCESSABLE', 'File not accepted', { [field]: key });
+/** BR-FILE-09: таблицы не загружаются — 422 fileTypeNotAllowed. */
+export const spreadsheetNotAllowed = () => unprocessable('file', SPREADSHEET_ERROR);
 
 type Media = typeof mediaFiles.$inferSelect;
 
@@ -90,6 +96,7 @@ export class FilesService {
   /** API-T-16 */
   async uploadUrl(ownerId: string, dto: UploadUrlDto): Promise<UploadUrlResponse> {
     const mime = dto.mime.toLowerCase();
+    if (isSpreadsheetFile(dto.fileName, mime)) throw spreadsheetNotAllowed();
     if (dto.kind === 'cover') {
       if (!isCoverMime(mime)) throw unprocessable('mime', 'fileType');
       if (dto.size > FILE_LIMITS.coverMaxBytes) throw tooLarge('size', 'fileTooLarge');
@@ -148,6 +155,7 @@ export class FilesService {
     dto: { fileName: string; mime: string; size: number },
   ): Promise<UploadUrlResponse> {
     const mime = dto.mime.toLowerCase();
+    if (isSpreadsheetFile(dto.fileName, mime)) throw spreadsheetNotAllowed();
     if (!isAvatarPhotoMime(mime)) throw unprocessable('mime', 'fileType');
     if (dto.size > PROFILE_LIMITS.photoMaxBytes) throw tooLarge('size', 'fileTooLarge');
     const [media] = await tx
@@ -169,8 +177,8 @@ export class FilesService {
   }
 
   /**
-   * API-T-17: повторная проверка размера, лимитов темы и сигнатуры по загруженному объекту; не прошёл —
-   * rejected и объект удалён (413/422); прошёл — событие file.scan (scan_status остаётся pending).
+   * API-T-17: повторная проверка размера, лимитов темы, сигнатуры и запрета таблиц (BR-FILE-09) по загруженному
+   * объекту; не прошёл — rejected и объект удалён (413/422); прошёл — событие file.scan (scan_status — pending).
    */
   async complete(mediaId: string): Promise<MediaStatusDto> {
     const [media] = await this.db.select().from(mediaFiles).where(eq(mediaFiles.id, mediaId));
@@ -331,6 +339,7 @@ export class FilesService {
   }
 
   private async problem(media: Media, size: number): Promise<ApiException | null> {
+    if (await this.spreadsheet(media, size)) return spreadsheetNotAllowed();
     if (media.kind === 'avatar') {
       // BR-PRF-03: картинка-аватар учителя — JPG/PNG/WEBP ≤ 2 МБ, сигнатура как у обложек.
       if (size > PROFILE_LIMITS.photoMaxBytes) return tooLarge('size', 'fileTooLarge');
@@ -359,6 +368,17 @@ export class FilesService {
         ? isCoverMime(media.mime) && coverSignatureOk(media.mime, head)
         : isMaterialExtension(ext) && size > 0 && materialSignatureOk(ext, head);
     return ok ? null : unprocessable('file', 'fileSignature');
+  }
+
+  /**
+   * BR-FILE-09: таблица по имени, MIME или содержимому. ZIP- и CFB-контейнер читается целиком (материал ≤ 25 МБ,
+   * картинка ≤ 5 МБ): книгу Excel под чужим расширением видно только по каталогу архива.
+   */
+  private async spreadsheet(media: Media, size: number): Promise<boolean> {
+    if (isSpreadsheetFile(media.originalName, media.mime)) return true;
+    if (size === 0 || size > FILE_LIMITS.materialMaxBytes) return false;
+    const head = await this.storage.head(media.storageKey, 8);
+    return mayHideSpreadsheet(head) && isSpreadsheetContent(await this.storage.read(media.storageKey));
   }
 
   /** SM-FILE: pending → rejected, объект удаляется из хранилища (BR-FILE-03). */

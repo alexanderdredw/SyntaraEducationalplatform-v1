@@ -471,8 +471,9 @@ describe('assignments, progress, analytics (integration)', () => {
     expect(value.quarters).toContainEqual(seeded.range);
     const year = (await as(s).get('/api/student/progress?period=year').expect(200)).body;
     expect(year.range.to).toMatch(/-05-25$/);
-    // Период ещё не закончился — серия и прогресс считаются на сегодня, а не на будущий конец периода.
-    for (const p of [seeded, year]) {
+    // Период ещё не закончился — серия и прогресс считаются на сегодня, а не на будущий конец периода. На каникулах
+    // «Четверть» — последняя начавшаяся (BR-ST-04), она уже закончилась: значения — на её конец (BR-ST-05).
+    for (const p of [seeded, year].filter((x) => x.range.to >= today)) {
       expect(p.streak).toMatchObject({ days: week.streak.days, lastActivityDate: today });
       expect(p.progress.percent).toBe(week.progress.percent);
     }

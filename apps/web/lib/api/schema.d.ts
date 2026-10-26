@@ -2228,6 +2228,8 @@ export interface components {
             scanStatus: "pending" | "clean" | "rejected";
             /** @description Подписанная ссылка на 10 минут, только clean */
             url: string | null;
+            /** @description BR-FILE-09: таблица, загруженная до запрета; ученикам не выдаётся */
+            formatNotSupported: boolean;
         };
         TopicDetailDto: {
             /** Format: uuid */
@@ -4702,7 +4704,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Лимиты материалов BR-FILE-02 */
+            /** @description Лимиты материалов BR-FILE-02; обложка-таблица по ссылке — fileTypeNotAllowed (BR-FILE-09) */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -5337,7 +5339,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Недопустимый тип или 20 файлов на тему */
+            /** @description Недопустимый тип, таблица (fileTypeNotAllowed, BR-FILE-09) или 20 файлов на тему */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -5392,7 +5394,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Сигнатура не совпала или объект не загружен */
+            /** @description Сигнатура не совпала, таблица по содержимому (fileTypeNotAllowed, BR-FILE-09) или объект не загружен */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -5641,7 +5643,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Не JPG/PNG/WEBP */
+            /** @description Не JPG/PNG/WEBP; таблица — fileTypeNotAllowed (BR-FILE-09) */
             422: {
                 headers: {
                     [name: string]: unknown;

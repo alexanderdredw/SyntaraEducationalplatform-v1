@@ -57,7 +57,9 @@ export class ProfileController {
   @ApiCreatedResponse({ type: UploadUrlResponse })
   @ApiForbiddenResponse({ description: 'Ученик не загружает картинку (решение владельца 2026-10-25)' })
   @ApiPayloadTooLargeResponse({ description: 'Больше 2 МБ' })
-  @ApiUnprocessableEntityResponse({ description: 'Не JPG/PNG/WEBP' })
+  @ApiUnprocessableEntityResponse({
+    description: 'Не JPG/PNG/WEBP; таблица — fileTypeNotAllowed (BR-FILE-09)',
+  })
   @ApiTooManyRequestsResponse({ description: '5 загрузок за 24 часа' })
   uploadUrl(
     @Body(new ZodValidationPipe(AvatarUploadUrlDto)) dto: Dto<typeof AvatarUploadUrlDto>,

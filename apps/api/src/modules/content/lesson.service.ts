@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, asc, count, eq, gt, inArray, isNull } from 'drizzle-orm';
-import { type Locale, type TopicSnapshot } from '@syntara/shared';
+import { isSpreadsheetFile, type Locale, type TopicSnapshot } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { pickTranslation } from '../../common/locale';
 import { type Tx } from '../../common/idempotency';
@@ -173,13 +173,24 @@ export class LessonService {
     return media?.status === 'clean' ? this.storage.downloadUrl(media.key) : null;
   }
 
+  /**
+   * Материалы урока: только clean (BR-FILE-04). Таблицы, загруженные до запрета BR-FILE-09, ученикам не выдаются —
+   * их нет в списке, ссылки не подписываются.
+   */
   private async cleanMaterials(ids: string[]): Promise<LessonDto['materials']> {
     if (ids.length === 0) return [];
     const rows = await this.db
-      .select({ id: mediaFiles.id, name: mediaFiles.originalName, key: mediaFiles.storageKey })
+      .select({
+        id: mediaFiles.id,
+        name: mediaFiles.originalName,
+        mime: mediaFiles.mime,
+        key: mediaFiles.storageKey,
+      })
       .from(mediaFiles)
       .where(and(inArray(mediaFiles.id, ids), eq(mediaFiles.scanStatus, 'clean')));
-    const ordered = ids.flatMap((id) => rows.filter((r) => r.id === id));
+    const ordered = ids.flatMap((id) =>
+      rows.filter((r) => r.id === id && !isSpreadsheetFile(r.name, r.mime)),
+    );
     return Promise.all(
       ordered.map(async (r) => ({
         id: r.id,

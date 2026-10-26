@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, relative, sep } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { type z } from 'zod';
-import { type Locale, QuestionDto } from '@syntara/shared';
+import { isSpreadsheetContent, isSpreadsheetName, type Locale, QuestionDto } from '@syntara/shared';
 import {
   type ContentCatalog,
   type ContentError,
@@ -68,6 +68,21 @@ export function readContent(
     }
     return null;
   };
+
+  // BR-FILE-09: табличные файлы в content/ запрещены — по расширению и по содержимому (xlsx под видом .docx).
+  const spreadsheets = (p: string): void => {
+    for (const name of readdirSync(p).sort()) {
+      const abs = join(p, name);
+      if (statSync(abs).isDirectory()) spreadsheets(abs);
+      else if (isSpreadsheetName(name) || isSpreadsheetContent(readFileSync(abs)))
+        errors.push({
+          file: rel(abs),
+          message:
+            'табличный файл запрещён (BR-FILE-09): таблицы Excel и CSV загружать нельзя, сохрани файл в PDF',
+        });
+    }
+  };
+  spreadsheets(dir);
 
   for (const sectionDir of dirs(dir)) {
     const sectionPath = join(dir, sectionDir);

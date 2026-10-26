@@ -3,6 +3,7 @@ import { and, asc, desc, eq, inArray, max, ne } from 'drizzle-orm';
 import {
   FILE_LIMITS,
   filledTranslations,
+  isSpreadsheetFile,
   type Locale,
   type PublishDto,
   type TopicContentDto,
@@ -272,6 +273,8 @@ export class TopicsService {
       rows.map(async ({ key, ...r }) => ({
         ...r,
         url: r.scanStatus === 'clean' ? await this.storage.downloadUrl(key, r.name) : null,
+        // BR-FILE-09: таблица, загруженная до запрета, — «Формат больше не поддерживается»; ученикам не выдаётся.
+        formatNotSupported: isSpreadsheetFile(r.name, r.mime),
       })),
     );
   }

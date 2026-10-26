@@ -171,7 +171,9 @@ export class TeacherTopicsController {
   @ApiBody({ type: TopicBody })
   @ApiNoContentResponse()
   @ApiBadRequestResponse()
-  @ApiUnprocessableEntityResponse({ description: 'Лимиты материалов BR-FILE-02' })
+  @ApiUnprocessableEntityResponse({
+    description: 'Лимиты материалов BR-FILE-02; обложка-таблица по ссылке — fileTypeNotAllowed (BR-FILE-09)',
+  })
   save(
     @Param('id', new UuidParamPipe()) id: string,
     @Body(new ZodValidationPipe(TopicContentDto)) dto: Dto<typeof TopicContentDto>,

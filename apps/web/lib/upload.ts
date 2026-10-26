@@ -1,4 +1,11 @@
-import { extensionOf, MATERIAL_TYPES } from '@syntara/shared';
+import {
+  extensionOf,
+  isSpreadsheetContent,
+  isSpreadsheetFile,
+  MATERIAL_TYPES,
+  mayHideSpreadsheet,
+  SPREADSHEET_ERROR,
+} from '@syntara/shared';
 import { apiRequest } from './api/browser';
 import type { components } from './api/schema';
 
@@ -16,6 +23,16 @@ function mimeOf(file: File): string {
     : 'application/octet-stream';
 }
 
+/**
+ * BR-FILE-09: таблица (по имени, типу или содержимому — xlsx под видом .docx) отклоняется сразу, до загрузки.
+ * Это подсказка пользователю; запрет проверяет сервер на каждом этапе.
+ */
+export async function isSpreadsheetUpload(file: File): Promise<boolean> {
+  if (isSpreadsheetFile(file.name, file.type)) return true;
+  const head = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+  return mayHideSpreadsheet(head) && isSpreadsheetContent(new Uint8Array(await file.arrayBuffer()));
+}
+
 const errorKey = (fieldErrors: Record<string, string> | undefined, fallback: string) =>
   (fieldErrors && Object.values(fieldErrors)[0]) || fallback;
 
@@ -29,6 +46,7 @@ export async function uploadFile(
   target: { kind: 'cover' } | { kind: 'material'; topicId: string },
   locale: string,
 ): Promise<UploadResult> {
+  if (await isSpreadsheetUpload(file)) return { ok: false, error: SPREADSHEET_ERROR };
   const mime = mimeOf(file);
   const issued = await apiRequest<UploadUrl>('/api/files/upload-url', {
     method: 'POST',

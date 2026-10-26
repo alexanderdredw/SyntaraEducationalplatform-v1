@@ -47,6 +47,7 @@
     "fileTooLarge": "The file is larger than allowed",
     "fileType": "This file type is not supported",
     "fileSignature": "The file content does not match its type",
+    "fileTypeNotAllowed": "Excel and CSV spreadsheets can't be uploaded. Save the file as PDF.",
     "fileMissing": "The file did not upload — try again",
     "max8": "No more than 8 options",
     "trueFalseTwo": "A True/False question has two options",
@@ -915,7 +916,8 @@
       "chooseCover": "Choose cover {name}",
       "materials": "Lesson materials",
       "addFile": "Add a file",
-      "materialsHint": "PDF, DOCX, XLSX, PPTX, ODT, TXT or CSV up to 25 MB. Up to 20 files and 200 MB per topic. Macros are not allowed.",
+      "materialsHint": "PDF, DOCX, PPTX, ODT or TXT up to 25 MB. Up to 20 files and 200 MB per topic. Macros are not allowed.",
+      "formatNotSupported": "This format is no longer supported",
       "removeFile": "Remove {name}",
       "uploading": "Uploading...",
       "scan": {

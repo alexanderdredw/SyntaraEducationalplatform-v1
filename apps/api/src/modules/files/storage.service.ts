@@ -81,6 +81,12 @@ export class StorageService {
     return Buffer.from(await res.Body!.transformToByteArray());
   }
 
+  /** Объект целиком — проверка содержимого контейнера (BR-FILE-09). */
+  async read(key: string): Promise<Buffer> {
+    const res = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
+    return Buffer.from(await res.Body!.transformToByteArray());
+  }
+
   /** Запись объекта сервером — обложка, скачанная по ссылке (BR-FILE-06). */
   async put(key: string, data: Buffer, mime: string): Promise<void> {
     await this.client.send(
