@@ -626,7 +626,7 @@ JS — переданные байты скриптов; «Оценка*» — �
 | О4-8 Lighthouse CI | `@lhci/cli` 0.15.1: главная, «Предметы», «О проекте», урок базового предмета (id — из API) на production-сборке, 3 прогона, медиана; ошибка — Performance < 85, CLS > 0,1, JS > 500 КБ; LCP > 2,5 с — предупреждение (почему — 13.2); отчёты — артефакт `lighthouse-report` | `lighthouserc.json`, `scripts/opt/lhci.mjs`, CI | локально все проверки пройдены: 93 / 97 / 94 / 94 |
 | SPEC | REQ-NFR-PERF-05, REQ-NFR-PERF-06, REQ-NFR-OPS-02; журнал 16 | `docs/SPEC.md` | — |
 
-Время CI выросло на шаги O5 (knip ≈ 10 с, бюджет ≈ 2 с, Lighthouse CI ≈ 2–3 мин); `timeout-minutes` 30 → 40.
+Время CI выросло на шаги O5 (первый прогон `46c5e0b`, зелёный): «Repository files» < 1 с, «Dependencies check» 3 с, «JS budget» 2 с, «Lighthouse CI» 5,6 мин (4 страницы × 3 прогона); `timeout-minutes` 30 → 40.
 
 ## 15. Итоговый отчёт «было → стало» (раздел 12 ТЗ)
 
@@ -677,7 +677,7 @@ JS, LCP и CLS — `measure-web.mjs` (Slow 4G, медиана 3); Performance �
 |---|---|---|
 | `pnpm install` с нуля (хранилище заполнено) | 21 с (O2, до обновлений) | 22,3 с (+ инструменты O4–O5) |
 | Холодный `pnpm build` (5 задач, без кеша turbo) | 31 с | 30,3 с |
-| Полный прогон CI (GitHub Actions) | 17,0 мин (коммит O1 `b1ac310`) | 12,3–16 мин (O4, `4ad7faa`/`6090605`); после O5 — см. PLAN (добавлены knip, бюджет, Lighthouse CI) |
+| Полный прогон CI (GitHub Actions) | 17,0 мин (коммит O1 `b1ac310`) | 23 мин после O5 (`46c5e0b`), из них Lighthouse CI 5,6 мин; без него ≈ 17,4 мин (O4: 12,3–16 мин) |
 
 ### 15.4 Оценка результата
 Больше всего дала **отдача первых данных прямо в HTML** (О4-2) вместе с правильными скелетонами: на 13 страницах исчезли сдвиги
@@ -693,7 +693,7 @@ JS, LCP и CLS — `measure-web.mjs` (Slow 4G, медиана 3); Performance �
 - Эталоны и файлы со ссылками: `node scripts/opt/check-doc-paths.mjs` — 514 путей, отсутствуют 0; эталоны (30 файлов) и `content/` не менялись.
 - Тесты: lint, typecheck — без ошибок; unit/integration — 563 (api 317, shared 103, db 59, worker 39, web 29, ui 16) — все зелёные;
   e2e — 473 passed, 0 failed, 15 skipped (как раньше); `pnpm deps:check` — 0; бюджет JS — 48 страниц в пределах; Lighthouse CI — пройден.
-- CI: `6090605` — зелёный; результаты `6530eca` и O5 — в PLAN «Текущее состояние».
+- CI: `6090605` и `46c5e0b` (O5, все новые шаги) — зелёные; `6530eca` отменён следующим push (concurrency), его изменения проверены в `46c5e0b`.
 - История git не переписана (только новые коммиты, без force-push); тома Docker с данными целы.
 - `pnpm audit --prod` — 0 уязвимостей.
 
