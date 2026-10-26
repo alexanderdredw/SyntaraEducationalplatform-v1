@@ -226,9 +226,10 @@ test.describe('Ученик: вход или регистрация (этало�
     await api.dispose();
 
     await page.goto('/ru/auth/login?role=teacher');
-    await page.getByRole('textbox', { name: ru.auth.login.email }).fill(email);
-    await page.getByLabel(ru.auth.login.password).fill('teacher-pass-1');
-    await page.getByRole('button', { name: ru.auth.login.submit }).click();
+    const teacherCard = page.getByTestId('teacher-auth');
+    await teacherCard.getByRole('textbox', { name: ru.teacherAuth.loginEmail, exact: true }).fill(email);
+    await teacherCard.getByLabel(ru.teacherAuth.password, { exact: true }).fill('teacher-pass-1');
+    await teacherCard.getByRole('button', { name: ru.teacherAuth.loginSubmit }).click();
     await expect(page).toHaveURL(/\/ru\/teacher\/courses$/);
     // Новый учитель ещё не подтвердил email — напоминание с повторной отправкой (AC-AUTH-08).
     await expect(page.getByTestId('verify-email-banner')).toContainText(ru.cabinet.verify.text);

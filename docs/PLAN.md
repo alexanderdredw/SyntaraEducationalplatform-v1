@@ -730,6 +730,12 @@ AC-VIS-01 и регресс всех AC; REQ-NFR-SEC-01..07, DATA-01..03, PERF-0
 
 Итоги каждой итерации — в подразделах «Итог» выше. Код — в `main` на GitHub (`alexanderdredw/SyntaraEducationalplatform-v1`), CI — GitHub Actions (runner `ubuntu-24.04`).
 
+### Форма учителя в стиле формы ученика (задача владельца, 2026-10-26)
+- [x] Общая карточка `apps/web/components/auth/auth-card.tsx` (логотип, подпись роли, плитка с иконкой, вкладки, поля, «глаз») — для ученика (`StudentAuth`) и учителя (`TeacherAuth`); фон с линиями — прежний `AuthBackdrop`.
+- [x] Учитель: `/auth/start?role=teacher` — вкладка «Регистрация» (Имя, Фамилия, Email, Пароль, Школа — необязательно), `/auth/login?role=teacher` — вкладка «Вход» (Email, Пароль, «Забыли пароль?» с пояснением); обращение на «вы»; прежняя форма `StartChoice` удалена.
+- [x] API-AUTH-03: `firstName`/`lastName` → user_profiles, display_name «Имя Фамилия»; необязательная школа (`schoolId`/`schoolName`, как у ученика) — нужна для поля «Школа»; прежнее тело с `displayName` принимается. SPEC 6.3, 8.2, журнал 16.
+- [x] Тексты `teacherAuth.*` RU/KK/EN, `needs_confirmation.json`; e2e `teacher-auth.spec.ts` (+ обновлены accounts, login-role, student-auth, nav); снимки — `docs/media/auth/` (`node e2e/scripts/teacher-auth-shots.mjs`).
+
 ### В работе — приведение интерфейса к эталонам (docs/UX_AI_TZ.md, 2026-10-19)
 - [x] Шаг 1–2: скрипт съёмки `e2e/scripts/ux-audit-shots.mjs`, аудит `docs/UX_AUDIT.md` (коммит `0f612c2`).
 - [x] Шаг 3–4, часть A: токены, хедер и боковая панель, футер, вкладки, аккордеон, урок, квиз, чат ИИ, каталог, показатели, достижения, кабинет учителя T04–T10; склейки «после» — `docs/media/ux-audit/*-compare-after.png`.

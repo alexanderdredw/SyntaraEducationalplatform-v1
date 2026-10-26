@@ -37,14 +37,20 @@ async function accounts(baseURL: string) {
   return { studentLogin: `lr.${id}`, teacherEmail: `lr.${id}@example.kz` };
 }
 
+/** Вкладка «Вход» экрана учителя (та же карточка, что у ученика). */
+async function fillTeacherLogin(page: Page, locale: Locale, email: string, password: string) {
+  const ta = bundles[locale].teacherAuth;
+  const card = page.getByTestId('teacher-auth');
+  await card.getByRole('textbox', { name: ta.loginEmail, exact: true }).fill(email);
+  await card.getByLabel(ta.password, { exact: true }).fill(password);
+  await card.getByRole('button', { name: ta.loginSubmit }).click();
+}
+
 async function teacherForm(page: Page, locale: Locale, email: string, password: string, returnTo?: string) {
-  const t = bundles[locale].auth.login;
   await page.goto(
     `/${locale}/auth/login?role=teacher${returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : ''}`,
   );
-  await page.getByRole('textbox', { name: t.email }).fill(email);
-  await page.getByLabel(t.password).fill(password);
-  await page.getByRole('button', { name: t.submit }).click();
+  await fillTeacherLogin(page, locale, email, password);
 }
 
 async function studentForm(page: Page, locale: Locale, identifier: string, password: string) {
@@ -91,9 +97,7 @@ test.describe('Вход по роли формы (BR-AUTH-01)', () => {
       // Ссылка ведёт в форму нужной роли, где этот аккаунт входит.
       await toTeacher.getByRole('link').click();
       await expect(page).toHaveURL(new RegExp(`/${locale}/auth/login\\?role=teacher$`));
-      await page.getByRole('textbox', { name: t.email }).fill(teacherEmail);
-      await page.getByLabel(t.password).fill('teacher-pass-1');
-      await page.getByRole('button', { name: t.submit }).click();
+      await fillTeacherLogin(page, locale, teacherEmail, 'teacher-pass-1');
       await expect(page).toHaveURL(new RegExp(`/${locale}/teacher/courses$`));
     });
   }
@@ -134,11 +138,15 @@ test.describe('Вход по роли формы (BR-AUTH-01)', () => {
       'href',
       `/ru/auth/start?role=teacher&returnTo=${back}`,
     );
+    // Экран учителя: вкладка «Вход» на той же странице сохраняет возврат.
+    const { teacherEmail: early } = await accounts(baseURL!);
     await page.getByTestId('start-teacher').click();
-    await expect(page.getByTestId('teacher-login-link')).toHaveAttribute(
-      'href',
-      `/ru/auth/login?role=teacher&returnTo=${back}`,
-    );
+    await expect(page).toHaveURL(new RegExp(`/ru/auth/start\\?role=teacher&returnTo=${back}$`));
+    await page.getByTestId('teacher-auth').getByRole('tab', { name: ru.teacherAuth.tabLogin }).click();
+    await fillTeacherLogin(page, 'ru', early, 'teacher-pass-1');
+    await expect(page).toHaveURL(/\/ru\/account\/privacy$/);
+    await page.context().clearCookies();
+    await acceptCookies(page.context(), baseURL);
 
     // «Войти» в хедере и футере — выбор роли.
     await page.goto('/ru');

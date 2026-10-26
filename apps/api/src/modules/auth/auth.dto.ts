@@ -21,8 +21,19 @@ export class LoginResponse {
 export class RegisterTeacherBody {
   @ApiProperty({ enum: ['teacher'] }) role: 'teacher';
   @ApiProperty({ format: 'email', maxLength: 254 }) email: string;
-  @ApiProperty({ maxLength: 100 }) displayName: string;
+  @ApiProperty({ maxLength: 40, description: 'Имя (BR-PRF-01)' }) firstName: string;
+  @ApiProperty({ maxLength: 40, description: 'Фамилия (BR-PRF-01)' }) lastName: string;
+  @ApiProperty({
+    maxLength: 100,
+    required: false,
+    description: 'Прежний формат: имя целиком вместо firstName и lastName',
+  })
+  displayName?: string;
   @ApiProperty({ minLength: 8, maxLength: 200, description: 'PH-06' }) password: string;
+  @ApiProperty({ format: 'uuid', required: false, description: 'Школа из справочника (API-PUB-09)' })
+  schoolId?: string;
+  @ApiProperty({ maxLength: 200, required: false, description: 'Школа вручную — «не проверена»' })
+  schoolName?: string;
 }
 
 export class RegisterStudentBody {

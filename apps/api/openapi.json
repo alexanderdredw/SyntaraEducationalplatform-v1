@@ -6289,21 +6289,43 @@
             "format": "email",
             "maxLength": 254
           },
+          "firstName": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Имя (BR-PRF-01)"
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Фамилия (BR-PRF-01)"
+          },
           "displayName": {
             "type": "string",
-            "maxLength": 100
+            "maxLength": 100,
+            "description": "Прежний формат: имя целиком вместо firstName и lastName"
           },
           "password": {
             "type": "string",
             "minLength": 8,
             "maxLength": 200,
             "description": "PH-06"
+          },
+          "schoolId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Школа из справочника (API-PUB-09)"
+          },
+          "schoolName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Школа вручную — «не проверена»"
           }
         },
         "required": [
           "role",
           "email",
-          "displayName",
+          "firstName",
+          "lastName",
           "password"
         ]
       },

@@ -78,6 +78,76 @@ describe('accounts (integration)', () => {
     expect(dup.body.fieldErrors).toEqual({ email: 'emailTaken' });
   });
 
+  it('API-AUTH-03 first and last name separately → user_profiles, display_name «Имя Фамилия»; optional school', async () => {
+    const [school] = await stack.db
+      .select({ id: schema.schools.id })
+      .from(schema.schools)
+      .where(eq(schema.schools.status, 'active'))
+      .limit(1);
+    const res = await register({
+      role: 'teacher',
+      email: 'saule.names@example.kz',
+      firstName: ' Сауле ',
+      lastName: 'Ахметова-Ким',
+      password: 'strong-pass-1',
+      schoolId: school!.id,
+    }).expect(201);
+    expect(res.body.user).toMatchObject({ displayName: 'Сауле Ахметова-Ким', initials: 'СА' });
+    const id = res.body.user.id as string;
+    const [profile] = await stack.db
+      .select()
+      .from(schema.userProfiles)
+      .where(eq(schema.userProfiles.userId, id));
+    expect(profile).toMatchObject({ firstName: 'Сауле', lastName: 'Ахметова-Ким' });
+    const [user] = await stack.db.select().from(schema.users).where(eq(schema.users.id, id));
+    expect(user!.displayName).toBe('Сауле Ахметова-Ким');
+    const [role] = await stack.db.select().from(schema.userRoles).where(eq(schema.userRoles.userId, id));
+    expect(role).toMatchObject({ role: 'teacher', schoolId: school!.id });
+
+    // Школа вручную — «не проверена»; без школы — school_id пуст.
+    const manual = await register({
+      role: 'teacher',
+      email: 'manual.school@example.kz',
+      firstName: 'Ерлан',
+      lastName: 'Садыков',
+      password: 'strong-pass-1',
+      schoolName: 'Школа №5, Тараз',
+    }).expect(201);
+    const [manualRole] = await stack.db
+      .select({ schoolId: schema.userRoles.schoolId })
+      .from(schema.userRoles)
+      .where(eq(schema.userRoles.userId, manual.body.user.id as string));
+    const [created] = await stack.db
+      .select()
+      .from(schema.schools)
+      .where(eq(schema.schools.id, manualRole!.schoolId!));
+    expect(created).toMatchObject({ name: 'Школа №5, Тараз', status: 'unverified' });
+
+    const missing = await register({
+      role: 'teacher',
+      email: 'no.names@example.kz',
+      firstName: '',
+      password: 'strong-pass-1',
+    }).expect(400);
+    expect(missing.body.fieldErrors).toEqual({ firstName: 'required', lastName: 'required' });
+    const badChars = await register({
+      role: 'teacher',
+      email: 'bad.names@example.kz',
+      firstName: 'Т1',
+      lastName: 'Ок',
+      password: 'strong-pass-1',
+    }).expect(400);
+    expect(badChars.body.fieldErrors).toEqual({ firstName: 'nameChars' });
+    await register({
+      role: 'teacher',
+      email: 'bad.school@example.kz',
+      firstName: 'Тест',
+      lastName: 'Школа',
+      password: 'strong-pass-1',
+      schoolId: '00000000-0000-4000-8000-000000000000',
+    }).expect(400);
+  });
+
   it('API-AUTH-03, PH-06, PH-17 only teachers can sign up; password ≥ 8 characters', async () => {
     const student = await register({
       role: 'student',

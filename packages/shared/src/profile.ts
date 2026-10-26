@@ -65,7 +65,7 @@ export const avatarSmallKey = (storageKey: string) => `${storageKey}-64`;
 
 /** BR-PRF-01: буквы любых алфавитов (кириллица, латиница, казахские), пробел, дефис, апостроф. */
 const NAME_RE = /^\p{L}[\p{L}\p{M} '’-]*$/u;
-const personName = z
+export const personName = z
   .string()
   .trim()
   .max(PROFILE_LIMITS.nameMax, 'tooLong')

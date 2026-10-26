@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { type Locale, type UserRole } from '@syntara/shared';
+import { and, eq } from 'drizzle-orm';
 import { profileFor, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { isUniqueViolation, type Tx } from '../../common/idempotency';
@@ -8,10 +9,13 @@ export interface NewAccount {
   email: string | null;
   login: string | null;
   displayName: string;
+  /** Имя и фамилия, введённые раздельно (учитель, API-AUTH-03); иначе — из displayName. */
+  firstName?: string;
+  lastName?: string | null;
   passwordHash: string;
   role: UserRole;
   locale: Locale;
-  /** Школа роли (user_roles.school_id): ученик — из класса, справочника или введённая вручную. */
+  /** Школа роли (user_roles.school_id): из класса (ученик), справочника или введённая вручную. */
   schoolId?: string | null;
 }
 
@@ -52,7 +56,14 @@ export async function createAccount(tx: Tx, account: NewAccount): Promise<string
   await tx.insert(userRoles).values({ userId, role: account.role, schoolId: account.schoolId ?? null });
   await tx.insert(userPreferences).values({ userId, locale: account.locale });
   // 5.11: профиль — имя и фамилия из введённого имени, аватар — инициалы случайного цвета (BR-PRF-02).
-  await tx.insert(userProfiles).values(profileFor(userId, account.displayName));
+  const profile = profileFor(userId, account.displayName);
+  await tx
+    .insert(userProfiles)
+    .values(
+      account.firstName
+        ? { ...profile, firstName: account.firstName, lastName: account.lastName || null }
+        : profile,
+    );
   // TODO(OWNER): согласие родителя для учеников-детей (PH-44 «требует уточнения»); сейчас фиксируется согласие самого пользователя.
   await tx.insert(consents).values({
     userId,
@@ -62,4 +73,35 @@ export async function createAccount(tx: Tx, account: NewAccount): Promise<string
     grantedAt: new Date(),
   });
   return userId;
+}
+
+/**
+ * Школа из формы регистрации (ученик API-AUTH-03S, учитель API-AUTH-03): из справочника (только status = 'active'),
+ * иначе введённая вручную — новая запись schools со статусом 'unverified' («не проверена»); иначе нет.
+ */
+export async function registrationSchool(
+  tx: Tx,
+  dto: { schoolId?: string | undefined; schoolName?: string | undefined },
+): Promise<string | null> {
+  const { schools } = schema;
+  if (dto.schoolId) {
+    const [school] = await tx
+      .select({ id: schools.id })
+      .from(schools)
+      .where(and(eq(schools.id, dto.schoolId), eq(schools.status, 'active')));
+    if (!school) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Unknown school', {
+        schoolId: 'invalidSchool',
+      });
+    }
+    return school.id;
+  }
+  if (dto.schoolName?.trim()) {
+    const [school] = await tx
+      .insert(schools)
+      .values({ name: dto.schoolName.trim(), status: 'unverified' })
+      .returning({ id: schools.id });
+    return school!.id;
+  }
+  return null;
 }

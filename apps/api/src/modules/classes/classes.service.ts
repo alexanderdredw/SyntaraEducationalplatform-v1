@@ -9,7 +9,7 @@ import { type Tx } from '../../common/idempotency';
 import { AppConfigService } from '../../config/app-config.service';
 import { DB } from '../../infra/tokens';
 import { AuditService } from '../audit/audit.service';
-import { createAccount } from '../auth/accounts';
+import { createAccount, registrationSchool } from '../auth/accounts';
 import { hashPassword } from '../auth/auth.service';
 import { type AuthUser } from '../auth/auth.types';
 import { SessionService } from '../auth/session.service';
@@ -193,7 +193,8 @@ export class ClassesService {
         throw (await this.battleCodes.isActiveCode(code))
           ? isBattleCode(HttpStatus.BAD_REQUEST)
           : invalidCodeField();
-      const schoolId = await this.schoolFor(tx, active?.schoolId ?? null, dto);
+      // Школа ученика: из класса (верный код), иначе из формы.
+      const schoolId = active?.schoolId ?? (await registrationSchool(tx, dto));
       const id = await createAccount(tx, {
         email: dto.email ? dto.email : null,
         login: dto.login,
@@ -208,34 +209,6 @@ export class ClassesService {
     });
     await this.sessions.create(userId, userAgent, res);
     return this.me.me({ id: userId, displayName: dto.displayName, roles: ['student'], sessionId: '' });
-  }
-
-  /**
-   * Школа ученика: из класса (верный код), иначе из справочника (только status = 'active'), иначе введённая
-   * вручную — новая запись schools со статусом 'unverified' («не проверена»).
-   */
-  private async schoolFor(tx: Tx, fromClass: string | null, dto: RegisterStudentDto): Promise<string | null> {
-    if (fromClass) return fromClass;
-    if (dto.schoolId) {
-      const [school] = await tx
-        .select({ id: schools.id })
-        .from(schools)
-        .where(and(eq(schools.id, dto.schoolId), eq(schools.status, 'active')));
-      if (!school) {
-        throw new ApiException(HttpStatus.BAD_REQUEST, 'VALIDATION_FAILED', 'Unknown school', {
-          schoolId: 'invalidSchool',
-        });
-      }
-      return school.id;
-    }
-    if (dto.schoolName?.trim()) {
-      const [school] = await tx
-        .insert(schools)
-        .values({ name: dto.schoolName.trim(), status: 'unverified' })
-        .returning({ id: schools.id });
-      return school!.id;
-    }
-    return null;
   }
 
   /** API-T-26 (минимальная версия): активные ученики своего класса. */

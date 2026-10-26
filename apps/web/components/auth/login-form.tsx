@@ -1,26 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginDto, type LoginEntry, type UserRole } from '@syntara/shared';
+import { LoginDto } from '@syntara/shared';
 import { Button, Field, Input } from '@syntara/ui';
-import { useRouter } from '@/i18n/navigation';
-import { apiRequest } from '@/lib/api/browser';
-import { HOME_BY_ROLE, safeReturnTo } from '@/lib/auth';
 import { AppLink } from '../app-link';
 import { useErrorText } from '../forms/form-parts';
-import { WrongRoleMessage, wrongRoleOf } from './wrong-role';
+import { useRoleLogin } from './use-role-login';
+import { WrongRoleMessage } from './wrong-role';
 
 type Values = { email: string; password: string };
-type Problem = 'invalid' | 'rateLimited' | 'network' | 'server' | null;
 
 /**
- * Вход (REQ-GEN-AUTH-01, API-AUTH-01): Email, Пароль, «Войти», «Забыли пароль?».
- * После входа — returnTo из белого списка или страница по роли. `entry` — форма «Я учитель» (BR-AUTH-01): сервер
- * впускает только аккаунт с этой ролью; аккаунт ученика — подсказка со ссылкой на «Я ученик». Без `entry` —
- * служебный вход сотрудников (как раньше).
+ * Вход (REQ-GEN-AUTH-01, API-AUTH-01): Email, Пароль, «Войти», «Забыли пароль?». `entry` — форма «Я учитель»
+ * (BR-AUTH-01, после подтверждения email); без `entry` — служебный вход сотрудников (как раньше). Основная форма
+ * учителя — вкладка «Вход» карточки TeacherAuth.
  */
 export function LoginForm({
   returnTo,
@@ -32,14 +27,8 @@ export function LoginForm({
   entry?: 'teacher';
 }) {
   const t = useTranslations('auth.login');
-  const tf = useTranslations('forms');
   const errorText = useErrorText();
-  const locale = useLocale();
-  const router = useRouter();
-  const [problem, setProblem] = useState<Problem>(null);
-  const [wrongRole, setWrongRole] = useState<LoginEntry | null>(null);
-  const [retryMinutes, setRetryMinutes] = useState(1);
-  const [pending, setPending] = useState(false);
+  const login = useRoleLogin({ entry, returnTo });
   const form = useForm<Values>({
     resolver: zodResolver(LoginDto),
     defaultValues: { email: '', password: '' },
@@ -47,51 +36,8 @@ export function LoginForm({
   const { errors } = form.formState;
 
   const onSubmit = form.handleSubmit(async (values) => {
-    setPending(true);
-    setProblem(null);
-    setWrongRole(null);
-    const result = await apiRequest<{
-      user: { roles: UserRole[]; activeRole: UserRole; mustChangePassword: boolean };
-    }>('/api/auth/login', {
-      method: 'POST',
-      body: entry ? { ...values, role: entry } : values,
-      locale,
-    });
-    if (result.kind === 'ok') {
-      // BR-CLS-05: с временным паролем — сначала смена пароля.
-      if (result.data.user.mustChangePassword) {
-        router.replace('/auth/login?change=1');
-        router.refresh();
-        return;
-      }
-      const target = safeReturnTo(returnTo);
-      router.replace(target !== '/' ? target : HOME_BY_ROLE[result.data.user.activeRole]);
-      router.refresh();
-      return;
-    }
-    setPending(false);
-    form.setValue('password', '');
-    if (result.kind === 'network') return setProblem('network');
-    if (result.kind === 'http' && result.status === 401) return setProblem('invalid');
-    const expected = wrongRoleOf(result);
-    if (expected) return setWrongRole(expected);
-    if (result.kind === 'http' && result.status === 429) {
-      setRetryMinutes(Math.max(1, Math.ceil((result.error.retryAfterSeconds ?? 60) / 60)));
-      return setProblem('rateLimited');
-    }
-    setProblem('server');
+    if (!(await login.submit(values))) form.setValue('password', '');
   });
-
-  const message =
-    problem === 'invalid'
-      ? t('invalid')
-      : problem === 'rateLimited'
-        ? t('rateLimited', { minutes: retryMinutes })
-        : problem === 'network'
-          ? tf('networkError')
-          : problem === 'server'
-            ? tf('serverError')
-            : null;
 
   return (
     <form noValidate onSubmit={onSubmit} data-testid="login-form" className="flex flex-col gap-5">
@@ -106,13 +52,13 @@ export function LoginForm({
       <Field id="login-password" label={t('password')} required error={errorText(errors.password?.message)}>
         <Input {...form.register('password')} type="password" autoComplete="current-password" />
       </Field>
-      {message ? (
+      {login.message ? (
         <p role="alert" data-testid="login-error" className="text-sm text-[var(--danger-text)]">
-          {message}
+          {login.message}
         </p>
       ) : null}
-      {wrongRole ? (
-        <WrongRoleMessage expected={wrongRole} returnTo={returnTo} testId="login-wrong-role" />
+      {login.wrongRole ? (
+        <WrongRoleMessage expected={login.wrongRole} returnTo={returnTo} testId="login-wrong-role" />
       ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <AppLink
@@ -121,7 +67,7 @@ export function LoginForm({
         >
           {t('forgot')}
         </AppLink>
-        <Button type="submit" disabled={pending} aria-busy={pending}>
+        <Button type="submit" disabled={login.pending} aria-busy={login.pending}>
           {t('submit')}
         </Button>
       </div>

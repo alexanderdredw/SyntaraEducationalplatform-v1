@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RegisterStudentDto } from './accounts';
+import { RegisterStudentDto, RegisterTeacherDto } from './accounts';
 
 const base = { displayName: 'Асель', login: 'asel.k', password: 'student-pass-1' };
 const errors = (input: object) => {
@@ -25,5 +25,35 @@ describe('регистрация ученика (API-AUTH-03S, PH-44)', () => {
     expect(errors({ ...base, email: '', schoolId: '', schoolName: '', code: '' })).toEqual({});
     expect(errors({ ...base, schoolName: 'Школа №1' })).toEqual({});
     expect(errors({ ...base, email: 'not-an-email' })).toHaveProperty('email');
+  });
+});
+
+describe('регистрация учителя (API-AUTH-03)', () => {
+  const teacher = { role: 'teacher', email: 't@example.kz', password: 'teacher-pass-1' };
+  const issues = (input: object) => {
+    const r = RegisterTeacherDto.safeParse(input);
+    return r.success ? {} : Object.fromEntries(r.error.issues.map((i) => [i.path.join('.'), i.message]));
+  };
+
+  it('REQ-GEN-AUTH-02 first and last name are required (BR-PRF-01 letters), school is optional', () => {
+    expect(issues({ ...teacher, firstName: 'Айгерим', lastName: 'Сапарова' })).toEqual({});
+    expect(
+      issues({ ...teacher, firstName: 'Айгерим', lastName: 'Сапарова', schoolName: 'Школа №1' }),
+    ).toEqual({});
+    expect(issues({ ...teacher, firstName: ' ', lastName: '' })).toEqual({
+      firstName: 'required',
+      lastName: 'required',
+    });
+    expect(issues({ ...teacher, firstName: 'A1', lastName: 'B' })).toEqual({ firstName: 'nameChars' });
+    expect(issues({ ...teacher, firstName: 'А'.repeat(41), lastName: 'Б' })).toEqual({
+      firstName: 'tooLong',
+    });
+    expect(issues({ ...teacher, firstName: 'А', lastName: 'Б', schoolId: 'x' })).toEqual({
+      schoolId: 'invalidSchool',
+    });
+  });
+
+  it('API-AUTH-03 the former displayName body is still accepted', () => {
+    expect(issues({ ...teacher, displayName: 'Айгерим Сапарова' })).toEqual({});
   });
 });

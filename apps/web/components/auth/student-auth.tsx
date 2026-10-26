@@ -1,111 +1,32 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Eye, EyeOff, GraduationCap, Users } from 'lucide-react';
+import { GraduationCap, Users } from 'lucide-react';
 import { type LoginEntry, LOGIN_PATTERN, type UserRole } from '@syntara/shared';
-import { cn, fieldClass } from '@syntara/ui';
+import { cn } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import { HOME_BY_ROLE, safeReturnTo } from '@/lib/auth';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
 import { useErrorText } from '../forms/form-parts';
+import {
+  AuthCard,
+  AuthConsent,
+  AuthPanel,
+  type AuthTab,
+  authInputClass as inputClass,
+  FieldRow,
+  PasswordInput,
+  SubmitButton,
+} from './auth-card';
 import { SchoolCombobox, type SchoolValue } from './school-combobox';
 import { WrongRoleMessage, wrongRoleOf } from './wrong-role';
 
 type Me = components['schemas']['MeDto'];
-type Tab = 'register' | 'login';
+type Tab = AuthTab;
 type RegisterField = 'displayName' | 'login' | 'password' | 'email' | 'school' | 'code';
-
-const inputClass = fieldClass;
-
-/** Поле формы ученика: подпись над полем, подсказка и ошибка под ним (эталон student-auth.png). */
-function FieldRow({
-  id,
-  label,
-  hint,
-  error,
-  icon,
-  children,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  error?: ReactNode;
-  /** Декоративная иконка перед подписью (BR-CODE-07: «люди» у кода класса). */
-  icon?: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label
-        htmlFor={id}
-        className={cn('text-sm text-[var(--text-muted)]', icon ? 'inline-flex items-center gap-1.5' : null)}
-      >
-        {icon}
-        {label}
-      </label>
-      {children}
-      {hint ? (
-        <p id={`${id}-hint`} className="text-xs text-[var(--text-muted)]">
-          {hint}
-        </p>
-      ) : null}
-      {error ? (
-        <p id={`${id}-error`} className="text-xs text-[var(--danger-text)]">
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function PasswordInput({
-  id,
-  value,
-  onChange,
-  autoComplete,
-  invalid,
-  describedBy,
-}: {
-  id: string;
-  value: string;
-  onChange: (v: string) => void;
-  autoComplete: string;
-  invalid?: boolean;
-  describedBy?: string;
-}) {
-  const t = useTranslations('studentAuth');
-  const [visible, setVisible] = useState(false);
-  return (
-    <div className="relative">
-      <input
-        id={id}
-        type={visible ? 'text' : 'password'}
-        className={cn(inputClass, 'pr-12')}
-        value={value}
-        autoComplete={autoComplete}
-        aria-invalid={invalid || undefined}
-        aria-describedby={describedBy}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <button
-        type="button"
-        aria-label={visible ? t('hidePassword') : t('showPassword')}
-        aria-pressed={visible}
-        onClick={() => setVisible((v) => !v)}
-        className="absolute right-1 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)]"
-      >
-        {visible ? (
-          <EyeOff aria-hidden="true" className="size-4" />
-        ) : (
-          <Eye aria-hidden="true" className="size-4" />
-        )}
-      </button>
-    </div>
-  );
-}
 
 /**
  * Экран ученика «Вход или регистрация» (REQ-GEN-AUTH-02, эталон docs/media/student-auth.png, BR-CLS-04):
@@ -231,250 +152,20 @@ export function StudentAuth({
     setLoginError(res.kind === 'network' ? tf('networkError') : tf('serverError'));
   };
 
-  const tabButton = (value: Tab, label: string) => (
-    <button
-      type="button"
-      role="tab"
-      id={`student-tab-${value}`}
-      aria-selected={tab === value}
-      aria-controls={`student-panel-${value}`}
-      onClick={() => setTab(value)}
-      className={cn(
-        'min-h-[var(--control-h)] flex-1 rounded-[var(--radius-field)] px-4 text-sm font-semibold',
-        tab === value
-          ? 'bg-[var(--accent-strong)] text-white shadow-accent'
-          : 'text-[var(--text-muted)] hover:text-[var(--text)]',
-      )}
-    >
-      {label}
-    </button>
-  );
-
   const err = (field: RegisterField) => errorText(errors[field]);
   const describe = (id: string, hint: boolean, field: RegisterField) =>
     [hint ? `${id}-hint` : null, errors[field] ? `${id}-error` : null].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="mx-auto w-full max-w-[380px]" data-testid="student-auth">
-      <p className="text-center text-2xl font-bold text-[var(--accent)]">Syntara</p>
-      <p className="mt-3 text-center text-xs font-semibold tracking-[0.2em] text-[var(--text-muted)]">
-        {t('label')}
-      </p>
-      <div className="mt-4 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card sm:p-6">
-        <div className="flex justify-center">
-          <span className="inline-flex size-14 items-center justify-center rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--field)]">
-            <GraduationCap aria-hidden="true" className="size-6 text-[var(--text)]" />
-          </span>
-        </div>
-        <h1 className="mt-4 text-center text-2xl font-bold">{t('title')}</h1>
-
-        <div
-          role="tablist"
-          aria-label={t('tabsLabel')}
-          className="mt-5 flex gap-1 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--field)] p-1"
-        >
-          {tabButton('register', t('tabRegister'))}
-          {tabButton('login', t('tabLogin'))}
-        </div>
-
-        {tab === 'register' ? (
-          <form
-            id="student-panel-register"
-            role="tabpanel"
-            aria-labelledby="student-tab-register"
-            noValidate
-            className="mt-5 flex flex-col gap-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void register();
-            }}
-          >
-            <FieldRow id="student-displayName" label={t('name')} error={err('displayName')}>
-              <input
-                id="student-displayName"
-                className={inputClass}
-                value={form.displayName}
-                placeholder={t('namePlaceholder')}
-                autoComplete="name"
-                aria-required="true"
-                aria-invalid={errors.displayName ? true : undefined}
-                aria-describedby={describe('student-displayName', false, 'displayName')}
-                onChange={(e) => setForm({ ...form, displayName: e.target.value })}
-              />
-            </FieldRow>
-            <FieldRow id="student-login" label={t('login')} error={err('login')}>
-              <input
-                id="student-login"
-                className={inputClass}
-                value={form.login}
-                autoComplete="username"
-                autoCapitalize="none"
-                aria-required="true"
-                aria-invalid={errors.login ? true : undefined}
-                aria-describedby={describe('student-login', false, 'login')}
-                onChange={(e) => {
-                  const login = e.target.value;
-                  setForm({ ...form, login });
-                  // Подсказка сразу, как только в логине появился «@» (REQ-GEN-AUTH-02).
-                  setErrors((prev) => ({ ...prev, login: login.includes('@') ? 'loginIsEmail' : undefined }));
-                }}
-              />
-            </FieldRow>
-            <FieldRow
-              id="student-password"
-              label={t('password')}
-              hint={t('passwordHint')}
-              error={err('password')}
-            >
-              <PasswordInput
-                id="student-password"
-                value={form.password}
-                autoComplete="new-password"
-                invalid={Boolean(errors.password)}
-                describedBy={describe('student-password', true, 'password')}
-                onChange={(password) => setForm({ ...form, password })}
-              />
-            </FieldRow>
-            <FieldRow id="student-email" label={t('email')} error={err('email')}>
-              <input
-                id="student-email"
-                type="email"
-                className={inputClass}
-                value={form.email}
-                placeholder={t('emailPlaceholder')}
-                autoComplete="email"
-                aria-invalid={errors.email ? true : undefined}
-                aria-describedby={describe('student-email', false, 'email')}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-            </FieldRow>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="student-school" className="text-sm text-[var(--text-muted)]">
-                {t('school')}
-              </label>
-              <SchoolCombobox id="student-school" value={school} onChange={setSchool} error={err('school')} />
-              {errors.school ? (
-                <p id="student-school-error" className="text-xs text-[var(--danger-text)]">
-                  {err('school')}
-                </p>
-              ) : null}
-            </div>
-            <FieldRow
-              id="student-code"
-              label={t('code')}
-              hint={t('codeHint')}
-              icon={<Users aria-hidden="true" className="size-4" />}
-              error={
-                // BR-CODE-04: код Battle в поле «Код класса» — подсказка со ссылкой на вход ученика.
-                errors.code === 'isBattleCode'
-                  ? tj.rich('isBattleCode', {
-                      link: (chunks) => (
-                        <AppLink href="/auth/start?role=student" className="font-semibold underline">
-                          {chunks}
-                        </AppLink>
-                      ),
-                    })
-                  : err('code')
-              }
-            >
-              <input
-                id="student-code"
-                className={cn(inputClass, 'text-center tracking-[0.3em] uppercase')}
-                value={form.code}
-                placeholder={t('codePlaceholder')}
-                autoComplete="off"
-                autoCapitalize="characters"
-                maxLength={32}
-                aria-invalid={errors.code ? true : undefined}
-                aria-describedby={describe('student-code', true, 'code')}
-                onChange={(e) => setForm({ ...form, code: e.target.value })}
-              />
-            </FieldRow>
-
-            {failed ? (
-              <p role="alert" className="text-sm text-[var(--danger-text)]">
-                {failed}
-              </p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={pending}
-              className="min-h-12 w-full rounded-[var(--radius-pill)] bg-[var(--accent-strong)] text-base font-semibold text-white hover:brightness-110 disabled:opacity-60"
-            >
-              {t('submit')}
-            </button>
-          </form>
-        ) : (
-          <form
-            id="student-panel-login"
-            role="tabpanel"
-            aria-labelledby="student-tab-login"
-            noValidate
-            className="mt-5 flex flex-col gap-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void signIn();
-            }}
-          >
-            <FieldRow id="student-identifier" label={t('identifier')}>
-              <input
-                id="student-identifier"
-                className={inputClass}
-                value={loginForm.email}
-                autoComplete="username"
-                autoCapitalize="none"
-                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-              />
-            </FieldRow>
-            <FieldRow id="student-login-password" label={t('password')}>
-              <PasswordInput
-                id="student-login-password"
-                value={loginForm.password}
-                autoComplete="current-password"
-                onChange={(password) => setLoginForm({ ...loginForm, password })}
-              />
-            </FieldRow>
-            {loginError ? (
-              <p role="alert" data-testid="student-login-error" className="text-sm text-[var(--danger-text)]">
-                {loginError}
-              </p>
-            ) : null}
-            {wrongRole ? (
-              <WrongRoleMessage expected={wrongRole} returnTo={returnTo} testId="student-login-wrong-role" />
-            ) : null}
-            <button
-              type="submit"
-              disabled={pending}
-              className="min-h-12 w-full rounded-[var(--radius-pill)] bg-[var(--accent-strong)] text-base font-semibold text-white hover:brightness-110 disabled:opacity-60"
-            >
-              {t('loginSubmit')}
-            </button>
-            <AppLink
-              href="/auth/login?forgot=1"
-              className="self-center text-sm text-[var(--text-muted)] underline"
-            >
-              {t('forgotLink')}
-            </AppLink>
-          </form>
-        )}
-
-        <div className="mt-6 flex flex-col gap-4 text-center text-xs text-[var(--text-muted)]">
-          {tab === 'register' ? (
-            <p>
-              {t.rich('consent', {
-                terms: (chunks) => (
-                  <AppLink href="/terms" className="underline hover:text-[var(--text)]">
-                    {chunks}
-                  </AppLink>
-                ),
-                privacy: (chunks) => (
-                  <AppLink href="/privacy" className="underline hover:text-[var(--text)]">
-                    {chunks}
-                  </AppLink>
-                ),
-              })}
-            </p>
-          ) : null}
+    <AuthCard
+      ns="studentAuth"
+      prefix="student"
+      icon={<GraduationCap aria-hidden="true" />}
+      tab={tab}
+      onTab={setTab}
+      footer={
+        <>
+          {tab === 'register' ? <AuthConsent ns="studentAuth" /> : null}
           <p>{t('accountNote')}</p>
           <p>
             {t('forgotNote')}{' '}
@@ -489,8 +180,159 @@ export function StudentAuth({
           >
             {t('guest')}
           </AppLink>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    >
+      {tab === 'register' ? (
+        <AuthPanel prefix="student" tab="register" onSubmit={() => void register()}>
+          <FieldRow id="student-displayName" label={t('name')} error={err('displayName')}>
+            <input
+              id="student-displayName"
+              className={inputClass}
+              value={form.displayName}
+              placeholder={t('namePlaceholder')}
+              autoComplete="name"
+              aria-required="true"
+              aria-invalid={errors.displayName ? true : undefined}
+              aria-describedby={describe('student-displayName', false, 'displayName')}
+              onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+            />
+          </FieldRow>
+          <FieldRow id="student-login" label={t('login')} error={err('login')}>
+            <input
+              id="student-login"
+              className={inputClass}
+              value={form.login}
+              autoComplete="username"
+              autoCapitalize="none"
+              aria-required="true"
+              aria-invalid={errors.login ? true : undefined}
+              aria-describedby={describe('student-login', false, 'login')}
+              onChange={(e) => {
+                const login = e.target.value;
+                setForm({ ...form, login });
+                // Подсказка сразу, как только в логине появился «@» (REQ-GEN-AUTH-02).
+                setErrors((prev) => ({ ...prev, login: login.includes('@') ? 'loginIsEmail' : undefined }));
+              }}
+            />
+          </FieldRow>
+          <FieldRow
+            id="student-password"
+            label={t('password')}
+            hint={t('passwordHint')}
+            error={err('password')}
+          >
+            <PasswordInput
+              ns="studentAuth"
+              id="student-password"
+              value={form.password}
+              autoComplete="new-password"
+              invalid={Boolean(errors.password)}
+              describedBy={describe('student-password', true, 'password')}
+              onChange={(password) => setForm({ ...form, password })}
+            />
+          </FieldRow>
+          <FieldRow id="student-email" label={t('email')} error={err('email')}>
+            <input
+              id="student-email"
+              type="email"
+              className={inputClass}
+              value={form.email}
+              placeholder={t('emailPlaceholder')}
+              autoComplete="email"
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={describe('student-email', false, 'email')}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </FieldRow>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="student-school" className="text-sm text-[var(--text-muted)]">
+              {t('school')}
+            </label>
+            <SchoolCombobox id="student-school" value={school} onChange={setSchool} error={err('school')} />
+            {errors.school ? (
+              <p id="student-school-error" className="text-xs text-[var(--danger-text)]">
+                {err('school')}
+              </p>
+            ) : null}
+          </div>
+          <FieldRow
+            id="student-code"
+            label={t('code')}
+            hint={t('codeHint')}
+            icon={<Users aria-hidden="true" className="size-4" />}
+            error={
+              // BR-CODE-04: код Battle в поле «Код класса» — подсказка со ссылкой на вход ученика.
+              errors.code === 'isBattleCode'
+                ? tj.rich('isBattleCode', {
+                    link: (chunks) => (
+                      <AppLink href="/auth/start?role=student" className="font-semibold underline">
+                        {chunks}
+                      </AppLink>
+                    ),
+                  })
+                : err('code')
+            }
+          >
+            <input
+              id="student-code"
+              className={cn(inputClass, 'text-center tracking-[0.3em] uppercase')}
+              value={form.code}
+              placeholder={t('codePlaceholder')}
+              autoComplete="off"
+              autoCapitalize="characters"
+              maxLength={32}
+              aria-invalid={errors.code ? true : undefined}
+              aria-describedby={describe('student-code', true, 'code')}
+              onChange={(e) => setForm({ ...form, code: e.target.value })}
+            />
+          </FieldRow>
+
+          {failed ? (
+            <p role="alert" className="text-sm text-[var(--danger-text)]">
+              {failed}
+            </p>
+          ) : null}
+          <SubmitButton pending={pending}>{t('submit')}</SubmitButton>
+        </AuthPanel>
+      ) : (
+        <AuthPanel prefix="student" tab="login" onSubmit={() => void signIn()}>
+          <FieldRow id="student-identifier" label={t('identifier')}>
+            <input
+              id="student-identifier"
+              className={inputClass}
+              value={loginForm.email}
+              autoComplete="username"
+              autoCapitalize="none"
+              onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+            />
+          </FieldRow>
+          <FieldRow id="student-login-password" label={t('password')}>
+            <PasswordInput
+              ns="studentAuth"
+              id="student-login-password"
+              value={loginForm.password}
+              autoComplete="current-password"
+              onChange={(password) => setLoginForm({ ...loginForm, password })}
+            />
+          </FieldRow>
+          {loginError ? (
+            <p role="alert" data-testid="student-login-error" className="text-sm text-[var(--danger-text)]">
+              {loginError}
+            </p>
+          ) : null}
+          {wrongRole ? (
+            <WrongRoleMessage expected={wrongRole} returnTo={returnTo} testId="student-login-wrong-role" />
+          ) : null}
+          <SubmitButton pending={pending}>{t('loginSubmit')}</SubmitButton>
+          <AppLink
+            href="/auth/login?forgot=1"
+            className="self-center text-sm text-[var(--text-muted)] underline"
+          >
+            {t('forgotLink')}
+          </AppLink>
+        </AuthPanel>
+      )}
+    </AuthCard>
   );
 }

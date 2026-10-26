@@ -8,6 +8,7 @@ import {
   ResetPasswordForm,
   VerifyEmail,
 } from '@/components/auth/password-forms';
+import { TeacherAuth } from '@/components/auth/teacher-auth';
 import { AppLink } from '@/components/app-link';
 import { getMe } from '@/lib/api/server';
 import { HOME_BY_ROLE, loginEntryHref, ROLE_HOME, safeReturnTo } from '@/lib/auth';
@@ -80,15 +81,22 @@ export default async function LoginPage({
     login: t('login.title'),
   }[mode];
 
+  // BR-AUTH-01: вход учителя — вкладка «Вход» экрана учителя (та же карточка, что у ученика).
+  if (mode === 'login' && teacherForm) {
+    return (
+      <section data-testid="login-page" className="px-4 py-8 md:py-12">
+        <TeacherAuth
+          initialTab="login"
+          returnTo={returnTo}
+          notice={one(q.reset) === 'done' ? t('login.registered') : undefined}
+        />
+      </section>
+    );
+  }
+
   return (
     <section data-testid="login-page" className="px-4 py-12 md:py-16">
       <div className="mx-auto max-w-[440px]">
-        {mode === 'login' && teacherForm ? (
-          // BR-AUTH-01: форма входа учителя — «Я учитель».
-          <p className="mb-2 text-sm font-semibold text-[var(--accent)]" data-testid="login-entry">
-            {t('choice.teacher')}
-          </p>
-        ) : null}
         <h1 className="text-page-title font-bold">{title}</h1>
         <div className="mt-8 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card sm:p-6">
           {mode === 'verify' ? (
@@ -107,18 +115,15 @@ export default async function LoginPage({
           ) : null}
           {mode === 'forgot' ? <ForgotPasswordForm /> : null}
           {mode === 'login' ? (
+            // Служебный вход сотрудников (без роли).
             <>
               <LoginForm
                 returnTo={returnTo}
-                entry={teacherForm ? 'teacher' : undefined}
                 notice={one(q.reset) === 'done' ? t('login.registered') : undefined}
               />
               <p className="mt-6 text-sm text-[var(--text-muted)]">
                 {t('login.noAccount')}{' '}
-                <AppLink
-                  href={teacherForm ? '/auth/start?role=teacher' : '/auth/start'}
-                  className="font-semibold text-[var(--accent)] hover:underline"
-                >
+                <AppLink href="/auth/start" className="font-semibold text-[var(--accent)] hover:underline">
                   {t('login.start')}
                 </AppLink>
               </p>

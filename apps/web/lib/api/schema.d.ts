@@ -2071,9 +2071,21 @@ export interface components {
             role: "teacher";
             /** Format: email */
             email: string;
-            displayName: string;
+            /** @description Имя (BR-PRF-01) */
+            firstName: string;
+            /** @description Фамилия (BR-PRF-01) */
+            lastName: string;
+            /** @description Прежний формат: имя целиком вместо firstName и lastName */
+            displayName?: string;
             /** @description PH-06 */
             password: string;
+            /**
+             * Format: uuid
+             * @description Школа из справочника (API-PUB-09)
+             */
+            schoolId?: string;
+            /** @description Школа вручную — «не проверена» */
+            schoolName?: string;
         };
         ForgotPasswordBody: {
             /** Format: email */

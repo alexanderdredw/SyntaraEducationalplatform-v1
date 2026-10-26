@@ -19,6 +19,7 @@ import {
   passwordResetKey,
   type PasswordResetPayload,
   type RegisterTeacherDto,
+  joinDisplayName,
   type ResetPasswordDto,
   type VerifyEmailDto,
 } from '@syntara/shared';
@@ -31,7 +32,7 @@ import { AppConfigService } from '../../config/app-config.service';
 import { DB, REDIS } from '../../infra/tokens';
 import { type MeDto } from '../users/me.dto';
 import { MeService } from '../users/me.service';
-import { createAccount } from './accounts';
+import { createAccount, registrationSchool } from './accounts';
 import { type AuthUser } from './auth.types';
 import { KnownDevicesService } from './known-devices.service';
 import { SessionService, sortRoles } from './session.service';
@@ -152,18 +153,22 @@ export class AuthService {
   ): Promise<MeDto> {
     await this.assertPasswordLength(dto.password);
     const passwordHash = await hashPassword(dto.password);
+    // display_name — «Имя Фамилия» (BR-PRF-01); прежний формат запроса — готовое displayName.
+    const displayName = dto.displayName ?? joinDisplayName(dto.firstName!, dto.lastName);
     const userId = await this.db.transaction(async (tx) => {
       const id = await createAccount(tx, {
         email: dto.email,
         login: null,
-        displayName: dto.displayName,
+        displayName,
+        ...(dto.displayName ? {} : { firstName: dto.firstName!, lastName: dto.lastName ?? null }),
         passwordHash,
         role: 'teacher',
         locale,
+        schoolId: await registrationSchool(tx, dto),
       });
       await enqueueEmail(tx, OUTBOX_EVENT_TYPES.emailAccount, EMAIL_TEMPLATES.accountRegistered, dto.email, {
         locale,
-        displayName: dto.displayName,
+        displayName,
         userId: id,
       } satisfies AccountRegisteredPayload);
       return id;
@@ -171,7 +176,7 @@ export class AuthService {
     await this.sessions.create(userId, userAgent, res);
     // BR-PRF-20: устройство регистрации — известное (следующий вход с него — без письма).
     await this.devices.remember(userId, userAgent).catch(() => undefined);
-    return this.me.me({ id: userId, displayName: dto.displayName, roles: ['teacher'], sessionId: '' });
+    return this.me.me({ id: userId, displayName, roles: ['teacher'], sessionId: '' });
   }
 
   /**

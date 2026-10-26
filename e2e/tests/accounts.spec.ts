@@ -59,13 +59,15 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
 
     await page.goto('/ru/auth/start');
     await page.getByTestId('start-teacher').click();
-    const form = page.getByTestId('teacher-register');
-    await form.getByRole('button', { name: ru.auth.start.submit }).click();
+    const form = page.getByTestId('teacher-auth');
+    const ta = ru.teacherAuth;
+    await form.getByRole('button', { name: ta.submit }).click();
     await expect(form.getByText(ru.validation.passwordTooShort)).toBeVisible();
-    await form.getByRole('textbox', { name: ru.auth.start.email }).fill(`new.${uid()}@example.kz`);
-    await form.getByRole('textbox', { name: ru.auth.start.displayName }).fill('Айгерим Сапарова');
-    await form.getByLabel(ru.auth.start.password).fill('teacher-pass-1');
-    await form.getByRole('button', { name: ru.auth.start.submit }).click();
+    await form.getByRole('textbox', { name: ta.firstName, exact: true }).fill('Айгерим');
+    await form.getByRole('textbox', { name: ta.lastName, exact: true }).fill('Сапарова');
+    await form.getByRole('textbox', { name: ta.email, exact: true }).fill(`new.${uid()}@example.kz`);
+    await form.getByLabel(ta.password, { exact: true }).fill('teacher-pass-1');
+    await form.getByRole('button', { name: ta.submit }).click();
 
     await expect(page).toHaveURL(/\/ru\/teacher\/courses$/);
     const header = page.getByTestId('cabinet-header');
@@ -257,7 +259,7 @@ test.describe('Аккаунты и классы (итерация 6)', () => {
     page,
   }) => {
     await page.goto('/ru/auth/login?role=teacher');
-    await page.getByRole('link', { name: ru.auth.login.forgot }).click();
+    await page.getByRole('link', { name: ru.teacherAuth.forgotLink }).click();
     await expect(page).toHaveURL(/\/ru\/auth\/login\?forgot=1$/);
     await page.getByRole('textbox', { name: ru.auth.forgot.email }).fill('nobody@example.kz');
     await page.getByRole('button', { name: ru.auth.forgot.submit }).click();

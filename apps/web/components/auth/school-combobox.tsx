@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { cn, fieldClass } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
+import { type AuthNs } from './auth-card';
 import type { components } from '@/lib/api/schema';
 
 type School = components['schemas']['SchoolDto'];
@@ -17,7 +18,7 @@ export interface SchoolValue {
 const inputClass = fieldClass;
 
 /**
- * Школа ученика (REQ-GEN-AUTH-02): поиск по справочнику с автодополнением (API-PUB-09, ARIA combobox) или ввод
+ * Школа ученика и учителя (REQ-GEN-AUTH-01/02): поиск по справочнику с автодополнением (API-PUB-09, ARIA combobox) или ввод
  * вручную — такая школа сохраняется с отметкой «не проверена».
  */
 export function SchoolCombobox({
@@ -25,13 +26,16 @@ export function SchoolCombobox({
   value,
   onChange,
   error,
+  ns = 'studentAuth',
 }: {
   id: string;
   value: SchoolValue;
   onChange: (value: SchoolValue) => void;
   error?: string;
+  /** Тексты роли: ученик — на «ты», учитель — на «вы». */
+  ns?: AuthNs;
 }) {
-  const t = useTranslations('studentAuth');
+  const t = useTranslations(ns);
   const locale = useLocale();
   const listId = useId();
   const [query, setQuery] = useState(value.manual ? '' : value.schoolName);

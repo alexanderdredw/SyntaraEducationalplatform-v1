@@ -244,7 +244,7 @@ test.describe('Единая рабочая среда (docs/NAV_TZ.md)', () => {
     browser,
     baseURL,
   }) => {
-    const guestOnly = [ru.shell.login, ru.about.hero.start, ru.home.hero.teacher, ru.auth.start.submit];
+    const guestOnly = [ru.shell.login, ru.about.hero.start, ru.home.hero.teacher, ru.teacherAuth.submit];
     await signIn(context, await account(baseURL!, 'student'), baseURL!);
     for (const path of ['/', '/about']) {
       await page.goto(`/ru${path}`);

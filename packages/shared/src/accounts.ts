@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Locale, UserRole } from './enums';
+import { personName } from './profile';
 
 /**
  * Итерация 6: аккаунты, предпочтения, классы и коды (6.3–6.5, 7.7, PH-06, PH-07, PH-44).
@@ -26,13 +27,27 @@ const login = z
   .refine((v) => !v.includes('@'), 'loginIsEmail')
   .refine((v) => v.includes('@') || LOGIN_PATTERN.test(v), 'invalidLogin');
 
-/** API-AUTH-03: регистрация доступна только учителю (PH-17). */
-export const RegisterTeacherDto = z.object({
-  role: z.literal('teacher', 'required'),
-  email,
-  displayName,
-  password,
-});
+/**
+ * API-AUTH-03: регистрация доступна только учителю (PH-17). Имя и фамилия — раздельно (5.11, BR-PRF-01), display_name —
+ * «Имя Фамилия». `displayName` вместо них — прежний формат запроса (тесты и скрипты). Школа необязательна — как у ученика:
+ * из справочника (schoolId) или вручную (schoolName, «не проверена»).
+ */
+export const RegisterTeacherDto = z
+  .object({
+    role: z.literal('teacher', 'required'),
+    email,
+    firstName: personName.optional(),
+    lastName: personName.optional(),
+    displayName: displayName.optional(),
+    password,
+    schoolId: z.uuid('invalidSchool').optional().or(z.literal('')),
+    schoolName: z.string().trim().max(200, 'tooLong').optional(),
+  })
+  .superRefine((d, ctx) => {
+    if (d.displayName) return;
+    if (!d.firstName) ctx.addIssue({ code: 'custom', path: ['firstName'], message: 'required' });
+    if (!d.lastName) ctx.addIssue({ code: 'custom', path: ['lastName'], message: 'required' });
+  });
 export type RegisterTeacherDto = z.infer<typeof RegisterTeacherDto>;
 
 /**
