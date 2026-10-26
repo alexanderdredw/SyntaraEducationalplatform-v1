@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   // Отдельный каталог сборки (например, для e2e при запущенном `pnpm dev`, который пишет в .next).
   distDir: process.env.NEXT_DIST_DIR || '.next',
   poweredByHeader: false,
+  // OPT-05 (О4-5): за nginx с brotli сжимает nginx (NEXT_COMPRESS=false); без него — gzip самого Next.js.
+  compress: process.env.NEXT_COMPRESS !== 'false',
   reactStrictMode: true,
   // REQ-PUB-SUP-03: версия приложения в techContext обращения.
   env: { NEXT_PUBLIC_APP_VERSION: pkg.version },

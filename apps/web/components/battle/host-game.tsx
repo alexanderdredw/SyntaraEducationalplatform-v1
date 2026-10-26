@@ -256,7 +256,13 @@ export function HostGame({ sessionId }: { sessionId: string }) {
         {announce}
       </p>
       {lost ? <ConnectionBanner text={t('connection')} /> : null}
-      {!snap ? <Skeleton className="h-64" /> : null}
+      {/* OPT-05 (О4-2а): как у лобби ведущего — строка заголовка и блок ≈ 400 px. */}
+      {!snap ? (
+        <>
+          <Skeleton className="h-11 w-2/3" />
+          <Skeleton className="h-[25rem]" />
+        </>
+      ) : null}
       {snap ? (
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">

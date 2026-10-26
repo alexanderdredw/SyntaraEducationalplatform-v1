@@ -200,6 +200,8 @@ test.describe('Редактировать профиль (docs/PROFILE_TZ.md, RE
       await page.goto('/ru/account/profile');
       await expect(page.getByTestId('profile-form')).toBeVisible();
       await expectNoSeriousA11yViolations(page);
+      // Данные страницы — в HTML (OPT-05, О4-2): гидратация без расхождений не сбрасывает тему «как в системе».
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       expect(await hasHorizontalScroll(page)).toBe(false);
     }
     await page.getByRole('radio', { name: p.avatarKinds.preset }).click();

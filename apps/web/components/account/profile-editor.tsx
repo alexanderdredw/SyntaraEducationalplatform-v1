@@ -32,6 +32,7 @@ import {
 } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
+import { PROFILE_KEY } from '../learn/query-keys';
 import { isSpreadsheetUpload } from '@/lib/upload';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
@@ -88,7 +89,7 @@ const avatarChanged = (a: Draft, b: Draft) =>
 export function ProfileEditor({ timeZone }: { timeZone: string }) {
   const locale = useLocale();
   const profile = useQuery({
-    queryKey: ['me', 'profile'],
+    queryKey: PROFILE_KEY,
     queryFn: async () => {
       const res = await apiRequest<Profile>('/api/me/profile', { locale });
       if (res.kind !== 'ok') throw new Error('profile');

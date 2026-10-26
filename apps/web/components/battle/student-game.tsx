@@ -200,7 +200,8 @@ export function StudentGame({ sessionId }: { sessionId: string }) {
         {announce}
       </p>
       {lost ? <ConnectionBanner text={t('connection')} /> : null}
-      {!snap ? <Skeleton className="h-48" /> : null}
+      {/* OPT-05 (О4-2а): высота — как у лобби (≈ 370–390 px), чтобы снимок по SSE не сдвигал страницу. */}
+      {!snap ? <Skeleton className="h-96" /> : null}
       {snap ? (
         <div key={`${snap.phase}-${snap.question?.index ?? ''}`} className="battle-phase flex flex-col gap-6">
           {snap.kicked ? (

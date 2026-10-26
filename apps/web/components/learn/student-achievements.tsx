@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Flame, Lock } from 'lucide-react';
 import { BadgeIcon, Card, Pill, ProgressBar, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
+import { achievementsQueryKey } from './query-keys';
 import type { components } from '@/lib/api/schema';
 import { useMarkSectionSeen } from './my-class';
 
@@ -18,7 +19,7 @@ export function StudentAchievements() {
   const t = useTranslations('student.achievements');
   const locale = useLocale();
   const data = useQuery({
-    queryKey: ['student', 'achievements', locale],
+    queryKey: achievementsQueryKey(locale),
     queryFn: async () => {
       const res = await apiRequest<Achievements>('/api/student/achievements', { locale });
       if (res.kind !== 'ok') throw new Error('achievements');

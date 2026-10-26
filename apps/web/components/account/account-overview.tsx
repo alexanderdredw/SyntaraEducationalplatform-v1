@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ClipboardList, Flame, Plus, Trophy, Zap } from 'lucide-react';
 import { Avatar, BadgeIcon, Button, Card, cn, ProgressBar, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
+import { ACTIVITY_KEY, DASHBOARD_KEY, PROFILE_KEY } from '../learn/query-keys';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { AppLink } from '../app-link';
@@ -34,8 +35,8 @@ export function AccountOverview({ timeZone }: { timeZone: string }) {
       if (res.kind !== 'ok') throw new Error(path);
       return res.data;
     };
-  const profile = useQuery({ queryKey: ['me', 'profile'], queryFn: get<Profile>('/api/me/profile') });
-  const dashboard = useQuery({ queryKey: ['me', 'dashboard'], queryFn: get<Dashboard>('/api/me/dashboard') });
+  const profile = useQuery({ queryKey: PROFILE_KEY, queryFn: get<Profile>('/api/me/profile') });
+  const dashboard = useQuery({ queryKey: DASHBOARD_KEY, queryFn: get<Dashboard>('/api/me/dashboard') });
 
   return (
     <div className="flex flex-col gap-6" data-testid="account-overview">
@@ -113,7 +114,7 @@ function Completeness({ profile }: { profile: Profile }) {
     key === 'email' || key === 'emailVerified' ? '/account/settings#email' : '/account/profile';
   const hide = async () => {
     const res = await apiRequest('/api/me/profile-completeness/hide', { method: 'POST' });
-    if (res.kind === 'ok') await queryClient.invalidateQueries({ queryKey: ['me', 'profile'] });
+    if (res.kind === 'ok') await queryClient.invalidateQueries({ queryKey: PROFILE_KEY });
   };
   return (
     <Card tone="callout" className="flex flex-col gap-3" data-testid="profile-completeness">
@@ -149,7 +150,7 @@ function StudentOverview({ data, timeZone }: { data: StudentDashboard; timeZone:
   const tcal = useTranslations('account.calendar');
   const locale = useLocale();
   const activity = useQuery({
-    queryKey: ['me', 'activity'],
+    queryKey: ACTIVITY_KEY,
     queryFn: async () => {
       const res = await apiRequest<Activity>('/api/me/activity?weeks=12', { locale });
       if (res.kind !== 'ok') throw new Error('activity');

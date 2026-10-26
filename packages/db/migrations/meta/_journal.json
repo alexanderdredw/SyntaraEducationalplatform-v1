@@ -85,6 +85,13 @@
       "when": 1792939509581,
       "tag": "0011_profile_v2",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793029986407,
+      "tag": "0012_opt_indexes",
+      "breakpoints": true
     }
   ]
 }

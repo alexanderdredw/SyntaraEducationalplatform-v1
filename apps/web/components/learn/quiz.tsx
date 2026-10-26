@@ -50,10 +50,17 @@ export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignme
 
   if (attempt.isPending) {
     return (
-      <div role="status" aria-busy="true" className="flex flex-col gap-3">
+      // OPT-05 (О4-2а): форма и высота — как у вопроса (≈ 430 px: шапка, текст, 4 варианта, кнопка), футер не прыгает.
+      <div role="status" aria-busy="true" className="flex flex-col gap-5" data-testid="quiz-skeleton">
         <span className="sr-only">{t('loading')}</span>
         <Skeleton className="h-8 w-1/2" />
-        <Skeleton className="h-40" />
+        <Skeleton className="h-7 w-3/4" />
+        <div className="flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-14" />
+          ))}
+        </div>
+        <Skeleton className="h-11 w-40" />
       </div>
     );
   }

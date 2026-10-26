@@ -8,17 +8,13 @@ import { usePathname } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { usePreferences } from '../preferences/preferences-provider';
+import { CLASS_OVERVIEW_KEY, NAV_BADGES_KEY } from '../learn/query-keys';
 import { activeNavHref, type RoleNav } from './nav';
+
+export { CLASS_OVERVIEW_KEY, NAV_BADGES_KEY };
 
 export type ClassOverview = components['schemas']['ClassOverviewDto'];
 export type NavBadges = components['schemas']['NavBadgesDto'];
-
-/** API-S-19: «Мой класс» — страница раздела, панель (активный пункт) и плашка на каталоге. */
-export const CLASS_OVERVIEW_KEY = ['student', 'class-overview'];
-/**
- * API-S-20. Ключ — под ['me', 'stats']: после урока и квиза его обновляют вместе с серией и XP (REQ-NAV-14, п. 3).
- */
-export const NAV_BADGES_KEY = ['me', 'stats', 'nav-badges'];
 /** REQ-NAV-14, п. 3: раз в 60 с, пока вкладка активна; в «Экономии трафика» — только при переходах. */
 const BADGES_POLL_MS = 60_000;
 

@@ -16,13 +16,15 @@ const TIMEOUT_MS = 5000;
 export interface Prefetch {
   key: QueryKey;
   path: string;
+  /** То же преобразование ответа, что в queryFn браузера (данные в кеше одной формы). */
+  transform?: (data: never) => unknown;
 }
 
 export async function prefetchState(locale: string, entries: Prefetch[]): Promise<DehydratedState> {
   const cookieHeader = (await cookies()).toString();
   const client = new QueryClient();
   await Promise.all(
-    entries.map(async ({ key, path }) => {
+    entries.map(async ({ key, path, transform }) => {
       try {
         const res = await fetch(`${API_URL}${path}`, {
           headers: { cookie: cookieHeader, Accept: 'application/json', 'Accept-Language': locale },
@@ -31,7 +33,8 @@ export async function prefetchState(locale: string, entries: Prefetch[]): Promis
         });
         if (!res.ok) return;
         const text = await res.text();
-        client.setQueryData(key, text ? (JSON.parse(text) as unknown) : null);
+        const data = text ? (JSON.parse(text) as unknown) : null;
+        client.setQueryData(key, transform && data !== null ? transform(data as never) : data);
       } catch (err) {
         console.error(`[web] prefetch GET ${path} failed: ${(err as Error).message}`);
       }

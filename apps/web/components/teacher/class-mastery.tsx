@@ -17,6 +17,7 @@ import {
   Th,
 } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
+import { masteryQueryKey } from '../learn/query-keys';
 import type { components } from '@/lib/api/schema';
 
 type MasteryMap = components['schemas']['MasteryMapDto'];
@@ -38,7 +39,7 @@ export function ClassMastery({ classId }: { classId: string }) {
   const locale = useLocale();
   const [subjectId, setSubjectId] = useState<string | null>(null);
   const data = useQuery({
-    queryKey: ['teacher', 'mastery', classId, subjectId, locale],
+    queryKey: masteryQueryKey(classId, subjectId, locale),
     queryFn: async () => {
       const query = subjectId ? `?subjectId=${subjectId}` : '';
       const res = await apiRequest<MasteryMap>(`/api/teacher/classes/${classId}/mastery${query}`, { locale });

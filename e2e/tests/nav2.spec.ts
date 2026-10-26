@@ -474,7 +474,9 @@ test.describe('Панель ученика: «Мой класс», группы,
       if (r.url().includes('/api/student/nav-badges')) calls++;
     });
     await page.goto('/ru/learn/progress');
-    await expect.poll(() => calls).toBeGreaterThan(0);
+    // OPT-05 (О4-2): первые счётчики приходят в HTML страницы — браузер их не запрашивает.
+    await expect(page.getByTestId('cabinet-sidebar')).toBeVisible();
+    await page.waitForLoadState('networkidle');
     const before = calls;
     await page.clock.fastForward(3 * 60_000);
     await page.waitForTimeout(500);

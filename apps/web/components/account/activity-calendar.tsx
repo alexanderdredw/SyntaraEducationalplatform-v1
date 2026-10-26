@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { formatDayMonth, type Locale } from '@syntara/shared';
 import { cn } from '@syntara/ui';
@@ -34,10 +34,19 @@ const noon = (day: string) => `${day}T07:00:00Z`;
  * подсказка и `aria-live` озвучивают «12 октября: 3 занятия»; скрытая таблица — альтернатива. На телефоне видны
  * последние 8 недель, ранние — прокруткой влево.
  */
+const subscribeNothing = () => () => {};
+
 export function ActivityCalendar({ data, timeZone }: { data: Activity; timeZone: string }) {
   const t = useTranslations('account.calendar');
   const locale = useLocale() as Locale;
   const [active, setActive] = useState<number | null>(null);
+  // Подписи месяцев и дней недели — после гидратации (OPT-05, О4-2): календарь приходит в HTML с сервера, а данные
+  // Intl в браузере могут отличаться от Node (kk), текст гидратации же должен совпасть с серверным.
+  const hydrated = useSyncExternalStore(
+    subscribeNothing,
+    () => true,
+    () => false,
+  );
   const scroller = useRef<HTMLDivElement>(null);
   const { cells, weeks } = useMemo(() => {
     const byDate = new Map(data.days.map((d) => [d.date, d.count]));
@@ -70,13 +79,14 @@ export function ActivityCalendar({ data, timeZone }: { data: Activity; timeZone:
   const months = Array.from({ length: weeks }, (_, w) => {
     const first = cells[w * 7]!.date;
     const prev = w > 0 ? cells[(w - 1) * 7]!.date : null;
-    return !prev || first.slice(5, 7) !== prev.slice(5, 7)
+    return hydrated && (!prev || first.slice(5, 7) !== prev.slice(5, 7))
       ? new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' }).format(
           new Date(`${first}T00:00:00Z`),
         )
       : '';
   });
   const weekday = (offset: number) => {
+    if (!hydrated) return '';
     const s = new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: 'UTC' }).format(
       new Date(`${addDays(data.from, offset)}T00:00:00Z`),
     );

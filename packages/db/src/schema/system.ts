@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import {
   bigserial,
   boolean,
@@ -26,15 +27,24 @@ export const idempotencyKeys = pgTable(
   (t) => [primaryKey({ columns: [t.scope, t.key] })],
 );
 
-export const outboxEvents = pgTable('outbox_events', {
-  id: id(),
-  type: text('type').notNull(),
-  payload: jsonb('payload').notNull(),
-  processedAt: tstz('processed_at'),
-  attempts: integer('attempts').notNull().default(0),
-  lastError: text('last_error'),
-  ...timestamps,
-});
+export const outboxEvents = pgTable(
+  'outbox_events',
+  {
+    id: id(),
+    type: text('type').notNull(),
+    payload: jsonb('payload').notNull(),
+    processedAt: tstz('processed_at'),
+    attempts: integer('attempts').notNull().default(0),
+    lastError: text('last_error'),
+    ...timestamps,
+  },
+  (t) => [
+    // OPT-05 (О4-6): опрос worker — только необработанные события по порядку (частичный индекс остаётся маленьким).
+    index('ix_outbox_pending')
+      .on(t.createdAt)
+      .where(sql`${t.processedAt} IS NULL`),
+  ],
+);
 
 export const emailQueue = pgTable('email_queue', {
   id: id(),
@@ -47,16 +57,23 @@ export const emailQueue = pgTable('email_queue', {
   ...timestamps,
 });
 
-export const notifications = pgTable('notifications', {
-  id: id(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id),
-  type: text('type').notNull(),
-  payload: jsonb('payload').notNull(),
-  readAt: tstz('read_at'),
-  ...timestamps,
-});
+export const notifications = pgTable(
+  'notifications',
+  {
+    id: id(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    type: text('type').notNull(),
+    payload: jsonb('payload').notNull(),
+    readAt: tstz('read_at'),
+    ...timestamps,
+  },
+  (t) => [
+    // OPT-05 (О4-6): уведомления пользователя.
+    index('ix_notifications_user').on(t.userId, t.createdAt),
+  ],
+);
 
 /** Журнал аудита (REQ-NFR-SEC-05): app_user — только INSERT (миграция 0002). */
 export const auditLog = pgTable(

@@ -14,9 +14,8 @@ import {
   Skeleton,
 } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
-import type { components } from '@/lib/api/schema';
-
-type Analytics = components['schemas']['ClassAnalyticsDto'];
+import { analyticsQueryKey } from '../learn/query-keys';
+import { type Analytics, withAttentionDays } from './analytics-data';
 
 const TONES: Record<'red' | 'blue' | 'green', ProgressTone> = {
   red: 'danger',
@@ -34,21 +33,11 @@ export function ClassAnalytics({ classId }: { classId: string }) {
   const locale = useLocale();
   const highlight = useSearchParams().get('student');
   const data = useQuery({
-    queryKey: ['teacher', 'analytics', classId, locale],
+    queryKey: analyticsQueryKey(classId, locale),
     queryFn: async () => {
       const res = await apiRequest<Analytics>(`/api/teacher/classes/${classId}/analytics`, { locale });
       if (res.kind !== 'ok') throw new Error('analytics');
-      // «N дней назад» считается при загрузке, а не при отрисовке.
-      const now = Date.now();
-      return {
-        ...res.data,
-        attention: res.data.attention.map((a) => ({
-          ...a,
-          days: a.lastActivityAt
-            ? Math.max(0, Math.floor((now - Date.parse(a.lastActivityAt)) / 86_400_000))
-            : null,
-        })),
-      };
+      return withAttentionDays(res.data);
     },
   });
   if (!data.data) return <Skeleton className="h-64" />;

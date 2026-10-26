@@ -6,6 +6,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { PROGRESS_PERIODS, type ProgressPeriod } from '@syntara/shared';
 import { Button, Card, Modal, SegmentedControl, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
+import { progressQueryKey } from './query-keys';
 import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { AppLink } from '../app-link';
@@ -29,7 +30,7 @@ export function StudentProgress({ timeZone }: { timeZone: string }) {
     null | 'progressMeaning' | 'progressCounted' | 'streakMeaning' | 'streakCounted'
   >(null);
   const data = useQuery({
-    queryKey: ['student', 'progress', period, locale],
+    queryKey: progressQueryKey(period, locale),
     queryFn: async () => {
       const res = await apiRequest<Progress>(`/api/student/progress?period=${period}`, { locale });
       if (res.kind !== 'ok') throw new Error('progress');

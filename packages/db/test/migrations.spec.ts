@@ -45,6 +45,7 @@ describe('migrations (integration)', () => {
       '0009_nav_seen',
       '0010_profiles',
       '0011_profile_v2',
+      '0012_opt_indexes',
     ]);
     expect(await tables()).toBe(64);
     expect(await enums()).toBe(18);
@@ -52,6 +53,7 @@ describe('migrations (integration)', () => {
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0012_opt_indexes',
       '0011_profile_v2',
       '0010_profiles',
       '0009_nav_seen',
@@ -86,6 +88,18 @@ describe('migrations (integration)', () => {
         sql`select count(*) as n from pg_policies where tablename = 'known_devices' and policyname = 'known_devices_own'`,
       ),
     ).toBe(1);
+    // 0012 (OPT-05, О4-6): только индексы — откат удаляет их, таблицы и данные не меняются.
+    const optIndexes = () =>
+      count(
+        db,
+        sql`select count(*) as n from pg_indexes where indexname in ('ix_outbox_pending', 'ix_auth_sessions_user',
+          'ix_classes_teacher', 'ix_topic_sections_topic', 'ix_assignments_topic', 'ix_questions_quiz',
+          'ix_submissions_student', 'ix_notifications_user')`,
+      );
+    expect(await optIndexes()).toBe(8);
+    expect(await rollback(db, 1)).toEqual(['0012_opt_indexes']);
+    expect(await optIndexes()).toBe(0);
+    expect(await tables()).toBe(64);
     expect(await rollback(db, 1)).toEqual(['0011_profile_v2']);
     expect(await tables()).toBe(63);
     // 0010: профили (5.11) — откат удаляет таблицу и значение 'avatar' перечисления media_kind.
@@ -153,11 +167,11 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(12);
+    expect(await appliedMigrations(db)).toHaveLength(13);
   });
 
   it('AC-PRF-01 0010 moves every existing name into the profile and keeps display_name; rollback keeps names', async () => {
-    expect(await rollback(db, 2)).toEqual(['0011_profile_v2', '0010_profiles']);
+    expect(await rollback(db, 3)).toEqual(['0012_opt_indexes', '0011_profile_v2', '0010_profiles']);
     const names = [
       'Асель',
       'Ерлан Сапарович Нурланов',
@@ -195,7 +209,7 @@ describe('migrations (integration)', () => {
         sql`select count(*) as n from users u left join user_profiles p on p.user_id = u.id where p.user_id is null`,
       ),
     ).toBe(0);
-    await rollback(db, 2);
+    await rollback(db, 3);
     expect(await count(db, sql`select count(*) as n from users where email like 'prf%'`)).toBe(names.length);
     await migrateUp(db);
   });

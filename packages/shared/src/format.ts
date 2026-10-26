@@ -30,6 +30,29 @@ const KK_MONTH_SINCE = [
   'желтоқсанынан',
 ] as const;
 
+/**
+ * Даты одинаковы на сервере и в браузере (OPT-05, О4-2: текст, отрисованный на сервере, должен совпасть с текстом
+ * гидратации): версии ICU в Node и браузере ставят разные пробелы (« г.» — U+202F или обычный) — приводим к
+ * обычному; казахские названия месяцев — из списка, а не из Intl (в части браузеров нет данных для kk).
+ */
+const sameSpaces = (s: string) => s.replace(/[\u00a0\u202f]/g, ' ');
+
+/** KK: «12 қазан» — именительный падеж (REQ-PRF-21). */
+const KK_MONTH = [
+  'қаңтар',
+  'ақпан',
+  'наурыз',
+  'сәуір',
+  'мамыр',
+  'маусым',
+  'шілде',
+  'тамыз',
+  'қыркүйек',
+  'қазан',
+  'қараша',
+  'желтоқсан',
+] as const;
+
 function zonedParts(date: Date, timeZone: string): { year: number; month: number; day: number } {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone,
@@ -56,16 +79,24 @@ export function formatSinceMonth(iso: string | Date, locale: Locale, timeZone: s
     const parts = new Intl.DateTimeFormat('ru', { timeZone, day: 'numeric', month: 'long', year: 'numeric' })
       .formatToParts(date)
       .filter((p) => p.type !== 'day');
-    return parts
-      .map((p) => p.value)
-      .join('')
-      .trim();
+    return sameSpaces(
+      parts
+        .map((p) => p.value)
+        .join('')
+        .trim(),
+    );
   }
-  return new Intl.DateTimeFormat('en', { timeZone, month: 'long', year: 'numeric' }).format(date);
+  return sameSpaces(new Intl.DateTimeFormat('en', { timeZone, month: 'long', year: 'numeric' }).format(date));
 }
 
 /** «12 октября» / «12 қазан» / «October 12» — подсказки календаря активности (REQ-PRF-21). */
 export function formatDayMonth(iso: string | Date, locale: Locale, timeZone: string): string {
   const date = typeof iso === 'string' ? new Date(iso) : iso;
-  return new Intl.DateTimeFormat(locale, { timeZone, day: 'numeric', month: 'long' }).format(date);
+  if (locale === 'kk') {
+    const { month, day } = zonedParts(date, timeZone);
+    return `${day} ${KK_MONTH[month - 1]}`;
+  }
+  return sameSpaces(
+    new Intl.DateTimeFormat(locale, { timeZone, day: 'numeric', month: 'long' }).format(date),
+  );
 }

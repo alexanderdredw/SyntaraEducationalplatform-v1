@@ -65,17 +65,24 @@ export const userPreferences = pgTable('user_preferences', {
   ...timestamps,
 });
 
-export const authSessions = pgTable('auth_sessions', {
-  id: id(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id),
-  tokenHash: bytea('token_hash').notNull().unique(),
-  expiresAt: tstz('expires_at').notNull(),
-  revokedAt: tstz('revoked_at'),
-  userAgent: text('user_agent'),
-  ...timestamps,
-});
+export const authSessions = pgTable(
+  'auth_sessions',
+  {
+    id: id(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    tokenHash: bytea('token_hash').notNull().unique(),
+    expiresAt: tstz('expires_at').notNull(),
+    revokedAt: tstz('revoked_at'),
+    userAgent: text('user_agent'),
+    ...timestamps,
+  },
+  (t) => [
+    // OPT-05 (О4-6): сессии пользователя («Устройства», выход со всех устройств, смена пароля).
+    index('ix_auth_sessions_user').on(t.userId),
+  ],
+);
 
 export const consents = pgTable('consents', {
   id: id(),
@@ -117,7 +124,11 @@ export const classes = pgTable(
     archivedAt: tstz('archived_at'),
     ...timestamps,
   },
-  (t) => [check('classes_name_len', sql`length(${t.name}) <= 50`)],
+  (t) => [
+    check('classes_name_len', sql`length(${t.name}) <= 50`),
+    // OPT-05 (О4-6): классы учителя (кабинет, проверка владения).
+    index('ix_classes_teacher').on(t.teacherId),
+  ],
 );
 
 export const classMemberships = pgTable(

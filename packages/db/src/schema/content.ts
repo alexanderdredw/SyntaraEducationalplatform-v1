@@ -162,17 +162,24 @@ export const topicTranslations = pgTable(
   ],
 );
 
-export const topicSections = pgTable('topic_sections', {
-  id: id(),
-  topicId: uuid('topic_id')
-    .notNull()
-    .references(() => topics.id),
-  position: integer('position').notNull(),
-  illustrationMediaId: uuid('illustration_media_id').references(() => mediaFiles.id),
-  /** Постоянный код раздела базовой темы (BR-CNT-04). */
-  code: text('code').unique(),
-  ...timestamps,
-});
+export const topicSections = pgTable(
+  'topic_sections',
+  {
+    id: id(),
+    topicId: uuid('topic_id')
+      .notNull()
+      .references(() => topics.id),
+    position: integer('position').notNull(),
+    illustrationMediaId: uuid('illustration_media_id').references(() => mediaFiles.id),
+    /** Постоянный код раздела базовой темы (BR-CNT-04). */
+    code: text('code').unique(),
+    ...timestamps,
+  },
+  (t) => [
+    // OPT-05 (О4-6): разделы урока по теме (урок, редактор темы).
+    index('ix_topic_sections_topic').on(t.topicId, t.position),
+  ],
+);
 
 export const topicSectionTranslations = pgTable(
   'topic_section_translations',

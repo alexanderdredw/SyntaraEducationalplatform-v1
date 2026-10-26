@@ -28,22 +28,29 @@ export const quizzes = pgTable('quizzes', {
   ...timestamps,
 });
 
-export const questions = pgTable('questions', {
-  id: id(),
-  quizId: uuid('quiz_id')
-    .notNull()
-    .references(() => quizzes.id),
-  type: questionTypeEnum('type').notNull(),
-  difficulty: difficultyEnum('difficulty').notNull(),
-  position: integer('position').notNull(),
-  isDemo: boolean('is_demo').notNull().default(false),
-  /** Только для type = text_input. */
-  textAnswer: text('text_answer'),
-  archivedAt: tstz('archived_at'),
-  /** Постоянный код вопроса базовой темы (BR-CNT-04). */
-  code: text('code').unique(),
-  ...timestamps,
-});
+export const questions = pgTable(
+  'questions',
+  {
+    id: id(),
+    quizId: uuid('quiz_id')
+      .notNull()
+      .references(() => quizzes.id),
+    type: questionTypeEnum('type').notNull(),
+    difficulty: difficultyEnum('difficulty').notNull(),
+    position: integer('position').notNull(),
+    isDemo: boolean('is_demo').notNull().default(false),
+    /** Только для type = text_input. */
+    textAnswer: text('text_answer'),
+    archivedAt: tstz('archived_at'),
+    /** Постоянный код вопроса базовой темы (BR-CNT-04). */
+    code: text('code').unique(),
+    ...timestamps,
+  },
+  (t) => [
+    // OPT-05 (О4-6): вопросы квиза (попытка, редактор квиза).
+    index('ix_questions_quiz').on(t.quizId, t.position),
+  ],
+);
 
 export const questionTranslations = pgTable(
   'question_translations',
@@ -112,7 +119,11 @@ export const assignments = pgTable(
       .references(() => users.id),
     ...timestamps,
   },
-  (t) => [index('ix_assignments_class').on(t.classId, t.dueAt)],
+  (t) => [
+    index('ix_assignments_class').on(t.classId, t.dueAt),
+    // OPT-05 (О4-6): задания по теме (статус задания у ученика в уроке, удаление темы).
+    index('ix_assignments_topic').on(t.topicId),
+  ],
 );
 
 export const submissions = pgTable(
@@ -135,5 +146,7 @@ export const submissions = pgTable(
   (t) => [
     unique('submissions_assignment_student').on(t.assignmentId, t.studentId),
     index('ix_submissions_status').on(t.assignmentId, t.status),
+    // OPT-05 (О4-6): сдачи ученика («Задания», показатели).
+    index('ix_submissions_student').on(t.studentId),
   ],
 );

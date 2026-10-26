@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavTabs } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
+import { TEACHER_CLASSES_KEY } from '../learn/query-keys';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
 
@@ -21,7 +22,7 @@ export function ClassTabs({ classId }: { classId: string }) {
   const locale = useLocale();
   const pathname = usePathname();
   const classes = useQuery({
-    queryKey: ['teacher', 'classes'],
+    queryKey: TEACHER_CLASSES_KEY,
     queryFn: async () => {
       const res = await apiRequest<TeacherClass[]>('/api/teacher/classes', { locale });
       if (res.kind !== 'ok') throw new Error('classes');

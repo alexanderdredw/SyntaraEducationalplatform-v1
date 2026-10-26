@@ -1,8 +1,11 @@
 import { type ReactNode } from 'react';
+import { HydrationBoundary } from '@tanstack/react-query';
 import { setRequestLocale } from 'next-intl/server';
 import { AccountHeader } from '@/components/account/account-header';
 import { CabinetShell } from '@/components/cabinet/cabinet-shell';
+import { DASHBOARD_KEY, PROFILE_KEY } from '@/components/learn/query-keys';
 import { PublicShell } from '@/components/shell/public-shell';
+import { prefetchState } from '@/lib/api/prefetch';
 import { workspaceRole } from '@/lib/auth';
 import { requireUser } from '@/lib/require-user';
 
@@ -31,13 +34,20 @@ export default async function Layout({
       </PublicShell>
     );
   }
+  // OPT-05 (О4-2): профиль и цифры шапки — уже в HTML на всех четырёх вкладках.
+  const state = await prefetchState(locale, [
+    { key: PROFILE_KEY, path: '/api/me/profile' },
+    { key: DASHBOARD_KEY, path: '/api/me/dashboard' },
+  ]);
   return (
     <CabinetShell me={me} cabinetRole={role}>
-      <section className="mx-auto flex max-w-[880px] flex-col gap-6 px-4 py-8">
-        {/* REQ-PRF-20: шапка профиля с вкладками — одинаковая на четырёх страницах. */}
-        <AccountHeader timeZone={process.env.PLATFORM_TZ ?? 'Asia/Almaty'} />
-        {children}
-      </section>
+      <HydrationBoundary state={state}>
+        <section className="mx-auto flex max-w-[880px] flex-col gap-6 px-4 py-8">
+          {/* REQ-PRF-20: шапка профиля с вкладками — одинаковая на четырёх страницах. */}
+          <AccountHeader timeZone={process.env.PLATFORM_TZ ?? 'Asia/Almaty'} />
+          {children}
+        </section>
+      </HydrationBoundary>
     </CabinetShell>
   );
 }

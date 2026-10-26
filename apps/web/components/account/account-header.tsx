@@ -7,6 +7,7 @@ import { formatSinceMonth, type Locale } from '@syntara/shared';
 import { Avatar, avatarPresetColor, Badge, Button, cn, Skeleton } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
+import { DASHBOARD_KEY, PROFILE_KEY } from '../learn/query-keys';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
 
@@ -37,9 +38,9 @@ export function AccountHeader({ timeZone }: { timeZone: string }) {
   const t = useTranslations('account');
   const tr = useTranslations('cabinet.roles');
   const locale = useLocale();
-  const profile = useQuery({ queryKey: ['me', 'profile'], queryFn: get<Profile>('/api/me/profile', locale) });
+  const profile = useQuery({ queryKey: PROFILE_KEY, queryFn: get<Profile>('/api/me/profile', locale) });
   const dashboard = useQuery({
-    queryKey: ['me', 'dashboard'],
+    queryKey: DASHBOARD_KEY,
     queryFn: get<Dashboard>('/api/me/dashboard', locale),
   });
   const p = profile.data;

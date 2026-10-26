@@ -9,6 +9,7 @@ import { type Locale, LOCALES, TopicContentDto } from '@syntara/shared';
 import { Button, Card, Field, Input, Skeleton, Textarea } from '@syntara/ui';
 import { useRouter } from '@/i18n/navigation';
 import { apiRequest } from '@/lib/api/browser';
+import { teacherTopicQueryKey } from '../learn/query-keys';
 import type { components } from '@/lib/api/schema';
 import { useErrorText } from '../forms/form-parts';
 import { issuesByPath } from './parts';
@@ -62,18 +63,22 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
   const locale = useLocale();
   const queryClient = useQueryClient();
   const [lang, setLang] = useState<Locale>(locale as Locale);
-  const [materials, setMaterials] = useState<Material[] | null>(null);
+  // OPT-05 (О4-2): тема из HTML (предзагрузка на сервере) — форма заполнена с первой отрисовки, без скелетона.
+  const [cached] = useState(() => queryClient.getQueryData<Topic>(teacherTopicQueryKey(id)));
+  const [materials, setMaterials] = useState<Material[] | null>(cached?.materials ?? null);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'failed' | null>(null);
   const [ai, setAi] = useState<'idle' | 'busy' | 'unavailable' | 'filled'>('idle');
   const [materialsError, setMaterialsError] = useState<string | undefined>();
-  const initialized = useRef(false);
+  const initialized = useRef(Boolean(cached));
   const form = useForm<TopicValues>({
-    defaultValues: {
-      translations: { ru: emptyLang(), kk: emptyLang(), en: emptyLang() },
-      coverUrl: '',
-      coverMediaId: null,
-    },
+    defaultValues: cached
+      ? valuesOf(cached)
+      : {
+          translations: { ru: emptyLang(), kk: emptyLang(), en: emptyLang() },
+          coverUrl: '',
+          coverMediaId: null,
+        },
   });
   const { errors } = form.formState;
   const translations = useWatch({ control: form.control, name: 'translations' });
@@ -81,7 +86,7 @@ export function TopicEditor({ id, timeZone }: { id: string; timeZone: string }) 
 
   const pendingFiles = (materials ?? []).some((m) => m.scanStatus === 'pending');
   const topic = useQuery({
-    queryKey: ['teacher', 'topic', id],
+    queryKey: teacherTopicQueryKey(id),
     queryFn: async () => {
       const res = await apiRequest<Topic>(`/api/teacher/topics/${id}`, { locale });
       if (res.kind !== 'ok') throw new Error('topic');
