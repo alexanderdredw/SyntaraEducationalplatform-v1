@@ -16,6 +16,8 @@ import {
   questions,
   questionTranslations,
   quizzes,
+  subjectChapters,
+  subjectChapterTranslations,
   subjects,
   subjectTranslations,
   topics,
@@ -40,6 +42,7 @@ export const IMPORT_USER = {
 export interface ImportSummary {
   sections: { created: number; updated: number };
   subjects: { created: number; updated: number; archived: number };
+  chapters: { created: number; updated: number; removed: number };
   topics: { created: number; updated: number; versions: number; unpublished: number; republished: number };
   questions: { created: number; updated: number; archived: number };
   media: { uploaded: number; reused: number; skipped: number };
@@ -48,6 +51,7 @@ export interface ImportSummary {
 export const emptySummary = (): ImportSummary => ({
   sections: { created: 0, updated: 0 },
   subjects: { created: 0, updated: 0, archived: 0 },
+  chapters: { created: 0, updated: 0, removed: 0 },
   topics: { created: 0, updated: 0, versions: 0, unpublished: 0, republished: 0 },
   questions: { created: 0, updated: 0, archived: 0 },
   media: { uploaded: 0, reused: 0, skipped: 0 },
@@ -60,6 +64,9 @@ export function changesCount(s: ImportSummary): number {
     s.subjects.created +
     s.subjects.updated +
     s.subjects.archived +
+    s.chapters.created +
+    s.chapters.updated +
+    s.chapters.removed +
     s.topics.created +
     s.topics.updated +
     s.topics.versions +
@@ -220,6 +227,46 @@ export async function applyCatalog(
     summary.subjects.archived++;
   }
 
+  /* ---- Главы (BR-CHAP-01): по коду внутри предмета; глава, удалённая из subject.yaml, удаляется ---- */
+  const chapterIds = new Map<string, string>();
+  for (const s of catalog.subjects) {
+    const subjectId = subjectIds.get(s.code)!;
+    const existing = await tx.select().from(subjectChapters).where(eq(subjectChapters.subjectId, subjectId));
+    for (const c of s.chapters) {
+      const found = existing.find((e) => e.code === c.code);
+      let id = found?.id;
+      if (!found) {
+        [{ id } = { id: '' }] = await tx
+          .insert(subjectChapters)
+          .values({ subjectId, code: c.code, position: c.position })
+          .returning({ id: subjectChapters.id });
+        summary.chapters.created++;
+      } else if (found.position !== c.position) {
+        await tx
+          .update(subjectChapters)
+          .set({ position: c.position })
+          .where(eq(subjectChapters.id, found.id));
+        summary.chapters.updated++;
+      }
+      chapterIds.set(`${s.code}#${c.code}`, id!);
+      const changed = await syncTranslations(
+        tx,
+        subjectChapterTranslations,
+        'chapterId',
+        id!,
+        c.translations,
+      );
+      if (found && changed && found.position === c.position) summary.chapters.updated++;
+    }
+    const stale = existing.filter((e) => !s.chapters.some((c) => c.code === e.code)).map((e) => e.id);
+    if (stale.length) {
+      await tx.update(topics).set({ chapterId: null }).where(inArray(topics.chapterId, stale));
+      await tx.delete(subjectChapterTranslations).where(inArray(subjectChapterTranslations.chapterId, stale));
+      await tx.delete(subjectChapters).where(inArray(subjectChapters.id, stale));
+      summary.chapters.removed += stale.length;
+    }
+  }
+
   /* ---- Картинки (BR-CNT-06) ---- */
   const mediaIds = new Map<string, string | null>();
   const importUserId = await importUser(tx);
@@ -304,22 +351,24 @@ export async function applyCatalog(
     const subjectId = subjectIds.get(t.subjectCode)!;
     let [row] = await tx.select().from(topics).where(eq(topics.code, t.code));
     const coverMediaId = mediaId(t, t.illustration);
+    const chapterId = t.chapterCode ? (chapterIds.get(`${t.subjectCode}#${t.chapterCode}`) ?? null) : null;
     if (!row) {
       [row] = await tx
         .insert(topics)
-        .values({ code: t.code, subjectId, position: t.position, coverMediaId })
+        .values({ code: t.code, subjectId, position: t.position, coverMediaId, chapterId })
         .returning();
       summary.topics.created++;
     } else if (
       row.subjectId !== subjectId ||
       row.position !== t.position ||
       row.coverMediaId !== coverMediaId ||
+      row.chapterId !== chapterId ||
       row.archivedAt ||
       row.coverUrl
     ) {
       await tx
         .update(topics)
-        .set({ subjectId, position: t.position, coverMediaId, coverUrl: null, archivedAt: null })
+        .set({ subjectId, position: t.position, coverMediaId, chapterId, coverUrl: null, archivedAt: null })
         .where(eq(topics.id, row.id));
       summary.topics.updated++;
     }

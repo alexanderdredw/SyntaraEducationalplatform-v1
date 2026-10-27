@@ -92,6 +92,13 @@
       "when": 1793029986407,
       "tag": "0012_opt_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793111771510,
+      "tag": "0013_subject_chapters",
+      "breakpoints": true
     }
   ]
 }

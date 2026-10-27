@@ -40,12 +40,28 @@ export const SectionFile = z.strictObject({
 });
 export type SectionFile = z.infer<typeof SectionFile>;
 
+/** Глава предмета (BR-CHAP-01): код, порядок, название на языках (KK/EN — с пометкой проверки). */
+export const ChapterEntry = z.strictObject({
+  code,
+  position,
+  title: localized(150),
+  review: z
+    .strictObject({
+      kk: z.enum(['needs_review', 'reviewed']).optional(),
+      en: z.enum(['needs_review', 'reviewed']).optional(),
+    })
+    .optional(),
+});
+export type ChapterEntry = z.infer<typeof ChapterEntry>;
+
 export const SubjectFile = z.strictObject({
   code,
   /** Порядок в разделе каталога (решение владельца 2026-10-17). */
   position,
   title: localized(150),
   description: localizedOptional(1000).optional(),
+  /** Главы (BR-CHAP-01): необязательно; если есть — у каждой темы обязателен chapter. */
+  chapters: z.array(ChapterEntry).min(1, 'хотя бы одна глава').optional(),
 });
 export type SubjectFile = z.infer<typeof SubjectFile>;
 
@@ -67,7 +83,10 @@ const lessonTexts = {
 /** YAML-заголовок ru.md: общие для всех языков поля (код, порядок, иллюстрация, источники картинок). */
 export const RuFrontMatter = z.strictObject({
   code,
+  /** Порядок темы в предмете, а если у предмета есть главы — внутри главы (BR-CHAP-02). */
   position,
+  /** Код главы из subject.yaml (BR-CHAP-01). */
+  chapter: code.optional(),
   ...lessonTexts,
   illustration: z
     .string()
@@ -125,11 +144,19 @@ export interface SectionModel {
   file: string;
 }
 
+export interface ChapterModel {
+  code: string;
+  position: number;
+  translations: Partial<Record<Locale, { title: string; needsReview: boolean }>>;
+}
+
 export interface SubjectModel {
   code: string;
   sectionCode: string;
   position: number;
   translations: Partial<Record<Locale, { title: string; description?: string }>>;
+  /** Главы по position; пусто — предмет без глав (BR-CHAP-02). */
+  chapters: ChapterModel[];
   file: string;
 }
 
@@ -168,7 +195,10 @@ export interface TopicModel {
   /** Полный код: `<код предмета>/<код темы>`. */
   code: string;
   subjectCode: string;
+  /** Сквозной порядок в предмете («Тема N»): у предмета с главами — по главам, затем по position в главе. */
   position: number;
+  /** Код главы (без кода предмета); у предмета без глав — нет. */
+  chapterCode?: string;
   dir: string;
   translations: Partial<Record<Locale, LocaleTexts>>;
   illustration?: string;

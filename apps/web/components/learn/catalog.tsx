@@ -3,7 +3,7 @@
 import { type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { EmptyState, Pill, Skeleton } from '@syntara/ui';
+import { Accordion, EmptyState, Pill, Skeleton } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
@@ -216,9 +216,91 @@ export function StudentSection({ id }: { id: string }) {
   );
 }
 
+type SubjectTopic = Subject['topics'][number];
+
+/** Тема в списке предмета: «Тема N», название и статус ученика (решение владельца 2026-10-16). */
+function TopicLink({ topic }: { topic: SubjectTopic }) {
+  const t = useTranslations('student.subject');
+  return (
+    <AppLink
+      href={`/learn/topics/${topic.id}`}
+      data-testid="student-topic"
+      data-status={topic.status}
+      className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card hover:border-[var(--border-strong)]"
+    >
+      <span className="flex flex-col">
+        <span className="text-xs text-[var(--text-muted)]">{t('number', { number: topic.number })}</span>
+        <span className="font-medium">{topic.title}</span>
+      </span>
+      {/* Статус темы для ученика (решение владельца 2026-10-16); гостю статусы не показываются. */}
+      {topic.status ? (
+        <Pill
+          className={
+            topic.status === 'mastered'
+              ? 'border-[var(--success)] text-[var(--text)]'
+              : topic.status === 'started'
+                ? 'border-[var(--accent)] text-[var(--text)]'
+                : 'text-[var(--text-muted)]'
+          }
+        >
+          {t(`status.${topic.status}`)}
+        </Pill>
+      ) : null}
+    </AppLink>
+  );
+}
+
+function TopicList({ topics }: { topics: SubjectTopic[] }) {
+  return (
+    <ol className="flex flex-col gap-2 text-[var(--text)]" data-testid="subject-topics">
+      {topics.map((topic) => (
+        <li key={topic.id}>
+          <TopicLink topic={topic} />
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/**
+ * Главы предмета (BR-CHAP-03): темы сгруппированы по главам; у ученика в заголовке главы — «Освоено m из n».
+ * Главы сворачиваются; при первом показе раскрыта первая неосвоенная глава (у гостя — первая).
+ */
+function ChapterList({ subject }: { subject: Subject & { chapters: NonNullable<Subject['chapters']> } }) {
+  const t = useTranslations('student.subject');
+  const byId = new Map(subject.topics.map((topic) => [topic.id, topic]));
+  const chapters = subject.chapters.map((c) => {
+    const topics = c.topicIds.flatMap((id) => byId.get(id) ?? []);
+    return { ...c, topics, mastered: topics.filter((topic) => topic.status === 'mastered').length };
+  });
+  const open = chapters.find((c) => c.mastered < c.topics.length);
+  return (
+    <div data-testid="subject-chapters">
+      <Accordion
+        defaultValue={open ? [open.id] : []}
+        items={chapters.map((c) => ({
+          value: c.id,
+          title: (
+            <span className="flex flex-col gap-1" data-testid="subject-chapter">
+              <span className="text-cabinet-block font-semibold text-[var(--text)]">{c.title}</span>
+              {c.topics.some((topic) => topic.status) ? (
+                <span className="text-sm text-[var(--text-muted)]" data-testid="chapter-progress">
+                  {t('chapterProgress', { mastered: c.mastered, total: c.topics.length })}
+                </span>
+              ) : null}
+            </span>
+          ),
+          content: <TopicList topics={c.topics} />,
+        }))}
+      />
+    </div>
+  );
+}
+
 /**
  * Страница предмета ученика (решение владельца 2026-10-14): опубликованные темы по порядку (PH-35 — без
- * блокировки). Сюда ведут карточка предмета, крошки урока и «Перейти к предмету».
+ * блокировки), у базового предмета с главами — по главам (BR-CHAP-03). Сюда ведут карточка предмета, крошки
+ * урока и «Перейти к предмету».
  */
 export function StudentSubject({ id }: { id: string }) {
   const t = useTranslations('student.subject');
@@ -242,39 +324,11 @@ export function StudentSubject({ id }: { id: string }) {
           {t('topics')}
         </h2>
         {subject.data?.topics.length === 0 ? <EmptyState title={t('empty')} /> : null}
-        <ol className="flex flex-col gap-2" data-testid="subject-topics">
-          {subject.data?.topics.map((topic) => (
-            <li key={topic.id}>
-              <AppLink
-                href={`/learn/topics/${topic.id}`}
-                data-testid="student-topic"
-                data-status={topic.status}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card hover:border-[var(--border-strong)]"
-              >
-                <span className="flex flex-col">
-                  <span className="text-xs text-[var(--text-muted)]">
-                    {t('number', { number: topic.number })}
-                  </span>
-                  <span className="font-medium">{topic.title}</span>
-                </span>
-                {/* Статус темы для ученика (решение владельца 2026-10-16); гостю статусы не показываются. */}
-                {topic.status ? (
-                  <Pill
-                    className={
-                      topic.status === 'mastered'
-                        ? 'border-[var(--success)] text-[var(--text)]'
-                        : topic.status === 'started'
-                          ? 'border-[var(--accent)] text-[var(--text)]'
-                          : 'text-[var(--text-muted)]'
-                    }
-                  >
-                    {t(`status.${topic.status}`)}
-                  </Pill>
-                ) : null}
-              </AppLink>
-            </li>
-          ))}
-        </ol>
+        {subject.data?.chapters?.length ? (
+          <ChapterList subject={{ ...subject.data, chapters: subject.data.chapters }} />
+        ) : subject.data ? (
+          <TopicList topics={subject.data.topics} />
+        ) : null}
       </section>
     </PageShell>
   );

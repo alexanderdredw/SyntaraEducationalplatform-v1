@@ -1087,7 +1087,8 @@
         "mastered": "Освоена",
         "started": "Начата",
         "not_started": "Не начата"
-      }
+      },
+      "chapterProgress": "Освоено {mastered} из {total}"
     },
     "lesson": {
       "breadcrumbs": "Навигация по уроку",

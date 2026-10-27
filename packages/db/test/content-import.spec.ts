@@ -10,6 +10,8 @@ import {
   auditLog,
   mediaFiles,
   questions,
+  subjectChapters,
+  subjectChapterTranslations,
   subjects,
   topicMastery,
   topics,
@@ -124,6 +126,67 @@ describe('content import (integration)', () => {
     expect(again.errors).toEqual([]);
     expect(changesCount(again.summary!)).toBe(0);
     expect(await rowCounts()).toEqual(before);
+  });
+
+  it('BR-CHAP-01, AC-CHEM-07 chapters: rows with translations, topics linked, «Тема N» through the subject; removed chapters unlink topics', async () => {
+    const ANATOMY = 'biology/01-human-anatomy';
+    const subjectFile = readFileSync(join(dir, ANATOMY, 'subject.yaml'), 'utf8');
+    writeFileSync(
+      join(dir, ANATOMY, 'subject.yaml'),
+      `${subjectFile}chapters:
+  - code: food
+    position: 1
+    title: { ru: 'Питание', kk: 'Тамақтану' }
+  - code: circulation
+    position: 2
+    title: { ru: 'Кровь и дыхание' }
+`,
+    );
+    edit(`${ANATOMY}/01-cardiovascular-system/ru.md`, 'position: 1\n', 'position: 1\nchapter: circulation\n');
+    edit(`${ANATOMY}/02-respiratory-system/ru.md`, 'position: 2\n', 'position: 2\nchapter: circulation\n');
+    edit(`${ANATOMY}/03-digestive-system/ru.md`, 'position: 3\n', 'position: 1\nchapter: food\n');
+    const B = await baseIds(db);
+    const withChapters = await importContent(db, { dir, media: store });
+    expect(withChapters.errors).toEqual([]);
+    expect(withChapters.summary!.chapters).toEqual({ created: 2, updated: 0, removed: 0 });
+    // Содержимое тем не менялось — новых версий нет, меняются только глава и сквозной номер.
+    expect(withChapters.summary!.topics.versions).toBe(0);
+    const chapters = await db
+      .select()
+      .from(subjectChapters)
+      .where(eq(subjectChapters.subjectId, B.subjectAnatomy));
+    const kk = await db
+      .select()
+      .from(subjectChapterTranslations)
+      .where(eq(subjectChapterTranslations.locale, 'kk'));
+    expect(kk).toEqual([expect.objectContaining({ title: 'Тамақтану', needsReview: true })]);
+    const chapterOf = new Map(chapters.map((c) => [c.id, c.code]));
+    const rows = await db
+      .select({ code: topics.code, position: topics.position, chapterId: topics.chapterId })
+      .from(topics)
+      .where(eq(topics.subjectId, B.subjectAnatomy));
+    expect(
+      rows
+        .sort((a, b) => a.position - b.position)
+        .map((r) => [r.position, chapterOf.get(r.chapterId!), r.code]),
+    ).toEqual([
+      [1, 'food', 'human-anatomy/digestive-system'],
+      [2, 'circulation', 'human-anatomy/cardiovascular-system'],
+      [3, 'circulation', 'human-anatomy/respiratory-system'],
+    ]);
+    expect(changesCount((await importContent(db, { dir, media: store })).summary!)).toBe(0);
+
+    // Главы убраны из файлов: строки глав удаляются, темы — без главы и в прежнем порядке.
+    writeFileSync(join(dir, ANATOMY, 'subject.yaml'), subjectFile);
+    edit(`${ANATOMY}/01-cardiovascular-system/ru.md`, 'chapter: circulation\n', '');
+    edit(`${ANATOMY}/02-respiratory-system/ru.md`, 'chapter: circulation\n', '');
+    edit(`${ANATOMY}/03-digestive-system/ru.md`, 'position: 1\nchapter: food\n', 'position: 3\n');
+    const without = await importContent(db, { dir, media: store });
+    expect(without.errors).toEqual([]);
+    expect(without.summary!.chapters.removed).toBe(2);
+    expect(await db.select().from(subjectChapters)).toEqual([]);
+    const [cardio] = await db.select().from(topics).where(eq(topics.id, B.topicCardio));
+    expect(cardio).toMatchObject({ position: 1, chapterId: null });
   });
 
   it('BR-CNT-04 subject order comes from subject.yaml position (owner decision 2026-10-17)', async () => {

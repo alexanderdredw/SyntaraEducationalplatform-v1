@@ -18,6 +18,7 @@ import { VisibilityService } from './visibility.service';
 
 const { catalogSections, catalogSectionTranslations: cst, subjects, subjectTranslations: st } = schema;
 const { topics, topicVersions, learningEvents, topicMastery, quizAttempts, quizzes } = schema;
+const { subjectChapters, subjectChapterTranslations } = schema;
 
 const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 
@@ -106,7 +107,12 @@ export class StudentContentService {
     const [translations, rows] = await Promise.all([
       this.db.select().from(st).where(eq(st.subjectId, subjectId)),
       this.db
-        .select({ id: topics.id, position: topics.position, snapshot: topicVersions.snapshot })
+        .select({
+          id: topics.id,
+          position: topics.position,
+          chapterId: topics.chapterId,
+          snapshot: topicVersions.snapshot,
+        })
         .from(topics)
         .innerJoin(topicVersions, eq(topicVersions.id, topics.publishedVersionId))
         .where(
@@ -115,6 +121,11 @@ export class StudentContentService {
         .orderBy(asc(topics.position)),
     ]);
     const tr = pickTranslation(translations, locale);
+    const chapters = await this.chapters(
+      subjectId,
+      rows.map((r) => ({ id: r.id, chapterId: r.chapterId })),
+      locale,
+    );
     return {
       id: subjectId,
       title: tr?.title ?? '',
@@ -124,7 +135,45 @@ export class StudentContentService {
         const t = [locale, 'ru', 'en', 'kk'].map((l) => snapshot.translations[l as Locale]).find(Boolean);
         return { id: r.id, number: r.position, title: t?.title ?? '' };
       }),
+      ...(chapters.length ? { chapters } : {}),
     };
+  }
+
+  /**
+   * Главы базового предмета (BR-CHAP-01…03): по position, в каждой — опубликованные темы в порядке «Тема N».
+   * Пустые главы не показываются; у предмета без глав — пустой список (поле в ответе не появляется, BR-CHAP-05).
+   */
+  private async chapters(
+    subjectId: string,
+    topicRows: Array<{ id: string; chapterId: string | null }>,
+    locale: Locale,
+  ): Promise<NonNullable<PublicSubjectPageDto['chapters']>> {
+    const rows = await this.db
+      .select()
+      .from(subjectChapters)
+      .where(eq(subjectChapters.subjectId, subjectId))
+      .orderBy(asc(subjectChapters.position));
+    if (rows.length === 0) return [];
+    const translations = await this.db
+      .select()
+      .from(subjectChapterTranslations)
+      .where(
+        inArray(
+          subjectChapterTranslations.chapterId,
+          rows.map((c) => c.id),
+        ),
+      );
+    return rows
+      .map((c) => ({
+        id: c.id,
+        title:
+          pickTranslation(
+            translations.filter((t) => t.chapterId === c.id),
+            locale,
+          )?.title ?? '',
+        topicIds: topicRows.filter((t) => t.chapterId === c.id).map((t) => t.id),
+      }))
+      .filter((c) => c.topicIds.length > 0);
   }
 
   /**

@@ -2448,12 +2448,20 @@ export interface components {
              */
             status: "mastered" | "started" | "not_started";
         };
+        SubjectChapterDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            topicIds: string[];
+        };
         StudentSubjectDto: {
             /** Format: uuid */
             id: string;
             title: string;
             description: string | null;
             topics: components["schemas"]["StudentTopicItemDto"][];
+            /** @description Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком */
+            chapters?: components["schemas"]["SubjectChapterDto"][];
         };
         LessonEventBody: {
             /** @enum {string} */
@@ -2475,6 +2483,8 @@ export interface components {
             title: string;
             description: string | null;
             topics: components["schemas"]["PublicTopicItemDto"][];
+            /** @description Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком */
+            chapters?: components["schemas"]["SubjectChapterDto"][];
         };
         UploadUrlBody: {
             /** @enum {string} */

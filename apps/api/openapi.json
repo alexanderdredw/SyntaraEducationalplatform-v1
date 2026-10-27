@@ -7514,6 +7514,30 @@
           "status"
         ]
       },
+      "SubjectChapterDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "topicIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "topicIds"
+        ]
+      },
       "StudentSubjectDto": {
         "type": "object",
         "properties": {
@@ -7532,6 +7556,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/StudentTopicItemDto"
+            }
+          },
+          "chapters": {
+            "description": "Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubjectChapterDto"
             }
           }
         },
@@ -7604,6 +7635,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PublicTopicItemDto"
+            }
+          },
+          "chapters": {
+            "description": "Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubjectChapterDto"
             }
           }
         },

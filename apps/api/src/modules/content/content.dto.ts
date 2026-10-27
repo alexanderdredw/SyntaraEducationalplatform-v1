@@ -264,12 +264,27 @@ class StudentTopicItemDto {
   status: 'mastered' | 'started' | 'not_started';
 }
 
+/** Глава базового предмета (BR-CHAP-03): темы главы — по порядку из topics. */
+class SubjectChapterDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: String, format: 'uuid', isArray: true }) topicIds: string[];
+}
+
+const chaptersProperty = {
+  type: SubjectChapterDto,
+  isArray: true,
+  description:
+    'Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком',
+};
+
 /** Страница предмета ученика (решение владельца 2026-10-14): опубликованные темы по position. */
 export class StudentSubjectDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) description: string | null;
   @ApiProperty({ type: StudentTopicItemDto, isArray: true }) topics: StudentTopicItemDto[];
+  @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
 }
 
 class PublicTopicItemDto {
@@ -284,6 +299,7 @@ export class PublicSubjectPageDto {
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) description: string | null;
   @ApiProperty({ type: PublicTopicItemDto, isArray: true }) topics: PublicTopicItemDto[];
+  @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
 }
 
 /** API-S-17 */

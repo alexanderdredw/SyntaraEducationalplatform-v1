@@ -5,6 +5,7 @@ import { parse as parseYaml } from 'yaml';
 import { type z } from 'zod';
 import { isSpreadsheetContent, isSpreadsheetName, type Locale, QuestionDto } from '@syntara/shared';
 import {
+  type ChapterModel,
   type ContentCatalog,
   type ContentError,
   CONTENT_LOCALES,
@@ -109,17 +110,24 @@ export function readContent(
       }
       const data = yamlFile(file, SubjectFile);
       if (!data) continue;
-      catalog.subjects.push({
+      const subject: SubjectModel = {
         code: data.code,
         sectionCode,
         position: data.position,
         translations: translations(data.title, data.description),
+        chapters: (data.chapters ?? [])
+          .map((c) => ({ code: c.code, position: c.position, translations: chapterTranslations(c) }))
+          .sort((a, b) => a.position - b.position),
         file: rel(file),
-      } satisfies SubjectModel);
+      };
+      catalog.subjects.push(subject);
+      const subjectTopics: TopicModel[] = [];
       for (const topicDir of dirs(subjectPath)) {
         const topic = readTopic(join(subjectPath, topicDir), data.code, rel, errors, validate);
-        if (topic) catalog.topics.push(topic);
+        if (topic) subjectTopics.push(topic);
       }
+      arrangeChapters(subject, subjectTopics, errors);
+      catalog.topics.push(...subjectTopics);
     }
   }
   for (const name of files(dir)) {
@@ -164,6 +172,72 @@ function translations(
     if (t) result[l] = { title: t, ...(description?.[l] ? { description: description[l] } : {}) };
   }
   return result;
+}
+
+function chapterTranslations(c: {
+  title: Partial<Record<Locale, string>>;
+  review?: { kk?: string; en?: string };
+}): ChapterModel['translations'] {
+  const result: ChapterModel['translations'] = {};
+  for (const l of CONTENT_LOCALES) {
+    const t = c.title[l];
+    // KK и EN без пометки считаются переводом ИИ, ждущим вычитки (BR-CNT-05).
+    if (t)
+      result[l] = { title: t, needsReview: l !== 'ru' && (c.review?.[l] ?? 'needs_review') !== 'reviewed' };
+  }
+  return result;
+}
+
+/**
+ * Главы предмета (BR-CHAP-01, BR-CHAP-02): если у предмета есть главы, у каждой темы обязателен chapter из
+ * subject.yaml, position темы — порядок внутри главы, а «Тема N» нумеруется сквозь весь предмет (по главам).
+ * Без глав темы с chapter — ошибка, порядок прежний.
+ */
+function arrangeChapters(subject: SubjectModel, topics: TopicModel[], errors: ContentError[]): void {
+  const withFile = subject.chapters.map((c) => ({ ...c, file: subject.file }));
+  checkUnique(withFile, (c) => c.code, 'chapters', 'код главы повторяется', errors);
+  checkUnique(withFile, (c) => String(c.position), 'chapters', 'порядковый номер главы повторяется', errors);
+  if (subject.chapters.length === 0) {
+    for (const t of topics)
+      if (t.chapterCode)
+        errors.push({
+          file: `${t.dir}/ru.md`,
+          field: 'chapter',
+          message: 'у предмета нет глав — уберите chapter или добавьте chapters в subject.yaml',
+        });
+    return;
+  }
+  const chapterPosition = new Map(subject.chapters.map((c) => [c.code, c.position]));
+  const placed: TopicModel[] = [];
+  for (const t of topics) {
+    if (!t.chapterCode)
+      errors.push({
+        file: `${t.dir}/ru.md`,
+        field: 'chapter',
+        message: 'у предмета есть главы — укажите chapter (код главы из subject.yaml)',
+      });
+    else if (!chapterPosition.has(t.chapterCode))
+      errors.push({
+        file: `${t.dir}/ru.md`,
+        field: 'chapter',
+        message: `нет главы ${t.chapterCode} в subject.yaml`,
+      });
+    else placed.push(t);
+  }
+  checkUnique(
+    placed.map((t) => ({ ...t, file: `${t.dir}/ru.md` })),
+    (t) => `${t.chapterCode}#${t.position}`,
+    'position',
+    'порядковый номер темы в главе повторяется',
+    errors,
+  );
+  [...placed]
+    .sort(
+      (a, b) =>
+        chapterPosition.get(a.chapterCode!)! - chapterPosition.get(b.chapterCode!)! ||
+        a.position - b.position,
+    )
+    .forEach((t, i) => (t.position = i + 1));
 }
 
 function checkUnique<T extends { file?: string; dir?: string }>(
@@ -347,6 +421,7 @@ function readTopic(
     code,
     subjectCode,
     position: ru.position,
+    ...(ru.chapter ? { chapterCode: ru.chapter } : {}),
     dir: dirRel,
     translations: {},
     ...(ru.illustration ? { illustration: ru.illustration } : {}),

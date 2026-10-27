@@ -1087,7 +1087,8 @@
         "mastered": "Меңгерілді",
         "started": "Басталды",
         "not_started": "Басталмаған"
-      }
+      },
+      "chapterProgress": "{total} тақырыптың {mastered} меңгерілді"
     },
     "lesson": {
       "breadcrumbs": "Сабақ навигациясы",

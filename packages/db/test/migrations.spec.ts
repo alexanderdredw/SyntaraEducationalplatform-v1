@@ -30,7 +30,7 @@ describe('migrations (integration)', () => {
                   where n.nspname = 'public' and t.typtype = 'e'`,
     );
 
-  it('AG-09 applies all migrations on a clean database (section 5: 64 tables, 18 enums)', async () => {
+  it('AG-09 applies all migrations on a clean database (section 5: 66 tables, 18 enums)', async () => {
     await migrateUp(db);
     expect(await appliedMigrations(db)).toEqual([
       '0000_extensions_roles',
@@ -46,13 +46,15 @@ describe('migrations (integration)', () => {
       '0010_profiles',
       '0011_profile_v2',
       '0012_opt_indexes',
+      '0013_subject_chapters',
     ]);
-    expect(await tables()).toBe(64);
+    expect(await tables()).toBe(66);
     expect(await enums()).toBe(18);
   });
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0013_subject_chapters',
       '0012_opt_indexes',
       '0011_profile_v2',
       '0010_profiles',
@@ -80,6 +82,16 @@ describe('migrations (integration)', () => {
 
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
+    expect(await tables()).toBe(66);
+    // 0013 (BR-CHAP-01, AC-CHEM-07): главы — две таблицы и topics.chapter_id; откат убирает их, темы остаются.
+    const chapterColumn = () =>
+      count(
+        db,
+        sql`select count(*) as n from information_schema.columns where table_name = 'topics' and column_name = 'chapter_id'`,
+      );
+    expect(await chapterColumn()).toBe(1);
+    expect(await rollback(db, 1)).toEqual(['0013_subject_chapters']);
+    expect(await chapterColumn()).toBe(0);
     expect(await tables()).toBe(64);
     // 0011: known_devices (BR-PRF-20) и раздел nav_seen 'profile_completeness'; откат возвращает прежнюю проверку.
     expect(
@@ -167,11 +179,17 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(13);
+    expect(await appliedMigrations(db)).toHaveLength(14);
   });
 
   it('AC-PRF-01 0010 moves every existing name into the profile and keeps display_name; rollback keeps names', async () => {
-    expect(await rollback(db, 3)).toEqual(['0012_opt_indexes', '0011_profile_v2', '0010_profiles']);
+    // Откат по 0010 включительно; более поздние миграции — первыми.
+    const steps = async () => (await appliedMigrations(db)).length - 10;
+    expect((await rollback(db, await steps())).slice(-3)).toEqual([
+      '0012_opt_indexes',
+      '0011_profile_v2',
+      '0010_profiles',
+    ]);
     const names = [
       'Асель',
       'Ерлан Сапарович Нурланов',
@@ -209,7 +227,7 @@ describe('migrations (integration)', () => {
         sql`select count(*) as n from users u left join user_profiles p on p.user_id = u.id where p.user_id is null`,
       ),
     ).toBe(0);
-    await rollback(db, 3);
+    await rollback(db, await steps());
     expect(await count(db, sql`select count(*) as n from users where email like 'prf%'`)).toBe(names.length);
     await migrateUp(db);
   });

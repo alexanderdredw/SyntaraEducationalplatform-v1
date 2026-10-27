@@ -136,9 +136,18 @@ export interface AccordionItem {
 
 /**
  * Accordion (3.2): разделы — отдельные карточки со стрелкой «›» справа (эталоны U04, U09, U12);
- * по умолчанию все свёрнуты, можно раскрыть несколько (PH-36).
+ * по умолчанию все свёрнуты, можно раскрыть несколько (PH-36). `defaultValue` — раскрытые при первом показе
+ * (главы предмета, BR-CHAP-03).
  */
-export function Accordion({ items, multiple = true }: { items: AccordionItem[]; multiple?: boolean }) {
+export function Accordion({
+  items,
+  multiple = true,
+  defaultValue = [],
+}: {
+  items: AccordionItem[];
+  multiple?: boolean;
+  defaultValue?: string[];
+}) {
   const list = items.map((item) => (
     <AccordionPrimitive.Item
       key={item.value}
@@ -161,11 +170,11 @@ export function Accordion({ items, multiple = true }: { items: AccordionItem[]; 
   ));
   const listClass = 'flex flex-col gap-3';
   return multiple ? (
-    <AccordionPrimitive.Root type="multiple" className={listClass}>
+    <AccordionPrimitive.Root type="multiple" defaultValue={defaultValue} className={listClass}>
       {list}
     </AccordionPrimitive.Root>
   ) : (
-    <AccordionPrimitive.Root type="single" collapsible className={listClass}>
+    <AccordionPrimitive.Root type="single" collapsible defaultValue={defaultValue[0]} className={listClass}>
       {list}
     </AccordionPrimitive.Root>
   );

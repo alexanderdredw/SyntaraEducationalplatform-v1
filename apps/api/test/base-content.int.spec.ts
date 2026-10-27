@@ -83,6 +83,8 @@ describe('base content (integration)', () => {
       'Пищеварительная система',
     ]);
     expect(subject.body.topics[0]).not.toHaveProperty('status');
+    // BR-CHAP-05: у предмета без глав ответ прежний — поля chapters нет.
+    expect(subject.body).not.toHaveProperty('chapters');
 
     const lesson = await guest(`/api/public/topics/${B.topicCardio}`).expect(200);
     expect(lesson.body).toMatchObject({
@@ -105,6 +107,55 @@ describe('base content (integration)', () => {
     // Квиз, события и прогресс — только после входа.
     await http().post(`/api/student/quizzes/${B.quizCardio}/attempts`).expect(401);
     await http().post('/api/student/events').send({}).expect(401);
+  });
+
+  it('BR-CHAP-03, BR-CHAP-05 a subject with chapters: chapters in order with their topics for a student and a guest; empty chapters are hidden', async () => {
+    const { subjectChapters, subjectChapterTranslations, topics } = schema;
+    const [food, circulation, empty] = await stack.db
+      .insert(subjectChapters)
+      .values([
+        { subjectId: B.subjectAnatomy, code: 'food', position: 1 },
+        { subjectId: B.subjectAnatomy, code: 'circulation', position: 2 },
+        { subjectId: B.subjectAnatomy, code: 'empty', position: 3 },
+      ])
+      .returning();
+    await stack.db.insert(subjectChapterTranslations).values([
+      { chapterId: food!.id, locale: 'ru', title: 'Питание' },
+      { chapterId: circulation!.id, locale: 'ru', title: 'Кровь и дыхание' },
+      { chapterId: circulation!.id, locale: 'en', title: 'Blood and breathing', needsReview: true },
+      { chapterId: empty!.id, locale: 'ru', title: 'Пусто' },
+    ]);
+    await stack.db
+      .update(topics)
+      .set({ chapterId: circulation!.id })
+      .where(inArray(topics.id, [B.topicCardio, B.topicRespiratory]));
+    await stack.db.update(topics).set({ chapterId: food!.id }).where(eq(topics.id, B.topicDigestive));
+    try {
+      const expected = [
+        { id: food!.id, title: 'Питание', topicIds: [B.topicDigestive] },
+        { id: circulation!.id, title: 'Кровь и дыхание', topicIds: [B.topicCardio, B.topicRespiratory] },
+      ];
+      const asGuest = await guest(`/api/public/subjects/${B.subjectAnatomy}`).expect(200);
+      expect(asGuest.body.chapters).toEqual(expected);
+      const asStudent = await as(student).get(`/api/student/subjects/${B.subjectAnatomy}`).expect(200);
+      expect(asStudent.body.chapters).toEqual(expected);
+      expect(asStudent.body.topics.map((t: { status: string }) => t.status)).toEqual([
+        'not_started',
+        'not_started',
+        'not_started',
+      ]);
+      const en = await guest(`/api/public/subjects/${B.subjectAnatomy}`, 'en').expect(200);
+      expect(en.body.chapters.map((c: { title: string }) => c.title)).toEqual([
+        'Питание',
+        'Blood and breathing',
+      ]);
+    } finally {
+      await stack.db.update(topics).set({ chapterId: null }).where(eq(topics.subjectId, B.subjectAnatomy));
+      await stack.db
+        .delete(subjectChapterTranslations)
+        .where(inArray(subjectChapterTranslations.chapterId, [food!.id, circulation!.id, empty!.id]));
+      await stack.db.delete(subjectChapters).where(eq(subjectChapters.subjectId, B.subjectAnatomy));
+    }
   });
 
   it('BR-CNT-05, REQ-ST-LES-07 language marks: KK is «на проверке»; EN has its own sixth section', async () => {

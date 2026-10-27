@@ -849,6 +849,7 @@
     "student.subject.status.mastered": "needs_review",
     "student.subject.status.started": "needs_review",
     "student.subject.status.not_started": "needs_review",
+    "student.subject.chapterProgress": "needs_review",
     "student.lesson.breadcrumbs": "needs_review",
     "student.lesson.tabs": "needs_review",
     "student.lesson.overview": "needs_review",

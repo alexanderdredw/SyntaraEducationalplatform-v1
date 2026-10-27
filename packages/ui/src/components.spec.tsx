@@ -132,6 +132,22 @@ describe('packages/ui (раздел 3.2)', () => {
     expect(second).toHaveAttribute('aria-expanded', 'true');
   });
 
+  it('BR-CHAP-03 Accordion opens the items from defaultValue on the first render', () => {
+    render(
+      <Accordion
+        defaultValue={['2']}
+        items={[
+          { value: '1', title: '01', content: 'один' },
+          { value: '2', title: '02', content: 'два' },
+        ]}
+      />,
+    );
+    const [first, second] = screen.getAllByRole('button');
+    expect(first).toHaveAttribute('aria-expanded', 'false');
+    expect(second).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('два')).toBeVisible();
+  });
+
   it('REQ-NFR-A11Y-01 Radio, Checkbox, ProgressBar and Sidebar have no serious axe violations', async () => {
     const { container } = render(
       <div>

@@ -116,6 +116,42 @@ export const mediaFiles = pgTable('media_files', {
 });
 
 /**
+ * Главы базового предмета (BR-CHAP-01…05, docs/CHEM_TZ.md 6.1): необязательный список в subject.yaml. Глава —
+ * отдельная таблица (а не текст у темы): названия на трёх языках и порядок глав. У предметов учителя глав нет.
+ */
+export const subjectChapters = pgTable(
+  'subject_chapters',
+  {
+    id: id(),
+    subjectId: uuid('subject_id')
+      .notNull()
+      .references(() => subjects.id),
+    code: text('code').notNull(),
+    position: integer('position').notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    unique('subject_chapters_subject_code').on(t.subjectId, t.code),
+    check('subject_chapters_position', sql`${t.position} >= 1`),
+  ],
+);
+
+export const subjectChapterTranslations = pgTable(
+  'subject_chapter_translations',
+  {
+    chapterId: uuid('chapter_id').references(() => subjectChapters.id),
+    locale: localeEnum('locale'),
+    title: text('title').notNull(),
+    /** Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05). */
+    needsReview: boolean('needs_review').notNull().default(false),
+  },
+  (t) => [
+    primaryKey({ columns: [t.chapterId, t.locale] }),
+    check('subject_chapter_tr_title_len', sql`length(${t.title}) <= 150`),
+  ],
+);
+
+/**
  * UNIQUE (subject_id, position) DEFERRABLE INITIALLY DEFERRED и FK published_version_id
  * создаются в миграции 0002 (drizzle-kit не выражает DEFERRABLE).
  */
@@ -135,6 +171,8 @@ export const topics = pgTable(
     archivedAt: tstz('archived_at'),
     /** Постоянный код базовой темы (BR-CNT-04); у тем учителей — NULL. */
     code: text('code').unique(),
+    /** Глава базового предмета (BR-CHAP-01); NULL — предмет без глав и все темы учителей. */
+    chapterId: uuid('chapter_id').references((): AnyPgColumn => subjectChapters.id),
     ...timestamps,
   },
   (t) => [index('ix_topics_subject').on(t.subjectId, t.position)],

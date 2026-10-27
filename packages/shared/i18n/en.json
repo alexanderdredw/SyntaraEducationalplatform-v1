@@ -1087,7 +1087,8 @@
         "mastered": "Mastered",
         "started": "Started",
         "not_started": "Not started"
-      }
+      },
+      "chapterProgress": "Mastered {mastered} of {total}"
     },
     "lesson": {
       "breadcrumbs": "Lesson navigation",

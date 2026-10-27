@@ -119,6 +119,83 @@ describe('content check', () => {
     );
   });
 
+  describe('chapters (BR-CHAP-01, BR-CHAP-02)', () => {
+    const ANATOMY = 'biology/01-human-anatomy';
+    const CHAPTERS = `chapters:
+  - code: circulation
+    position: 2
+    title: { ru: 'Кровь и дыхание', kk: 'Қан және тыныс', en: 'Blood and breathing' }
+  - code: food
+    position: 1
+    title: { ru: 'Питание' }
+`;
+    const addChapters = () => {
+      write(`${ANATOMY}/subject.yaml`, readFileSync(join(dir, ANATOMY, 'subject.yaml'), 'utf8') + CHAPTERS);
+      edit(
+        `${ANATOMY}/01-cardiovascular-system/ru.md`,
+        'position: 1\n',
+        'position: 1\nchapter: circulation\n',
+      );
+      edit(`${ANATOMY}/02-respiratory-system/ru.md`, 'position: 2\n', 'position: 2\nchapter: circulation\n');
+      edit(`${ANATOMY}/03-digestive-system/ru.md`, 'position: 3\n', 'position: 1\nchapter: food\n');
+    };
+
+    it('BR-CHAP-02 «Тема N» runs through the subject by chapters; position is the order inside a chapter', () => {
+      addChapters();
+      const { catalog, errors } = checkContent(dir);
+      expect(errors.map(formatError)).toEqual([]);
+      const anatomy = catalog.subjects.find((s) => s.code === 'human-anatomy')!;
+      expect(anatomy.chapters.map((c) => c.code)).toEqual(['food', 'circulation']);
+      expect(anatomy.chapters[1]!.translations).toEqual({
+        ru: { title: 'Кровь и дыхание', needsReview: false },
+        kk: { title: 'Қан және тыныс', needsReview: true },
+        en: { title: 'Blood and breathing', needsReview: true },
+      });
+      const order = catalog.topics
+        .filter((t) => t.subjectCode === 'human-anatomy')
+        .sort((a, b) => a.position - b.position)
+        .map((t) => [t.position, t.chapterCode, t.code]);
+      expect(order).toEqual([
+        [1, 'food', 'human-anatomy/digestive-system'],
+        [2, 'circulation', 'human-anatomy/cardiovascular-system'],
+        [3, 'circulation', 'human-anatomy/respiratory-system'],
+      ]);
+    });
+
+    it('BR-CHAP-02 with chapters every topic needs a known chapter; positions are unique inside a chapter', () => {
+      addChapters();
+      edit(`${ANATOMY}/01-cardiovascular-system/ru.md`, 'chapter: circulation\n', '');
+      edit(`${ANATOMY}/02-respiratory-system/ru.md`, 'chapter: circulation', 'chapter: lungs');
+      edit(
+        `${ANATOMY}/subject.yaml`,
+        "position: 1\n    title: { ru: 'Питание' }",
+        "position: 2\n    title: { ru: 'Питание' }",
+      );
+      expect(messages()).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(
+            /01-cardiovascular-system\/ru\.md: chapter — у предмета есть главы — укажите chapter/,
+          ),
+          expect.stringMatching(/02-respiratory-system\/ru\.md: chapter — нет главы lungs в subject\.yaml/),
+          expect.stringMatching(/subject\.yaml: chapters — порядковый номер главы повторяется/),
+        ]),
+      );
+    });
+
+    it('BR-CHAP-02 without chapters a topic must not name one; a subject without chapters is unchanged', () => {
+      edit(
+        `${ANATOMY}/01-cardiovascular-system/ru.md`,
+        'position: 1\n',
+        'position: 1\nchapter: circulation\n',
+      );
+      expect(messages()).toEqual([
+        expect.stringMatching(/01-cardiovascular-system\/ru\.md: chapter — у предмета нет глав/),
+      ]);
+      const { catalog } = checkContent();
+      expect(catalog.subjects.find((s) => s.code === 'human-anatomy')!.chapters).toEqual([]);
+    });
+  });
+
   it('BR-CNT-02 subjects need a position, unique inside a section; every folder is a section (no _root)', () => {
     edit('natural-sciences/02-physics/subject.yaml', 'position: 2', 'position: 1');
     edit('natural-sciences/03-geography/subject.yaml', 'position: 3\n', '');

@@ -470,6 +470,14 @@ ALTER TABLE topic_translations ADD COLUMN needs_review boolean NOT NULL DEFAULT 
 -- Порядок базовых предметов в каталоге — position из subject.yaml (решение владельца 2026-10-17); у предметов учителей NULL.
 ALTER TABLE subjects ADD COLUMN position int,
   ADD CONSTRAINT subjects_position_official CHECK (position IS NULL OR (is_official AND position >= 1));
+-- Главы базового предмета (BR-CHAP-01…05, docs/CHEM_TZ.md, миграция 0013): необязательный список chapters в subject.yaml.
+-- topics.position у предмета с главами — сквозной номер «Тема N» (по главам, затем по порядку в главе).
+CREATE TABLE subject_chapters (id uuid PRIMARY KEY, subject_id uuid NOT NULL REFERENCES subjects, code text NOT NULL,
+  position int NOT NULL CHECK (position >= 1), UNIQUE (subject_id, code));
+CREATE TABLE subject_chapter_translations (chapter_id uuid REFERENCES subject_chapters, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), needs_review boolean NOT NULL DEFAULT false,
+  PRIMARY KEY (chapter_id, locale));
+ALTER TABLE topics ADD COLUMN chapter_id uuid REFERENCES subject_chapters;
 ```
 
 ## 5.5 Квизы и задания
@@ -766,7 +774,7 @@ CREATE TABLE known_devices (
 | API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
 | API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
 | API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
-| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }] }` — без статусов; не базовый → 404 |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }], chapters? }` — без статусов; `chapters: [{ id, title, topicIds }]` — только у предмета с главами (BR-CHAP-03, BR-CHAP-05); не базовый → 404 |
 | API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
 
 ## 6.3 Аутентификация и профиль
@@ -855,7 +863,7 @@ CREATE TABLE known_devices (
 | API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
 | API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
 | API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
-| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }] }` — опубликованные темы по position; предмет не виден (BR-VIS-01) → 404 |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); предмет не виден (BR-VIS-01) → 404 |
 | API-S-19 | GET /api/student/class/overview | «Мой класс» (REQ-NAV-11), только чтение: `{ class: StudentClassDto | null, subjects: [{ id, title, description, topicsTotal, topicsMastered, isNew }], upcomingAssignments: StudentAssignmentDto[] }` — предметы, выданные действующему классу ученика (без отзыва, не в архиве); `topicsMastered` — темы с mastered_at; `isNew` — выдан после отметки `nav_seen('class')` (нет отметки — новый); до 3 несданных заданий, ближайший срок — первым (как API-S-10). Путь — `class/overview`: `GET /api/student/class` занят API-S-02, существующие операции не меняются (TODO(OWNER): подтвердить путь). |
 | API-S-20 | GET /api/student/nav-badges | `{ assignmentsOpen, assignmentsOverdue, classHasNew, achievementsHasNew }` (REQ-NAV-14): несданные задания API-S-10 и из них просроченные; предмет выдан классу или бейдж получен позже отметки `nav_seen` (нет отметки — всё новое). |
 | API-S-21 | POST /api/student/nav-seen | `{ section: 'class'|'achievements' }` → 204; отметка «раздел открыт сейчас» (upsert). Иной section → 400. |
@@ -1299,6 +1307,19 @@ BR-CNT-07 Автор версий импорта — системный поль
           action = 'content.import', after = сводка (создано, обновлено, снято с публикации).
 BR-CNT-08 Предмет без опубликованных тем — статус «Скоро», карточка не кликабельна: каталог ученика и гостя
           (API-S-04/05, API-PUB-10/11) и /subjects (API-PUB-01).
+BR-CHAP-01 Главы предмета (docs/CHEM_TZ.md 6.1): в subject.yaml — необязательный список
+          chapters: [{ code, position, title: { ru, kk, en }, review? }] (KK, EN без review — needs_review); в ru.md
+          темы — необязательное chapter: <код главы>. Хранение — subject_chapters (+ переводы), topics.chapter_id (5.4).
+BR-CHAP-02 Если у предмета есть главы: у каждой темы обязательно указана существующая глава, иначе ошибка content:check;
+          position темы — порядок внутри главы (уникален в главе); «Тема N» нумеруется сквозь весь предмет (по главам,
+          затем по position). Если глав нет — всё как раньше; тема с chapter у предмета без глав — ошибка.
+BR-CHAP-03 Страница предмета (ученик, гость; API-S-18, API-PUB-12 — поле chapters): темы сгруппированы по главам;
+          у ученика в заголовке главы — «Освоено m из n» (статусы тем API-S-18). Главы сворачиваются; при первом
+          показе раскрыта первая неосвоенная (у гостя — первая). Глава без опубликованных тем не показывается.
+BR-CHAP-04 Импорт сопоставляет главы по коду внутри предмета; глава, удалённая из subject.yaml, удаляется, её темы
+          остаются без главы. Изменение глав без изменения текстов тем не создаёт новых версий тем.
+BR-CHAP-05 Поле chapters в API необязательное: у предмета без глав его нет, прежние клиенты и тесты не меняются.
+          Предметы учителя глав не получают — TODO(OWNER): нужны ли главы учителю.
 ```
 
 ## 7.12 Battle (итерация 10.5)
@@ -1689,7 +1710,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 | REQ-ST-CAT-01 | Карточка класса (API-S-02) — с 2026-10-24 в разделе «Мой класс» (REQ-NAV-11, 8.4.10), не в каталоге: «Вы в классе «{name}»», «Учитель: {teacher} · {school}», кнопка «Выйти из класса» (EN-эталон U13: «You're in class «{name}»», «Teacher: {teacher} · {school}», «Leave»). Выход из аккаунта в хедере — «Выйти» / EN «Log out». Подтверждение «Выйти из класса «{name}»?» → API-S-03 (PH-40). Это не выход из аккаунта. Без класса — поле «Подключиться к классу». |
 | REQ-ST-CAT-02 | Заголовок «Предметы платформы» (EN «Platform subjects»); сетка 3 колонки: разделы (статус «Раздел»/«Section») и доступные предметы («Доступно»/«Available»); вся карточка кликабельна, без отдельной кнопки. Предмет без опубликованных тем — «Скоро»/«Soon», карточка не кликабельна (BR-CNT-08). Гость видит тот же каталог базовых уроков без карточки класса (BR-VIS-04). Пользовательские названия не переводятся. Эталон U13 (EN), 7 карточек по порядку: Biology — Human Anatomy (Section); Natural sciences — Physics · Geography (Section); Exact sciences — Mathematics · Algebra · Geometry · Informatics (Section); Humanities — History of Kazakhstan (Section); Languages — Kazakh language · Russian language · English language (Section); ботаника — растение, животные (Available, название учителя не переводится); Chemistry — Elements, reactions, molecular structures (Available). Отступление от эталона (решение владельца 2026-10-17): «Химия» — в разделе «Естественные науки» (Chemistry · Physics · Geography), отдельной карточки Chemistry нет. |
 | REQ-ST-CAT-03 | /learn/sections/:id: «← Предметы», заголовок раздела, карточки предметов (пример U03: «Анатомия человека», «11 систем организма», «Доступно»). |
-| REQ-ST-CAT-04 | /learn/subjects/:id (API-S-18): «← Предметы», название и описание предмета, «Темы» — карточки тем по порядку («Тема {N}», название) со статусом ученика: «Освоена» (лучший результат ≥ 80 %, PH-38), «Начата» (тема открыта или есть попытка квиза), «Не начата». Сюда ведут карточка предмета, крошки урока и «Перейти к предмету». |
+| REQ-ST-CAT-04 | /learn/subjects/:id (API-S-18): «← Предметы», название и описание предмета, «Темы» — карточки тем по порядку («Тема {N}», название) со статусом ученика: «Освоена» (лучший результат ≥ 80 %, PH-38), «Начата» (тема открыта или есть попытка квиза), «Не начата». Сюда ведут карточка предмета, крошки урока и «Перейти к предмету». У базового предмета с главами темы сгруппированы по главам: заголовок главы, у ученика — «Освоено {m} из {n}»; главы сворачиваются, раскрыта первая неосвоенная (BR-CHAP-03). |
 
 ### 8.4.3 Урок (/learn/topics/:id, U04, U09, U12)
 
@@ -2145,6 +2166,19 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | AC-CNT-05 | Изменён файл темы | Импорт | Новая опубликованная версия; ученик видит новый текст; прогресс сохранён |
 | AC-CNT-06 | Файл с ошибкой | Импорт | Код выхода 1, список ошибок; БД не изменена |
 | AC-CNT-07 | Тема удалена из файлов | Импорт | Тема снята с публикации, не удалена; результаты учеников сохранены |
+| AC-CHEM-01 | Атлас химии в локальной папке владельца | Этап C0 (docs/CHEM_TZ.md) | Создан docs/CHEM_MAP.md; дальше — только по команде владельца |
+| AC-CHEM-02 | Импорт content/ выполнен | Каталог → «Естественные науки» → «Химия» | «Химия» открыта (не «Скоро»); 2 главы; 60 уроков элементов в порядке атомного номера и урок «Учёные-химики» |
+| AC-CHEM-03 | Ученик | Открывает урок элемента | «Обзор», «Интересный факт» (если утверждён), иллюстрация, разделы, «Источники», квиз из 5 вопросов; XP и прогресс — как у других базовых уроков |
+| AC-CHEM-04 | Язык KK или EN | Открывает урок химии | Текст на выбранном языке с пометкой «На проверке» |
+| AC-CHEM-05 | Утверждённые исправления CHEM_MAP в файле правок | Повторный запуск конвертера и импорта | Файлы content/ и БД не меняются |
+| AC-CHEM-06 | content/ химии | content:check | Все картинки WebP ≤ 300 КБ с источником и лицензией; без лицензии картинок нет |
+| AC-CHEM-07 | Предмет без глав («Анатомия человека») | Открывает ученик и гость | Ничего не изменилось; миграция глав применяется и откатывается на чистой базе |
+| AC-CHEM-08 | Предмет с глоссарием | Ученик и гость открывают «Глоссарий», ищут термин | Разделы, поиск без учёта регистра и «ё/е» с подсветкой, «Ничего не найдено»; три языка; у предметов без глоссария кнопки нет |
+| AC-CHEM-09 | Страница «Химии» | Таблица Менделеева | 118 ячеек, ссылки на 60 уроков, «Скоро» у остальных, статусы ученика, легенда-фильтр, клавиатура, диктор; 320/390 px без горизонтальной прокрутки страницы, вид «Списком» |
+| AC-CHEM-10 | Урок «Учёные-химики» | Лента времени | 9 учёных по реальным годам; нажатие ведёт к разделу учёного; на телефоне — вертикальный список |
+| AC-CHEM-11 | Новые экраны химии | axe, темы, ширины 320/390/768/1440, «Экономия трафика», prefers-reduced-motion | Нет нарушений serious/critical; без анимаций при экономии и reduced motion; бюджет JS ≤ 500 КБ; Lighthouse CI зелёный |
+| AC-CHEM-12 | Коммиты задачи | Поиск по истории | Ключа ИИ атласа и кода ИИ атласа в репозитории нет |
+| AC-CHEM-13 | Задача завершена | docs/CONTENT_GUIDE.md | Есть разделы «Главы», «Глоссарий», «Таблица Менделеева», «Лента времени», «Как перенести готовый сайт-предмет» |
 | AC-BTL-01 | Учитель | Создаёт тест из 5 вопросов, 2 импортирует из темы | Тест сохранён; импортированные вопросы — копии |
 | AC-BTL-02 | Тест с вопросами | Запуск игры (без выбора класса) | Код вида `^[A-Z]{3}[1-9]{3}$`, уникален среди активных |
 | AC-BTL-03 | Любой вошедший ученик (в том числе без класса) | Вводит код в нижнем регистре с пробелом | Попадает в лобби; учитель видит его без перезагрузки ≤ 1 с |
@@ -2336,3 +2370,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-26 | Оптимизация (docs/OPTIMIZATION_TZ.md, этапы O4–O5): 10 — новые REQ-NFR-PERF-05 (бюджет JS 500 КБ на страницу, проверка в CI), REQ-NFR-PERF-06 (цели Lighthouse, данные в HTML, скелетоны, одинаковый текст сервера и браузера), REQ-NFR-OPS-02 (файлы в git, скриншоты, `pnpm clean`, `pnpm deps:check`); 5 — миграция 0012 (только индексы: опрос outbox, внешние ключи «горячих» путей). Функциональность и тексты не менялись | Команда владельца 2026-10-26: выполнить docs/OPTIMIZATION_TZ.md, решения О4-1…О4-9 |
 | 2026-10-26 | Форма учителя в стиле формы ученика: 6.3 API-AUTH-03 (`firstName`, `lastName` вместо `displayName`, необязательные `schoolId`/`schoolName`; прежнее тело принимается), 8.2 REQ-GEN-AUTH-01 (вход учителя — вкладка «Вход» общей карточки, поле «Email», пояснение к «Забыли пароль?»), REQ-GEN-AUTH-02 (регистрация учителя: Имя, Фамилия, Email, Пароль, Школа; обращение на «вы») | Решение владельца |
 | 2026-10-27 | 3.3 REQ-GEN-SHELL-04: поведение плавающих кнопок на телефоне — не закрывают поля ввода и текст (размер, ряд, скрытие при фокусе и над содержимым, отступ в конце страницы) | Замечание владельца к форме учителя |
+| 2026-10-27 | Перенос атласа химии (docs/CHEM_TZ.md), C1 «Главы»: 5.4 `subject_chapters`, `subject_chapter_translations`, `topics.chapter_id` (миграция 0013); 6.2 API-PUB-12 и 6.5 API-S-18 — необязательное поле `chapters`; 7.11 BR-CHAP-01…05; 8.4.2 REQ-ST-CAT-04 (главы); 13 AC-CHEM-01…13 | Решения владельца 2026-10-27 (CHEM_TZ, раздел 2; ответы на вопросы C0) |
