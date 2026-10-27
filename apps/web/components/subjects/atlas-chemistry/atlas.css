@@ -4422,3 +4422,14 @@
 .atlas .atlas-quiz-actions .btn-secondary {
   margin-left: 0;
 }
+
+/* Решение А-12: «Наверх» Глоссария — над плавающими кнопками платформы (у оригинала там была кнопка языка). */
+.atlas .glossary-scroll-top-btn {
+  bottom: calc(var(--cookie-banner-h, 0px) + 13rem);
+}
+
+@media (max-width: 768px) {
+  .atlas .glossary-scroll-top-btn {
+    bottom: calc(var(--cookie-banner-h, 0px) + 5.2rem);
+  }
+}
