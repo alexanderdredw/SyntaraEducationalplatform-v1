@@ -61,7 +61,9 @@ async function expectShownAtContentEnd(page: Page) {
       const end = main.getBoundingClientRect().bottom + scrollY;
       window.scrollTo({ top: end - innerHeight, behavior: 'instant' });
     });
-    await expect(page.getByTestId('floating-help')).toHaveAttribute('data-hidden', 'false', { timeout: 1000 });
+    await expect(page.getByTestId('floating-help')).toHaveAttribute('data-hidden', 'false', {
+      timeout: 1000,
+    });
   }).toPass({ timeout: 10_000 });
   await expect(page.getByRole('link', { name: ru.help.assistant })).toBeInViewport();
 }
