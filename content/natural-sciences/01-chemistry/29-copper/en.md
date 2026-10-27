@@ -2,7 +2,7 @@
 title: Copper
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Copper is naturally antibacterial — bacteria on copper door handles die within a few hours.
-illustrationAlt: 'Bohr model of an atom: copper, Cu. Protons in the nucleus: 29; electrons in shells: 2, 8, 18, 1.'
+illustrationAlt: 'Atom model: Copper (Cu) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

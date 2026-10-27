@@ -6,14 +6,15 @@ element:
   symbol: Ti
   number: 22
   group: transition_metal
+  color: '#CBD5E1'
 title: Титан
 description: Невероятно прочный и лёгкий металл, обладающий исключительной коррозийной стойкостью.
 funFact: Титан горит даже в атмосфере чистого азота.
 illustration: media/titanium-atom.webp
-illustrationAlt: 'Модель атома по Бору: титан, Ti. Протонов в ядре — 22; электроны по оболочкам — 2, 8, 10, 2.'
+illustrationAlt: 'Модель атома: Титан (Ti) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/titanium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

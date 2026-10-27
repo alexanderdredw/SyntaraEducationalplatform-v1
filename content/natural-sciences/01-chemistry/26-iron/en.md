@@ -2,7 +2,7 @@
 title: Iron
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: The Earth’s core is 80% iron, which creates the magnetic field that protects us from cosmic radiation.
-illustrationAlt: 'Bohr model of an atom: iron, Fe. Protons in the nucleus: 26; electrons in shells: 2, 8, 14, 2.'
+illustrationAlt: 'Atom model: Iron (Fe) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -6,14 +6,15 @@ element:
   symbol: He
   number: 2
   group: noble_gas
+  color: '#C084FC'
 title: Гелий
 description: Бесцветный, безвкусный, нетоксичный и инертный благородный газ, второй по распространенности элемент во Вселенной.
 funFact: Гелий — единственный элемент, который невозможно перевести в твердое состояние простым охлаждением при нормальном давлении; он остается жидким до абсолютного нуля.
 illustration: media/helium-atom.webp
-illustrationAlt: 'Модель атома по Бору: гелий, He. Протонов в ядре — 2; электроны по оболочкам — 2.'
+illustrationAlt: 'Модель атома: Гелий (He) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/helium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

@@ -2,7 +2,7 @@
 title: Zirconium
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Zirconium hardly absorbs neutrons, which makes it an essential material for building nuclear reactors.
-illustrationAlt: 'Bohr model of an atom: zirconium, Zr. Protons in the nucleus: 40; electrons in shells: 2, 8, 18, 10, 2.'
+illustrationAlt: 'Atom model: Zirconium (Zr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

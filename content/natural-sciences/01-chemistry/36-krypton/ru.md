@@ -6,14 +6,15 @@ element:
   symbol: Kr
   number: 36
   group: noble_gas
+  color: '#A855F7'
 title: Криптон
 description: Редкий благородный газ, используемый в мощных лазерах и энергосберегающих окнах.
 funFact: С 1960 по 1983 год эталон метра определялся через длину волны излучения изотопа криптона-86.
 illustration: media/krypton-atom.webp
-illustrationAlt: 'Модель атома по Бору: криптон, Kr. Протонов в ядре — 36; электроны по оболочкам — 2, 8, 18, 8.'
+illustrationAlt: 'Модель атома: Криптон (Kr) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/krypton-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

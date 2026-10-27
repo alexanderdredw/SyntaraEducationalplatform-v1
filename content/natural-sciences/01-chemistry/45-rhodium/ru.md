@@ -6,13 +6,14 @@ element:
   symbol: Rh
   number: 45
   group: transition_metal
+  color: '#E2E8F0'
 title: Родий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/rhodium-atom.webp
-illustrationAlt: 'Модель атома по Бору: родий, Rh. Протонов в ядре — 45; электроны по оболочкам — 2, 8, 18, 16, 1.'
+illustrationAlt: 'Модель атома: Родий (Rh) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/rhodium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

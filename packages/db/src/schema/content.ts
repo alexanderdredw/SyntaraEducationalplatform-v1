@@ -57,10 +57,19 @@ export const subjects = pgTable(
       .array()
       .notNull()
       .default(sql`'{}'::text[]`),
+    /**
+     * Модуль базового предмета со своим интерфейсом из subject.yaml (REQ-ATL-01): пока только 'atlas-chemistry'
+     * («Mendeleev Atlas», docs/CHEM_TZ_2.md); NULL — стандартная страница предмета.
+     */
+    module: text('module'),
     ...timestamps,
   },
   (t) => [
     check('subjects_blocks', sql`${t.blocks} <@ ARRAY['periodic-table']::text[]`),
+    check(
+      'subjects_module',
+      sql`${t.module} IS NULL OR (${t.isOfficial} AND ${t.module} IN ('atlas-chemistry'))`,
+    ),
     check('subjects_official_or_owner', sql`${t.isOfficial} OR ${t.ownerId} IS NOT NULL`),
     check('subjects_code_official', sql`${t.code} IS NULL OR ${t.isOfficial}`),
     check(

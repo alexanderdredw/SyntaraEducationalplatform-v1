@@ -40,6 +40,6 @@ import { VisibilityService } from './visibility.service';
     AiDraftService,
     StudentContentService,
   ],
-  exports: [VisibilityService, OwnershipGuard, LessonService],
+  exports: [VisibilityService, OwnershipGuard, LessonService, StudentContentService],
 })
 export class ContentModule {}

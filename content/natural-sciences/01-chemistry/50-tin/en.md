@@ -1,7 +1,7 @@
 ---
 title: Tin
 description: A versatile other metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: tin, Sn. Protons in the nucleus: 50; electrons in shells: 2, 8, 18, 18, 4.'
+illustrationAlt: 'Atom model: Tin (Sn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

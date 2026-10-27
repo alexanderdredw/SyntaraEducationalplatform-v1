@@ -2,7 +2,7 @@
 title: Lithium
 description: A soft, silvery-white alkali metal, the lightest of all solid elements, highly reactive and essential for modern batteries.
 funFact: Lithium is so light that it can float on water, and it is the least dense of all solid elements.
-illustrationAlt: 'Bohr model of an atom: lithium, Li. Protons in the nucleus: 3; electrons in shells: 2, 1.'
+illustrationAlt: 'Atom model: Lithium (Li) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

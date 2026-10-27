@@ -6,14 +6,15 @@ element:
   symbol: H
   number: 1
   group: nonmetal
+  color: '#FF6B6B'
 title: Водород
 description: Самый лёгкий и распространённый элемент во Вселенной, основа звёзд и жизни.
 funFact: Водород — единственный элемент, который может существовать без нейтронов в своей самой распространенной форме (Протий).
 illustration: media/hydrogen-atom.webp
-illustrationAlt: 'Модель атома по Бору: водород, H. Протонов в ядре — 1; электроны по оболочкам — 1.'
+illustrationAlt: 'Модель атома: Водород (H) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/hydrogen-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

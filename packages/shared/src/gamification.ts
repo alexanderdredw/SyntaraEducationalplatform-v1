@@ -19,7 +19,16 @@ export interface XpConfig {
   first_lesson_open: number;
   per_level: number;
   failed_attempt_below: number;
+  /** BR-XP-05 (решение владельца А-11): XP за правильный ответ квиза атласа и дневной лимит. */
+  atlas_quiz_per_correct?: number;
+  atlas_quiz_daily_cap?: number;
 }
+
+/**
+ * BR-ST-02: события дня активности — серия, «Активность» профиля (API-ME-15) и показатели. Квиз атласа засчитывается
+ * в серию (решение владельца А-11, docs/ATLAS_MAP.md).
+ */
+export const STREAK_EVENTS = ['lesson_opened', 'quiz_finished', 'atlas_quiz_finished'] as const;
 
 /** BR-QZ-03, PH-28: trim, схлопнуть пробелы, нижний регистр. */
 export function normalizeAnswer(value: string): string {

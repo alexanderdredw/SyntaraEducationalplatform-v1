@@ -128,6 +128,7 @@ export function readContent(
           .map((c) => ({ code: c.code, position: c.position, translations: chapterTranslations(c) }))
           .sort((a, b) => a.position - b.position),
         blocks: data.blocks ?? [],
+        ...(data.module ? { module: data.module } : {}),
         file: rel(file),
       };
       const glossaryPath = join(subjectPath, 'glossary.yaml');
@@ -504,6 +505,7 @@ function readTopic(
     position: ru.position,
     ...(ru.chapter ? { chapterCode: ru.chapter } : {}),
     ...(ru.element ? { elementNumber: ru.element.number } : {}),
+    ...(ru.element?.color ? { elementColor: ru.element.color } : {}),
     dir: dirRel,
     translations: {},
     ...(ru.illustration ? { illustration: ru.illustration } : {}),

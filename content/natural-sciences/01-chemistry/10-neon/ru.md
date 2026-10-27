@@ -6,14 +6,15 @@ element:
   symbol: Ne
   number: 10
   group: noble_gas
+  color: '#C084FC'
 title: Неон
 description: Благородный газ, известный своим ярким красно-оранжевым свечением в газоразрядных лампах.
 funFact: Неон даёт самое яркое свечение среди благородных газов в разрядных трубках.
 illustration: media/neon-atom.webp
-illustrationAlt: 'Модель атома по Бору: неон, Ne. Протонов в ядре — 10; электроны по оболочкам — 2, 8.'
+illustrationAlt: 'Модель атома: Неон (Ne) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/neon-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// REQ-CHEM-01 (docs/CHEM_TZ.md): перенос «Молекулярного атласа» в предмет «Химия» —
+// REQ-CHEM-01 (docs/CHEM_TZ.md), REQ-ATL-04 (docs/CHEM_TZ_2.md): перенос «Молекулярного атласа» в предмет «Химия» —
 //   node scripts/content-import/atlas-chemistry.mjs --source <папка атласа>
 // Читает данные (js/data/*.js) и тексты (locales/ru_v2, kk_v3, en_v2) атласа, применяет утверждённые правки
 // (atlas-chemistry.fixes.yaml) и переводы (atlas-chemistry.translations.yaml), пишет content/natural-sciences/01-chemistry/.
@@ -11,7 +11,6 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import * as prettier from 'prettier';
-import { atomSvg, SHELLS } from '../content-art/atoms.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const YAML = createRequire(join(root, 'packages/db/package.json'))('yaml');
@@ -241,8 +240,14 @@ function write(rel, content) {
   written.add(rel);
 }
 
-async function webpFromSvg(svg) {
-  return sharp(Buffer.from(svg)).webp({ quality: 85 }).toBuffer();
+/**
+ * Картинка атома атласа (REQ-ATL-05, решение владельца 9): оригинал, который показывает атлас (`image` в данных —
+ * `*_atom_lux.png`), → WebP q85 без уменьшения (1024 px — чётко в окне элемента). Больше 300 КБ — ошибка.
+ */
+async function atomImage(file) {
+  const buf = await sharp(readFileSync(join(SRC, file))).webp({ quality: 85 }).toBuffer();
+  if (buf.length > 300 * 1024) problems.push(`${file}: WebP ${Math.round(buf.length / 1024)} КБ > 300 КБ`);
+  return buf;
 }
 
 /** Портрет с Wikimedia Commons (В-6): скачивается, если файла ещё нет (кеш в content/); WebP ≤ 1200 px, ≤ 290 КБ. */
@@ -290,8 +295,10 @@ const SUBJECT = {
     kk: 'Элементтер, реакциялар, молекулалық құрылымдар',
     en: 'Elements, reactions, molecular structures',
   },
-  // REQ-PTBL-01: таблица Менделеева над главами.
+  // REQ-PTBL-01: таблица Менделеева (в модуле атласа — вид «Таблица» в Explore).
   blocks: ['periodic-table'],
+  // REQ-ATL-01: интерфейс предмета — «Mendeleev Atlas».
+  module: 'atlas-chemistry',
   chapters: [
     {
       code: 'elements',
@@ -302,13 +309,14 @@ const SUBJECT = {
   ],
 };
 
+/** Подпись картинки атласа: что изображено; надписи на самой картинке — английские (CHEM_MAP 5.2). */
 const ALT = {
-  ru: (name, sym, z, shells) =>
-    `Модель атома по Бору: ${name}, ${sym}. Протонов в ядре — ${z}; электроны по оболочкам — ${shells.join(', ')}.`,
-  kk: (name, sym, z, shells) =>
-    `Бор бойынша атом моделі: ${name}, ${sym}. Ядродағы протондар саны — ${z}; қабықтардағы электрондар — ${shells.join(', ')}.`,
-  en: (name, sym, z, shells) =>
-    `Bohr model of an atom: ${name}, ${sym}. Protons in the nucleus: ${z}; electrons in shells: ${shells.join(', ')}.`,
+  ru: (name, sym) =>
+    `Модель атома: ${name} (${sym}) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.`,
+  kk: (name, sym) =>
+    `Атом моделі: ${name} (${sym}) — ядро және электрондық қабықтар. Mendeleev Atlas иллюстрациясы, жазулары ағылшынша.`,
+  en: (name, sym) =>
+    `Atom model: ${name} (${sym}) — the nucleus and electron shells. Mendeleev Atlas illustration.`,
 };
 const SOURCES = { ru: 'Источники', kk: 'Дереккөздер', en: 'Sources' };
 const FACT_LABEL = { ru: 'Интересный факт', kk: 'Қызықты факт', en: 'Fun fact' };
@@ -325,7 +333,7 @@ async function elementTopic(it) {
   const significance = FIX.significanceTitle?.elements.includes(it.id) ? FIX.significanceTitle.title : null;
 
   const image = `media/${code}-atom.webp`;
-  write(`${dir}/${image}`, await webpFromSvg(atomSvg({ symbol: it.symbol, number: it.atomicNumber })));
+  write(`${dir}/${image}`, await atomImage(it.image));
 
   for (const l of LANGS) {
     const title = FIX.titles?.[it.id]?.[l] ?? text(l, it.titleKey);
@@ -350,20 +358,25 @@ async function elementTopic(it) {
             code,
             chapter: 'elements',
             position: it.atomicNumber,
-            element: { symbol: it.symbol, number: it.atomicNumber, group: it.groupKey },
+            element: {
+              symbol: it.symbol,
+              number: it.atomicNumber,
+              group: it.groupKey,
+              color: it.color.toUpperCase(),
+            },
           }
         : {}),
       title,
       description: text(l, it.descKey),
       ...(fact ? { funFact: fact } : {}),
       ...(l === 'ru' ? { illustration: image } : {}),
-      illustrationAlt: ALT[l](title.toLowerCase(), it.symbol, it.atomicNumber, SHELLS[it.atomicNumber]),
+      illustrationAlt: ALT[l](title, it.symbol),
       ...(l === 'ru'
         ? {
             media: [
               {
                 file: image,
-                source: 'Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs',
+                source: 'Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)',
                 license: 'own',
               },
             ],

@@ -2,7 +2,7 @@
 title: Krypton
 description: A versatile noble gas essential for various scientific and industrial applications.
 funFact: From 1960 to 1983 the metre was defined by the wavelength of light emitted by krypton-86.
-illustrationAlt: 'Bohr model of an atom: krypton, Kr. Protons in the nucleus: 36; electrons in shells: 2, 8, 18, 8.'
+illustrationAlt: 'Atom model: Krypton (Kr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

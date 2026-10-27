@@ -2,7 +2,7 @@
 title: Helium
 description: A colorless, odorless, tasteless, non-toxic, and inert noble gas, the second most abundant element in the universe.
 funFact: Helium is the only element that cannot be solidified by sufficient cooling at normal atmospheric pressure; it remains liquid down to absolute zero.
-illustrationAlt: 'Bohr model of an atom: helium, He. Protons in the nucleus: 2; electrons in shells: 2.'
+illustrationAlt: 'Atom model: Helium (He) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

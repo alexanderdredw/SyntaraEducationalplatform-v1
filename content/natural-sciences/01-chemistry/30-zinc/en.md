@@ -2,7 +2,7 @@
 title: Zinc
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Humans need zinc for immunity, growth and the senses of taste and smell.
-illustrationAlt: 'Bohr model of an atom: zinc, Zn. Protons in the nucleus: 30; electrons in shells: 2, 8, 18, 2.'
+illustrationAlt: 'Atom model: Zinc (Zn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

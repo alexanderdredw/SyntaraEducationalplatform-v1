@@ -2,7 +2,7 @@
 title: Argon
 description: A versatile noble gas essential for various scientific applications.
 funFact: Argon makes up 0.93% of the Earth’s atmosphere — 23 times more than carbon dioxide.
-illustrationAlt: 'Bohr model of an atom: argon, Ar. Protons in the nucleus: 18; electrons in shells: 2, 8, 8.'
+illustrationAlt: 'Atom model: Argon (Ar) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

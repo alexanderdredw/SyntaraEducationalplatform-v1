@@ -6,14 +6,15 @@ element:
   symbol: Co
   number: 27
   group: transition_metal
+  color: '#3B82F6'
 title: Кобальт
 description: Металл «будущего», критически важный для аккумуляторов электромобилей и сверхтвёрдых сплавов.
 funFact: Кобальт входит в витамин B12 — одно из немногих природных металлоорганических соединений, жизненно необходимое человеку.
 illustration: media/cobalt-atom.webp
-illustrationAlt: 'Модель атома по Бору: кобальт, Co. Протонов в ядре — 27; электроны по оболочкам — 2, 8, 15, 2.'
+illustrationAlt: 'Модель атома: Кобальт (Co) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/cobalt-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

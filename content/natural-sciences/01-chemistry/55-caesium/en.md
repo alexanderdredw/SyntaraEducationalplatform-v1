@@ -1,7 +1,7 @@
 ---
 title: Cesium
 description: A versatile alkali metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: cesium, Cs. Protons in the nucleus: 55; electrons in shells: 2, 8, 18, 18, 8, 1.'
+illustrationAlt: 'Atom model: Cesium (Cs) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

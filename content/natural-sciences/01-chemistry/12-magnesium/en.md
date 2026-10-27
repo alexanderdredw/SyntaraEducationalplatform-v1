@@ -2,7 +2,7 @@
 title: Magnesium
 description: A lightweight metal essential for plant photosynthesis and human muscle function.
 funFact: Magnesium is the central atom of the chlorophyll molecule, without which plants could not photosynthesise.
-illustrationAlt: 'Bohr model of an atom: magnesium, Mg. Protons in the nucleus: 12; electrons in shells: 2, 8, 2.'
+illustrationAlt: 'Atom model: Magnesium (Mg) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -6,13 +6,14 @@ element:
   symbol: Nb
   number: 41
   group: transition_metal
+  color: '#94A3B8'
 title: Ниобий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/niobium-atom.webp
-illustrationAlt: 'Модель атома по Бору: ниобий, Nb. Протонов в ядре — 41; электроны по оболочкам — 2, 8, 18, 12, 1.'
+illustrationAlt: 'Модель атома: Ниобий (Nb) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/niobium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

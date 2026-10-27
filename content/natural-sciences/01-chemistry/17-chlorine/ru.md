@@ -6,14 +6,15 @@ element:
   symbol: Cl
   number: 17
   group: halogen
+  color: '#22C55E'
 title: Хлор
 description: Жёлто-зелёный токсичный газ-галоген, основа дезинфекции воды и производства ПВХ.
 funFact: Хлор применялся как химическое оружие в Первой мировой войне — первый массовый газовый удар был в 1915 году.
 illustration: media/chlorine-atom.webp
-illustrationAlt: 'Модель атома по Бору: хлор, Cl. Протонов в ядре — 17; электроны по оболочкам — 2, 8, 7.'
+illustrationAlt: 'Модель атома: Хлор (Cl) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/chlorine-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

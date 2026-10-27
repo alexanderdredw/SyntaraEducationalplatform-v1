@@ -6,14 +6,15 @@ element:
   symbol: Fe
   number: 26
   group: transition_metal
+  color: '#475569'
 title: Железо
 description: Самый важный металл человеческой цивилизации, основа стали и переносчик кислорода в крови.
 funFact: Ядро Земли на 80% состоит из железа, что создает магнитное поле, защищающее нас от космической радиации.
 illustration: media/iron-atom.webp
-illustrationAlt: 'Модель атома по Бору: железо, Fe. Протонов в ядре — 26; электроны по оболочкам — 2, 8, 14, 2.'
+illustrationAlt: 'Модель атома: Железо (Fe) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/iron-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

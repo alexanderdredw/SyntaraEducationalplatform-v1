@@ -6,14 +6,15 @@ element:
   symbol: Se
   number: 34
   group: nonmetal
+  color: '#FBBF24'
 title: Селен
 description: Фоточувствительный неметалл, способный преобразовывать свет в электричество.
 funFact: 'Селен — отличный фотопроводник: его электрическое сопротивление падает в тысячи раз при освещении.'
 illustration: media/selenium-atom.webp
-illustrationAlt: 'Модель атома по Бору: селен, Se. Протонов в ядре — 34; электроны по оболочкам — 2, 8, 18, 6.'
+illustrationAlt: 'Модель атома: Селен (Se) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/selenium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

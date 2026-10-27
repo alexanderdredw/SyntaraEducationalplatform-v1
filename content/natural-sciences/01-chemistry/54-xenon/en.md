@@ -1,7 +1,7 @@
 ---
 title: Xenon
 description: A versatile noble gas essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: xenon, Xe. Protons in the nucleus: 54; electrons in shells: 2, 8, 18, 18, 8.'
+illustrationAlt: 'Atom model: Xenon (Xe) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

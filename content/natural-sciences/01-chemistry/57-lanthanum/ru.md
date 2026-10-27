@@ -6,13 +6,14 @@ element:
   symbol: La
   number: 57
   group: lanthanide
+  color: '#E2E8F0'
 title: Лантан
 description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
 illustration: media/lanthanum-atom.webp
-illustrationAlt: 'Модель атома по Бору: лантан, La. Протонов в ядре — 57; электроны по оболочкам — 2, 8, 18, 18, 9, 2.'
+illustrationAlt: 'Модель атома: Лантан (La) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/lanthanum-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

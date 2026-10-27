@@ -6,14 +6,15 @@ element:
   symbol: Ca
   number: 20
   group: alkaline_earth
+  color: '#4ECDC4'
 title: Кальций
 description: Самый распространённый металл в теле человека, основа костей, зубов и строительного материала.
 funFact: В теле взрослого человека содержится около 1 кг кальция — почти весь он в костях и зубах.
 illustration: media/calcium-atom.webp
-illustrationAlt: 'Модель атома по Бору: кальций, Ca. Протонов в ядре — 20; электроны по оболочкам — 2, 8, 8, 2.'
+illustrationAlt: 'Модель атома: Кальций (Ca) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/calcium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

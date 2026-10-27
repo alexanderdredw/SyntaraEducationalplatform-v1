@@ -2,7 +2,7 @@
 title: Yttrium
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Yttrium is named after the Swedish village of Ytterby, where four new elements were found.
-illustrationAlt: 'Bohr model of an atom: yttrium, Y. Protons in the nucleus: 39; electrons in shells: 2, 8, 18, 9, 2.'
+illustrationAlt: 'Atom model: Yttrium (Y) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

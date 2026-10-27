@@ -6,14 +6,15 @@ element:
   symbol: B
   number: 5
   group: metalloid
+  color: '#34D399'
 title: Бор
 description: Полуметаллы, применяемый в стекловолокне, ядерных реакторах и удобрениях.
 funFact: Бор — единственный полуметалл в группе 13 и один из самых твёрдых элементов.
 illustration: media/boron-atom.webp
-illustrationAlt: 'Модель атома по Бору: бор, B. Протонов в ядре — 5; электроны по оболочкам — 2, 3.'
+illustrationAlt: 'Модель атома: Бор (B) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/boron-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

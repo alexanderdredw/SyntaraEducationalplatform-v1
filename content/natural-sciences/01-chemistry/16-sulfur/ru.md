@@ -6,14 +6,15 @@ element:
   symbol: S
   number: 16
   group: nonmetal
+  color: '#EAB308'
 title: Сера
 description: Лимонно-желтый неметалл, необходимый для создания белков и производства важнейших промышленных кислот.
 funFact: 'Серная кислота — самый производимый промышленный химикат в мире: более 200 млн тонн ежегодно.'
 illustration: media/sulfur-atom.webp
-illustrationAlt: 'Модель атома по Бору: сера, S. Протонов в ядре — 16; электроны по оболочкам — 2, 8, 6.'
+illustrationAlt: 'Модель атома: Сера (S) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/sulfur-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

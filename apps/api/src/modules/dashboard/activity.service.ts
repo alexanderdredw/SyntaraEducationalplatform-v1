@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, eq, gte, inArray, sql } from 'drizzle-orm';
-import { localDate } from '@syntara/shared';
+import { localDate, STREAK_EVENTS } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 
 const { learningEvents } = schema;
 /** Те же события, что серия (BR-ST-02). */
-const ACTIVITY_EVENTS = ['lesson_opened', 'quiz_finished'];
+const ACTIVITY_EVENTS = [...STREAK_EVENTS];
 const DAY_MS = 86_400_000;
 
 export interface ActivityDay {

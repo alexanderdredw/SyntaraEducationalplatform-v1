@@ -2083,5 +2083,162 @@
       "lobby": "In the Battle lobby",
       "classCard": "Teacher card in «My class»"
     }
+  },
+  "atlas": {
+    "nav": {
+      "home": "Home",
+      "explore": "Explore",
+      "scientists": "Scientists",
+      "learn": "Quiz",
+      "search": "Search",
+      "glossary": "Glossary",
+      "syntara": "Syntara AI",
+      "list": "Menu"
+    },
+    "hero": {
+      "title": "Architecture of<br></br><accent>Matter</accent>",
+      "subtitle": "Where chemistry is born.",
+      "start": "Get Started",
+      "quiz": "Quiz"
+    },
+    "fact": {
+      "label": "Did you know?"
+    },
+    "filter": {
+      "title": "Filter by Group",
+      "subtitle": "Select an element group to filter the table",
+      "all": "All",
+      "reset": "Reset to All",
+      "empty": "No elements in this group"
+    },
+    "view": {
+      "label": "View",
+      "cards": "Cards",
+      "table": "Table"
+    },
+    "group": {
+      "nonmetal": "Nonmetal",
+      "noble_gas": "Noble Gas",
+      "alkali_metal": "Alkali Metal",
+      "alkaline_earth": "Alkaline Earth",
+      "metalloid": "Semimetal",
+      "halogen": "Halogen",
+      "transition_metal": "Transition Metal",
+      "post_transition": "Post-transition metal",
+      "lanthanide": "Lanthanide",
+      "actinide": "Actinide",
+      "scientist": "Scientists"
+    },
+    "detail": {
+      "atomicNumber": "Atomic Number",
+      "overview": "Overview",
+      "readMore": "Read more",
+      "readLess": "Collapse",
+      "layers": "Layers",
+      "resources": "External Resources",
+      "explore": "Explore",
+      "takeTest": "Take the test"
+    },
+    "layer": {
+      "atomic_structure": "Atomic Structure",
+      "electron_shells": "Electron Shells",
+      "physical_properties": "Physical Properties",
+      "chemical_properties": "Chemical Properties",
+      "applications": "Applications",
+      "biography": "Biography",
+      "discovery": "Discovery",
+      "impact": "Impact",
+      "ai_bridge": "AI Bridge"
+    },
+    "assistant": {
+      "title": "Syntara AI Assistant",
+      "placeholder": "Select a mode to start learning...",
+      "simple": "Briefly",
+      "details": "In detail",
+      "quiz": "Quiz",
+      "question": "Question",
+      "score": "Score",
+      "correct": "Correct!",
+      "incorrect": "Incorrect.",
+      "finish": "Quiz Completed!",
+      "correctPct": "Correct",
+      "tryAgain": "Try Again"
+    },
+    "timeline": {
+      "title": "Timeline of Scientific Discoveries",
+      "subtitle": "Path from first theories to quantum chemistry"
+    },
+    "scientistsQuiz": {
+      "title": "Scientists Knowledge Test",
+      "subtitle": "Test your knowledge about the greatest minds in chemistry.",
+      "questionIntro": "Who is this scientist?",
+      "review": "Scientists to review:"
+    },
+    "quiz": {
+      "title": "Test Your <accent>Knowledge</accent>",
+      "subtitle": "Challenge yourself with chemistry questions.",
+      "start": "Start Quiz",
+      "progress": "Question {current} / {total}",
+      "questionIntro": "Which element is it?",
+      "resultsTitle": "{score} / {total}",
+      "excellent": "Excellent!",
+      "keepLearning": "Keep learning!",
+      "retry": "Try Again",
+      "recommendation": "Recommended for Review",
+      "perfect": "Perfect result! You are a chemistry master.",
+      "greatJob": "Great job! No specific topics for review.",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "search": {
+      "title": "Search Atlas",
+      "subtitle": "Find any element, definition, or property",
+      "placeholder": "Search elements, definitions, groups...",
+      "noResults": "No results found.",
+      "tryDifferent": "Try a different keyword or remove filters",
+      "resultsFound": "results found",
+      "recent": "Recent Searches",
+      "clearRecent": "Clear",
+      "definitions": "Definitions",
+      "elements": "Elements",
+      "showAll": "Show all {count} definitions →"
+    },
+    "glossary": {
+      "title": "Chemical Lexicon",
+      "top": "Scroll to top"
+    },
+    "syntara": {
+      "subtitle": "Your Personal Intelligent Chemistry Assistant",
+      "desc": "Syntara analyzes your progress, explains complex concepts clearly, and helps you prepare effectively for exams through adaptive learning.",
+      "start": "Start AI Training",
+      "works": "How It Works",
+      "online": "Online",
+      "mode": "Academic Guidance Mode",
+      "ask": "Ask about any chemical element.",
+      "iWill": "I can help with:",
+      "bullet1": "Explaining structures and functions",
+      "bullet2": "Showing connections between elements",
+      "bullet3": "Identifying weak points in knowledge",
+      "bullet4": "Creating adaptive questions",
+      "bullet5": "Creating structured notes",
+      "example": "E.g.: How does carbon form bonds with hydrogen?",
+      "thinking": "Syntara is thinking...",
+      "modeSimple": "Explain Simpler",
+      "modeSimpleDesc": "Breaks complex topics into simple concepts.",
+      "modeDeep": "Deep Explanation",
+      "modeDeepDesc": "Detailed academic analysis of chemical structures.",
+      "modeTest": "Quiz Prep",
+      "modeTestDesc": "Focused practice questions for exams.",
+      "modeChallenge": "Challenge Me",
+      "modeChallengeDesc": "Challenging questions to test your knowledge.",
+      "statWeak": "Weak Points",
+      "statRec": "Recommended",
+      "statAcc": "Accuracy"
+    },
+    "preview": {
+      "note": "Teacher preview: questions without correct answers; results are not saved.",
+      "ai": "Syntara AI is available to students after signing in."
+    }
   }
 }

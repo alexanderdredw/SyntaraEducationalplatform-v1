@@ -2,7 +2,7 @@
 title: Manganese
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Manganese is so important for steelmaking that modern industry would simply stop without it — there is no substitute.
-illustrationAlt: 'Bohr model of an atom: manganese, Mn. Protons in the nucleus: 25; electrons in shells: 2, 8, 13, 2.'
+illustrationAlt: 'Atom model: Manganese (Mn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

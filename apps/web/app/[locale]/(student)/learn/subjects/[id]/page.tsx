@@ -1,10 +1,13 @@
 import { setRequestLocale } from 'next-intl/server';
 import { StudentSubject } from '@/components/learn/catalog';
+import { AtlasView } from '@/components/subjects/atlas-chemistry/atlas-view';
+import { subjectModule } from '@/lib/atlas';
 import { requireLearnVisible } from '@/lib/require-owned';
 
 /**
  * /learn/subjects/:id — страница предмета ученика (решение владельца 2026-10-14). Предмет не виден ученику
- * (BR-VIS-01) → 404. Гость — только базовые предметы (BR-VIS-04).
+ * (BR-VIS-01) → 404. Гость — только базовые предметы (BR-VIS-04). Предмет с модулем атласа — Главная атласа
+ * (REQ-ATL-01).
  */
 export default async function Page({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;
@@ -13,5 +16,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
     `/api/student/subjects/${encodeURIComponent(id)}`,
     `/api/public/subjects/${encodeURIComponent(id)}`,
   );
+  if ((await subjectModule(id, locale)) === 'atlas-chemistry')
+    return <AtlasView route={{ screen: 'home' }} />;
   return <StudentSubject id={id} />;
 }

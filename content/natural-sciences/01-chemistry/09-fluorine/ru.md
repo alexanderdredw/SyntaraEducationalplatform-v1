@@ -6,14 +6,15 @@ element:
   symbol: F
   number: 9
   group: halogen
+  color: '#F97316'
 title: Фтор
 description: Универсальный галоген, необходимый для различных промышленных и биологических процессов.
 funFact: 'Фтор — самый реакционноспособный элемент: он реагирует даже с благородными газами ксеноном и криптоном.'
 illustration: media/fluorine-atom.webp
-illustrationAlt: 'Модель атома по Бору: фтор, F. Протонов в ядре — 9; электроны по оболочкам — 2, 7.'
+illustrationAlt: 'Модель атома: Фтор (F) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/fluorine-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Lanthanum
 description: A versatile lanthanide essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: lanthanum, La. Protons in the nucleus: 57; electrons in shells: 2, 8, 18, 18, 9, 2.'
+illustrationAlt: 'Atom model: Lanthanum (La) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

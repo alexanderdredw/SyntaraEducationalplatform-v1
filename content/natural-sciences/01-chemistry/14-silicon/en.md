@@ -2,7 +2,7 @@
 title: Silicon
 description: The foundation of modern electronics and the second most abundant element in the Earth's crust.
 funFact: Silicon gave its name to Silicon Valley, the world’s technology centre. It makes up 28% of the Earth’s crust.
-illustrationAlt: 'Bohr model of an atom: silicon, Si. Protons in the nucleus: 14; electrons in shells: 2, 8, 4.'
+illustrationAlt: 'Atom model: Silicon (Si) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

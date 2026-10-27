@@ -1,7 +1,7 @@
 ---
 title: Tellurium
 description: A versatile semimetal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: tellurium, Te. Protons in the nucleus: 52; electrons in shells: 2, 8, 18, 18, 6.'
+illustrationAlt: 'Atom model: Tellurium (Te) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

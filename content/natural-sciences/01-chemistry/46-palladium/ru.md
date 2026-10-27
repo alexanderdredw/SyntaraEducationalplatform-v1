@@ -6,13 +6,14 @@ element:
   symbol: Pd
   number: 46
   group: transition_metal
+  color: '#CBD5E1'
 title: Палладий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/palladium-atom.webp
-illustrationAlt: 'Модель атома по Бору: палладий, Pd. Протонов в ядре — 46; электроны по оболочкам — 2, 8, 18, 18.'
+illustrationAlt: 'Модель атома: Палладий (Pd) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/palladium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

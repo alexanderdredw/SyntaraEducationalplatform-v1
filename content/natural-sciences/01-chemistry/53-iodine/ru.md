@@ -6,13 +6,14 @@ element:
   symbol: I
   number: 53
   group: halogen
+  color: '#A855F7'
 title: Йод
 description: Универсальный галоген, необходимый для различных научных и промышленных применений.
 illustration: media/iodine-atom.webp
-illustrationAlt: 'Модель атома по Бору: йод, I. Протонов в ядре — 53; электроны по оболочкам — 2, 8, 18, 18, 7.'
+illustrationAlt: 'Модель атома: Йод (I) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/iodine-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

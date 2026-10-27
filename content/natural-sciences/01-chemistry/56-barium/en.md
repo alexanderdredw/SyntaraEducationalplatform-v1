@@ -1,7 +1,7 @@
 ---
 title: Barium
 description: A versatile alkaline earth metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: barium, Ba. Protons in the nucleus: 56; electrons in shells: 2, 8, 18, 18, 8, 2.'
+illustrationAlt: 'Atom model: Barium (Ba) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

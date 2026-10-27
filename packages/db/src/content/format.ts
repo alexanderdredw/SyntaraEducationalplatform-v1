@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ELEMENT_FAMILIES, type Locale } from '@syntara/shared';
+import { ELEMENT_FAMILIES, type Locale, SUBJECT_MODULES, type SubjectModule } from '@syntara/shared';
 
 /**
  * Формат базовой программы (BR-CNT-02, docs/CONTENT_GUIDE.md):
@@ -64,6 +64,8 @@ export const SubjectFile = z.strictObject({
   chapters: z.array(ChapterEntry).min(1, 'хотя бы одна глава').optional(),
   /** Блоки страницы предмета (REQ-PTBL-01): periodic-table — таблица Менделеева над главами. */
   blocks: z.array(z.enum(['periodic-table'], 'блок: periodic-table')).optional(),
+  /** Модуль со своим интерфейсом (REQ-ATL-01): atlas-chemistry — «Mendeleev Atlas». */
+  module: z.enum(SUBJECT_MODULES, `модуль: ${SUBJECT_MODULES.join(', ')}`).optional(),
 });
 export type SubjectFile = z.infer<typeof SubjectFile>;
 
@@ -136,6 +138,11 @@ export const RuFrontMatter = z.strictObject({
       symbol: z.string().regex(/^[A-Z][a-z]{0,2}$/, 'символ элемента, например O или Fe'),
       number: z.number().int('целое число').min(1, 'от 1').max(118, 'до 118'),
       group: z.enum(ELEMENT_FAMILIES, `семейство: ${ELEMENT_FAMILIES.join(', ')}`),
+      /** Цвет элемента в модуле атласа (REQ-ATL-04, решение А-16): подсветка карточки и картинки. */
+      color: z
+        .string()
+        .regex(/^#[0-9A-F]{6}$/, 'цвет вида #RRGGBB (заглавные буквы)')
+        .optional(),
     })
     .optional(),
   ...lessonTexts,
@@ -226,6 +233,8 @@ export interface SubjectModel {
   glossary?: GlossaryModel;
   /** Блоки страницы (REQ-PTBL-01). */
   blocks: string[];
+  /** Модуль со своим интерфейсом (REQ-ATL-01); нет — стандартная страница предмета. */
+  module?: SubjectModule;
   file: string;
 }
 
@@ -270,6 +279,8 @@ export interface TopicModel {
   chapterCode?: string;
   /** Номер химического элемента (REQ-PTBL-04). */
   elementNumber?: number;
+  /** Цвет элемента в модуле атласа (REQ-ATL-04). */
+  elementColor?: string;
   dir: string;
   translations: Partial<Record<Locale, LocaleTexts>>;
   illustration?: string;

@@ -6,14 +6,15 @@ element:
   symbol: V
   number: 23
   group: transition_metal
+  color: '#94A3B8'
 title: Ванадий
 description: Твёрдый металл, используемый для создания сверхпрочных стальных сплавов и мощных батарей.
 funFact: 'Соединения ванадия имеют четыре разных цвета в зависимости от степени окисления: фиолетовый, зелёный, синий и жёлтый.'
 illustration: media/vanadium-atom.webp
-illustrationAlt: 'Модель атома по Бору: ванадий, V. Протонов в ядре — 23; электроны по оболочкам — 2, 8, 11, 2.'
+illustrationAlt: 'Модель атома: Ванадий (V) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/vanadium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

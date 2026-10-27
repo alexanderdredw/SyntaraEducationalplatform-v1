@@ -6,13 +6,14 @@ element:
   symbol: Xe
   number: 54
   group: noble_gas
+  color: '#C084FC'
 title: Ксенон
 description: Универсальный благородный газ, необходимый для различных научных и промышленных применений.
 illustration: media/xenon-atom.webp
-illustrationAlt: 'Модель атома по Бору: ксенон, Xe. Протонов в ядре — 54; электроны по оболочкам — 2, 8, 18, 18, 8.'
+illustrationAlt: 'Модель атома: Ксенон (Xe) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/xenon-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

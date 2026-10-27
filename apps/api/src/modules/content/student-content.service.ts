@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { and, asc, eq, inArray, isNull, or, type SQL, sql } from 'drizzle-orm';
-import { type LessonEventDto, type Locale, type TopicSnapshot } from '@syntara/shared';
+import { type LessonEventDto, type Locale, type SubjectModule, type TopicSnapshot } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { pickTranslation } from '../../common/locale';
@@ -122,7 +122,10 @@ export class StudentContentService {
           and(eq(topics.subjectId, subjectId), eq(topics.status, 'published'), isNull(topics.archivedAt)),
         )
         .orderBy(asc(topics.position)),
-      this.db.select({ blocks: subjects.blocks }).from(subjects).where(eq(subjects.id, subjectId)),
+      this.db
+        .select({ blocks: subjects.blocks, module: subjects.module })
+        .from(subjects)
+        .where(eq(subjects.id, subjectId)),
     ]);
     const tr = pickTranslation(translations, locale);
     const [chapters, [glossary]] = await Promise.all([
@@ -148,6 +151,8 @@ export class StudentContentService {
       }),
       ...(chapters.length ? { chapters } : {}),
       ...(glossary ? { hasGlossary: true } : {}),
+      // REQ-ATL-01: модуль со своим интерфейсом — у предмета без модуля поля нет.
+      ...(subject?.module ? { module: subject.module as SubjectModule } : {}),
       // REQ-PTBL-01, REQ-PTBL-04: ячейки с уроками — только опубликованные темы с номером элемента.
       ...(subject?.blocks.includes('periodic-table')
         ? {
@@ -270,7 +275,7 @@ export class StudentContentService {
    * Статус темы для ученика (решение владельца 2026-10-16): «Освоена» — mastered_at задан (≥ порога PH-38);
    * «Начата» — тема открыта (lesson_opened) или есть попытка квиза; иначе «Не начата».
    */
-  private async topicStatuses(
+  async topicStatuses(
     studentId: string,
     topicIds: string[],
   ): Promise<Map<string, 'mastered' | 'started' | 'not_started'>> {

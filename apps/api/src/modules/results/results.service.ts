@@ -10,6 +10,7 @@ import {
   type ProgressConfig,
   type ProgressPeriod,
   progressPercent,
+  STREAK_EVENTS,
   streakOf,
   topicColor,
   type XpConfig,
@@ -297,7 +298,7 @@ export class ResultsService {
     return { total: Number(row?.total ?? 0), mastered: Number(row?.mastered ?? 0) };
   }
 
-  /** BR-ST-02: дни активности (quiz_finished, lesson_opened) в PLATFORM_TZ, по возрастанию. */
+  /** BR-ST-02: дни активности (STREAK_EVENTS) в PLATFORM_TZ, по возрастанию. */
   private async activityDays(studentId: string): Promise<string[]> {
     const tz = this.env.PLATFORM_TZ;
     const rows = await this.db
@@ -305,7 +306,7 @@ export class ResultsService {
         day: sql<string>`to_char((${ev.occurredAt} AT TIME ZONE ${tz})::date, 'YYYY-MM-DD')`,
       })
       .from(ev)
-      .where(and(eq(ev.studentId, studentId), inArray(ev.type, ['lesson_opened', 'quiz_finished'])));
+      .where(and(eq(ev.studentId, studentId), inArray(ev.type, [...STREAK_EVENTS])));
     return rows.map((r) => r.day).sort();
   }
 

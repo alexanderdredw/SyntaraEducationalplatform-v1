@@ -1,7 +1,7 @@
 ---
 title: Silver
 description: A versatile transition metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: silver, Ag. Protons in the nucleus: 47; electrons in shells: 2, 8, 18, 18, 1.'
+illustrationAlt: 'Atom model: Silver (Ag) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

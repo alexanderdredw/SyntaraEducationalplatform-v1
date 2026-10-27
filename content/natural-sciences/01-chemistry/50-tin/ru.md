@@ -6,13 +6,14 @@ element:
   symbol: Sn
   number: 50
   group: post_transition
+  color: '#CBD5E1'
 title: Олово
 description: Универсальный другой металл, необходимый для различных научных и промышленных применений.
 illustration: media/tin-atom.webp
-illustrationAlt: 'Модель атома по Бору: олово, Sn. Протонов в ядре — 50; электроны по оболочкам — 2, 8, 18, 18, 4.'
+illustrationAlt: 'Модель атома: Олово (Sn) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/tin-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

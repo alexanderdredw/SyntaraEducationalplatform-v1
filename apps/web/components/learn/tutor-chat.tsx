@@ -1,9 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
-import { useQuery } from '@tanstack/react-query';
-import { AI_MAX_MESSAGE_CHARS, AI_QUICK_ACTIONS, type AiQuickAction, parseSse } from '@syntara/shared';
+import { type KeyboardEvent, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
+import { AI_MAX_MESSAGE_CHARS, AI_QUICK_ACTIONS } from '@syntara/shared';
 import {
   Button,
   ChatAvatar,
@@ -16,21 +15,8 @@ import {
   StatusDot,
   Textarea,
 } from '@syntara/ui';
-import { apiRequest, csrfToken } from '@/lib/api/browser';
 import { AssistantText } from '../ai/assistant-text';
-
-type Status = 'streaming' | 'complete' | 'partial' | 'failed';
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  status: Status;
-}
-interface History {
-  id: string;
-  messages: Message[];
-}
-type Problem = { kind: 'error' } | { kind: 'tooMany'; seconds: number } | null;
+import { type TutorMessage, useTutorChat } from './use-tutor-chat';
 
 export interface TutorChatProps {
   /** topic_tutor — вкладка «Syntara AI» урока (U06–U07); general_tutor — /learn/assistant (U02). */
@@ -52,125 +38,11 @@ export default function TutorChat({ context, topicId, topicTitle, inputId }: Tut
   const t = useTranslations('student.ai');
   const ta = useTranslations('student.assistant');
   const tc = useTranslations('ai.chat');
-  const locale = useLocale();
   const lesson = context === 'topic_tutor';
 
-  const conversation = useQuery({
-    queryKey: ['student', 'ai', context, topicId ?? null],
-    queryFn: async (): Promise<History> => {
-      const opened = await apiRequest<{ id: string }>('/api/student/ai/conversations', {
-        method: 'POST',
-        body: lesson ? { context, topicId } : { context },
-        locale,
-      });
-      if (opened.kind !== 'ok') throw new Error('conversation');
-      const history = await apiRequest<History>(`/api/student/ai/conversations/${opened.data.id}`, {
-        locale,
-      });
-      if (history.kind !== 'ok') throw new Error('history');
-      return history.data;
-    },
-    staleTime: Infinity,
-  });
-
-  const [messages, storeMessages] = useState<Message[] | null>(null);
-  const [input, setInput] = useState('');
-  const [problem, setProblem] = useState<Problem>(null);
-  const [announce, setAnnounce] = useState('');
-  const [busy, setBusy] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-  const messagesRef = useRef<Message[]>([]);
-  // Обновления потока идут чаще отрисовки — актуальный список держим в ref.
-  const setMessages = useCallback((next: Message[]) => {
-    messagesRef.current = next;
-    storeMessages(next);
-  }, []);
-
-  useEffect(() => () => abortRef.current?.abort(), []);
-
-  const update = useCallback(
-    (id: string, patch: Partial<Message>) =>
-      setMessages(messagesRef.current.map((m) => (m.id === id ? { ...m, ...patch } : m))),
-    [setMessages],
-  );
-
-  const send = useCallback(
-    async (raw: string, quickAction?: AiQuickAction) => {
-      const text = raw.trim();
-      const id = conversation.data?.id;
-      if (!id || !text || busy || text.length > AI_MAX_MESSAGE_CHARS) return;
-      const question: Message = { id: crypto.randomUUID(), role: 'user', content: text, status: 'complete' };
-      const reply: Message = { id: crypto.randomUUID(), role: 'assistant', content: '', status: 'streaming' };
-      // До первого вопроса в ленте — история с сервера (API-S-13).
-      const before = messagesRef.current.length ? messagesRef.current : (conversation.data?.messages ?? []);
-      setMessages([...before, question, reply]);
-      if (!quickAction) setInput('');
-      setProblem(null);
-      setBusy(true);
-
-      // Запрос не дошёл до сервера (сеть, 429) — вопрос не сохранён: возвращаем его в поле.
-      const fail = (p: Exclude<Problem, null>) => {
-        setMessages(before);
-        if (!quickAction) setInput(text);
-        setProblem(p);
-      };
-
-      const controller = new AbortController();
-      abortRef.current = controller;
-      const csrf = csrfToken();
-      let content = '';
-      try {
-        const res = await fetch(`/api/student/ai/conversations/${id}/messages`, {
-          method: 'POST',
-          credentials: 'same-origin',
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept-Language': locale,
-            ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
-          },
-          body: JSON.stringify({ content: text, ...(quickAction ? { quickAction } : {}) }),
-        });
-        if (res.status === 429) {
-          const body = (await res.json().catch(() => ({}))) as { retryAfterSeconds?: number };
-          return fail({ kind: 'tooMany', seconds: body.retryAfterSeconds ?? 60 });
-        }
-        if (!res.ok || !res.body) return fail({ kind: 'error' });
-
-        const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
-        let buffer = '';
-        for (;;) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          const parsed = parseSse(buffer + value);
-          buffer = parsed.rest;
-          for (const event of parsed.events) {
-            if (event.event === 'delta') {
-              content += event.data.text;
-              update(reply.id, { content });
-            } else if (event.event === 'error') {
-              // BR-AI-06: поставщик не подключён или недоступен — PH-19.
-              update(reply.id, { content, status: 'failed' });
-              setAnnounce(t('unavailable'));
-            } else {
-              update(reply.id, { content, status: 'complete' });
-              setAnnounce(content);
-            }
-          }
-        }
-        const last = messagesRef.current.find((m) => m.id === reply.id);
-        if (last?.status === 'streaming') update(reply.id, { status: 'complete' });
-      } catch {
-        // BR-AI-04: «Остановить» — ответ остаётся с пометкой «Ответ прерван» (сервер сохранил его как partial).
-        if (controller.signal.aborted) update(reply.id, { content, status: 'partial' });
-        else if (content) update(reply.id, { content, status: 'failed' });
-        else fail({ kind: 'error' });
-      } finally {
-        abortRef.current = null;
-        setBusy(false);
-      }
-    },
-    [busy, conversation.data, locale, setMessages, t, update],
+  const { conversation, list, ready, busy, problem, announce, input, setInput, send, stop } = useTutorChat(
+    context,
+    topicId,
   );
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -180,9 +52,7 @@ export default function TutorChat({ context, topicId, topicTitle, inputId }: Tut
     }
   };
 
-  const list = messages ?? conversation.data?.messages ?? [];
-  const ready = Boolean(conversation.data);
-  const renderMessage = (m: Message) => (
+  const renderMessage = (m: TutorMessage) => (
     <ChatMessage
       key={m.id}
       from={m.role}
@@ -270,7 +140,7 @@ export default function TutorChat({ context, topicId, topicTitle, inputId }: Tut
           <p role="status" className="text-sm text-[var(--text-muted)]">
             {tc('thinking')}
           </p>
-          <Button variant="secondary" onClick={() => abortRef.current?.abort()} data-testid="tutor-stop">
+          <Button variant="secondary" onClick={stop} data-testid="tutor-stop">
             {tc('stop')}
           </Button>
         </div>

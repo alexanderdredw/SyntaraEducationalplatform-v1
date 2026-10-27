@@ -2,7 +2,7 @@
 title: Sulfur
 description: A lemon-yellow nonmetal essential for protein creation and major industrial acid production.
 funFact: 'Sulfuric acid is the most produced industrial chemical in the world: more than 200 million tonnes a year.'
-illustrationAlt: 'Bohr model of an atom: sulfur, S. Protons in the nucleus: 16; electrons in shells: 2, 8, 6.'
+illustrationAlt: 'Atom model: Sulfur (S) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

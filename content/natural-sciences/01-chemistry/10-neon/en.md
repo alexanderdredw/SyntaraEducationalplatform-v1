@@ -2,7 +2,7 @@
 title: Neon
 description: A noble gas best known for its bright reddish-orange glow in discharge lamps.
 funFact: Neon gives the brightest glow of all noble gases in discharge tubes.
-illustrationAlt: 'Bohr model of an atom: neon, Ne. Protons in the nucleus: 10; electrons in shells: 2, 8.'
+illustrationAlt: 'Atom model: Neon (Ne) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

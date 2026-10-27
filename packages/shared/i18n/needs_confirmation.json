@@ -1061,7 +1061,11 @@
     "student.periodicTable.families.noble_gas": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
     "student.periodicTable.families.lanthanide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
     "student.periodicTable.families.actinide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
-    "student.lesson.timeline": "Заголовок блока ленты времени в уроке (REQ-TL-02) — в docs/CHEM_TZ.md текст не задан"
+    "student.lesson.timeline": "Заголовок блока ленты времени в уроке (REQ-TL-02) — в docs/CHEM_TZ.md текст не задан",
+    "atlas.view.label": "Подпись группы переключателя «Карточки / Таблица» для экранного диктора (REQ-ATL-03) — текст не задан",
+    "atlas.glossary.top": "Подпись кнопки «Наверх» в Глоссарии атласа (в оригинале только EN «Scroll to top») — текст не задан",
+    "atlas.preview.note": "Пояснение предпросмотра учителя (решение А-9, docs/ATLAS_MAP.md) — текст не задан",
+    "atlas.preview.ai": "Пояснение «ИИ недоступен» для учителя в атласе (решение А-9) — текст не задан"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

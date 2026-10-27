@@ -1,7 +1,7 @@
 ---
 title: Neodymium
 description: A versatile lanthanide essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: neodymium, Nd. Protons in the nucleus: 60; electrons in shells: 2, 8, 18, 22, 8, 2.'
+illustrationAlt: 'Atom model: Neodymium (Nd) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

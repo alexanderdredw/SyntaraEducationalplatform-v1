@@ -2,7 +2,7 @@
 title: Vanadium
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: 'Vanadium compounds come in four colours depending on the oxidation state: violet, green, blue and yellow.'
-illustrationAlt: 'Bohr model of an atom: vanadium, V. Protons in the nucleus: 23; electrons in shells: 2, 8, 11, 2.'
+illustrationAlt: 'Atom model: Vanadium (V) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

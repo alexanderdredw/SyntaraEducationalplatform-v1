@@ -30,7 +30,7 @@ describe('migrations (integration)', () => {
                   where n.nspname = 'public' and t.typtype = 'e'`,
     );
 
-  it('AG-09 applies all migrations on a clean database (section 5: 70 tables, 18 enums)', async () => {
+  it('AG-09 applies all migrations on a clean database (section 5: 71 tables, 18 enums)', async () => {
     await migrateUp(db);
     expect(await appliedMigrations(db)).toEqual([
       '0000_extensions_roles',
@@ -49,13 +49,15 @@ describe('migrations (integration)', () => {
       '0013_subject_chapters',
       '0014_glossary',
       '0015_periodic_table',
+      '0016_atlas_module',
     ]);
-    expect(await tables()).toBe(70);
+    expect(await tables()).toBe(71);
     expect(await enums()).toBe(18);
   });
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0016_atlas_module',
       '0015_periodic_table',
       '0014_glossary',
       '0013_subject_chapters',
@@ -86,6 +88,16 @@ describe('migrations (integration)', () => {
 
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
+    expect(await tables()).toBe(71);
+    // 0016 (REQ-ATL-01, REQ-ATL-03): subjects.module и таблица atlas_quiz_sessions; откат убирает только их.
+    const moduleColumn = () =>
+      count(
+        db,
+        sql`select count(*) as n from information_schema.columns where table_name = 'subjects' and column_name = 'module'`,
+      );
+    expect(await moduleColumn()).toBe(1);
+    expect(await rollback(db, 1)).toEqual(['0016_atlas_module']);
+    expect(await moduleColumn()).toBe(0);
     expect(await tables()).toBe(70);
     // 0015 (REQ-PTBL-01, REQ-PTBL-04): столбцы subjects.blocks и topics.element_number; откат убирает только их.
     const columns = () =>
@@ -195,7 +207,7 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(16);
+    expect(await appliedMigrations(db)).toHaveLength(17);
   });
 
   it('AC-PRF-01 0010 moves every existing name into the profile and keeps display_name; rollback keeps names', async () => {

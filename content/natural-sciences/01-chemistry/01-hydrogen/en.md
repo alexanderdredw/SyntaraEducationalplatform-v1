@@ -2,7 +2,7 @@
 title: Hydrogen
 description: A versatile nonmetal essential for various scientific applications.
 funFact: Hydrogen is the only element whose most common form has no neutrons at all (protium).
-illustrationAlt: 'Bohr model of an atom: hydrogen, H. Protons in the nucleus: 1; electrons in shells: 1.'
+illustrationAlt: 'Atom model: Hydrogen (H) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

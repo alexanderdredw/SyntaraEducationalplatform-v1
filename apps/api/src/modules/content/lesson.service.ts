@@ -140,6 +140,7 @@ export class LessonService {
             const st = s.translations[actualLocale]!;
             return {
               id: s.id,
+              ...(s.code ? { code: s.code.split('#').pop()! } : {}),
               number: i + 1,
               title: st.title,
               body: st.body ?? null,

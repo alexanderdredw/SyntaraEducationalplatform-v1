@@ -2,7 +2,7 @@
 title: Oxygen
 description: A life-sustaining gas essential for aerobic respiration and combustion.
 funFact: Oxygen is the third most abundant element in the Universe and the first by mass in the Earth’s crust (46%).
-illustrationAlt: 'Bohr model of an atom: oxygen, O. Protons in the nucleus: 8; electrons in shells: 2, 6.'
+illustrationAlt: 'Atom model: Oxygen (O) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

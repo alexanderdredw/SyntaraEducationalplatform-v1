@@ -194,7 +194,7 @@ describe('base content (integration)', () => {
       needsReview: false,
     });
     expect(lesson.body.funFact).toContain('46%');
-    expect(lesson.body.illustrationAlt).toContain('кислород, O');
+    expect(lesson.body.illustrationAlt).toContain('Кислород (O)');
     expect(lesson.body.sections.map((s: { title: string }) => s.title).at(-1)).toBe('Источники');
     expect(lesson.body.sections[0].body).toContain('- ');
     expect(lesson.body.quizId).toBeTruthy();

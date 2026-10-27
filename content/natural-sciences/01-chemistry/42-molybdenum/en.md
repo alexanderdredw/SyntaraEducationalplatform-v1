@@ -1,7 +1,7 @@
 ---
 title: Molybdenum
 description: A versatile transition metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: molybdenum, Mo. Protons in the nucleus: 42; electrons in shells: 2, 8, 18, 13, 1.'
+illustrationAlt: 'Atom model: Molybdenum (Mo) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

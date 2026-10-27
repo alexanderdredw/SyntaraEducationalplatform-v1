@@ -6,13 +6,14 @@ element:
   symbol: C
   number: 6
   group: nonmetal
+  color: '#FBBF24'
 title: Углерод
 description: Универсальный неметалл, необходимый для различных научных и промышленных применений.
 illustration: media/carbon-atom.webp
-illustrationAlt: 'Модель атома по Бору: углерод, C. Протонов в ядре — 6; электроны по оболочкам — 2, 4.'
+illustrationAlt: 'Модель атома: Углерод (C) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/carbon-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

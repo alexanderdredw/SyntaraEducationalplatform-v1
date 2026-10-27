@@ -2,7 +2,7 @@
 title: Chromium
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: It is chromium that makes rubies red and emeralds green, although the metal itself is silvery.
-illustrationAlt: 'Bohr model of an atom: chromium, Cr. Protons in the nucleus: 24; electrons in shells: 2, 8, 13, 1.'
+illustrationAlt: 'Atom model: Chromium (Cr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -2,7 +2,7 @@
 title: Strontium
 description: A versatile alkaline earth metal essential for various scientific and industrial applications.
 funFact: Strontium salts give festive fireworks their rich red colour.
-illustrationAlt: 'Bohr model of an atom: strontium, Sr. Protons in the nucleus: 38; electrons in shells: 2, 8, 18, 8, 2.'
+illustrationAlt: 'Atom model: Strontium (Sr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -6,14 +6,15 @@ element:
   symbol: Br
   number: 35
   group: halogen
+  color: '#B91C1C'
 title: Бром
 description: Единственный неметалл, являющийся жидкостью при комнатной температуре; крайне агрессивный и пахучий.
 funFact: Один из двух элементов таблицы Менделеева (наряду со ртутью), который при комнатной температуре находится в жидком состоянии.
 illustration: media/bromine-atom.webp
-illustrationAlt: 'Модель атома по Бору: бром, Br. Протонов в ядре — 35; электроны по оболочкам — 2, 8, 18, 7.'
+illustrationAlt: 'Модель атома: Бром (Br) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/bromine-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

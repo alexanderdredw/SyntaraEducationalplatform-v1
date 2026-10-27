@@ -2,7 +2,7 @@
 title: Germanium
 description: A versatile semimetal essential for various scientific and industrial applications.
 funFact: The world’s first transistor (1947) was made of germanium, not silicon.
-illustrationAlt: 'Bohr model of an atom: germanium, Ge. Protons in the nucleus: 32; electrons in shells: 2, 8, 18, 4.'
+illustrationAlt: 'Atom model: Germanium (Ge) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

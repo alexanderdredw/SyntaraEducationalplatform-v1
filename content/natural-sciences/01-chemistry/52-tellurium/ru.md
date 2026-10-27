@@ -6,13 +6,14 @@ element:
   symbol: Te
   number: 52
   group: metalloid
+  color: '#34D399'
 title: Теллур
 description: Универсальный полуметалл, необходимый для различных научных и промышленных применений.
 illustration: media/tellurium-atom.webp
-illustrationAlt: 'Модель атома по Бору: теллур, Te. Протонов в ядре — 52; электроны по оболочкам — 2, 8, 18, 18, 6.'
+illustrationAlt: 'Модель атома: Теллур (Te) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/tellurium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

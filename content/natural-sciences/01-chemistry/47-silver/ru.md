@@ -6,13 +6,14 @@ element:
   symbol: Ag
   number: 47
   group: transition_metal
+  color: '#E2E8F0'
 title: Серебро
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/silver-atom.webp
-illustrationAlt: 'Модель атома по Бору: серебро, Ag. Протонов в ядре — 47; электроны по оболочкам — 2, 8, 18, 18, 1.'
+illustrationAlt: 'Модель атома: Серебро (Ag) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/silver-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

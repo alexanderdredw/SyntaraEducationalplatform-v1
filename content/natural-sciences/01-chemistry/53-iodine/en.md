@@ -1,7 +1,7 @@
 ---
 title: Iodine
 description: A versatile halogen essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: iodine, I. Protons in the nucleus: 53; electrons in shells: 2, 8, 18, 18, 7.'
+illustrationAlt: 'Atom model: Iodine (I) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

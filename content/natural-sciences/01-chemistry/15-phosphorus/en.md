@@ -2,7 +2,7 @@
 title: Phosphorus
 description: A vital element that is part of DNA, bones, and provides energy transfer in cells.
 funFact: Phosphorus was discovered in 1669 by distilling urine — it was called "cold fire" because it glows in the dark.
-illustrationAlt: 'Bohr model of an atom: phosphorus, P. Protons in the nucleus: 15; electrons in shells: 2, 8, 5.'
+illustrationAlt: 'Atom model: Phosphorus (P) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -2,7 +2,7 @@
 title: Aluminum
 description: The most abundant metal in the Earth's crust, lightweight and corrosion-resistant.
 funFact: Until 1886 aluminium was valued more than gold — it was extremely expensive to produce.
-illustrationAlt: 'Bohr model of an atom: aluminum, Al. Protons in the nucleus: 13; electrons in shells: 2, 8, 3.'
+illustrationAlt: 'Atom model: Aluminum (Al) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

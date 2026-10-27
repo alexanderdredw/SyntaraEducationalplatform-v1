@@ -6,14 +6,15 @@ element:
   symbol: Ni
   number: 28
   group: transition_metal
+  color: '#94A3B8'
 title: Никель
 description: Коррозионностойкий металл, используемый в монетах, нержавеющей стали и суперсплавах.
 funFact: Многие метеориты состоят из сплава железа и никеля — именно так люди впервые познакомились с металлическим железом.
 illustration: media/nickel-atom.webp
-illustrationAlt: 'Модель атома по Бору: никель, Ni. Протонов в ядре — 28; электроны по оболочкам — 2, 8, 16, 2.'
+illustrationAlt: 'Модель атома: Никель (Ni) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/nickel-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

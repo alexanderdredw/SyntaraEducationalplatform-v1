@@ -72,7 +72,7 @@ export const learningEvents = pgTable(
   (t) => [
     check(
       'learning_events_type',
-      sql`${t.type} IN ('lesson_opened','quiz_finished','topic_mastered','ai_question')`,
+      sql`${t.type} IN ('lesson_opened','quiz_finished','topic_mastered','ai_question','atlas_quiz_finished')`,
     ),
     unique('learning_events_student_idem').on(t.studentId, t.idempotencyKey),
     index('ix_events_student_time').on(t.studentId, t.occurredAt),
@@ -167,4 +167,36 @@ export const xpLedger = pgTable(
   },
   // BR-XP-02: повторная обработка события не начисляет XP повторно.
   (t) => [unique('xp_ledger_student_event_reason').on(t.studentId, t.sourceEventId, t.reason)],
+);
+
+/**
+ * Квиз «Проверь знания» и игра «Кто этот учёный?» модуля «Mendeleev Atlas» (REQ-ATL-03, решения А-5, А-11):
+ * вопросы строит и проверяет сервер — правильный вариант не уходит в браузер до ответа (BR-QZ-01). В `state` —
+ * очередь элементов или учёных, адаптивная сложность, текущий вопрос и ответы; XP — при завершении (BR-XP-05).
+ */
+export const atlasQuizSessions = pgTable(
+  'atlas_quiz_sessions',
+  {
+    id: id(),
+    studentId: uuid('student_id')
+      .notNull()
+      .references(() => users.id),
+    subjectId: uuid('subject_id')
+      .notNull()
+      .references(() => subjects.id),
+    kind: text('kind').notNull(),
+    status: text('status').notNull().default('in_progress'),
+    state: jsonb('state').notNull(),
+    correctCount: integer('correct_count').notNull().default(0),
+    total: integer('total').notNull(),
+    xpAwarded: integer('xp_awarded').notNull().default(0),
+    finishedAt: tstz('finished_at'),
+    ...timestamps,
+  },
+  (t) => [
+    check('atlas_quiz_kind', sql`${t.kind} IN ('elements','scientists')`),
+    check('atlas_quiz_status', sql`${t.status} IN ('in_progress','finished')`),
+    check('atlas_quiz_counts', sql`${t.correctCount} BETWEEN 0 AND ${t.total} AND ${t.xpAwarded} >= 0`),
+    index('ix_atlas_quiz_student_time').on(t.studentId, t.createdAt),
+  ],
 );

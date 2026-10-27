@@ -6,14 +6,15 @@ element:
   symbol: Be
   number: 4
   group: alkaline_earth
+  color: '#4ECDC4'
 title: Бериллий
 description: Легкий, прочный и весьма токсичный щелочноземельный металл, ценимый в аэрокосмической промышленности за высокую теплопроводность.
 funFact: Бериллий обладает высокой прозрачностью для рентгеновских лучей, что делает его основным материалом для изготовления окон рентгеновских трубок.
 illustration: media/beryllium-atom.webp
-illustrationAlt: 'Модель атома по Бору: бериллий, Be. Протонов в ядре — 4; электроны по оболочкам — 2, 2.'
+illustrationAlt: 'Модель атома: Бериллий (Be) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/beryllium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

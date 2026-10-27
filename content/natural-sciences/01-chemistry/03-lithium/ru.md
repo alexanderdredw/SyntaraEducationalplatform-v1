@@ -6,14 +6,15 @@ element:
   symbol: Li
   number: 3
   group: alkali_metal
+  color: '#FF6B6B'
 title: Литий
 description: Мягкий, серебристо-белый щелочной металл, самый легкий из твердых элементов, крайне активный и ключевой для современных батарей.
 funFact: Литий настолько легок, что может плавать на воде, и является наименее плотным из всех твердых элементов.
 illustration: media/lithium-atom.webp
-illustrationAlt: 'Модель атома по Бору: литий, Li. Протонов в ядре — 3; электроны по оболочкам — 2, 1.'
+illustrationAlt: 'Модель атома: Литий (Li) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/lithium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

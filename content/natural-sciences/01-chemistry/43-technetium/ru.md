@@ -6,13 +6,14 @@ element:
   symbol: Tc
   number: 43
   group: transition_metal
+  color: '#94A3B8'
 title: Технеций
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/technetium-atom.webp
-illustrationAlt: 'Модель атома по Бору: технеций, Tc. Протонов в ядре — 43; электроны по оболочкам — 2, 8, 18, 13, 2.'
+illustrationAlt: 'Модель атома: Технеций (Tc) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/technetium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

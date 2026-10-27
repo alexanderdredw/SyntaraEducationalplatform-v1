@@ -2,7 +2,7 @@
 title: Titanium
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Titanium burns even in an atmosphere of pure nitrogen.
-illustrationAlt: 'Bohr model of an atom: titanium, Ti. Protons in the nucleus: 22; electrons in shells: 2, 8, 10, 2.'
+illustrationAlt: 'Atom model: Titanium (Ti) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

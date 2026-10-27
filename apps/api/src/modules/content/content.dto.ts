@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SUBJECT_MODULES, type SubjectModule } from '@syntara/shared';
 
 /** OpenAPI-описание тел и ответов модуля content (6.4, 6.5). Валидация — Zod-схемами packages/shared. */
 
@@ -163,6 +164,10 @@ class LessonSubjectDto {
 
 class LessonSectionDto {
   @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiPropertyOptional({
+    description: 'Код раздела базового урока из content/ (REQ-ATL-01: адрес окна учёного /scientists/:code)',
+  })
+  code?: string;
   @ApiProperty() number: number;
   @ApiProperty() title: string;
   @ApiProperty({ type: String, nullable: true }) body: string | null;
@@ -314,6 +319,12 @@ const periodicTableProperty = {
   description: 'Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml',
 };
 
+const moduleProperty = {
+  enum: SUBJECT_MODULES,
+  description:
+    'Модуль со своим интерфейсом (REQ-ATL-01): atlas-chemistry — «Mendeleev Atlas»; у остальных предметов поля нет',
+};
+
 const hasGlossaryProperty = {
   type: Boolean,
   description: 'У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет',
@@ -328,6 +339,7 @@ export class StudentSubjectDto {
   @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
   @ApiPropertyOptional(hasGlossaryProperty) hasGlossary?: boolean;
   @ApiPropertyOptional(periodicTableProperty) periodicTable?: PeriodicTableDto;
+  @ApiPropertyOptional(moduleProperty) module?: SubjectModule;
 }
 
 class PublicTopicItemDto {
@@ -345,6 +357,7 @@ export class PublicSubjectPageDto {
   @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
   @ApiPropertyOptional(hasGlossaryProperty) hasGlossary?: boolean;
   @ApiPropertyOptional(periodicTableProperty) periodicTable?: PeriodicTableDto;
+  @ApiPropertyOptional(moduleProperty) module?: SubjectModule;
 }
 
 class GlossaryTermDto {

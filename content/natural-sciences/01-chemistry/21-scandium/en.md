@@ -2,7 +2,7 @@
 title: Scandium
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: 'Scandium is one of the rarest and most expensive metals: the world produces only a few tonnes a year.'
-illustrationAlt: 'Bohr model of an atom: scandium, Sc. Protons in the nucleus: 21; electrons in shells: 2, 8, 9, 2.'
+illustrationAlt: 'Atom model: Scandium (Sc) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

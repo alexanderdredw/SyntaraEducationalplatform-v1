@@ -6,13 +6,14 @@ element:
   symbol: Ru
   number: 44
   group: transition_metal
+  color: '#CBD5E1'
 title: Рутений
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/ruthenium-atom.webp
-illustrationAlt: 'Модель атома по Бору: рутений, Ru. Протонов в ядре — 44; электроны по оболочкам — 2, 8, 18, 15, 1.'
+illustrationAlt: 'Модель атома: Рутений (Ru) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/ruthenium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

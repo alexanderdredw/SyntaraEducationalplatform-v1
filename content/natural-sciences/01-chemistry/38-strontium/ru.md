@@ -6,14 +6,15 @@ element:
   symbol: Sr
   number: 38
   group: alkaline_earth
+  color: '#F97316'
 title: Стронций
 description: Щелочноземельный металл, дарящий ярко-красный цвет фейерверкам.
 funFact: Именно соли стронция отвечают за сочный красный цвет праздничных салютов.
 illustration: media/strontium-atom.webp
-illustrationAlt: 'Модель атома по Бору: стронций, Sr. Протонов в ядре — 38; электроны по оболочкам — 2, 8, 18, 8, 2.'
+illustrationAlt: 'Модель атома: Стронций (Sr) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/strontium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

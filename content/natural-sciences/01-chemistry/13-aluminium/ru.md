@@ -6,14 +6,15 @@ element:
   symbol: Al
   number: 13
   group: post_transition
+  color: '#E2E8F0'
 title: Алюминий
 description: Самый распространенный металл в земной коре, легкий и устойчивый к коррозии.
 funFact: До 1886 года алюминий ценился дороже золота — его производство было крайне дорогостоящим.
 illustration: media/aluminium-atom.webp
-illustrationAlt: 'Модель атома по Бору: алюминий, Al. Протонов в ядре — 13; электроны по оболочкам — 2, 8, 3.'
+illustrationAlt: 'Модель атома: Алюминий (Al) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/aluminium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

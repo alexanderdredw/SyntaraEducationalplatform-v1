@@ -6,14 +6,15 @@ element:
   symbol: Zn
   number: 30
   group: transition_metal
+  color: '#94A3B8'
 title: Цинк
 description: Металл-защитник, используемый для оцинковки стали и в производстве латуни и батареек.
 funFact: Цинк необходим человеку для работы иммунитета, роста и чувства вкуса/запаха.
 illustration: media/zinc-atom.webp
-illustrationAlt: 'Модель атома по Бору: цинк, Zn. Протонов в ядре — 30; электроны по оболочкам — 2, 8, 18, 2.'
+illustrationAlt: 'Модель атома: Цинк (Zn) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/zinc-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

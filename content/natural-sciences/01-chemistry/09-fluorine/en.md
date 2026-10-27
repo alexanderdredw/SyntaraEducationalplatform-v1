@@ -2,7 +2,7 @@
 title: Fluorine
 description: A versatile halogen essential for various industrial and biological processes.
 funFact: 'Fluorine is the most reactive element: it reacts even with the noble gases xenon and krypton.'
-illustrationAlt: 'Bohr model of an atom: fluorine, F. Protons in the nucleus: 9; electrons in shells: 2, 7.'
+illustrationAlt: 'Atom model: Fluorine (F) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

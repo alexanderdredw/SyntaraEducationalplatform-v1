@@ -2,7 +2,7 @@
 title: Arsenic
 description: A versatile semimetal essential for various scientific and industrial applications.
 funFact: 'Arsenic is called the "king of poisons": it has no taste or smell, which made it a favourite tool of plotters in the past.'
-illustrationAlt: 'Bohr model of an atom: arsenic, As. Protons in the nucleus: 33; electrons in shells: 2, 8, 18, 5.'
+illustrationAlt: 'Atom model: Arsenic (As) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -6,13 +6,14 @@ element:
   symbol: Cs
   number: 55
   group: alkali_metal
+  color: '#EF4444'
 title: Цезий
 description: Универсальный щелочной металл, необходимый для различных научных и промышленных применений.
 illustration: media/caesium-atom.webp
-illustrationAlt: 'Модель атома по Бору: цезий, Cs. Протонов в ядре — 55; электроны по оболочкам — 2, 8, 18, 18, 8, 1.'
+illustrationAlt: 'Модель атома: Цезий (Cs) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/caesium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

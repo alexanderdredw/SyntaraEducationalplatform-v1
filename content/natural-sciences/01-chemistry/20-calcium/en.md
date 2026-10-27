@@ -2,7 +2,7 @@
 title: Calcium
 description: A versatile alkaline earth essential for various scientific applications.
 funFact: An adult’s body contains about 1 kg of calcium — almost all of it in bones and teeth.
-illustrationAlt: 'Bohr model of an atom: calcium, Ca. Protons in the nucleus: 20; electrons in shells: 2, 8, 8, 2.'
+illustrationAlt: 'Atom model: Calcium (Ca) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

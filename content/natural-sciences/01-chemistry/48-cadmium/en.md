@@ -1,7 +1,7 @@
 ---
 title: Cadmium
 description: A versatile transition metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: cadmium, Cd. Protons in the nucleus: 48; electrons in shells: 2, 8, 18, 18, 2.'
+illustrationAlt: 'Atom model: Cadmium (Cd) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

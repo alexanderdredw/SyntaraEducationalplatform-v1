@@ -2,7 +2,7 @@
 title: Chlorine
 description: A versatile halogen essential for various scientific applications.
 funFact: Chlorine was used as a chemical weapon in the First World War — the first mass gas attack took place in 1915.
-illustrationAlt: 'Bohr model of an atom: chlorine, Cl. Protons in the nucleus: 17; electrons in shells: 2, 8, 7.'
+illustrationAlt: 'Atom model: Chlorine (Cl) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

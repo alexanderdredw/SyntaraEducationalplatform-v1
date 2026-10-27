@@ -12,6 +12,7 @@ description:
   en: Elements, reactions, molecular structures
 blocks:
   - periodic-table
+module: atlas-chemistry
 chapters:
   - code: elements
     position: 1

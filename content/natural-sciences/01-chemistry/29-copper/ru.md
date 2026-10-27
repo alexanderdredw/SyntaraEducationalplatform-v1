@@ -6,14 +6,15 @@ element:
   symbol: Cu
   number: 29
   group: transition_metal
+  color: '#B45309'
 title: Медь
 description: Один из лучших проводников электричества, первый металл, освоенный человеком.
 funFact: Медь обладает природными антибактериальными свойствами — на медных ручках дверей бактерии погибают за считанные часы.
 illustration: media/copper-atom.webp
-illustrationAlt: 'Модель атома по Бору: медь, Cu. Протонов в ядре — 29; электроны по оболочкам — 2, 8, 18, 1.'
+illustrationAlt: 'Модель атома: Медь (Cu) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/copper-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

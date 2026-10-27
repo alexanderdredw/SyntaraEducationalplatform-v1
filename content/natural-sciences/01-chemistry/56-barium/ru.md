@@ -6,13 +6,14 @@ element:
   symbol: Ba
   number: 56
   group: alkaline_earth
+  color: '#F97316'
 title: Барий
 description: Универсальный щелочноземельный металл, необходимый для различных научных и промышленных применений.
 illustration: media/barium-atom.webp
-illustrationAlt: 'Модель атома по Бору: барий, Ba. Протонов в ядре — 56; электроны по оболочкам — 2, 8, 18, 18, 8, 2.'
+illustrationAlt: 'Модель атома: Барий (Ba) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/barium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

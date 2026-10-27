@@ -6,14 +6,15 @@ element:
   symbol: Sc
   number: 21
   group: transition_metal
+  color: '#94A3B8'
 title: Скандий
 description: Лёгкий переходный металл, используемый в аэрокосмических сплавах и высокоинтенсивных лампах.
 funFact: Скандий — один из самых редких и дорогих металлов, его мировое производство составляет всего несколько тонн в год.
 illustration: media/scandium-atom.webp
-illustrationAlt: 'Модель атома по Бору: скандий, Sc. Протонов в ядре — 21; электроны по оболочкам — 2, 8, 9, 2.'
+illustrationAlt: 'Модель атома: Скандий (Sc) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/scandium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

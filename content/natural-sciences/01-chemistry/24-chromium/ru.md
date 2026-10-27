@@ -6,14 +6,15 @@ element:
   symbol: Cr
   number: 24
   group: transition_metal
+  color: '#E2E8F0'
 title: Хром
 description: Твёрдый, блестящий металл, основа нержавеющей стали и декоративных защитных покрытий.
 funFact: Именно хром делает рубины красными, а изумруды — зелёными, хотя сам металл серебристый.
 illustration: media/chromium-atom.webp
-illustrationAlt: 'Модель атома по Бору: хром, Cr. Протонов в ядре — 24; электроны по оболочкам — 2, 8, 13, 1.'
+illustrationAlt: 'Модель атома: Хром (Cr) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/chromium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

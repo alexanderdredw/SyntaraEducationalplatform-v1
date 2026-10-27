@@ -6,13 +6,14 @@ element:
   symbol: Nd
   number: 60
   group: lanthanide
+  color: '#E2E8F0'
 title: Неодим
 description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
 illustration: media/neodymium-atom.webp
-illustrationAlt: 'Модель атома по Бору: неодим, Nd. Протонов в ядре — 60; электроны по оболочкам — 2, 8, 18, 22, 8, 2.'
+illustrationAlt: 'Модель атома: Неодим (Nd) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/neodymium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

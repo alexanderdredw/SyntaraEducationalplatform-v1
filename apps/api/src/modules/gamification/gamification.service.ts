@@ -1,6 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, count, eq, inArray, isNotNull, isNull, sql, sum } from 'drizzle-orm';
-import { badgeEarned, type Locale, localDate, levelOf, streakOf, type XpConfig } from '@syntara/shared';
+import {
+  atlasQuizXp,
+  badgeEarned,
+  type Locale,
+  localDate,
+  levelOf,
+  STREAK_EVENTS,
+  streakOf,
+  type XpConfig,
+} from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { type Tx } from '../../common/idempotency';
 import { pickTranslation } from '../../common/locale';
@@ -9,12 +18,12 @@ import { ENV, type Env } from '../../config/env';
 import { DB } from '../../infra/tokens';
 
 const { learningEvents: ev, xpLedger, studentStats, studentBadges, badges, badgeTranslations } = schema;
-const { topicMastery, quizAttempts, quizzes, topics } = schema;
+const { topicMastery, quizAttempts, quizzes, topics, atlasQuizSessions } = schema;
 
 export interface LearningEvent {
   id: string;
   studentId: string;
-  type: 'lesson_opened' | 'quiz_finished' | 'topic_mastered' | 'ai_question';
+  type: 'lesson_opened' | 'quiz_finished' | 'topic_mastered' | 'ai_question' | 'atlas_quiz_finished';
   topicId: string | null;
   idempotencyKey: string;
 }
@@ -31,6 +40,12 @@ export interface ProcessResult {
 
 /** Ключ события завершения квиза: `quiz:{attemptId}` — по нему находится балл попытки (BR-XP-01). */
 export const quizEventKey = (attemptId: string) => `quiz:${attemptId}`;
+
+/** Ключ события завершения квиза атласа: `atlas-quiz:{sessionId}` — по нему находится число верных ответов (BR-XP-05). */
+export const atlasQuizEventKey = (sessionId: string) => `atlas-quiz:${sessionId}`;
+
+/** Причина записи xp_ledger за квиз атласа — по ней считается дневной лимит (BR-XP-05). */
+export const ATLAS_QUIZ_REASON = 'atlas_quiz';
 
 /**
  * Геймификация (7.3–7.4, PH-39): событие → записи xp_ledger (уникальны по student, event, reason — BR-XP-02),
@@ -59,6 +74,10 @@ export class GamificationService {
       if (attempt?.score !== null && Number(attempt?.score) >= xp.high_score_threshold) {
         awards.push({ reason: 'quiz_high_score', amount: xp.high_score_bonus });
       }
+    }
+    if (event.type === 'atlas_quiz_finished') {
+      const amount = await this.atlasQuizAward(tx, event, xp);
+      if (amount > 0) awards.push({ reason: ATLAS_QUIZ_REASON, amount });
     }
     if (event.type === 'lesson_opened' && event.topicId) {
       // «Первое открытие темы»: это событие — самое раннее открытие темы учеником.
@@ -93,6 +112,39 @@ export class GamificationService {
     return { xpAwarded, badgesAwarded };
   }
 
+  /**
+   * BR-XP-05 (решение владельца А-11): за каждый правильный ответ квиза атласа (квиз «Проверь знания» и игра про
+   * учёных) — atlas_quiz_per_correct XP, всего не больше atlas_quiz_daily_cap XP за день в PLATFORM_TZ. Блокировка
+   * по ученику: два одновременных завершения не превысят лимит.
+   */
+  private async atlasQuizAward(tx: Tx, event: LearningEvent, xp: XpConfig): Promise<number> {
+    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${`atlas-xp:${event.studentId}`}))`);
+    const sessionId = event.idempotencyKey.replace(/^atlas-quiz:/, '');
+    const [session] = await tx
+      .select({ correct: atlasQuizSessions.correctCount })
+      .from(atlasQuizSessions)
+      .where(and(eq(atlasQuizSessions.id, sessionId), eq(atlasQuizSessions.studentId, event.studentId)));
+    if (!session) return 0;
+    const tz = this.env.PLATFORM_TZ;
+    const today = localDate(new Date(), tz);
+    const [used] = await tx
+      .select({ total: sum(xpLedger.amount) })
+      .from(xpLedger)
+      .where(
+        and(
+          eq(xpLedger.studentId, event.studentId),
+          eq(xpLedger.reason, ATLAS_QUIZ_REASON),
+          sql`(${xpLedger.createdAt} AT TIME ZONE ${tz})::date = ${today}::date`,
+        ),
+      );
+    return atlasQuizXp(
+      session.correct,
+      xp.atlas_quiz_per_correct ?? 1,
+      xp.atlas_quiz_daily_cap ?? 20,
+      Number(used?.total ?? 0),
+    );
+  }
+
   /** student_stats из журнала XP и событий (источник правды — xp_ledger и learning_events). */
   async recalcStats(
     tx: Tx | Database,
@@ -111,7 +163,7 @@ export class GamificationService {
         day: sql<string>`to_char((${ev.occurredAt} AT TIME ZONE ${tz})::date, 'YYYY-MM-DD')`,
       })
       .from(ev)
-      .where(and(eq(ev.studentId, studentId), inArray(ev.type, ['lesson_opened', 'quiz_finished'])));
+      .where(and(eq(ev.studentId, studentId), inArray(ev.type, [...STREAK_EVENTS])));
     const dayList = days.map((d) => d.day);
     const streak = streakOf(dayList, localDate(new Date(), tz));
     const lastActivityDate = dayList.length ? [...dayList].sort().at(-1)! : null;

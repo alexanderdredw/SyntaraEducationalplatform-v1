@@ -2,7 +2,7 @@
 title: Gallium
 description: A versatile other metal essential for various scientific and industrial applications.
 funFact: Gallium was predicted by Mendeleev as "eka-aluminium" and discovered only 4 years later by spectroscopy.
-illustrationAlt: 'Bohr model of an atom: gallium, Ga. Protons in the nucleus: 31; electrons in shells: 2, 8, 18, 3.'
+illustrationAlt: 'Atom model: Gallium (Ga) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

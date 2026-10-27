@@ -6,14 +6,15 @@ element:
   symbol: Y
   number: 39
   group: transition_metal
+  color: '#94A3B8'
 title: Иттрий
 description: Редкоземельный металл, ключевой для лазеров, сверхпроводников и люминофоров.
 funFact: Иттрий назван в честь шведской деревни Иттербю, где были найдены сразу четыре новых элемента.
 illustration: media/yttrium-atom.webp
-illustrationAlt: 'Модель атома по Бору: иттрий, Y. Протонов в ядре — 39; электроны по оболочкам — 2, 8, 18, 9, 2.'
+illustrationAlt: 'Модель атома: Иттрий (Y) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/yttrium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

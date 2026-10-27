@@ -1,7 +1,7 @@
 ---
 title: Indium
 description: A versatile other metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: indium, In. Protons in the nucleus: 49; electrons in shells: 2, 8, 18, 18, 3.'
+illustrationAlt: 'Atom model: Indium (In) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

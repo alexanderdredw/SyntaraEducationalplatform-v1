@@ -6,14 +6,15 @@ element:
   symbol: Ar
   number: 18
   group: noble_gas
+  color: '#A855F7'
 title: Аргон
 description: Третий по распространённости газ атмосферы, абсолютно инертный; используется в сварке и лампах.
 funFact: Аргон составляет 0.93% атмосферы Земли — это в 23 раза больше, чем углекислого газа.
 illustration: media/argon-atom.webp
-illustrationAlt: 'Модель атома по Бору: аргон, Ar. Протонов в ядре — 18; электроны по оболочкам — 2, 8, 8.'
+illustrationAlt: 'Модель атома: Аргон (Ar) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/argon-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

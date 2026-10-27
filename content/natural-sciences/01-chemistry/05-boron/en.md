@@ -2,7 +2,7 @@
 title: Boron
 description: A versatile semimetal essential for various scientific applications.
 funFact: Boron is the only metalloid in group 13 and one of the hardest elements.
-illustrationAlt: 'Bohr model of an atom: boron, B. Protons in the nucleus: 5; electrons in shells: 2, 3.'
+illustrationAlt: 'Atom model: Boron (B) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

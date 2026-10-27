@@ -17,8 +17,8 @@
     },
     "apps/web": {
       "entry": ["instrumentation*.ts"],
-      // Файлы шрифта Inter подключаются путём в next/font/local (app/fonts.ts), а не импортом.
-      "ignoreDependencies": ["@fontsource-variable/inter"],
+      // Файлы шрифтов Inter и Space Grotesk (модуль атласа) подключаются путём в next/font/local, а не импортом.
+      "ignoreDependencies": ["@fontsource-variable/inter", "@fontsource-variable/space-grotesk"],
     },
     "apps/worker": {
       "ignoreDependencies": ["testcontainers"],

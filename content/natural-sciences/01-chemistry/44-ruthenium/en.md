@@ -1,7 +1,7 @@
 ---
 title: Ruthenium
 description: A versatile transition metal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: ruthenium, Ru. Protons in the nucleus: 44; electrons in shells: 2, 8, 18, 15, 1.'
+illustrationAlt: 'Atom model: Ruthenium (Ru) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Cerium
 description: A versatile lanthanide essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: cerium, Ce. Protons in the nucleus: 58; electrons in shells: 2, 8, 18, 19, 9, 2.'
+illustrationAlt: 'Atom model: Cerium (Ce) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Carbon
 description: A versatile nonmetal essential for various scientific applications.
-illustrationAlt: 'Bohr model of an atom: carbon, C. Protons in the nucleus: 6; electrons in shells: 2, 4.'
+illustrationAlt: 'Atom model: Carbon (C) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

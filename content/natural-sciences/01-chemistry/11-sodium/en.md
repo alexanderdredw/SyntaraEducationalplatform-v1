@@ -2,7 +2,7 @@
 title: Sodium
 description: A soft, silvery, and highly reactive metal, essential for life and industry.
 funFact: Sodium regulates the water–salt balance in cells — without it nerve impulses could not be transmitted.
-illustrationAlt: 'Bohr model of an atom: sodium, Na. Protons in the nucleus: 11; electrons in shells: 2, 8, 1.'
+illustrationAlt: 'Atom model: Sodium (Na) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

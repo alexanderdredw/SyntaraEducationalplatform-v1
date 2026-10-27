@@ -6,13 +6,14 @@ element:
   symbol: Sb
   number: 51
   group: metalloid
+  color: '#94A3B8'
 title: Сурьма
 description: Универсальный полуметалл, необходимый для различных научных и промышленных применений.
 illustration: media/antimony-atom.webp
-illustrationAlt: 'Модель атома по Бору: сурьма, Sb. Протонов в ядре — 51; электроны по оболочкам — 2, 8, 18, 18, 5.'
+illustrationAlt: 'Модель атома: Сурьма (Sb) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/antimony-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

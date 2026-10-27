@@ -1,7 +1,7 @@
 ---
 title: Antimony
 description: A versatile semimetal essential for various scientific and industrial applications.
-illustrationAlt: 'Bohr model of an atom: antimony, Sb. Protons in the nucleus: 51; electrons in shells: 2, 8, 18, 18, 5.'
+illustrationAlt: 'Atom model: Antimony (Sb) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

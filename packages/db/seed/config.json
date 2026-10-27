@@ -361,7 +361,9 @@
         "high_score_threshold": 80,
         "first_lesson_open": 5,
         "per_level": 100,
-        "failed_attempt_below": 50
+        "failed_attempt_below": 50,
+        "atlas_quiz_per_correct": 1,
+        "atlas_quiz_daily_cap": 20
       }
     },
     {

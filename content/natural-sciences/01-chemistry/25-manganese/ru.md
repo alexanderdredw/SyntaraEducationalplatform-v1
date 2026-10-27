@@ -6,14 +6,15 @@ element:
   symbol: Mn
   number: 25
   group: transition_metal
+  color: '#94A3B8'
 title: Марганец
 description: Незаменимый элемент в металлургии, делающий сталь твёрдой и устойчивой к износу.
 funFact: Марганец настолько важен для производства стали, что без него современная промышленность просто бы остановилась — альтернативы ему нет.
 illustration: media/manganese-atom.webp
-illustrationAlt: 'Модель атома по Бору: марганец, Mn. Протонов в ядре — 25; электроны по оболочкам — 2, 8, 13, 2.'
+illustrationAlt: 'Модель атома: Марганец (Mn) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/manganese-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

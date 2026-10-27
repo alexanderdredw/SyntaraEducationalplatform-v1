@@ -2,7 +2,7 @@
 title: Cobalt
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Cobalt is part of vitamin B12, one of the few natural organometallic compounds and essential for humans.
-illustrationAlt: 'Bohr model of an atom: cobalt, Co. Protons in the nucleus: 27; electrons in shells: 2, 8, 15, 2.'
+illustrationAlt: 'Atom model: Cobalt (Co) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

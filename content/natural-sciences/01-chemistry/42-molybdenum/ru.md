@@ -6,13 +6,14 @@ element:
   symbol: Mo
   number: 42
   group: transition_metal
+  color: '#CBD5E1'
 title: Молибден
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/molybdenum-atom.webp
-illustrationAlt: 'Модель атома по Бору: молибден, Mo. Протонов в ядре — 42; электроны по оболочкам — 2, 8, 18, 13, 1.'
+illustrationAlt: 'Модель атома: Молибден (Mo) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/molybdenum-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

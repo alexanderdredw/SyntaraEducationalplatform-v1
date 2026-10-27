@@ -187,6 +187,10 @@ export type UploadUrlDto = z.infer<typeof UploadUrlDto>;
  * Снимок опубликованной темы (topic_versions.snapshot, SM-TOPIC): ученик видит только его (REQ-TCH-PUB-05).
  * Поля обложки и материалов появились в итерации 7 — в снимках seed их нет.
  */
+/** Модули базовых предметов со своим интерфейсом (REQ-ATL-01, docs/CHEM_TZ_2.md). */
+export const SUBJECT_MODULES = ['atlas-chemistry'] as const;
+export type SubjectModule = (typeof SUBJECT_MODULES)[number];
+
 export interface TopicSnapshot {
   /** Базовый урок из content/: постоянный код и хеш содержимого (BR-CNT-04). */
   code?: string;
@@ -217,6 +221,8 @@ export interface TopicSnapshot {
   coverMediaId?: string | null;
   coverUrl?: string | null;
   materialIds?: string[];
+  /** Химический элемент урока в модуле атласа (REQ-ATL-04): цвет карточки и подсветки картинки. */
+  element?: { color: string };
   /** Лента времени базового урока (REQ-TL-01): события по году, раздел — полный код раздела урока. */
   timeline?: Array<{
     year: number;

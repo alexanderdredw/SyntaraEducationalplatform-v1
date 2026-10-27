@@ -6,14 +6,15 @@ element:
   symbol: Ga
   number: 31
   group: post_transition
+  color: '#E2E8F0'
 title: Галлий
 description: Металл, который плавится на ладони, основа современной полупроводниковой электроники.
 funFact: Галлий был предсказан Менделеевым как «экаалюминий» и открыт всего через 4 года спектральным методом.
 illustration: media/gallium-atom.webp
-illustrationAlt: 'Модель атома по Бору: галлий, Ga. Протонов в ядре — 31; электроны по оболочкам — 2, 8, 18, 3.'
+illustrationAlt: 'Модель атома: Галлий (Ga) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/gallium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

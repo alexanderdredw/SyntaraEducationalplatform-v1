@@ -6,14 +6,15 @@ element:
   symbol: K
   number: 19
   group: alkali_metal
+  color: '#FF6B6B'
 title: Калий
 description: Жизненно необходимый щелочной металл, регулирующий работу сердца и нервов; ключевое удобрение.
 funFact: Калий-40 — естественно радиоактивный изотоп, присутствующий в бананах и в теле человека.
 illustration: media/potassium-atom.webp
-illustrationAlt: 'Модель атома по Бору: калий, K. Протонов в ядре — 19; электроны по оболочкам — 2, 8, 8, 1.'
+illustrationAlt: 'Модель атома: Калий (K) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/potassium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

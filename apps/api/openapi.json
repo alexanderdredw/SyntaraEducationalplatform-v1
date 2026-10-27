@@ -6083,6 +6083,399 @@
           "auth"
         ]
       }
+    },
+    "/api/student/subjects/{id}/atlas": {
+      "get": {
+        "operationId": "StudentAtlasController_data",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/subjects/{id}/atlas-quiz": {
+      "post": {
+        "operationId": "StudentAtlasController_start",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtlasQuizStartBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasQuizSessionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "quizEmpty: нет вопросов"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/atlas-quiz/{sid}": {
+      "get": {
+        "operationId": "StudentAtlasController_get",
+        "parameters": [
+          {
+            "name": "sid",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasQuizSessionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/atlas-quiz/{sid}/answers": {
+      "post": {
+        "operationId": "StudentAtlasController_answer",
+        "parameters": [
+          {
+            "name": "sid",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtlasQuizAnswerBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasQuizAnswerResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Вариант не из текущего вопроса"
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "quizFinished: сессия завершена"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/atlas-quiz/{sid}/finish": {
+      "post": {
+        "operationId": "StudentAtlasController_finish",
+        "parameters": [
+          {
+            "name": "sid",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasQuizSessionDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "quizNotComplete | quizFinished"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/public/subjects/{id}/atlas": {
+      "get": {
+        "operationId": "PublicAtlasController_data",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/teacher/atlas/{subjectId}/preview": {
+      "get": {
+        "operationId": "TeacherAtlasController_preview",
+        "parameters": [
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "elements",
+                "scientists"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasPreviewDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
+    "/api/teacher/atlas/{subjectId}/topics/{topicId}/questions": {
+      "get": {
+        "operationId": "TeacherAtlasController_topic",
+        "parameters": [
+          {
+            "name": "subjectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasPreviewDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
     }
   },
   "info": {
@@ -7290,6 +7683,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "code": {
+            "type": "string",
+            "description": "Код раздела базового урока из content/ (REQ-ATL-01: адрес окна учёного /scientists/:code)"
+          },
           "number": {
             "type": "number"
           },
@@ -7744,6 +8141,13 @@
                 "$ref": "#/components/schemas/PeriodicTableDto"
               }
             ]
+          },
+          "module": {
+            "type": "string",
+            "enum": [
+              "atlas-chemistry"
+            ],
+            "description": "Модуль со своим интерфейсом (REQ-ATL-01): atlas-chemistry — «Mendeleev Atlas»; у остальных предметов поля нет"
           }
         },
         "required": [
@@ -7902,6 +8306,13 @@
                 "$ref": "#/components/schemas/PeriodicTableDto"
               }
             ]
+          },
+          "module": {
+            "type": "string",
+            "enum": [
+              "atlas-chemistry"
+            ],
+            "description": "Модуль со своим интерфейсом (REQ-ATL-01): atlas-chemistry — «Mendeleev Atlas»; у остальных предметов поля нет"
           }
         },
         "required": [
@@ -12486,6 +12897,426 @@
           "role",
           "student",
           "teacher"
+        ]
+      },
+      "AtlasSubjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "AtlasElementDto": {
+        "type": "object",
+        "properties": {
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "description": "Код темы без кода предмета: oxygen"
+          },
+          "number": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 118
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "alkali_metal",
+              "alkaline_earth",
+              "transition_metal",
+              "post_transition",
+              "metalloid",
+              "nonmetal",
+              "halogen",
+              "noble_gas",
+              "lanthanide",
+              "actinide"
+            ]
+          },
+          "color": {
+            "type": "string",
+            "description": "Цвет элемента атласа #RRGGBB (REQ-ATL-04)",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "funFact": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Подписанная ссылка на 10 минут (BR-FILE-04)"
+          },
+          "imageAlt": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "mastered",
+              "started",
+              "not_started"
+            ],
+            "description": "Статус темы — только у ученика (решение А-6)"
+          }
+        },
+        "required": [
+          "topicId",
+          "code",
+          "number",
+          "symbol",
+          "group",
+          "color",
+          "title",
+          "description",
+          "funFact",
+          "imageUrl",
+          "imageAlt"
+        ]
+      },
+      "AtlasTopicRefDto": {
+        "type": "object",
+        "properties": {
+          "topicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "mastered",
+              "started",
+              "not_started"
+            ]
+          }
+        },
+        "required": [
+          "topicId",
+          "title"
+        ]
+      },
+      "AtlasDto": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/AtlasSubjectDto"
+          },
+          "elements": {
+            "description": "По атомному номеру",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtlasElementDto"
+            }
+          },
+          "scientists": {
+            "nullable": true,
+            "description": "Урок «Учёные-химики» (экран «Учёные»)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasTopicRefDto"
+              }
+            ]
+          },
+          "hasGlossary": {
+            "type": "boolean"
+          },
+          "needsReview": {
+            "type": "boolean",
+            "description": "Показанный перевод ждёт вычитки (BR-CNT-05)"
+          }
+        },
+        "required": [
+          "subject",
+          "elements",
+          "scientists",
+          "hasGlossary",
+          "needsReview"
+        ]
+      },
+      "AtlasQuizStartBody": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "elements",
+              "scientists"
+            ]
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "AtlasQuizOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ]
+      },
+      "AtlasQuizQuestionDto": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "Номер вопроса с 1"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "options": {
+            "description": "Без признака правильного (BR-QZ-01)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtlasQuizOptionDto"
+            }
+          }
+        },
+        "required": [
+          "index",
+          "difficulty",
+          "text",
+          "options"
+        ]
+      },
+      "AtlasQuizMistakeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Код элемента или учёного"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "description"
+        ]
+      },
+      "AtlasQuizResultDto": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "percent": {
+            "type": "number",
+            "description": "Целые проценты"
+          },
+          "xpAwarded": {
+            "type": "number",
+            "description": "BR-XP-05: 1 XP за верный ответ, не больше дневного лимита"
+          },
+          "mistakes": {
+            "description": "«Рекомендуется повторить»",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtlasQuizMistakeDto"
+            }
+          }
+        },
+        "required": [
+          "correct",
+          "total",
+          "percent",
+          "xpAwarded",
+          "mistakes"
+        ]
+      },
+      "AtlasQuizSessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "elements",
+              "scientists"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "in_progress",
+              "finished"
+            ]
+          },
+          "total": {
+            "type": "number"
+          },
+          "answered": {
+            "type": "number",
+            "description": "Сколько вопросов уже отвечено"
+          },
+          "correct": {
+            "type": "number"
+          },
+          "question": {
+            "nullable": true,
+            "description": "Текущий вопрос; null — все отвечены",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasQuizQuestionDto"
+              }
+            ]
+          },
+          "result": {
+            "nullable": true,
+            "description": "Только у завершённой сессии",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasQuizResultDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "total",
+          "answered",
+          "correct",
+          "question",
+          "result"
+        ]
+      },
+      "AtlasQuizAnswerBody": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "string",
+            "description": "ID варианта из вопроса"
+          }
+        },
+        "required": [
+          "optionId"
+        ]
+      },
+      "AtlasQuizAnswerResultDto": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "correctOptionId": {
+            "type": "string"
+          },
+          "next": {
+            "nullable": true,
+            "description": "Следующий вопрос; null — квиз пройден",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasQuizQuestionDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "correct",
+          "correctOptionId",
+          "next"
+        ]
+      },
+      "PreviewQuestionDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ]
+          }
+        },
+        "required": [
+          "text",
+          "options",
+          "difficulty"
+        ]
+      },
+      "AtlasPreviewDto": {
+        "type": "object",
+        "properties": {
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PreviewQuestionDto"
+            }
+          }
+        },
+        "required": [
+          "questions"
         ]
       }
     }

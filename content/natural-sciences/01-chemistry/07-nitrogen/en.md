@@ -2,7 +2,7 @@
 title: Nitrogen
 description: A versatile nonmetal essential for various scientific applications.
 funFact: Nitrogen makes up 78% of the air and is a building block of all amino acids and DNA.
-illustrationAlt: 'Bohr model of an atom: nitrogen, N. Protons in the nucleus: 7; electrons in shells: 2, 5.'
+illustrationAlt: 'Atom model: Nitrogen (N) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

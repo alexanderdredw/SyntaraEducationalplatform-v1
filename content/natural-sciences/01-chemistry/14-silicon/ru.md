@@ -6,14 +6,15 @@ element:
   symbol: Si
   number: 14
   group: metalloid
+  color: '#94A3B8'
 title: Кремний
 description: Основа современной электроники и второй по распространенности элемент в земной коре.
 funFact: Кремний дал название «Кремниевой долине» — мировому центру технологий. Он составляет 28% коры Земли.
 illustration: media/silicon-atom.webp
-illustrationAlt: 'Модель атома по Бору: кремний, Si. Протонов в ядре — 14; электроны по оболочкам — 2, 8, 4.'
+illustrationAlt: 'Модель атома: Кремний (Si) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/silicon-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

@@ -6,14 +6,15 @@ element:
   symbol: Ge
   number: 32
   group: metalloid
+  color: '#94A3B8'
 title: Германий
 description: Полупроводник, сыгравший ключевую роль в создании первых транзисторов и современной оптики.
 funFact: Первый в мире транзистор (1947 г.) был сделан из германия, а не из кремния.
 illustration: media/germanium-atom.webp
-illustrationAlt: 'Модель атома по Бору: германий, Ge. Протонов в ядре — 32; электроны по оболочкам — 2, 8, 18, 4.'
+illustrationAlt: 'Модель атома: Германий (Ge) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/germanium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

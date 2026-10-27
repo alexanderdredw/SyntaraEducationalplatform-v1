@@ -2,7 +2,7 @@
 title: Beryllium
 description: A lightweight, strong, and highly toxic alkaline earth metal, prized for its high thermal stability in aerospace engineering.
 funFact: Beryllium is highly transparent to X-rays, making it the premier material for manufacturing X-ray tube windows.
-illustrationAlt: 'Bohr model of an atom: beryllium, Be. Protons in the nucleus: 4; electrons in shells: 2, 2.'
+illustrationAlt: 'Atom model: Beryllium (Be) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -6,14 +6,15 @@ element:
   symbol: N
   number: 7
   group: nonmetal
+  color: '#3B82F6'
 title: Азот
 description: Газ, составляющий 78% атмосферы, основа белков и нуклеиновых кислот.
 funFact: Азот составляет 78% воздуха и является основой всех аминокислот и ДНК.
 illustration: media/nitrogen-atom.webp
-illustrationAlt: 'Модель атома по Бору: азот, N. Протонов в ядре — 7; электроны по оболочкам — 2, 5.'
+illustrationAlt: 'Модель атома: Азот (N) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/nitrogen-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

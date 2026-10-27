@@ -6,14 +6,15 @@ element:
   symbol: As
   number: 33
   group: metalloid
+  color: '#34D399'
 title: Мышьяк
 description: Полуметаллы с дурной славой яда, находящий применение в микроэлектронике и спецсплавах.
 funFact: Мышьяк называют «королем ядов» — он не имеет вкуса и запаха, что делало его популярным инструментом заговорщиков в древности.
 illustration: media/arsenic-atom.webp
-illustrationAlt: 'Модель атома по Бору: мышьяк, As. Протонов в ядре — 33; электроны по оболочкам — 2, 8, 18, 5.'
+illustrationAlt: 'Модель атома: Мышьяк (As) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/arsenic-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

@@ -6,13 +6,14 @@ element:
   symbol: In
   number: 49
   group: post_transition
+  color: '#E2E8F0'
 title: Индий
 description: Универсальный другой металл, необходимый для различных научных и промышленных применений.
 illustration: media/indium-atom.webp
-illustrationAlt: 'Модель атома по Бору: индий, In. Протонов в ядре — 49; электроны по оболочкам — 2, 8, 18, 18, 3.'
+illustrationAlt: 'Модель атома: Индий (In) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/indium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

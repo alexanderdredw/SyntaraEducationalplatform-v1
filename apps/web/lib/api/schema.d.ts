@@ -2036,6 +2036,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/subjects/{id}/atlas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentAtlasController_data"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/subjects/{id}/atlas-quiz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StudentAtlasController_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/atlas-quiz/{sid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentAtlasController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/atlas-quiz/{sid}/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StudentAtlasController_answer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/atlas-quiz/{sid}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StudentAtlasController_finish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/subjects/{id}/atlas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicAtlasController_data"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/atlas/{subjectId}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAtlasController_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/teacher/atlas/{subjectId}/topics/{topicId}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherAtlasController_topic"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2388,6 +2516,8 @@ export interface components {
         LessonSectionDto: {
             /** Format: uuid */
             id: string;
+            /** @description Код раздела базового урока из content/ (REQ-ATL-01: адрес окна учёного /scientists/:code) */
+            code?: string;
             number: number;
             title: string;
             body: string | null;
@@ -2527,6 +2657,11 @@ export interface components {
             hasGlossary?: boolean;
             /** @description Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml */
             periodicTable?: components["schemas"]["PeriodicTableDto"];
+            /**
+             * @description Модуль со своим интерфейсом (REQ-ATL-01): atlas-chemistry — «Mendeleev Atlas»; у остальных предметов поля нет
+             * @enum {string}
+             */
+            module?: "atlas-chemistry";
         };
         GlossaryTermDto: {
             /** Format: uuid */
@@ -2573,6 +2708,11 @@ export interface components {
             hasGlossary?: boolean;
             /** @description Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml */
             periodicTable?: components["schemas"]["PeriodicTableDto"];
+            /**
+             * @description Модуль со своим интерфейсом (REQ-ATL-01): atlas-chemistry — «Mendeleev Atlas»; у остальных предметов поля нет
+             * @enum {string}
+             */
+            module?: "atlas-chemistry";
         };
         UploadUrlBody: {
             /** @enum {string} */
@@ -3867,6 +4007,119 @@ export interface components {
             role: "student" | "teacher";
             student: components["schemas"]["StudentDashboardDto"] | null;
             teacher: components["schemas"]["TeacherDashboardDto"] | null;
+        };
+        AtlasSubjectDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+        };
+        AtlasElementDto: {
+            /** Format: uuid */
+            topicId: string;
+            /** @description Код темы без кода предмета: oxygen */
+            code: string;
+            number: number;
+            symbol: string;
+            /** @enum {string} */
+            group: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide";
+            /** @description Цвет элемента атласа #RRGGBB (REQ-ATL-04) */
+            color: string | null;
+            title: string;
+            description: string | null;
+            funFact: string | null;
+            /** @description Подписанная ссылка на 10 минут (BR-FILE-04) */
+            imageUrl: string | null;
+            imageAlt: string | null;
+            /**
+             * @description Статус темы — только у ученика (решение А-6)
+             * @enum {string}
+             */
+            status?: "mastered" | "started" | "not_started";
+        };
+        AtlasTopicRefDto: {
+            /** Format: uuid */
+            topicId: string;
+            title: string;
+            /** @enum {string} */
+            status?: "mastered" | "started" | "not_started";
+        };
+        AtlasDto: {
+            subject: components["schemas"]["AtlasSubjectDto"];
+            /** @description По атомному номеру */
+            elements: components["schemas"]["AtlasElementDto"][];
+            /** @description Урок «Учёные-химики» (экран «Учёные») */
+            scientists: components["schemas"]["AtlasTopicRefDto"] | null;
+            hasGlossary: boolean;
+            /** @description Показанный перевод ждёт вычитки (BR-CNT-05) */
+            needsReview: boolean;
+        };
+        AtlasQuizStartBody: {
+            /** @enum {string} */
+            kind: "elements" | "scientists";
+        };
+        AtlasQuizOptionDto: {
+            id: string;
+            title: string;
+        };
+        AtlasQuizQuestionDto: {
+            /** @description Номер вопроса с 1 */
+            index: number;
+            /** @enum {string} */
+            difficulty: "easy" | "medium" | "hard";
+            text: string;
+            /** @description Без признака правильного (BR-QZ-01) */
+            options: components["schemas"]["AtlasQuizOptionDto"][];
+        };
+        AtlasQuizMistakeDto: {
+            /** @description Код элемента или учёного */
+            code: string;
+            title: string;
+            description: string;
+        };
+        AtlasQuizResultDto: {
+            correct: number;
+            total: number;
+            /** @description Целые проценты */
+            percent: number;
+            /** @description BR-XP-05: 1 XP за верный ответ, не больше дневного лимита */
+            xpAwarded: number;
+            /** @description «Рекомендуется повторить» */
+            mistakes: components["schemas"]["AtlasQuizMistakeDto"][];
+        };
+        AtlasQuizSessionDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "elements" | "scientists";
+            /** @enum {string} */
+            status: "in_progress" | "finished";
+            total: number;
+            /** @description Сколько вопросов уже отвечено */
+            answered: number;
+            correct: number;
+            /** @description Текущий вопрос; null — все отвечены */
+            question: components["schemas"]["AtlasQuizQuestionDto"] | null;
+            /** @description Только у завершённой сессии */
+            result: components["schemas"]["AtlasQuizResultDto"] | null;
+        };
+        AtlasQuizAnswerBody: {
+            /** @description ID варианта из вопроса */
+            optionId: string;
+        };
+        AtlasQuizAnswerResultDto: {
+            correct: boolean;
+            correctOptionId: string;
+            /** @description Следующий вопрос; null — квиз пройден */
+            next: components["schemas"]["AtlasQuizQuestionDto"] | null;
+        };
+        PreviewQuestionDto: {
+            text: string;
+            options: string[];
+            /** @enum {string} */
+            difficulty: "easy" | "medium" | "hard";
+        };
+        AtlasPreviewDto: {
+            questions: components["schemas"]["PreviewQuestionDto"][];
         };
     };
     responses: never;
@@ -9606,6 +9859,359 @@ export interface operations {
             };
             /** @description Нет роли или неверный X-CSRF-Token */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_data: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AtlasQuizStartBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasQuizSessionDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description quizEmpty: нет вопросов */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasQuizSessionDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_answer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AtlasQuizAnswerBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasQuizAnswerResultDto"];
+                };
+            };
+            /** @description Вариант не из текущего вопроса */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description quizFinished: сессия завершена */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_finish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasQuizSessionDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description quizNotComplete | quizFinished */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PublicAtlasController_data: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAtlasController_preview: {
+        parameters: {
+            query: {
+                kind: "elements" | "scientists";
+            };
+            header?: never;
+            path: {
+                subjectId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasPreviewDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherAtlasController_topic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subjectId: string;
+                topicId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasPreviewDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

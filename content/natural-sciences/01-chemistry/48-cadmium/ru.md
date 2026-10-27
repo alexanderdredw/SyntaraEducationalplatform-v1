@@ -6,13 +6,14 @@ element:
   symbol: Cd
   number: 48
   group: transition_metal
+  color: '#94A3B8'
 title: Кадмий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/cadmium-atom.webp
-illustrationAlt: 'Модель атома по Бору: кадмий, Cd. Протонов в ядре — 48; электроны по оболочкам — 2, 8, 18, 18, 2.'
+illustrationAlt: 'Модель атома: Кадмий (Cd) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/cadmium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

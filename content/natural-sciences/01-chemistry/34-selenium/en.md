@@ -2,7 +2,7 @@
 title: Selenium
 description: A versatile nonmetal essential for various scientific and industrial applications.
 funFact: 'Selenium is an excellent photoconductor: its electrical resistance falls thousands of times when it is lit.'
-illustrationAlt: 'Bohr model of an atom: selenium, Se. Protons in the nucleus: 34; electrons in shells: 2, 8, 18, 6.'
+illustrationAlt: 'Atom model: Selenium (Se) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

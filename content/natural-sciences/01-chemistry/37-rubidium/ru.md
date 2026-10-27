@@ -6,14 +6,15 @@ element:
   symbol: Rb
   number: 37
   group: alkali_metal
+  color: '#EF4444'
 title: Рубидий
 description: Мягкий щелочной металл, используемый в атомных часах и лазерных технологиях.
 funFact: Рубидий настолько активен, что может воспламениться на воздухе просто от влажности.
 illustration: media/rubidium-atom.webp
-illustrationAlt: 'Модель атома по Бору: рубидий, Rb. Протонов в ядре — 37; электроны по оболочкам — 2, 8, 18, 8, 1.'
+illustrationAlt: 'Модель атома: Рубидий (Rb) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/rubidium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

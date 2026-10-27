@@ -2,7 +2,7 @@
 title: Nickel
 description: A versatile transition metal essential for various scientific and industrial applications.
 funFact: Many meteorites are made of an iron–nickel alloy — this is how people first came across metallic iron.
-illustrationAlt: 'Bohr model of an atom: nickel, Ni. Protons in the nucleus: 28; electrons in shells: 2, 8, 16, 2.'
+illustrationAlt: 'Atom model: Nickel (Ni) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -185,6 +185,7 @@ export async function applyCatalog(
           isOfficial: true,
           inPublicCatalog: true,
           blocks: s.blocks,
+          module: s.module ?? null,
         })
         .returning({ id: subjects.id });
       summary.subjects.created++;
@@ -194,7 +195,8 @@ export async function applyCatalog(
       row.archivedAt ||
       !row.inPublicCatalog ||
       !row.isOfficial ||
-      row.blocks.join() !== s.blocks.join()
+      row.blocks.join() !== s.blocks.join() ||
+      row.module !== (s.module ?? null)
     ) {
       await tx
         .update(subjects)
@@ -205,6 +207,7 @@ export async function applyCatalog(
           inPublicCatalog: true,
           isOfficial: true,
           blocks: s.blocks,
+          module: s.module ?? null,
         })
         .where(eq(subjects.id, row.id));
       summary.subjects.updated++;
@@ -501,6 +504,7 @@ export async function applyCatalog(
       coverMediaId,
       coverUrl: null,
       materialIds: [],
+      ...(t.elementColor ? { element: { color: t.elementColor } } : {}),
       ...(t.timeline ? { timeline: t.timeline } : {}),
     };
     // Хеш содержимого: снимок, квиз и картинки — изменённый файл любой из частей даёт новую версию (BR-CNT-04).

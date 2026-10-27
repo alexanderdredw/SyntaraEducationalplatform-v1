@@ -6,14 +6,15 @@ element:
   symbol: Na
   number: 11
   group: alkali_metal
+  color: '#94A3B8'
 title: Натрий
 description: Мягкий, серебристый и крайне активный металл, ключевой элемент для жизни и промышленности.
 funFact: Натрий регулирует водно-солевой баланс в клетках — без него невозможна передача нервных импульсов.
 illustration: media/sodium-atom.webp
-illustrationAlt: 'Модель атома по Бору: натрий, Na. Протонов в ядре — 11; электроны по оболочкам — 2, 8, 1.'
+illustrationAlt: 'Модель атома: Натрий (Na) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/sodium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

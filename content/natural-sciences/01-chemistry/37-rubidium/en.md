@@ -2,7 +2,7 @@
 title: Rubidium
 description: A versatile alkali metal essential for various scientific and industrial applications.
 funFact: Rubidium is so reactive that it can catch fire in air simply because of humidity.
-illustrationAlt: 'Bohr model of an atom: rubidium, Rb. Protons in the nucleus: 37; electrons in shells: 2, 8, 18, 8, 1.'
+illustrationAlt: 'Atom model: Rubidium (Rb) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

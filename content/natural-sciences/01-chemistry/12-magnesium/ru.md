@@ -6,14 +6,15 @@ element:
   symbol: Mg
   number: 12
   group: alkaline_earth
+  color: '#CBD5E1'
 title: Магний
 description: Легкий металл, необходимый для фотосинтеза растений и работы мышц человека.
 funFact: Магний — центральный атом молекулы хлорофилла, без которого невозможен фотосинтез растений.
 illustration: media/magnesium-atom.webp
-illustrationAlt: 'Модель атома по Бору: магний, Mg. Протонов в ядре — 12; электроны по оболочкам — 2, 8, 2.'
+illustrationAlt: 'Модель атома: Магний (Mg) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/magnesium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

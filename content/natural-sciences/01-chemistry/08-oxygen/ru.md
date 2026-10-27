@@ -6,14 +6,15 @@ element:
   symbol: O
   number: 8
   group: nonmetal
+  color: '#EF4444'
 title: Кислород
 description: Жизненно важный газ, необходимый для аэробного дыхания и горения.
 funFact: Кислород — третий по распространённости элемент во Вселенной и первый по массе в земной коре (46%).
 illustration: media/oxygen-atom.webp
-illustrationAlt: 'Модель атома по Бору: кислород, O. Протонов в ядре — 8; электроны по оболочкам — 2, 6.'
+illustrationAlt: 'Модель атома: Кислород (O) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/oxygen-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

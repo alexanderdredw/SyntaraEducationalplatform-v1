@@ -6,14 +6,15 @@ element:
   symbol: Zr
   number: 40
   group: transition_metal
+  color: '#CBD5E1'
 title: Цирконий
 description: Металл с уникальной прозрачностью для нейтронов, основа оболочек ядерного топлива.
 funFact: Цирконий почти не поглощает нейтроны, что делает его незаменимым материалом для строительства ядерных реакторов.
 illustration: media/zirconium-atom.webp
-illustrationAlt: 'Модель атома по Бору: цирконий, Zr. Протонов в ядре — 40; электроны по оболочкам — 2, 8, 18, 10, 2.'
+illustrationAlt: 'Модель атома: Цирконий (Zr) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/zirconium-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 

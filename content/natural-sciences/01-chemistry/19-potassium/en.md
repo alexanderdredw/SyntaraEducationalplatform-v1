@@ -2,7 +2,7 @@
 title: Potassium
 description: A versatile alkali metal essential for various scientific applications.
 funFact: Potassium-40 is a naturally radioactive isotope found in bananas and in the human body.
-illustrationAlt: 'Bohr model of an atom: potassium, K. Protons in the nucleus: 19; electrons in shells: 2, 8, 8, 1.'
+illustrationAlt: 'Atom model: Potassium (K) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
 

@@ -6,14 +6,15 @@ element:
   symbol: P
   number: 15
   group: nonmetal
+  color: '#FDE047'
 title: Фосфор
 description: Жизненно важный элемент, входящий в состав ДНК, костей и обеспечивающий перенос энергии в клетках.
 funFact: Фосфор был открыт в 1669 году при перегонке мочи — его назвали «холодным огнём» из-за свечения в темноте.
 illustration: media/phosphorus-atom.webp
-illustrationAlt: 'Модель атома по Бору: фосфор, P. Протонов в ядре — 15; электроны по оболочкам — 2, 8, 5.'
+illustrationAlt: 'Модель атома: Фосфор (P) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
   - file: media/phosphorus-atom.webp
-    source: Собственная схема Syntara (модель Бора), исходник — scripts/content-art/atoms.mjs
+    source: Mendeleev Atlas, собственная работа владельца (сгенерировано ИИ)
     license: own
 ---
 
