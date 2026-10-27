@@ -8,7 +8,7 @@ import { startStack, type TestStack } from './support/stack';
 /**
  * Модуль «Mendeleev Atlas» (docs/CHEM_TZ_2.md): модуль предмета (REQ-ATL-01), данные экранов (API-S-23, API-PUB-15),
  * квиз «Проверь знания» и игра «Кто этот учёный?» с XP (API-S-24…27, BR-XP-05, AC-ATL-06), предпросмотр учителя
- * (API-T-31, API-T-32, решение А-9), права (REQ-ATL-06.5, AC-ATL-11).
+ * (API-T-32, API-T-33, решение А-9), права (REQ-ATL-06.5, AC-ATL-11).
  */
 describe('atlas (integration)', () => {
   let stack: TestStack;
@@ -248,7 +248,7 @@ describe('atlas (integration)', () => {
     expect(session?.answers).toBe(0);
   });
 
-  it('decision А-9, API-T-31, API-T-32 a teacher previews questions without answers; a student cannot', async () => {
+  it('decision А-9, API-T-32, API-T-33 a teacher previews questions without answers; a student cannot', async () => {
     const preview = await as(teacher)
       .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
       .expect(200);

@@ -153,7 +153,7 @@ class PreviewQuestionDto {
   @ApiProperty({ enum: ['easy', 'medium', 'hard'] }) difficulty: AtlasDifficulty;
 }
 
-/** API-T-31: предпросмотр вопросов для учителя — без правильных ответов (решение А-9). */
+/** API-T-32: предпросмотр вопросов для учителя — без правильных ответов (решение А-9). */
 export class AtlasPreviewDto {
   @ApiProperty({ type: PreviewQuestionDto, isArray: true }) questions: PreviewQuestionDto[];
 }

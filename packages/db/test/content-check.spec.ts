@@ -151,6 +151,18 @@ describe('content check', () => {
     );
   });
 
+  it('REQ-ATL-01 subject.yaml module: only known modules', () => {
+    edit('natural-sciences/01-chemistry/subject.yaml', 'module: atlas-chemistry', 'module: atlas-physics');
+    expect(messages()).toEqual([expect.stringMatching(/subject\.yaml: module — модуль: atlas-chemistry/)]);
+  });
+
+  it('REQ-ATL-04 element.color: colour #RRGGBB', () => {
+    edit('natural-sciences/01-chemistry/08-oxygen/ru.md', "  color: '#EF4444'", "  color: 'red'");
+    expect(messages()).toEqual([
+      expect.stringMatching(/08-oxygen\/ru\.md: element\.color — цвет вида #RRGGBB/),
+    ]);
+  });
+
   it('REQ-TL-01 timeline.yaml: events point to existing sections; birth before death; sorted by year', () => {
     const file = 'natural-sciences/01-chemistry/61-chemists/timeline.yaml';
     const ok = checkContent(dir);

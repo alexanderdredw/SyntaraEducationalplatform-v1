@@ -385,7 +385,10 @@ export default function AtlasSearch() {
                     <h4 className="result-card-title">
                       <Highlight text={e.title} query={query} />
                     </h4>
-                    <span className="result-card-group" style={{ color: e.color ?? undefined }}>
+                    <span
+                      className="result-card-group atlas-gtext"
+                      style={{ color: e.color ?? undefined, ['--atlas-gc' as string]: e.color ?? undefined }}
+                    >
                       {t(`group.${e.group}`)}
                     </span>
                   </div>

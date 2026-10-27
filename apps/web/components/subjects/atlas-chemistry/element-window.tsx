@@ -106,13 +106,30 @@ export default function ElementWindow({
           }}
         >
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 900, color: groupColor, lineHeight: 1 }}>
+            <div
+              className="atlas-gtext"
+              style={{
+                fontSize: '2rem',
+                fontWeight: 900,
+                color: groupColor,
+                lineHeight: 1,
+                ['--atlas-gc' as string]: groupColor,
+              }}
+            >
               {e.symbol}
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{e.number}</div>
           </div>
           <div style={{ borderLeft: `1px solid ${groupColor}30`, paddingLeft: 12 }}>
-            <div style={{ fontSize: '0.75rem', color: groupColor, fontWeight: 600 }}>
+            <div
+              className="atlas-gtext"
+              style={{
+                fontSize: '0.75rem',
+                color: groupColor,
+                fontWeight: 600,
+                ['--atlas-gc' as string]: groupColor,
+              }}
+            >
               {t(`group.${e.group}`)}
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: 2 }}>

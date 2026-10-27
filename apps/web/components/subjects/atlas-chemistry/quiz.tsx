@@ -515,7 +515,7 @@ function Result({
   );
 }
 
-/** Предпросмотр учителя (API-T-31, решение А-9): вопросы квиза или игры без правильных ответов. */
+/** Предпросмотр учителя (API-T-32, решение А-9): вопросы квиза или игры без правильных ответов. */
 function TeacherPreview({ kind }: { kind: AtlasQuizKind }) {
   const t = useTranslations('atlas');
   const locale = useLocale();

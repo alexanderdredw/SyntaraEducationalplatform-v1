@@ -238,7 +238,7 @@ function Run({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
   );
 }
 
-/** Предпросмотр учителя (API-T-32): вопросы теста без правильных ответов, ничего не записывается. */
+/** Предпросмотр учителя (API-T-33): вопросы теста без правильных ответов, ничего не записывается. */
 function TeacherPreview({ topicId }: { topicId: string }) {
   const t = useTranslations('atlas');
   const locale = useLocale();

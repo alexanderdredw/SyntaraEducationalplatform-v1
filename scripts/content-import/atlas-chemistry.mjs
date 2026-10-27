@@ -245,7 +245,9 @@ function write(rel, content) {
  * `*_atom_lux.png`), → WebP q85 без уменьшения (1024 px — чётко в окне элемента). Больше 300 КБ — ошибка.
  */
 async function atomImage(file) {
-  const buf = await sharp(readFileSync(join(SRC, file))).webp({ quality: 85 }).toBuffer();
+  const buf = await sharp(readFileSync(join(SRC, file)))
+    .webp({ quality: 85 })
+    .toBuffer();
   if (buf.length > 300 * 1024) problems.push(`${file}: WebP ${Math.round(buf.length / 1024)} КБ > 300 КБ`);
   return buf;
 }

@@ -4452,3 +4452,45 @@
 .atlas button.mode-card:disabled {
   cursor: default;
 }
+
+/*
+ * REQ-ATL-06.4 — минимальное исправление доступности (показать владельцу): подсветка совпадений Поиска #007aff на
+ * синеватом фоне — контраст ≈ 3,5 : 1; оттенок синего чуть светлее в тёмной теме и темнее в светлой — ≥ 4,5 : 1.
+ */
+.atlas .search-highlight {
+  color: #4da3ff;
+}
+
+:root[data-theme='light'] .atlas .search-highlight {
+  color: #0058b8;
+}
+
+/*
+ * REQ-ATL-06.4 — минимальные исправления контраста (показать владельцу), axe serious:
+ * чипы разделов Глоссария (#86868b на светлой подложке — 4,0 : 1) — текст чуть светлее; в светлой теме текст цвета
+ * группы и синие ссылки — затемнены смешением с чёрным (оттенок группы сохраняется); подзаголовок квиза на телефоне —
+ * прозрачность 0,95 вместо 0,85.
+ */
+.atlas .glossary-nav-chip {
+  color: #a1a1a6;
+}
+
+:root[data-theme='light'] .atlas .glossary-nav-chip {
+  color: var(--text-secondary);
+}
+
+:root[data-theme='light'] .atlas .atlas-gtext,
+:root[data-theme='light'] .atlas .atlas-ptable-number {
+  color: color-mix(in srgb, var(--atlas-gc, var(--cell-color)) 50%, #000000) !important;
+}
+
+:root[data-theme='light'] .atlas .resource-link,
+:root[data-theme='light'] .atlas .read-more-btn {
+  color: #0058b8;
+}
+
+@media (max-width: 480px) {
+  .atlas .hero-subtitle {
+    opacity: 0.95;
+  }
+}

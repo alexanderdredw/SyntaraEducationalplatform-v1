@@ -125,7 +125,7 @@ export class PublicAtlasController {
 export class TeacherAtlasController {
   constructor(private readonly quiz: AtlasQuizService) {}
 
-  /** API-T-31: вопросы квиза «Проверь знания» (elements) или игры про учёных (scientists). */
+  /** API-T-32: вопросы квиза «Проверь знания» (elements) или игры про учёных (scientists). */
   @Get(':subjectId/preview')
   @ApiQuery({ name: 'kind', enum: ATLAS_QUIZ_KINDS })
   @ApiOkResponse({ type: AtlasPreviewDto })
@@ -138,7 +138,7 @@ export class TeacherAtlasController {
     return this.quiz.preview(subjectId, query.kind, locale(req));
   }
 
-  /** API-T-32: вопросы теста темы атласа (элемент или «Учёные-химики»). */
+  /** API-T-33: вопросы теста темы атласа (элемент или «Учёные-химики»). */
   @Get(':subjectId/topics/:topicId/questions')
   @ApiOkResponse({ type: AtlasPreviewDto })
   @ApiNotFoundResponse()

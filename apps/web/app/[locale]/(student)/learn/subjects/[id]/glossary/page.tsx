@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { SubjectGlossary } from '@/components/learn/glossary';
-import { AtlasView } from '@/components/subjects/atlas-chemistry/atlas-view';
+import AtlasGlossary from '@/components/subjects/atlas-chemistry/glossary';
 import { subjectModule } from '@/lib/atlas';
 import { requireLearnVisible } from '@/lib/require-owned';
 
@@ -15,7 +15,6 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
     `/api/student/subjects/${encodeURIComponent(id)}/glossary`,
     `/api/public/subjects/${encodeURIComponent(id)}/glossary`,
   );
-  if ((await subjectModule(id, locale)) === 'atlas-chemistry')
-    return <AtlasView route={{ screen: 'glossary' }} />;
+  if ((await subjectModule(id, locale)) === 'atlas-chemistry') return <AtlasGlossary />;
   return <SubjectGlossary id={id} />;
 }

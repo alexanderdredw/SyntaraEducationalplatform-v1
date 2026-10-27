@@ -233,6 +233,8 @@ pnpm lint && pnpm typecheck
 
 `Button` (variant: primary-blue, primary-white, secondary, text, publish, ai), `Card`, `Pill`, `Tabs` (капсульные), `SegmentedControl` (RU/KK/EN, тип, сложность, период), `Field` (label + input + error + hint), `Select`, `Textarea`, `Checkbox`, `Radio`, `Modal`, `Accordion`, `ProgressBar`, `Badge`, `EmptyState`, `Toast`, `Skeleton`, `Sidebar`, `Header`, `Footer`, `FloatingHelp`. Все компоненты MUST поддерживать клавиатуру и видимый фокус (Radix UI).
 
+**Исключение — модуль «Mendeleev Atlas» (docs/CHEM_TZ_2.md, REQ-ATL-01.3):** интерфейс предмета «Химия» повторяет оригинальный сайт атласа и использует его собственные стили, шрифты и эффекты в изолированной области (корневой класс `.atlas`, `apps/web/components/subjects/atlas-chemistry/`). Правило «только токены и компоненты packages/ui» на модуль не распространяется; права на сервере, i18n, доступность, бюджеты, миграции и безопасность действуют полностью.
+
 ## 3.3 Оболочка (REQ-GEN-SHELL)
 
 | **ID** | **Требование** |
@@ -312,6 +314,7 @@ pnpm lint && pnpm typecheck
 | /learn/sections/:id | Раздел каталога | student; гость (BR-VIS-04) | U03 | 8.4.2 |
 | /learn/subjects/:id | Предмет: темы и их статусы | student; гость — базовый предмет, без статусов (BR-VIS-04) | — | 8.4.2 |
 | /learn/subjects/:id/glossary | Глоссарий предмета (REQ-GLOS-02…06) | student; гость — базовый предмет (BR-VIS-04); нет глоссария → 404 | — | 8.4.2 |
+| /learn/subjects/:id (модуль atlas-chemistry), …/explore[?group=&view=table], …/explore/:code[/test][?assignment=], …/scientists[/:code \| /test], …/quiz[?session=], …/search[?q=], …/glossary[#t-:termId], …/ai[?element=:code \| ?scientists=1] | «Mendeleev Atlas»: Главная, Explore и окно элемента, тест элемента, Учёные и окно учёного, тест урока «Учёные-химики», квиз «Проверь знания», Поиск, Глоссарий, Syntara AI (REQ-ATL-01…03, docs/ATLAS_MAP.md, раздел 2) | student; гость — обзорные экраны, тест, квиз и ИИ — через вход (REQ-ATL-06); учитель — предпросмотр (решение А-9); предмет без модуля → 404 | — | 8.4.11 |
 | /learn/topics/:id?tab=overview|quiz|ai | Урок | student; гость — «Обзор» базового урока, на «Квиз» и «Syntara AI» — приглашение войти (REQ-ST-LES-06) | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
 | /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
 | /learn/progress | Мои показатели | student | U08 | 8.4.6 |
@@ -495,6 +498,9 @@ ALTER TABLE subjects ADD COLUMN blocks text[] NOT NULL DEFAULT '{}'
   CONSTRAINT subjects_blocks CHECK (blocks <@ ARRAY['periodic-table']::text[]);
 ALTER TABLE topics ADD COLUMN element_number smallint CONSTRAINT topics_element_number CHECK (element_number BETWEEN 1 AND 118);
 CREATE UNIQUE INDEX ux_topics_subject_element ON topics (subject_id, element_number) WHERE element_number IS NOT NULL;
+-- Модуль «Mendeleev Atlas» (REQ-ATL-01, миграция 0016): интерфейс базового предмета из subject.yaml (module).
+ALTER TABLE subjects ADD COLUMN module text
+  CONSTRAINT subjects_module CHECK (module IS NULL OR (is_official AND module IN ('atlas-chemistry')));
 ```
 
 ## 5.5 Квизы и задания
@@ -545,10 +551,18 @@ CREATE TABLE attempt_answers (attempt_id uuid REFERENCES quiz_attempts, question
   answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
 
 CREATE TABLE learning_events (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
-  type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question')),
+  type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question','atlas_quiz_finished')),
   subject_id uuid REFERENCES subjects, topic_id uuid REFERENCES topics, occurred_at timestamptz NOT NULL,
   idempotency_key text NOT NULL, UNIQUE (student_id, idempotency_key));
 CREATE INDEX ix_events_student_time ON learning_events (student_id, occurred_at);
+-- Квиз «Проверь знания» и игра «Кто этот учёный?» атласа (REQ-ATL-03, BR-XP-05, миграция 0016): вопросы строит и
+-- проверяет сервер; state — очередь, сложность, текущий вопрос, ответы. RLS «только свои» (как nav_seen).
+CREATE TABLE atlas_quiz_sessions (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
+  subject_id uuid NOT NULL REFERENCES subjects, kind text NOT NULL CHECK (kind IN ('elements','scientists')),
+  status text NOT NULL DEFAULT 'in_progress' CHECK (status IN ('in_progress','finished')), state jsonb NOT NULL,
+  correct_count int NOT NULL DEFAULT 0, total int NOT NULL, xp_awarded int NOT NULL DEFAULT 0, finished_at timestamptz,
+  created_at, updated_at, CHECK (correct_count BETWEEN 0 AND total AND xp_awarded >= 0));
+CREATE INDEX ix_atlas_quiz_student_time ON atlas_quiz_sessions (student_id, created_at);
 
 CREATE TABLE topic_mastery (student_id uuid REFERENCES users, topic_id uuid REFERENCES topics,
   best_percent numeric(5,2) NOT NULL, attempts_count int NOT NULL, mastered_at timestamptz,
@@ -793,6 +807,7 @@ CREATE TABLE known_devices (
 | API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
 | API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }], chapters? }` — без статусов; `chapters: [{ id, title, topicIds }]` — только у предмета с главами (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); `periodicTable: { elements: [{ number, topicId }] }` — только если в subject.yaml включён блок periodic-table (REQ-PTBL-01); не базовый → 404 |
 | API-PUB-14 | GET /api/public/subjects/:id/glossary | — | Глоссарий базового предмета для гостя (REQ-GLOS-02): как API-S-22; не базовый или без глоссария → 404 |
+| API-PUB-15 | GET /api/public/subjects/:id/atlas | — | Данные экранов «Mendeleev Atlas» для гостя (REQ-ATL-03): как API-S-23, без `status` и `stats`; предмет не базовый или без модуля atlas-chemistry → 404 |
 | API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
 
 ## 6.3 Аутентификация и профиль
@@ -857,6 +872,8 @@ CREATE TABLE known_devices (
 | API-T-29 | GET /api/teacher/classes/:id/mastery | `?subjectId` (необязательно; по умолчанию — первый предмет API-T-28) → `{ subjects: [{ id, title, official }], subjectId, topics: [{ id, title }], students: [{ id, name }], cells: [{ studentId, topicId, status: 'mastered'|'started'|'not_started', percent }] }` — «Карта освоения»; чужой класс или недоступный предмет → 404 |
 | API-T-30 | DELETE /api/teacher/topics/:id | Удалить черновик темы (BR-DEL-01…03) → 204. Тема публиковалась (есть версия или `published_version_id`) или есть следы учеников → 409 `topicHasHistory`; есть задание → 409 `topicHasAssignments`; чужая или базовая тема → 404; CSRF. `deletable` в API-T-03 (список тем) и API-T-10 GET — можно ли удалить |
 | API-T-31 | DELETE /api/teacher/gallery/:mediaId | Удалить свою картинку галереи в любом статусе (BR-DEL-04/05) → 204. Обложка черновика или опубликованной версии темы → 409 `coverInUse`; картинка вопроса Battle → 409 `coverInUseBattle`; чужая → 404; CSRF |
+| API-T-32 | GET /api/teacher/atlas/:subjectId/preview?kind=elements\|scientists | Предпросмотр учителя (решение А-9): вопросы квиза «Проверь знания» или игры «Кто этот учёный?» на среднем уровне — `{ questions: [{ text, options: string[], difficulty }] }`, без правильных ответов, ничего не сохраняется; предмет без модуля → 404 |
+| API-T-33 | GET /api/teacher/atlas/:subjectId/topics/:topicId/questions | Предпросмотр учителя (решение А-9): вопросы теста темы атласа в том же формате, без правильных ответов; тема не этого предмета → 404 |
 | API-T-26 | GET /api/teacher/classes/:id/roster | Ростер: минимальная версия — `[{ id, displayName, login, hasEmail }]` активных учеников (страница «Ростер» — PH-24) |
 | API-T-27 | POST /api/teacher/classes/:id/students/:studentId/temporary-password | Временный пароль ученику своего класса без email → `{ temporaryPassword }` (показывается один раз); ученик меняет его при входе (API-AUTH-05) |
 
@@ -869,7 +886,7 @@ CREATE TABLE known_devices (
 | API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
 | API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
 | API-S-05 | GET /api/student/sections/:id | Предметы раздела (`status: 'available'|'soon'`, BR-CNT-08) |
-| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05); `timeline?: [{ year, sectionId, name, title, lived: { from, to } | null }]` — лента времени базового урока (REQ-TL-01), только у темы с timeline.yaml |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05); `timeline?: [{ year, sectionId, name, title, lived: { from, to } | null }]` — лента времени базового урока (REQ-TL-01), только у темы с timeline.yaml; `sections[].code` — код раздела базового урока из content/ (адрес окна учёного атласа /scientists/:code, REQ-ATL-01) |
 | API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` Тело (необязательно): `{ assignmentId }` — попытка из задания (решение по Q-18): назначение действующего класса ученика по этой теме, иначе 404; незавершённая попытка продолжается и связывается с заданием. |
 | API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
@@ -881,10 +898,15 @@ CREATE TABLE known_devices (
 | API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
 | API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
 | API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
-| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); `periodicTable: { elements: [{ number, topicId }] }` — только если включён блок periodic-table, элементы опубликованных тем (REQ-PTBL-01, REQ-PTBL-04); предмет не виден (BR-VIS-01) → 404 |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); `periodicTable: { elements: [{ number, topicId }] }` — только если включён блок periodic-table, элементы опубликованных тем (REQ-PTBL-01, REQ-PTBL-04); `module: 'atlas-chemistry'` — только у предмета с модулем атласа (REQ-ATL-01); предмет не виден (BR-VIS-01) → 404 |
 | API-S-19 | GET /api/student/class/overview | «Мой класс» (REQ-NAV-11), только чтение: `{ class: StudentClassDto | null, subjects: [{ id, title, description, topicsTotal, topicsMastered, isNew }], upcomingAssignments: StudentAssignmentDto[] }` — предметы, выданные действующему классу ученика (без отзыва, не в архиве); `topicsMastered` — темы с mastered_at; `isNew` — выдан после отметки `nav_seen('class')` (нет отметки — новый); до 3 несданных заданий, ближайший срок — первым (как API-S-10). Путь — `class/overview`: `GET /api/student/class` занят API-S-02, существующие операции не меняются (TODO(OWNER): подтвердить путь). |
 | API-S-20 | GET /api/student/nav-badges | `{ assignmentsOpen, assignmentsOverdue, classHasNew, achievementsHasNew }` (REQ-NAV-14): несданные задания API-S-10 и из них просроченные; предмет выдан классу или бейдж получен позже отметки `nav_seen` (нет отметки — всё новое). |
 | API-S-22 | GET /api/student/subjects/:id/glossary | Глоссарий предмета (REQ-GLOS-01…04): `{ subject: { id, title }, sections: [{ id, title, terms: [{ id, term, definition }] }], needsReview }` — разделы по position, термины по алфавиту языка ответа (Intl.Collator), перевода нет — RU; `needsReview` — показан перевод на проверке; предмет не виден (BR-VIS-01) или без глоссария → 404 |
+| API-S-23 | GET /api/student/subjects/:id/atlas | Данные экранов «Mendeleev Atlas» (REQ-ATL-03, REQ-ATL-04): `{ subject: { id, title }, elements: [{ topicId, code, number, symbol, group, color, title, description, funFact, imageUrl, imageAlt, status }], scientists: { topicId, title, status } \| null, hasGlossary, needsReview, stats: { weak, recommended, accuracy } }` — элементы по атомному номеру; `imageUrl` — подписанная ссылка (BR-FILE-04); `stats` — показатели Syntara AI (решение А-15); предмет не виден (BR-VIS-01) или без модуля → 404 |
+| API-S-24 | POST /api/student/subjects/:id/atlas-quiz | `{ kind?: 'elements' \| 'scientists' }` (по умолчанию elements) → 201 `{ id, kind, status, total, answered, correct, question: { index, difficulty, text, options: [{ id, title }] } \| null, result: { correct, total, percent, xpAwarded, mistakes: [{ code, title, description }] } \| null }` — 10 элементов или 9 учёных в случайном порядке; правильный вариант не передаётся (BR-QZ-01); вопросов меньше двух → 409 `quizEmpty` |
+| API-S-25 | POST /api/student/atlas-quiz/:sid/answers | `{ optionId }` → `{ correct, correctOptionId, next }` — проверка сразу; следующий вопрос — по адаптивной сложности оригинала (packages/shared/src/atlas.ts); вариант не из текущего вопроса → 400; сессия завершена → 409 `quizFinished`; чужая → 404 (BR-ACL-03) |
+| API-S-26 | GET /api/student/atlas-quiz/:sid | Состояние своей сессии на языке запроса (обновление страницы, смена языка); чужая → 404 |
+| API-S-27 | POST /api/student/atlas-quiz/:sid/finish | После ответа на все вопросы: событие `atlas_quiz_finished` (ключ `atlas-quiz:{sid}`), XP по BR-XP-05, день серии (BR-ST-02); ответ — сессия с `result`; есть неотвеченные → 409 `quizNotComplete`; повтор → 409 `quizFinished` |
 | API-S-21 | POST /api/student/nav-seen | `{ section: 'class'|'achievements' }` → 204; отметка «раздел открыт сейчас» (upsert). Иной section → 400. |
 
 ## 6.6 Служебная поддержка
@@ -1119,6 +1141,11 @@ BR-BDG-01 Бейджи и правила (rule jsonb):
 BR-BDG-02 Бейдж выдаётся один раз (PK student_id, badge_id).
 BR-XP-04  Начисление XP, пересчёт уровня и серии и выдача бейджей — синхронно, в транзакции события (finish, lesson_opened);
           отдельной очереди пересчёта нет (решение по Q-17). Серия в хедере учитывает дату последней активности (API-S-16).
+BR-XP-05  Квиз «Проверь знания» и игра «Кто этот учёный?» атласа (решение владельца А-11, 2026-10-27): событие
+          atlas_quiz_finished → xp.atlas_quiz_per_correct (1) XP за каждый правильный ответ, всего не больше
+          xp.atlas_quiz_daily_cap (20) XP в день в PLATFORM_TZ — общий лимит обоих (reason = 'atlas_quiz'; блокировка
+          по ученику). Событие засчитывается в серию дней и «Активность» (BR-ST-02, STREAK_EVENTS); бейджи «по квизам»,
+          освоение тем и задания не затрагиваются.
 ```
 
 ## 7.4 Показатели (PH-38)
@@ -1392,6 +1419,27 @@ REQ-TL-02 Блок показывается в уроке над раздела�
 REQ-TL-03 Компьютер — горизонтальная шкала с точками; телефон — вертикальный список.
 REQ-TL-04 Нажатие на точку раскрывает раздел учёного и прокручивает к нему.
 REQ-TL-05 Доступность: список с кнопками, видимый фокус; без анимаций (в том числе в «Экономии трафика»).
+
+REQ-ATL-01 «Химия» — модуль «Mendeleev Atlas» (docs/CHEM_TZ_2.md, docs/ATLAS_MAP.md): subject.yaml module:
+          atlas-chemistry → subjects.module. У каждого раздела и окна свой адрес (раздел 4); старые адреса уроков
+          химии — 308 на экраны атласа (?tab=quiz → тест, ?assignment= сохраняется). Код —
+          apps/web/components/subjects/atlas-chemistry/, стили изолированы (.atlas). Остальные предметы не меняются.
+REQ-ATL-02 Оболочка: шапка и левая панель платформы; под шапкой — полоса атласа: логотип «MENDELEEV ATLAS» и
+          «таблетка» из 7 разделов. Тема и язык — переключатели платформы; своих кнопок темы и языка у атласа нет.
+          Телефон — «☰ Меню» и логотип, меню оригинала (Esc, возврат фокуса); плавающие кнопки платформы скрыты, пока
+          меню открыто (решение А-12).
+REQ-ATL-03 Экраны — вид и поведение оригинала (эталоны docs/media/chem-ref/): Главная, Explore (+ вид «Таблица»),
+          окно элемента с «Пройти тест», Учёные (+ игра «Кто этот учёный?» и «Пройти тест» урока «Учёные-химики»),
+          квиз «Проверь знания», Поиск, Глоссарий «Химический лексикон», Syntara AI. Тест — движок квиза платформы
+          (BR-QZ-*); квиз и игра — API-S-24…27 с XP BR-XP-05; ИИ — учебный ИИ платформы (API-S-11…13).
+REQ-ATL-04 Данные — content/ (исправленное содержание): element.color у темы-элемента (#RRGGBB, content:check),
+          картинки атомов — оригиналы атласа; тексты интерфейса — i18n atlas.* (RU/KK/EN, KK и EN — на проверке).
+REQ-ATL-05 Картинки атомов — WebP ≤ 300 КБ, license own; портреты — Wikimedia Commons (PD), у Ходжкин — инициалы;
+          ленивая загрузка, без сдвига вёрстки.
+REQ-ATL-06 Без внешних CDN (шрифты локально); частицы — canvas, пауза на скрытой вкладке, статичны при
+          prefers-reduced-motion и в «Экономии трафика»; экраны — отдельные страницы (свой чанк), JS ≤ 500 КБ; axe без
+          serious/critical (минимальные исправления контраста — atlas.css); тест, квиз и ИИ — после входа, учитель —
+          предпросмотр (API-T-32/33). Ключ DeepSeek, secrets.js, api/chat.py, netlify/ не переносятся.
 ```
 
 ## 7.12 Battle (итерация 10.5)
@@ -1985,6 +2033,10 @@ answered: ссылка «Перейти к предмету». Баллы не �
 
 Вопросы владельцу (PROFILE_TZ_2): `TODO(OWNER)` — письма о входе с нового устройства ученикам; статус «Готово — скачать (7 дней)» для копии данных (сейчас не отслеживается); тексты не из ТЗ — `needs_confirmation.json`.
 
+### 8.4.11 «Химия» — Mendeleev Atlas (docs/CHEM_TZ_2.md)
+
+Экраны, интерактивные элементы и их связь с платформой — docs/ATLAS_MAP.md (разделы 2–9, решения владельца — раздел 12); эталоны — docs/media/chem-ref/, итог — docs/media/chem/. Требования — REQ-ATL-01…06 (7.11), XP — BR-XP-05, API — API-S-23…27, API-PUB-15, API-T-32/33. Отличия от оригинала — только интеграция: шапка платформы, исправленные тексты, язык, «Пройти тест», вид «Таблица», убраны «Статистика», «О нас», кнопки темы и языка, 3D, сбор данных и прямые запросы к DeepSeek.
+
 # 9. Конечные автоматы
 
 ```text
@@ -2251,6 +2303,18 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | AC-CHEM-11 | Новые экраны химии | axe, темы, ширины 320/390/768/1440, «Экономия трафика», prefers-reduced-motion | Нет нарушений serious/critical; без анимаций при экономии и reduced motion; бюджет JS ≤ 500 КБ; Lighthouse CI зелёный |
 | AC-CHEM-12 | Коммиты задачи | Поиск по истории | Ключа ИИ атласа и кода ИИ атласа в репозитории нет |
 | AC-CHEM-13 | Задача завершена | docs/CONTENT_GUIDE.md | Есть разделы «Главы», «Глоссарий», «Таблица Менделеева», «Лента времени», «Как перенести готовый сайт-предмет» |
+| AC-ATL-01 | Этап A0 | docs/CHEM_TZ_2.md | Есть эталоны docs/media/chem-ref/ и docs/ATLAS_MAP.md; работа остановлена до команды владельца |
+| AC-ATL-02 | Экраны атласа, 1440 и 390 px, обе темы | Сравнение с эталоном | Совпадают; отличия — только в зонах интеграции (шапка, тексты, язык, «Пройти тест», «Таблица») |
+| AC-ATL-03 | Гость | Полоса атласа | Логотип и 7 разделов, «Статистики» и «О нас» нет; свои адреса, «назад» и обновление работают |
+| AC-ATL-04 | Переключатели платформы | Тема, язык | Атлас в светлой и тёмной теме; RU, KK, EN на всех экранах |
+| AC-ATL-05 | Ученик | «Пройти тест» в окне элемента | Попытка, XP и прогресс записаны; задание учителя открывает атлас и засчитывается |
+| AC-ATL-06 | Ученик | Квиз «Проверь знания» | XP по BR-XP-05 |
+| AC-ATL-07 | Поиск, Глоссарий, Syntara AI | Запросы | Данные и сервер платформы; запросов к DeepSeek и внешним CDN нет |
+| AC-ATL-08 | Картинки | content/ | Картинки атласа у всех 60 элементов, WebP ≤ 300 КБ; портреты по решению 8 |
+| AC-ATL-09 | Старые адреса химии, другие предметы | Переход | 308 на атлас; остальные предметы не изменились |
+| AC-ATL-10 | «Экономия трафика», prefers-reduced-motion | Экраны атласа | Без анимаций; JS ≤ 500 КБ; axe без serious/critical; клавиатура |
+| AC-ATL-11 | Гость, учитель | Тест, квиз, ИИ | Гостю — вход; учителю — предпросмотр без записи |
+| AC-ATL-12 | Коммиты задачи | Поиск по истории | Секретов и кода ИИ атласа нет |
 | AC-BTL-01 | Учитель | Создаёт тест из 5 вопросов, 2 импортирует из темы | Тест сохранён; импортированные вопросы — копии |
 | AC-BTL-02 | Тест с вопросами | Запуск игры (без выбора класса) | Код вида `^[A-Z]{3}[1-9]{3}$`, уникален среди активных |
 | AC-BTL-03 | Любой вошедший ученик (в том числе без класса) | Вводит код в нижнем регистре с пробелом | Попадает в лобби; учитель видит его без перезагрузки ≤ 1 с |
@@ -2448,3 +2512,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-27 | Перенос атласа химии, C4 «Таблица Менделеева»: 5.4 `subjects.blocks`, `topics.element_number` (миграция 0015); 6.2 API-PUB-12 и 6.5 API-S-18 — необязательное `periodicTable`; 7.11 REQ-PTBL-01…08; токены `--family-*` (3.1). Тексты легенды, «Таблицей», подписи рядов и названия семейств — needs_confirmation | docs/CHEM_TZ.md 6.3 |
 | 2026-10-27 | Перенос атласа химии, C5 «Лента времени»: 6.5 API-S-06 (и API-PUB-13) — необязательное `timeline`; 7.11 REQ-TL-01…05; заголовок «Лента времени» — needs_confirmation | docs/CHEM_TZ.md 6.4, решение владельца В-13 |
 | 2026-10-27 | Перенос атласа химии, C6: docs/CONTENT_GUIDE.md — разделы «Главы», «Глоссарий», «Таблица Менделеева», «Лента времени», «Как перенести готовый сайт-предмет» (AC-CHEM-13); снимки docs/media/chem/ | docs/CHEM_TZ.md 8, 9 |
+| 2026-10-27 | «Mendeleev Atlas» (docs/CHEM_TZ_2.md, A0–A7): исключение из правила «только packages/ui» для модуля атласа (3.2); маршруты атласа (4); 5.4 `subjects.module`, 5.5 `atlas_quiz_sessions` и событие `atlas_quiz_finished` (миграция 0016); 6.2 API-PUB-15; 6.4 API-T-32, API-T-33; 6.5 API-S-23…27, API-S-18 `module`, API-S-06 `sections[].code`; 7.3 BR-XP-05 (STREAK_EVENTS — серия и «Активность»); 7.11 REQ-ATL-01…06; 8.4.11; 13 AC-ATL-01…12. Тексты интерфейса — из переводов атласа (решение владельца), новые — needs_confirmation (`atlas.view.label`, `atlas.glossary.top`, `atlas.preview.*`) | docs/CHEM_TZ_2.md, решения владельца по A0 (docs/ATLAS_MAP.md, раздел 12) |

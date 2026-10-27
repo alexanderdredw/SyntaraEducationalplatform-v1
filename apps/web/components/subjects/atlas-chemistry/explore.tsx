@@ -1,7 +1,6 @@
 'use client';
 
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
@@ -10,8 +9,8 @@ import { type AtlasElement, GROUP_COLORS, useAtlasData, useAtlasSubject } from '
 import { useDialog } from './dialog';
 import { atlasHref, elementHref } from './routes';
 
-const ElementWindow = dynamic(() => import('./element-window'));
-const AtlasTable = dynamic(() => import('./atlas-table'));
+import AtlasTable from './atlas-table';
+import ElementWindow from './element-window';
 
 /** Порядок групп в фильтре — по первому появлению в данных, как в оригинале. */
 function groupsOf(elements: AtlasElement[]): string[] {
