@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Ручной запуск (в том числе Lighthouse CI).
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -142,8 +144,10 @@ jobs:
         run: pnpm e2e
 
       # OPT-06, О4-8 (REQ-NFR-PERF-01/02, REQ-NFR-PERF-06): Lighthouse CI — страницы гостя и урок базового предмета
-      # на production-сборке; пороги — lighthouserc.json, отчёты — артефакт lighthouse-report.
+      # на production-сборке; пороги — lighthouserc.json, отчёты — артефакт lighthouse-report. Только push в main и ручной
+      # запуск (решение владельца 2026-10-27), не для pull request.
       - name: Lighthouse CI
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           nohup env RATE_LIMITS_DISABLED=true pnpm --filter @syntara/api start > api-lhci.log 2>&1 &
           nohup pnpm --filter @syntara/web start > web-lhci.log 2>&1 &
