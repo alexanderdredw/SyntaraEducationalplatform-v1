@@ -1100,7 +1100,8 @@
       "guestLogin": "Log in",
       "needsReview": "Under review",
       "onlyRussian": "This lesson is only available in Russian for now",
-      "guestInviteAi": "Log in or sign up to ask Syntara AI a question"
+      "guestInviteAi": "Log in or sign up to ask Syntara AI a question",
+      "timeline": "Timeline"
     },
     "quiz": {
       "difficulty": {

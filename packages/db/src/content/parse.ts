@@ -27,6 +27,7 @@ import {
   SectionFile,
   type SectionModel,
   SubjectFile,
+  TimelineFile,
   type SubjectModel,
   type TopicModel,
   type TopicSectionModel,
@@ -474,7 +475,7 @@ function readTopic(
   validate: Validate,
 ): TopicModel | null {
   const dirRel = rel(topicPath);
-  const known = new Set(['ru.md', 'kk.md', 'en.md', 'quiz.yaml', 'media']);
+  const known = new Set(['ru.md', 'kk.md', 'en.md', 'quiz.yaml', 'timeline.yaml', 'media']);
   for (const name of readdirSync(topicPath).filter((n) => !n.startsWith('.'))) {
     if (!known.has(name)) errors.push({ file: `${dirRel}/${name}`, message: 'лишний файл в папке темы' });
   }
@@ -568,6 +569,38 @@ function readTopic(
     }
   }
   topic.sections = [...byCode.values()];
+
+  // Лента времени (REQ-TL-01): события — к существующим разделам урока, годы жизни — от рождения к смерти.
+  const timelinePath = join(topicPath, 'timeline.yaml');
+  if (existsSync(timelinePath)) {
+    const file = rel(timelinePath);
+    let data: unknown;
+    try {
+      data = parseYaml(readFileSync(timelinePath, 'utf8'));
+    } catch (err) {
+      errors.push({ file, message: `YAML не читается: ${(err as Error).message.split('\n')[0]}` });
+    }
+    const timeline = data === undefined ? null : validate(file, data, TimelineFile);
+    if (timeline) {
+      timeline.events.forEach((e, i) => {
+        if (!byCode.has(e.section))
+          errors.push({ file, field: `events.${i}.section`, message: `нет раздела {#${e.section}} в уроке` });
+        if (e.lived && e.lived.from > e.lived.to)
+          errors.push({ file, field: `events.${i}.lived`, message: 'год рождения позже года смерти' });
+      });
+      topic.timeline = [...timeline.events]
+        .sort((a, b) => a.year - b.year)
+        .map((e) => ({
+          year: e.year,
+          // Полный код раздела — как в снимке версии (`<тема>#<раздел>`).
+          section: `${code}#${e.section}`,
+          ...(e.lived ? { lived: e.lived } : {}),
+          translations: Object.fromEntries(
+            CONTENT_LOCALES.flatMap((l) => (e.title[l] ? [[l, { title: e.title[l]! }]] : [])),
+          ),
+        }));
+    }
+  }
 
   // Картинки: только media/ папки темы, объявленные в ru.md с источником и лицензией (BR-CNT-06).
   const declared = new Map((ru.media ?? []).map((m) => [m.file, m]));

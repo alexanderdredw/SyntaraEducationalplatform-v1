@@ -1100,7 +1100,8 @@
       "guestLogin": "Кіру",
       "needsReview": "Тексерілуде",
       "onlyRussian": "Сабақ әзірге орыс тілінде ғана қолжетімді",
-      "guestInviteAi": "Syntara AI-ға сұрақ қою үшін кір немесе тіркел"
+      "guestInviteAi": "Syntara AI-ға сұрақ қою үшін кір немесе тіркел",
+      "timeline": "Уақыт желісі"
     },
     "quiz": {
       "difficulty": {

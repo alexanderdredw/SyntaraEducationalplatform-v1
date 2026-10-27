@@ -204,6 +204,32 @@ describe('base content (integration)', () => {
       expect(tr.body).toMatchObject({ locale: lang, needsReview: true });
       expect(tr.body.sections).toHaveLength(lesson.body.sections.length);
     }
+    // У урока элемента ленты нет (REQ-TL-02).
+    expect(lesson.body).not.toHaveProperty('timeline');
+
+    // REQ-TL-01, REQ-TL-04, AC-CHEM-10: «Учёные-химики» — 9 событий по реальным годам, каждое ведёт к разделу учёного.
+    const chemistsId = page.body.topics.at(-1).id;
+    const chemists = await guest(`/api/public/topics/${chemistsId}`).expect(200);
+    const timeline = chemists.body.timeline as Array<{
+      year: number;
+      sectionId: string;
+      name: string;
+      lived: { from: number; to: number } | null;
+    }>;
+    expect(timeline.map((e) => e.year)).toEqual([1774, 1803, 1867, 1869, 1898, 1911, 1913, 1939, 1964]);
+    expect(timeline[3]).toMatchObject({ name: 'Дмитрий Менделеев', lived: { from: 1834, to: 1907 } });
+    const sectionIds = chemists.body.sections.map((s: { id: string }) => s.id);
+    expect(timeline.every((e) => sectionIds.includes(e.sectionId))).toBe(true);
+    // Учёные — в хронологическом порядке; портрет (подпись) — у 8, у Ходжкин нет (в тесте файлы не загружаются).
+    expect(chemists.body.sections.map((s: { title: string }) => s.title).slice(0, 2)).toEqual([
+      'Антуан Лавуазье',
+      'Джон Дальтон',
+    ]);
+    expect(
+      chemists.body.sections.filter((s: { illustrationAlt: string | null }) => s.illustrationAlt),
+    ).toHaveLength(8);
+    const en = await guest(`/api/public/topics/${chemistsId}`, 'en').expect(200);
+    expect(en.body.timeline[3].title).toBe('The periodic law');
   });
 
   it('API-S-22, API-PUB-14, REQ-GLOS-01…04 glossary: a guest and a student read it (sections in order, terms A–Z, KK/EN «на проверке»); no glossary or not visible → 404', async () => {

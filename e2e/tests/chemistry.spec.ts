@@ -303,4 +303,44 @@ test.describe('Химия из «Молекулярного атласа»', () 
       await expectNoSeriousA11yViolations(page);
     });
   }
+
+  test('AC-CHEM-10, REQ-TL-01…05 «Учёные-химики»: 9 points by real years; a point opens and scrolls to the scientist; keyboard; axe', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await page.goto(`/ru/learn/topics/${ids.chemists}`);
+    const timeline = page.getByTestId('lesson-timeline');
+    await expect(timeline.getByRole('heading', { name: ru.student.lesson.timeline })).toBeVisible();
+    const points = timeline.getByTestId('timeline-point');
+    await expect(points).toHaveCount(9);
+    await expect(points.first()).toContainText('1774');
+    await expect(points.last()).toContainText('1964');
+    const mendeleev = points.filter({ hasText: 'Дмитрий Менделеев' });
+    await expect(mendeleev).toContainText('1834–1907');
+    await mendeleev.focus();
+    await page.keyboard.press('Enter');
+    const section = page
+      .getByTestId('lesson-overview')
+      .locator('button[aria-expanded]', { hasText: 'Дмитрий Менделеев' });
+    await expect(section).toHaveAttribute('aria-expanded', 'true');
+    await expect(section).toBeInViewport();
+    await expect(page.getByRole('img', { name: /Дмитрий Менделеев, фотография 1897 года/ })).toBeVisible();
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test('REQ-TL-03 phone 390 px: the timeline is a vertical list; no horizontal scroll', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto(`/ru/learn/topics/${ids.chemists}`);
+    const points = page.getByTestId('timeline-point');
+    await expect(points).toHaveCount(9);
+    const [a, b] = [await points.nth(0).boundingBox(), await points.nth(1).boundingBox()];
+    expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
+    expect(Math.abs(b!.x - a!.x)).toBeLessThan(2);
+    expect(await hasHorizontalScroll(page)).toBe(false);
+  });
 });

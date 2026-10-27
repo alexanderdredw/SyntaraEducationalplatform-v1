@@ -1,0 +1,82 @@
+events:
+  - section: lavoisier
+    year: 1774
+    lived:
+      from: 1743
+      to: 1794
+    title:
+      ru: Опыты с прокаливанием металлов — масса сохраняется
+      kk: Металдарды күйдіру тәжірибелері — масса сақталады
+      en: Experiments on heating metals — mass is conserved
+  - section: dalton
+    year: 1803
+    lived:
+      from: 1766
+      to: 1844
+    title:
+      ru: Атомная теория
+      kk: Атомдық теория
+      en: Atomic theory
+  - section: nobel
+    year: 1867
+    lived:
+      from: 1833
+      to: 1896
+    title:
+      ru: Патент на динамит
+      kk: Динамитке патент
+      en: Patent for dynamite
+  - section: mendeleev
+    year: 1869
+    lived:
+      from: 1834
+      to: 1907
+    title:
+      ru: Периодический закон
+      kk: Периодтық заң
+      en: The periodic law
+  - section: curie
+    year: 1898
+    lived:
+      from: 1867
+      to: 1934
+    title:
+      ru: Открытие полония и радия
+      kk: Полоний мен радийдің ашылуы
+      en: Discovery of polonium and radium
+  - section: rutherford
+    year: 1911
+    lived:
+      from: 1871
+      to: 1937
+    title:
+      ru: Ядерная модель атома
+      kk: Атомның ядролық моделі
+      en: The nuclear model of the atom
+  - section: bohr
+    year: 1913
+    lived:
+      from: 1885
+      to: 1962
+    title:
+      ru: Модель атома Бора
+      kk: Бор атомының моделі
+      en: The Bohr model of the atom
+  - section: pauling
+    year: 1939
+    lived:
+      from: 1901
+      to: 1994
+    title:
+      ru: Книга «Природа химической связи»
+      kk: «Химиялық байланыстың табиғаты» кітабы
+      en: The book «The Nature of the Chemical Bond»
+  - section: hodgkin
+    year: 1964
+    lived:
+      from: 1910
+      to: 1994
+    title:
+      ru: Нобелевская премия по химии (структуры пенициллина и витамина B12)
+      kk: Химия бойынша Нобель сыйлығы (пенициллин мен B12 дәруменінің құрылымы)
+      en: Nobel Prize in Chemistry (structures of penicillin and vitamin B12)

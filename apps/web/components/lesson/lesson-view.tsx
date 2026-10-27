@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, BookOpen, FileText, Lightbulb, PencilLine } from 'lucide-react';
 import { Accordion, Card } from '@syntara/ui';
@@ -8,6 +8,7 @@ import type { components } from '@/lib/api/schema';
 import { AppLink } from '../app-link';
 import { LazyMarkdown } from '../markdown/lazy-markdown';
 import type { LessonMarkdown } from '../markdown/lesson-markdown';
+import { LessonTimeline } from './timeline';
 
 export type Lesson = components['schemas']['LessonDto'];
 
@@ -87,6 +88,16 @@ export function LessonOverview({ lesson, markdown }: { lesson: Lesson; markdown?
   const t = useTranslations('teacher.lesson');
   // Markdown, отрисованный на сервере (О4-4), иначе — тот же SafeMarkdown с ленивой загрузкой.
   const md = (text: string) => markdown?.[text] ?? <LazyMarkdown>{text}</LazyMarkdown>;
+  // Раскрытые разделы — управляемо: точка ленты времени раскрывает раздел и прокручивает к нему (REQ-TL-04).
+  const [open, setOpen] = useState<string[]>([]);
+  const showSection = (id: string) => {
+    setOpen((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    requestAnimationFrame(() => {
+      const item = document.getElementById(`section-${id}`);
+      item?.scrollIntoView({ block: 'start' });
+      item?.querySelector('button')?.focus({ preventScroll: true });
+    });
+  };
   return (
     <div className="@container flex flex-col gap-5" data-testid="lesson-overview">
       {/* Ширина колонок — по ширине самого урока (окно предпросмотра, страница ученика). */}
@@ -104,10 +115,17 @@ export function LessonOverview({ lesson, markdown }: { lesson: Lesson; markdown?
             </Card>
           ) : null}
           {lesson.bodyMd ? md(lesson.bodyMd) : null}
+          {/* REQ-TL-02: лента времени — над разделами, только у темы с timeline.yaml. */}
+          {lesson.timeline?.length ? (
+            <LessonTimeline events={lesson.timeline} onSelect={showSection} />
+          ) : null}
           {lesson.sections.length ? (
             <Accordion
+              value={open}
+              onValueChange={setOpen}
               items={lesson.sections.map((s) => ({
                 value: s.id,
+                id: `section-${s.id}`,
                 title: (
                   <span className="flex items-baseline gap-4 font-semibold">
                     <span className="text-sm text-[var(--accent-bright)]">

@@ -869,7 +869,7 @@ CREATE TABLE known_devices (
 | API-S-03 | POST /api/student/class/leave | Выйти из класса (SM-MEM, PH-40) |
 | API-S-04 | GET /api/student/catalog | `{ sections: [{ id, title, description, status: 'section' }], subjects: [{ id, title, description, status: 'available'|'soon' }] }` — `soon`: у предмета нет опубликованных тем (BR-CNT-08) |
 | API-S-05 | GET /api/student/sections/:id | Предметы раздела (`status: 'available'|'soon'`, BR-CNT-08) |
-| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05) |
+| API-S-06 | GET /api/student/topics/:id | `{ id, quizId, subject: {id, title}, title, number, questionsCount, summary, funFact, bodyMd?, illustrationUrl?, illustrationAlt?, needsReview, sections: [{ id, number, title, body, illustrationUrl?, illustrationAlt? }], materials: [{ id, name, url }], next: { id, title } | null, locale }` — `materials` только со scan_status = clean, `url` и `illustrationUrl` — подписанные ссылки нашего хранилища на 10 минут (BR-FILE-04); `locale` — фактический язык урока (нет перевода → RU, REQ-ST-LES-07); `needsReview` — перевод ждёт вычитки (BR-CNT-05); `timeline?: [{ year, sectionId, name, title, lived: { from, to } | null }]` — лента времени базового урока (REQ-TL-01), только у темы с timeline.yaml |
 | API-S-07 | POST /api/student/quizzes/:quizId/attempts | Начать или продолжить попытку → `{ attemptId, questions: [{ id, type, difficulty, text, options: [{id, text}] }], answered: {...} }` Тело (необязательно): `{ assignmentId }` — попытка из задания (решение по Q-18): назначение действующего класса ученика по этой теме, иначе 404; незавершённая попытка продолжается и связывается с заданием. |
 | API-S-08 | POST /api/student/attempts/:id/answers | `{ questionId, optionId?, textAnswer? }` → `{ correct, correctOptionId, correctAnswer, explanation }` (PH-37); `correctAnswer` — правильный ответ «Вписать ответ», только в ответе на уже отправленный ответ (BR-QZ-01) |
 | API-S-09 | POST /api/student/attempts/:id/finish | `{ scorePercent, xpAwarded, badgesAwarded[] }` |
@@ -1385,6 +1385,13 @@ REQ-PTBL-07 Клавиатура: роль grid, стрелки — к ближ�
 REQ-PTBL-08 Телефон: таблица прокручивается по горизонтали внутри блока (страница — нет), переключатель «Списком».
           В «Экономии трафика» и при prefers-reduced-motion — без анимаций. Блок — отдельный чанк (next/dynamic),
           бюджет JS страницы ≤ 500 КБ (REQ-NFR-PERF-05).
+REQ-TL-01 Лента времени: timeline.yaml в папке темы — events: [{ year, section, title, lived? }]; годы реальные
+          (рождение — в lived, ключевое событие — year), section — код раздела урока (иначе ошибка content:check).
+          Хранится в снимке версии темы (topic_versions.snapshot.timeline), без отдельной таблицы; API-S-06 — timeline.
+REQ-TL-02 Блок показывается в уроке над разделами, если у темы есть timeline.yaml; блок общий (история, физика и т. д.).
+REQ-TL-03 Компьютер — горизонтальная шкала с точками; телефон — вертикальный список.
+REQ-TL-04 Нажатие на точку раскрывает раздел учёного и прокручивает к нему.
+REQ-TL-05 Доступность: список с кнопками, видимый фокус; без анимаций (в том числе в «Экономии трафика»).
 ```
 
 ## 7.12 Battle (итерация 10.5)
@@ -2439,3 +2446,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-27 | Перенос атласа химии, C2 «Контент»: 7.11 REQ-CHEM-01…06; «Химия» наполнена (content/natural-sciences/01-chemistry, конвертер и файлы правок в scripts/content-import/) | Решения владельца по C0 (В-1…В-17) |
 | 2026-10-27 | Перенос атласа химии, C3 «Глоссарий»: 4 маршрут /learn/subjects/:id/glossary; 5.4 таблицы глоссария (миграция 0014); 6.2 API-PUB-14, API-PUB-12 `hasGlossary`; 6.5 API-S-22, API-S-18 `hasGlossary`; 7.11 REQ-GLOS-01…06. Тексты «Поиск по глоссарию», «Термин или определение», «Найдено: {count}» — needs_confirmation | docs/CHEM_TZ.md 6.2 |
 | 2026-10-27 | Перенос атласа химии, C4 «Таблица Менделеева»: 5.4 `subjects.blocks`, `topics.element_number` (миграция 0015); 6.2 API-PUB-12 и 6.5 API-S-18 — необязательное `periodicTable`; 7.11 REQ-PTBL-01…08; токены `--family-*` (3.1). Тексты легенды, «Таблицей», подписи рядов и названия семейств — needs_confirmation | docs/CHEM_TZ.md 6.3 |
+| 2026-10-27 | Перенос атласа химии, C5 «Лента времени»: 6.5 API-S-06 (и API-PUB-13) — необязательное `timeline`; 7.11 REQ-TL-01…05; заголовок «Лента времени» — needs_confirmation | docs/CHEM_TZ.md 6.4, решение владельца В-13 |

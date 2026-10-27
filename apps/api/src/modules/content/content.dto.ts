@@ -176,6 +176,21 @@ class LessonSectionDto {
   illustrationAlt?: string | null;
 }
 
+class TimelineLivedDto {
+  @ApiProperty() from: number;
+  @ApiProperty() to: number;
+}
+
+/** REQ-TL-01: событие ленты времени — год, раздел урока, подпись; годы жизни — в подписи точки. */
+class TimelineEventDto {
+  @ApiProperty() year: number;
+  @ApiProperty({ format: 'uuid', description: 'Раздел урока, к которому ведёт точка (REQ-TL-04)' })
+  sectionId: string;
+  @ApiProperty({ description: 'Название раздела на языке урока' }) name: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ type: TimelineLivedDto, nullable: true }) lived: TimelineLivedDto | null;
+}
+
 class LessonNextDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() title: string;
@@ -212,6 +227,12 @@ export class LessonDto {
   })
   needsReview: boolean;
   @ApiProperty({ type: LessonSectionDto, isArray: true }) sections: LessonSectionDto[];
+  @ApiPropertyOptional({
+    type: TimelineEventDto,
+    isArray: true,
+    description: 'Лента времени над разделами (REQ-TL-01…05): только у темы с timeline.yaml, по году',
+  })
+  timeline?: TimelineEventDto[];
   @ApiProperty({
     type: LessonMaterialDto,
     isArray: true,

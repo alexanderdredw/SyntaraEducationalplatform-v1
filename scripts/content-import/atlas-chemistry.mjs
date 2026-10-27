@@ -434,6 +434,8 @@ async function chemistsTopic() {
     return { ...question, difficulty: q.difficulty };
   });
   write(`${dir}/quiz.yaml`, yaml({ questions }));
+  // REQ-TL-01: лента времени — события из atlas-chemistry.fixes.yaml (реальные годы, а не atomicNumber атласа).
+  write(`${dir}/timeline.yaml`, yaml({ events: FIX.timeline }));
 }
 
 /* ---------- Глоссарий (REQ-GLOS-01, CHEM_MAP 1.6, 3.7) ---------- */

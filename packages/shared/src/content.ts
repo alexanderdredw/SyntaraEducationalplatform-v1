@@ -217,4 +217,11 @@ export interface TopicSnapshot {
   coverMediaId?: string | null;
   coverUrl?: string | null;
   materialIds?: string[];
+  /** Лента времени базового урока (REQ-TL-01): события по году, раздел — полный код раздела урока. */
+  timeline?: Array<{
+    year: number;
+    section: string;
+    lived?: { from: number; to: number };
+    translations: Partial<Record<LocaleType, { title: string }>>;
+  }>;
 }

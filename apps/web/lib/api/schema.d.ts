@@ -2396,6 +2396,22 @@ export interface components {
             /** @description Подпись иллюстрации раздела */
             illustrationAlt?: string | null;
         };
+        TimelineLivedDto: {
+            from: number;
+            to: number;
+        };
+        TimelineEventDto: {
+            year: number;
+            /**
+             * Format: uuid
+             * @description Раздел урока, к которому ведёт точка (REQ-TL-04)
+             */
+            sectionId: string;
+            /** @description Название раздела на языке урока */
+            name: string;
+            title: string;
+            lived: components["schemas"]["TimelineLivedDto"] | null;
+        };
         LessonMaterialDto: {
             /** Format: uuid */
             id: string;
@@ -2430,6 +2446,8 @@ export interface components {
             /** @description Перевод подготовлен ИИ и ждёт вычитки — пометка «На проверке» (BR-CNT-05) */
             needsReview: boolean;
             sections: components["schemas"]["LessonSectionDto"][];
+            /** @description Лента времени над разделами (REQ-TL-01…05): только у темы с timeline.yaml, по году */
+            timeline?: components["schemas"]["TimelineEventDto"][];
             /** @description Материалы урока — только прошедшие проверку (BR-FILE-04) */
             materials: components["schemas"]["LessonMaterialDto"][];
             next: components["schemas"]["LessonNextDto"] | null;

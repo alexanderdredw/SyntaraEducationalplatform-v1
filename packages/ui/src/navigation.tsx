@@ -132,26 +132,33 @@ export interface AccordionItem {
   value: string;
   title: ReactNode;
   content: ReactNode;
+  /** id пункта — цель прокрутки (лента времени урока, REQ-TL-04). */
+  id?: string;
 }
 
 /**
  * Accordion (3.2): разделы — отдельные карточки со стрелкой «›» справа (эталоны U04, U09, U12);
  * по умолчанию все свёрнуты, можно раскрыть несколько (PH-36). `defaultValue` — раскрытые при первом показе
- * (главы предмета, BR-CHAP-03).
+ * (главы предмета, BR-CHAP-03). `value` + `onValueChange` — управляемый режим (раскрыть раздел из ленты времени).
  */
 export function Accordion({
   items,
   multiple = true,
   defaultValue = [],
+  value,
+  onValueChange,
 }: {
   items: AccordionItem[];
   multiple?: boolean;
   defaultValue?: string[];
+  value?: string[];
+  onValueChange?: (value: string[]) => void;
 }) {
   const list = items.map((item) => (
     <AccordionPrimitive.Item
       key={item.value}
       value={item.value}
+      id={item.id}
       className="rounded-[14px] border border-[var(--border)] bg-[var(--surface)] has-[button:hover]:border-[var(--border-strong)]"
     >
       <AccordionPrimitive.Header>
@@ -170,7 +177,11 @@ export function Accordion({
   ));
   const listClass = 'flex flex-col gap-3';
   return multiple ? (
-    <AccordionPrimitive.Root type="multiple" defaultValue={defaultValue} className={listClass}>
+    <AccordionPrimitive.Root
+      type="multiple"
+      {...(value ? { value, onValueChange } : { defaultValue })}
+      className={listClass}
+    >
       {list}
     </AccordionPrimitive.Root>
   ) : (

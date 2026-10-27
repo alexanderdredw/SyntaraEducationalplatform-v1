@@ -90,6 +90,24 @@ export const GlossaryFile = z.strictObject({
 });
 export type GlossaryFile = z.infer<typeof GlossaryFile>;
 
+const year = z.number().int('целое число').min(1, 'год').max(2100, 'год');
+
+/** timeline.yaml в папке темы (REQ-TL-01): события с реальными годами; section — код раздела урока. */
+export const TimelineFile = z.strictObject({
+  events: z
+    .array(
+      z.strictObject({
+        year,
+        section: code,
+        title: localized(200),
+        /** Годы жизни — в подписи точки (решение владельца В-13). */
+        lived: z.strictObject({ from: year, to: year }).optional(),
+      }),
+    )
+    .min(1, 'хотя бы одно событие'),
+});
+export type TimelineFile = z.infer<typeof TimelineFile>;
+
 export const MediaEntry = z.strictObject({
   file: z.string().regex(/^media\/[A-Za-z0-9._-]+$/, 'путь вида media/<имя файла>'),
   source: text(500),
@@ -256,6 +274,13 @@ export interface TopicModel {
   translations: Partial<Record<Locale, LocaleTexts>>;
   illustration?: string;
   sections: TopicSectionModel[];
+  /** Лента времени (REQ-TL-01): события по году. */
+  timeline?: Array<{
+    year: number;
+    section: string;
+    lived?: { from: number; to: number };
+    translations: Partial<Record<Locale, { title: string }>>;
+  }>;
   questions: QuestionModel[];
   media: Record<string, MediaModel>;
 }

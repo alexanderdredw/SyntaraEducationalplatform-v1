@@ -151,7 +151,19 @@ export class LessonService {
       materials: await this.cleanMaterials(snapshot.materialIds ?? []),
       next,
       locale: actualLocale,
+      ...(snapshot.timeline?.length ? { timeline: this.timeline(snapshot, actualLocale) } : {}),
     };
+  }
+
+  /** REQ-TL-01, REQ-TL-04: события ленты — к разделам на фактическом языке урока; нет раздела — нет точки. */
+  private timeline(snapshot: TopicSnapshot, locale: Locale): NonNullable<LessonDto['timeline']> {
+    return (snapshot.timeline ?? []).flatMap((e) => {
+      const section = snapshot.sections.find((s) => s.code === e.section);
+      const name = section?.translations[locale]?.title;
+      const title = e.translations[locale]?.title ?? e.translations.ru?.title;
+      if (!section || !name || !title) return [];
+      return [{ year: e.year, sectionId: section.id, name, title, lived: e.lived ?? null }];
+    });
   }
 
   /**

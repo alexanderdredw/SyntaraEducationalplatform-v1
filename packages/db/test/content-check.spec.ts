@@ -151,6 +151,22 @@ describe('content check', () => {
     );
   });
 
+  it('REQ-TL-01 timeline.yaml: events point to existing sections; birth before death; sorted by year', () => {
+    const file = 'natural-sciences/01-chemistry/61-chemists/timeline.yaml';
+    const ok = checkContent(dir);
+    expect(
+      ok.catalog.topics.find((t) => t.code === 'chemistry/chemists')!.timeline!.map((e) => e.year),
+    ).toEqual([1774, 1803, 1867, 1869, 1898, 1911, 1913, 1939, 1964]);
+    edit(file, 'section: dalton', 'section: avogadro');
+    edit(file, 'from: 1743', 'from: 1800');
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/timeline\.yaml: events\.1\.section — нет раздела \{#avogadro\} в уроке/),
+        expect.stringMatching(/timeline\.yaml: events\.0\.lived — год рождения позже года смерти/),
+      ]),
+    );
+  });
+
   it('REQ-GLOS-01 glossary.yaml: term codes unique in the subject; every language has both the term and the definition', () => {
     const file = 'natural-sciences/01-chemistry/glossary.yaml';
     edit(file, '      - code: molecule\n', '      - code: atom\n');

@@ -1060,7 +1060,8 @@
     "student.periodicTable.families.halogen": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
     "student.periodicTable.families.noble_gas": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
     "student.periodicTable.families.lanthanide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
-    "student.periodicTable.families.actinide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан"
+    "student.periodicTable.families.actinide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.lesson.timeline": "Заголовок блока ленты времени в уроке (REQ-TL-02) — в docs/CHEM_TZ.md текст не задан"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

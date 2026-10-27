@@ -1100,7 +1100,8 @@
       "guestLogin": "Войти",
       "needsReview": "На проверке",
       "onlyRussian": "Урок пока доступен на русском",
-      "guestInviteAi": "Войди или зарегистрируйся, чтобы задать вопрос Syntara AI"
+      "guestInviteAi": "Войди или зарегистрируйся, чтобы задать вопрос Syntara AI",
+      "timeline": "Лента времени"
     },
     "quiz": {
       "difficulty": {

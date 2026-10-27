@@ -7318,6 +7318,57 @@
           "body"
         ]
       },
+      "TimelineLivedDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number"
+          },
+          "to": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "TimelineEventDto": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "number"
+          },
+          "sectionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Раздел урока, к которому ведёт точка (REQ-TL-04)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Название раздела на языке урока"
+          },
+          "title": {
+            "type": "string"
+          },
+          "lived": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TimelineLivedDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "year",
+          "sectionId",
+          "name",
+          "title",
+          "lived"
+        ]
+      },
       "LessonMaterialDto": {
         "type": "object",
         "properties": {
@@ -7410,6 +7461,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LessonSectionDto"
+            }
+          },
+          "timeline": {
+            "description": "Лента времени над разделами (REQ-TL-01…05): только у темы с timeline.yaml, по году",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelineEventDto"
             }
           },
           "materials": {

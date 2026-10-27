@@ -501,6 +501,7 @@ export async function applyCatalog(
       coverMediaId,
       coverUrl: null,
       materialIds: [],
+      ...(t.timeline ? { timeline: t.timeline } : {}),
     };
     // Хеш содержимого: снимок, квиз и картинки — изменённый файл любой из частей даёт новую версию (BR-CNT-04).
     snapshot.contentHash = createHash('sha256')
