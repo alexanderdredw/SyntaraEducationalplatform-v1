@@ -261,3 +261,48 @@ portraits:
       ru: Лайнус Полинг, фотография около 1954 года
       kk: Лайнус Полинг, шамамен 1954 жылғы фотосурет
       en: Linus Pauling, photograph, about 1954
+
+# Глоссарий (REQ-GLOS-01, CHEM_MAP 3.7). Номера — N из ключей атласа glossary.term.N / glossary.def.N.
+glossary:
+  sections: [general, concepts, inorganic, organic, physical] # коды разделов glossary.sect.1…5
+  remove: [75, 97] # дубли: «Простое вещество» (есть №55), «ОВР» (есть №175)
+  definitions:
+    6:
+      ru: отрицательно заряженная элементарная частица, находящаяся в электронной оболочке атома.
+      kk: атомның электрондық қабықшасында орналасқан теріс зарядты элементар бөлшек.
+      en: a negatively charged elementary particle in the electron shell of an atom.
+    37:
+      ru: элементы 18-й группы (VIIIA) с завершённой электронной оболочкой.
+      kk: аяқталған электрондық қабықшасы бар 18-топтың (VIIIA) элементтері.
+      en: elements of group 18 (VIIIA) with a completed electron shell.
+    88:
+      ru: соли, где гидроксид-группы основания частично замещены кислотным остатком.
+      kk: негіздің гидроксид топтары қышқыл қалдығымен жартылай ауыстырылған тұздар.
+      en: salts in which the hydroxide groups of a base are partly replaced by an acid residue.
+    102:
+      kk: ерітінді немесе балқыма арқылы ток өткенде электродтарда жүретін процестер.
+      en: processes at the electrodes when a current passes through a solution or a melt.
+    103:
+      ru: положительно заряженный электрод (при электролизе).
+      kk: оң зарядталған электрод (электролиз кезінде).
+      en: positively charged electrode (in electrolysis).
+    104:
+      ru: отрицательно заряженный электрод (при электролизе).
+      kk: теріс зарядталған электрод (электролиз кезінде).
+      en: negatively charged electrode (in electrolysis).
+    107:
+      ru: материалы из металла и других металлов или неметаллов (например, сталь — железо с углеродом).
+      kk: металл мен басқа металдардан немесе бейметалдардан тұратын материалдар (мысалы, болат — көміртекті темір).
+      en: materials made of a metal and other metals or nonmetals (for example, steel is iron with carbon).
+    109:
+      ru: элементы 17-й группы (F, Cl, Br, I).
+      kk: 17-топтың элементтері (F, Cl, Br, I).
+      en: elements of group 17 (F, Cl, Br, I).
+    195:
+      ru: список металлов в порядке убывания их активности.
+      kk: металдардың белсенділігінің кему ретімен тізімі.
+      en: a list of metals in order of decreasing activity.
+    214:
+      ru: правила работы для предотвращения травм.
+      kk: жарақаттануды болдырмау үшін жұмыс ережелері.
+      en: work rules to prevent injuries.

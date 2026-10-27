@@ -8,6 +8,8 @@ import { changesCount, defaultContentDir, IMPORT_USER, importContent, type Media
 import { migrateUp } from '../src/migrator';
 import {
   auditLog,
+  glossaryTerms,
+  glossaryTermTranslations,
   mediaFiles,
   questions,
   subjectChapters,
@@ -198,6 +200,30 @@ describe('content import (integration)', () => {
     ).toEqual([]);
     const [cardio] = await db.select().from(topics).where(eq(topics.id, B.topicCardio));
     expect(cardio).toMatchObject({ position: 1, chapterId: null });
+  });
+
+  it('REQ-GLOS-01 glossary import: a removed term is deleted, a returned one is created; a rerun changes nothing', async () => {
+    const file = 'natural-sciences/01-chemistry/glossary.yaml';
+    const terms = async () => (await db.select().from(glossaryTerms)).length;
+    expect(await terms()).toBe(212);
+    const original = readFileSync(join(dir, file), 'utf8');
+    const start = original.indexOf('      - code: molecule\n');
+    const end = original.indexOf('      - code: chemical-element\n');
+    writeFileSync(join(dir, file), original.slice(0, start) + original.slice(end));
+    const removed = await importContent(db, { dir, media: store });
+    expect(removed.errors).toEqual([]);
+    expect(removed.summary!.glossary.removed).toBe(1);
+    expect(await terms()).toBe(211);
+    writeFileSync(join(dir, file), original);
+    const back = await importContent(db, { dir, media: store });
+    expect(back.summary!.glossary.created).toBe(1);
+    expect(await terms()).toBe(212);
+    expect(changesCount((await importContent(db, { dir, media: store })).summary!)).toBe(0);
+    const [ru] = await db
+      .select()
+      .from(glossaryTermTranslations)
+      .where(eq(glossaryTermTranslations.term, 'Молекула'));
+    expect(ru).toMatchObject({ locale: 'ru', needsReview: false });
   });
 
   it('BR-CNT-04 subject order comes from subject.yaml position (owner decision 2026-10-17)', async () => {

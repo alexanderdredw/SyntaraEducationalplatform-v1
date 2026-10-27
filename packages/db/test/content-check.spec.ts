@@ -139,6 +139,20 @@ describe('content check', () => {
     );
   });
 
+  it('REQ-GLOS-01 glossary.yaml: term codes unique in the subject; every language has both the term and the definition', () => {
+    const file = 'natural-sciences/01-chemistry/glossary.yaml';
+    edit(file, '      - code: molecule\n', '      - code: atom\n');
+    edit(file, '          kk: Молекула\n', '');
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/glossary\.yaml: terms — код термина повторяется: atom/),
+        expect.stringMatching(
+          /glossary\.yaml: sections\.0\.terms\.1 \(atom\) — на языке kk нужны и термин, и определение/,
+        ),
+      ]),
+    );
+  });
+
   describe('chapters (BR-CHAP-01, BR-CHAP-02)', () => {
     const ANATOMY = 'biology/01-human-anatomy';
     const CHAPTERS = `chapters:

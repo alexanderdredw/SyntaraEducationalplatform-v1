@@ -33,6 +33,7 @@ function printSummary(s: ImportSummary, dryRun: boolean): void {
   console.warn(line('разделы', s.sections));
   console.warn(line('предметы', s.subjects));
   console.warn(line('главы', s.chapters));
+  console.warn(line('глоссарий', s.glossary));
   console.warn(line('темы', s.topics));
   console.warn(line('вопросы', s.questions));
   console.warn(line('картинки', s.media));

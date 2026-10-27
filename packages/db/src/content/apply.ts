@@ -12,6 +12,10 @@ import {
   auditLog,
   catalogSections,
   catalogSectionTranslations,
+  glossarySections,
+  glossarySectionTranslations,
+  glossaryTerms,
+  glossaryTermTranslations,
   mediaFiles,
   questions,
   questionTranslations,
@@ -43,6 +47,8 @@ export interface ImportSummary {
   sections: { created: number; updated: number };
   subjects: { created: number; updated: number; archived: number };
   chapters: { created: number; updated: number; removed: number };
+  /** Разделы и термины глоссария (REQ-GLOS-01). */
+  glossary: { created: number; updated: number; removed: number };
   topics: { created: number; updated: number; versions: number; unpublished: number; republished: number };
   questions: { created: number; updated: number; archived: number };
   media: { uploaded: number; reused: number; skipped: number };
@@ -52,6 +58,7 @@ export const emptySummary = (): ImportSummary => ({
   sections: { created: 0, updated: 0 },
   subjects: { created: 0, updated: 0, archived: 0 },
   chapters: { created: 0, updated: 0, removed: 0 },
+  glossary: { created: 0, updated: 0, removed: 0 },
   topics: { created: 0, updated: 0, versions: 0, unpublished: 0, republished: 0 },
   questions: { created: 0, updated: 0, archived: 0 },
   media: { uploaded: 0, reused: 0, skipped: 0 },
@@ -67,6 +74,9 @@ export function changesCount(s: ImportSummary): number {
     s.chapters.created +
     s.chapters.updated +
     s.chapters.removed +
+    s.glossary.created +
+    s.glossary.updated +
+    s.glossary.removed +
     s.topics.created +
     s.topics.updated +
     s.topics.versions +
@@ -266,6 +276,9 @@ export async function applyCatalog(
       summary.chapters.removed += stale.length;
     }
   }
+
+  /* ---- Глоссарии (REQ-GLOS-01): разделы по коду в предмете, термины — по коду в разделе ---- */
+  for (const s of catalog.subjects) await syncGlossary(tx, subjectIds.get(s.code)!, s.glossary, summary);
 
   /* ---- Картинки (BR-CNT-06) ---- */
   const mediaIds = new Map<string, string | null>();
@@ -525,6 +538,92 @@ export async function applyCatalog(
     });
   }
   return summary;
+}
+
+/**
+ * Глоссарий предмета (REQ-GLOS-01): разделы и термины сопоставляются по кодам; неизменённое не трогается; удалённые
+ * из файла раздел или термин удаляются (на них ничего не ссылается). Нет glossary.yaml — глоссария у предмета нет.
+ */
+async function syncGlossary(
+  tx: Tx,
+  subjectId: string,
+  glossary: ContentCatalog['subjects'][number]['glossary'],
+  summary: ImportSummary,
+) {
+  const existing = await tx.select().from(glossarySections).where(eq(glossarySections.subjectId, subjectId));
+  const wanted = glossary?.sections ?? [];
+  for (const section of wanted) {
+    const found = existing.find((e) => e.code === section.code);
+    let id = found?.id;
+    if (!found) {
+      [{ id } = { id: '' }] = await tx
+        .insert(glossarySections)
+        .values({ subjectId, code: section.code, position: section.position })
+        .returning({ id: glossarySections.id });
+      summary.glossary.created++;
+    } else if (found.position !== section.position) {
+      await tx
+        .update(glossarySections)
+        .set({ position: section.position })
+        .where(eq(glossarySections.id, found.id));
+      summary.glossary.updated++;
+    }
+    const titleChanged = await syncTranslations(
+      tx,
+      glossarySectionTranslations,
+      'sectionId',
+      id!,
+      section.translations,
+    );
+    if (found && titleChanged) summary.glossary.updated++;
+    const terms = await tx.select().from(glossaryTerms).where(eq(glossaryTerms.sectionId, id!));
+    for (const term of section.terms) {
+      const t = terms.find((e) => e.code === term.code);
+      let termId = t?.id;
+      if (!t) {
+        [{ id: termId } = { id: '' }] = await tx
+          .insert(glossaryTerms)
+          .values({ sectionId: id!, code: term.code, position: term.position })
+          .returning({ id: glossaryTerms.id });
+        summary.glossary.created++;
+      } else if (t.position !== term.position) {
+        await tx.update(glossaryTerms).set({ position: term.position }).where(eq(glossaryTerms.id, t.id));
+        summary.glossary.updated++;
+      }
+      const changed = await syncTranslations(
+        tx,
+        glossaryTermTranslations,
+        'termId',
+        termId!,
+        term.translations,
+      );
+      if (t && changed) summary.glossary.updated++;
+    }
+    const staleTerms = terms.filter((e) => !section.terms.some((t) => t.code === e.code)).map((e) => e.id);
+    if (staleTerms.length) {
+      await tx.delete(glossaryTermTranslations).where(inArray(glossaryTermTranslations.termId, staleTerms));
+      await tx.delete(glossaryTerms).where(inArray(glossaryTerms.id, staleTerms));
+      summary.glossary.removed += staleTerms.length;
+    }
+  }
+  const staleSections = existing.filter((e) => !wanted.some((s) => s.code === e.code)).map((e) => e.id);
+  if (staleSections.length) {
+    const terms = (
+      await tx
+        .select({ id: glossaryTerms.id })
+        .from(glossaryTerms)
+        .where(inArray(glossaryTerms.sectionId, staleSections))
+    ).map((t) => t.id);
+    if (terms.length) {
+      await tx.delete(glossaryTermTranslations).where(inArray(glossaryTermTranslations.termId, terms));
+      await tx.delete(glossaryTerms).where(inArray(glossaryTerms.id, terms));
+    }
+    await tx
+      .delete(glossarySectionTranslations)
+      .where(inArray(glossarySectionTranslations.sectionId, staleSections));
+    await tx.delete(glossarySections).where(inArray(glossarySections.id, staleSections));
+    summary.glossary.removed += staleSections.length + terms.length;
+  }
 }
 
 async function importUser(tx: Tx): Promise<string> {

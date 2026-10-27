@@ -99,6 +99,13 @@
       "when": 1793111771510,
       "tag": "0013_subject_chapters",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793114207849,
+      "tag": "0014_glossary",
+      "breakpoints": true
     }
   ]
 }

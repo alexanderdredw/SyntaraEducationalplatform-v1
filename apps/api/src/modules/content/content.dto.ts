@@ -278,6 +278,11 @@ const chaptersProperty = {
     'Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком',
 };
 
+const hasGlossaryProperty = {
+  type: Boolean,
+  description: 'У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет',
+};
+
 /** Страница предмета ученика (решение владельца 2026-10-14): опубликованные темы по position. */
 export class StudentSubjectDto {
   @ApiProperty({ format: 'uuid' }) id: string;
@@ -285,6 +290,7 @@ export class StudentSubjectDto {
   @ApiProperty({ type: String, nullable: true }) description: string | null;
   @ApiProperty({ type: StudentTopicItemDto, isArray: true }) topics: StudentTopicItemDto[];
   @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
+  @ApiPropertyOptional(hasGlossaryProperty) hasGlossary?: boolean;
 }
 
 class PublicTopicItemDto {
@@ -300,6 +306,34 @@ export class PublicSubjectPageDto {
   @ApiProperty({ type: String, nullable: true }) description: string | null;
   @ApiProperty({ type: PublicTopicItemDto, isArray: true }) topics: PublicTopicItemDto[];
   @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
+  @ApiPropertyOptional(hasGlossaryProperty) hasGlossary?: boolean;
+}
+
+class GlossaryTermDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() term: string;
+  @ApiProperty() definition: string;
+}
+
+class GlossarySectionDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() title: string;
+  @ApiProperty({
+    type: GlossaryTermDto,
+    isArray: true,
+    description: 'По алфавиту языка ответа (REQ-GLOS-04)',
+  })
+  terms: GlossaryTermDto[];
+}
+
+/** API-S-22, API-PUB-14: глоссарий предмета (REQ-GLOS-01…04). */
+export class GlossaryDto {
+  @ApiProperty({ type: LessonSubjectDto }) subject: LessonSubjectDto;
+  @ApiProperty({ type: GlossarySectionDto, isArray: true }) sections: GlossarySectionDto[];
+  @ApiProperty({
+    description: 'Показанный перевод подготовлен ИИ и ждёт вычитки — пометка «На проверке» (BR-CNT-05)',
+  })
+  needsReview: boolean;
 }
 
 /** API-S-17 */

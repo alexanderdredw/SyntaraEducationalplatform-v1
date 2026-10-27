@@ -468,6 +468,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/subjects/{id}/glossary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentContentController_glossary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/events": {
         parameters: {
             query?: never;
@@ -540,6 +556,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["PublicContentController_subject"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/public/subjects/{id}/glossary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PublicContentController_glossary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2462,6 +2494,27 @@ export interface components {
             topics: components["schemas"]["StudentTopicItemDto"][];
             /** @description Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком */
             chapters?: components["schemas"]["SubjectChapterDto"][];
+            /** @description У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет */
+            hasGlossary?: boolean;
+        };
+        GlossaryTermDto: {
+            /** Format: uuid */
+            id: string;
+            term: string;
+            definition: string;
+        };
+        GlossarySectionDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** @description По алфавиту языка ответа (REQ-GLOS-04) */
+            terms: components["schemas"]["GlossaryTermDto"][];
+        };
+        GlossaryDto: {
+            subject: components["schemas"]["LessonSubjectDto"];
+            sections: components["schemas"]["GlossarySectionDto"][];
+            /** @description Показанный перевод подготовлен ИИ и ждёт вычитки — пометка «На проверке» (BR-CNT-05) */
+            needsReview: boolean;
         };
         LessonEventBody: {
             /** @enum {string} */
@@ -2485,6 +2538,8 @@ export interface components {
             topics: components["schemas"]["PublicTopicItemDto"][];
             /** @description Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком */
             chapters?: components["schemas"]["SubjectChapterDto"][];
+            /** @description У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет */
+            hasGlossary?: boolean;
         };
         UploadUrlBody: {
             /** @enum {string} */
@@ -5136,6 +5191,47 @@ export interface operations {
             };
         };
     };
+    StudentContentController_glossary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlossaryDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     StudentContentController_events: {
         parameters: {
             query?: never;
@@ -5282,6 +5378,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PublicSubjectPageDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PublicContentController_glossary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlossaryDto"];
                 };
             };
             404: {

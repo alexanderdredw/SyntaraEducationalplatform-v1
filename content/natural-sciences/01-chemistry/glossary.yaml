@@ -1,0 +1,1949 @@
+# Глоссарий «Химии» (REQ-GLOS-01). Создан конвертером scripts/content-import/atlas-chemistry.mjs — правки в
+# atlas-chemistry.fixes.yaml (раздел glossary), а не здесь. KK и EN — перевод ИИ, на проверке.
+review:
+  kk: needs_review
+  en: needs_review
+sections:
+  - code: general
+    position: 1
+    title:
+      ru: Общая химия и строение атома
+      kk: Жалпы химия және атом құрылысы
+      en: General chemistry and atomic structure
+    terms:
+      - code: atom
+        term:
+          ru: Атом
+          kk: Атом
+          en: Atom
+        definition:
+          ru: наименьшая частица химического элемента, являющаяся носителем его свойств.
+          kk: химиялық элементтің қасиеттерін тасымалдаушы болып табылатын ең кішкентай бөлшек.
+          en: the smallest particle of a chemical element that is the carrier of its properties.
+      - code: molecule
+        term:
+          ru: Молекула
+          kk: Молекула
+          en: Molecule
+        definition:
+          ru: минимальная частица вещества, обладающая всеми его химическими свойствами.
+          kk: барлық химиялық қасиеттері бар заттың ең кішкентай бөлшегі.
+          en: the smallest particle of a substance that has all its chemical properties.
+      - code: chemical-element
+        term:
+          ru: Химический элемент
+          kk: Химиялық элемент
+          en: Chemical element
+        definition:
+          ru: совокупность атомов с одинаковым зарядом ядра.
+          kk: ядро заряды бірдей атомдар жиынтығы.
+          en: a collection of atoms with the same nuclear charge.
+      - code: proton
+        term:
+          ru: Протон
+          kk: Протон
+          en: Proton
+        definition:
+          ru: положительно заряженная элементарная частица в ядре атома.
+          kk: атом ядросындағы оң зарядты элементар бөлшек.
+          en: a positively charged elementary particle in the nucleus of an atom.
+      - code: neutron
+        term:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+        definition:
+          ru: нейтральная элементарная частица в ядре атома.
+          kk: атом ядросындағы бейтарап элементар бөлшек.
+          en: neutral elementary particle in the nucleus of an atom.
+      - code: electron
+        term:
+          ru: Электрон
+          kk: Электрон
+          en: Electron
+        definition:
+          ru: отрицательно заряженная элементарная частица, находящаяся в электронной оболочке атома.
+          kk: атомның электрондық қабықшасында орналасқан теріс зарядты элементар бөлшек.
+          en: a negatively charged elementary particle in the electron shell of an atom.
+      - code: atomic-nucleus
+        term:
+          ru: Ядро атома
+          kk: Атом ядросы
+          en: Atomic nucleus
+        definition:
+          ru: центральная часть атома, содержащая протоны и нейтроны.
+          kk: протондар мен нейтрондардан тұратын атомның орталық бөлігі.
+          en: the central part of an atom containing protons and neutrons.
+      - code: isotopes
+        term:
+          ru: Изотопы
+          kk: Изотоптар
+          en: Isotopes
+        definition:
+          ru: разновидности атомов одного элемента с разным числом нейтронов.
+          kk: нейтрондардың саны әртүрлі бір элемент атомдарының сорттары.
+          en: varieties of atoms of the same element with different numbers of neutrons.
+      - code: energy-level
+        term:
+          ru: Энергетический уровень
+          kk: Энергия деңгейі
+          en: Energy level
+        definition:
+          ru: область пространства, где вероятность нахождения электронов с близкими энергиями максимальна.
+          kk: энергиялары ұқсас электрондарды табу ықтималдығы максимум болатын кеңістік аймағы.
+          en: the region of space where the probability of finding electrons with similar energies is maximum.
+      - code: orbital
+        term:
+          ru: Орбиталь
+          kk: Орбиталық
+          en: Orbital
+        definition:
+          ru: пространство вокруг ядра, где вероятность нахождения электрона наиболее высока.
+          kk: электронның табылу ықтималдығы ең жоғары болатын ядроның айналасындағы кеңістік.
+          en: the space around the nucleus where the probability of finding an electron is highest.
+      - code: hybridization
+        term:
+          ru: Гибридизация
+          kk: Гибридизация
+          en: Hybridization
+        definition:
+          ru: процесс смешения атомных орбиталей с образованием новых равноценных орбиталей.
+          kk: жаңа эквивалентті орбитальдарды құру үшін атомдық орбитальдарды араластыру процесі.
+          en: the process of mixing atomic orbitals to form new equivalent orbitals.
+      - code: valence-electrons
+        term:
+          ru: Валентные электроны
+          kk: Валенттік электрондар
+          en: Valence electrons
+        definition:
+          ru: электроны внешнего уровня, участвующие в образовании химических связей.
+          kk: химиялық байланыстардың түзілуіне қатысатын сыртқы деңгейдегі электрондар.
+          en: outer level electrons involved in the formation of chemical bonds.
+      - code: periodic-law
+        term:
+          ru: Периодический закон
+          kk: Периодтық заң
+          en: Periodic law
+        definition:
+          ru: свойства элементов находятся в периодической зависимости от заряда их ядер.
+          kk: элементтердің қасиеттері олардың ядроларының зарядына периодты түрде тәуелді.
+          en: the properties of elements are periodically dependent on the charge of their nuclei.
+      - code: period
+        term:
+          ru: Период
+          kk: Кезең
+          en: Period
+        definition:
+          ru: горизонтальный ряд элементов в таблице Менделеева.
+          kk: Периодтық жүйедегі элементтердің көлденең қатары.
+          en: horizontal row of elements in the periodic table.
+      - code: group
+        term:
+          ru: Группа
+          kk: Топ
+          en: Group
+        definition:
+          ru: вертикальный столбец элементов, обладающих сходными химическими свойствами.
+          kk: ұқсас химиялық қасиеттері бар элементтердің тік бағанасы.
+          en: a vertical column of elements that have similar chemical properties.
+      - code: electronegativity
+        term:
+          ru: Электроотрицательность
+          kk: Электртерістілік
+          en: Electronegativity
+        definition:
+          ru: способность атома притягивать общие электронные пары.
+          kk: атомның ортақ электрон жұптарын тарту қабілеті.
+          en: the ability of an atom to attract shared electron pairs.
+      - code: atomic-radius
+        term:
+          ru: Атомный радиус
+          kk: Атом радиусы
+          en: Atomic radius
+        definition:
+          ru: расстояние от ядра до внешней электронной оболочки.
+          kk: ядродан сыртқы электрон қабатына дейінгі қашықтық.
+          en: distance from the nucleus to the outer electron shell.
+      - code: metallic-properties
+        term:
+          ru: Металлические свойства
+          kk: Металлдық қасиеттер
+          en: Metallic properties
+        definition:
+          ru: способность атомов отдавать электроны.
+          kk: атомдардың электрондардан бас тарту қабілеті.
+          en: the ability of atoms to give up electrons.
+      - code: non-metallic-properties
+        term:
+          ru: Неметаллические свойства
+          kk: Металл емес қасиеттер
+          en: Non-metallic properties
+        definition:
+          ru: способность атомов принимать электроны.
+          kk: атомдардың электрондарды қабылдау қабілеті.
+          en: the ability of atoms to accept electrons.
+      - code: oxidation-state
+        term:
+          ru: Степень окисления
+          kk: Тотығу күйі
+          en: Oxidation state
+        definition:
+          ru: условный заряд атома в соединении.
+          kk: қосылыстағы атомның шартты заряды.
+          en: conditional charge of an atom in a compound.
+      - code: valence
+        term:
+          ru: Валентность
+          kk: Валенттілік
+          en: Valence
+        definition:
+          ru: способность атома образовывать определенное число связей.
+          kk: атомның белгілі бір байланыс санын түзу қабілеті.
+          en: the ability of an atom to form a certain number of bonds.
+      - code: covalent-bond
+        term:
+          ru: Ковалентная связь
+          kk: Коваленттік байланыс
+          en: Covalent bond
+        definition:
+          ru: связь, образованная общими электронными парами.
+          kk: ортақ электрон жұптары арқылы түзілетін байланыс.
+          en: a bond formed by shared electron pairs.
+      - code: polar-connection
+        term:
+          ru: Полярная связь
+          kk: Полярлық байланыс
+          en: Polar connection
+        definition:
+          ru: ковалентная связь между разными неметаллами с разной электроотрицательностью.
+          kk: электртерістігі әр түрлі бейметалдар арасындағы коваленттік байланыс.
+          en: covalent bond between different nonmetals with different electronegativity.
+      - code: non-polar-bond
+        term:
+          ru: Неполярная связь
+          kk: Полярлы емес байланыс
+          en: Non-polar bond
+        definition:
+          ru: ковалентная связь между одинаковыми атомами-неметаллами.
+          kk: бірдей металл емес атомдар арасындағы коваленттік байланыс.
+          en: covalent bond between identical nonmetal atoms.
+      - code: ionic-bond
+        term:
+          ru: Ионная связь
+          kk: Иондық байланыс
+          en: Ionic bond
+        definition:
+          ru: связь за счет электростатического притяжения противоположно заряженных ионов.
+          kk: қарама-қарсы зарядталған иондардың электростатикалық тартылуынан болатын байланыс.
+          en: bond due to electrostatic attraction of oppositely charged ions.
+      - code: metal-connection
+        term:
+          ru: Металлическая связь
+          kk: Металл қосылым
+          en: Metal connection
+        definition:
+          ru: связь в металлах между ионами и общими электронами.
+          kk: иондар мен ортақ электрондар арасындағы металдардағы байланыс.
+          en: bonding in metals between ions and shared electrons.
+      - code: hydrogen-bond
+        term:
+          ru: Водородная связь
+          kk: Сутектік байланыс
+          en: Hydrogen bond
+        definition:
+          ru: взаимодействие водорода одной молекулы с электроотрицательным атомом другой.
+          kk: бір молекуланың сутегінің екінші молекуланың электртеріс атомымен әрекеттесуі.
+          en: interaction of hydrogen of one molecule with an electronegative atom of another.
+      - code: crystal-lattice
+        term:
+          ru: Кристаллическая решетка
+          kk: Кристалды тор
+          en: Crystal lattice
+        definition:
+          ru: упорядоченное расположение частиц в твердом теле.
+          kk: қатты денедегі бөлшектердің реттелген орналасуы.
+          en: ordered arrangement of particles in a solid.
+      - code: atomic-lattice
+        term:
+          ru: Атомная решетка
+          kk: Атомдық тор
+          en: Atomic lattice
+        definition:
+          ru: узлы решетки заполнены атомами, связанными ковалентными связями (алмаз).
+          kk: торлар коваленттік байланыстармен (алмас) байланысқан атомдармен толтырылған.
+          en: lattice sites are filled with atoms connected by covalent bonds (diamond).
+      - code: molecular-lattice
+        term:
+          ru: Молекулярная решетка
+          kk: Молекулалық тор
+          en: Molecular lattice
+        definition:
+          ru: узлы заполнены молекулами (лед, йод).
+          kk: түйіндер молекулалармен толтырылады (мұз, йод).
+          en: the nodes are filled with molecules (ice, iodine).
+      - code: ionic-lattice
+        term:
+          ru: Ионная решетка
+          kk: Иондық тор
+          en: Ionic lattice
+        definition:
+          ru: узлы заполнены ионами (соль).
+          kk: түйіндер иондармен (тұз) толтырылған.
+          en: the nodes are filled with ions (salt).
+      - code: metal-grate
+        term:
+          ru: Металлическая решетка
+          kk: Металл тор
+          en: Metal grate
+        definition:
+          ru: узлы заполнены атомами-ионами металлов.
+          kk: түйіндер металл атомдары-иондарымен толтырылған.
+          en: the nodes are filled with metal atoms-ions.
+      - code: relative-atomic-mass
+        term:
+          ru: Относительная атомная масса
+          kk: Салыстырмалы атомдық масса
+          en: Relative atomic mass
+        definition:
+          ru: отношение массы атома к 1/12 массы атома углерода-12.
+          kk: атом массасының көміртегі-12 атомының массасының 1/12 бөлігіне қатынасы.
+          en: the ratio of the mass of an atom to 1/12 the mass of a carbon-12 atom.
+      - code: relative-molecular-weight
+        term:
+          ru: Относительная молекулярная масса
+          kk: Салыстырмалы молекулалық салмақ
+          en: Relative molecular weight
+        definition:
+          ru: сумма относительных атомных масс элементов в молекуле.
+          kk: молекуладағы элементтердің салыстырмалы атомдық массаларының қосындысы.
+          en: the sum of the relative atomic masses of the elements in a molecule.
+      - code: nuclide
+        term:
+          ru: Нуклид
+          kk: Нуклид
+          en: Nuclide
+        definition:
+          ru: вид атомов с определенным числом протонов и нейтронов.
+          kk: протондар мен нейтрондардың белгілі бір саны бар атом түрі.
+          en: a type of atom with a certain number of protons and neutrons.
+      - code: atomic-mass
+        term:
+          ru: Атомная масса
+          kk: Атомдық масса
+          en: Atomic mass
+        definition:
+          ru: средняя масса атомов элемента с учетом изотопов.
+          kk: изотоптарды ескере отырып, элемент атомдарының орташа массасы.
+          en: average mass of atoms of an element, taking into account isotopes.
+      - code: noble-gases
+        term:
+          ru: Инертные газы
+          kk: Асыл газдар
+          en: Noble gases
+        definition:
+          ru: элементы 18-й группы (VIIIA) с завершённой электронной оболочкой.
+          kk: аяқталған электрондық қабықшасы бар 18-топтың (VIIIA) элементтері.
+          en: elements of group 18 (VIIIA) with a completed electron shell.
+      - code: ion
+        term:
+          ru: Ион
+          kk: Ион
+          en: Ion
+        definition:
+          ru: заряженная частица, образующаяся при потере или присоединении электронов.
+          kk: электрондардың жоғалуы немесе күшеюі нәтижесінде пайда болған зарядталған бөлшек.
+          en: a charged particle formed by the loss or gain of electrons.
+      - code: periodic-table
+        term:
+          ru: Периодическая система
+          kk: Периодтық кесте
+          en: Periodic table
+        definition:
+          ru: классификация химических элементов.
+          kk: химиялық элементтердің классификациясы.
+          en: classification of chemical elements.
+      - code: semi-metal
+        term:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Semi-metal
+        definition:
+          ru: элемент с промежуточными свойствами металлов и неметаллов.
+          kk: металдар мен бейметалдардың аралық қасиеттері бар элемент.
+          en: an element with intermediate properties of metals and nonmetals.
+      - code: serial-number
+        term:
+          ru: Порядковый номер
+          kk: Сериялық нөмірі
+          en: Serial number
+        definition:
+          ru: заряд ядра и количество протонов в нем.
+          kk: ядроның заряды және ондағы протондар саны.
+          en: the charge of the nucleus and the number of protons in it.
+      - code: chemical-bond
+        term:
+          ru: Химическая связь
+          kk: Химиялық байланыс
+          en: Chemical bond
+        definition:
+          ru: сила, удерживающая атомы вместе.
+          kk: атомдарды біріктіретін күш.
+          en: the force that holds atoms together.
+      - code: chemical-symbol
+        term:
+          ru: Химический символ
+          kk: Химиялық таңба
+          en: Chemical symbol
+        definition:
+          ru: буквенное обозначение элемента.
+          kk: элементтің әріптік белгісі.
+          en: letter designation of the element.
+      - code: electronic-configuration
+        term:
+          ru: Электронная конфигурация
+          kk: Электрондық конфигурация
+          en: Electronic configuration
+        definition:
+          ru: распределение электронов по орбиталям.
+          kk: электрондардың орбитальдар арасында таралуы.
+          en: distribution of electrons among orbitals.
+  - code: concepts
+    position: 2
+    title:
+      ru: Основные химические понятия и законы
+      kk: Негізгі химиялық ұғымдар мен заңдар
+      en: Basic chemical concepts and laws
+    terms:
+      - code: mole
+        term:
+          ru: Моль
+          kk: Моль
+          en: Mole
+        definition:
+          ru: количество вещества, содержащее число Авогадро частиц.
+          kk: бөлшектердің Авогадро саны бар заттың мөлшері.
+          en: the amount of a substance containing the Avogadro number of particles.
+      - code: molar-mass
+        term:
+          ru: Молярная масса
+          kk: Молярлық масса
+          en: Molar mass
+        definition:
+          ru: масса одного моля вещества (г/моль).
+          kk: бір моль заттың массасы (г/моль).
+          en: mass of one mole of a substance (g/mol).
+      - code: avogadro-s-number
+        term:
+          ru: Число Авогадро
+          kk: Авогадро саны
+          en: Avogadro's number
+        definition:
+          ru: фундаментальная константа (6,022 × 10²³ моль⁻¹).
+          kk: негізгі тұрақты (6,022 × 10²³ моль⁻¹).
+          en: fundamental constant (6.022 × 10²³ mol⁻¹).
+      - code: avogadro-s-law
+        term:
+          ru: Закон Авогадро
+          kk: Авогадро заңы
+          en: Avogadro's law
+        definition:
+          ru: в равных объемах газов при одинаковых условиях содержится равное число молекул.
+          kk: Бірдей жағдайда бірдей көлемдегі газдарда молекулалардың бірдей саны болады.
+          en: Equal volumes of gases under identical conditions contain an equal number of molecules.
+      - code: molar-volume-of-gas
+        term:
+          ru: Молярный объем газа
+          kk: Газдың молярлық көлемі
+          en: Molar volume of gas
+        definition:
+          ru: объем 1 моля газа при н.у. (22,4 л/моль).
+          kk: қоршаған орта жағдайында 1 моль газдың көлемі (22,4 л/моль).
+          en: volume of 1 mole of gas at ambient conditions(22.4 l/mol).
+      - code: law-of-conservation-of-mass
+        term:
+          ru: Закон сохранения массы
+          kk: Массаның сақталу заңы
+          en: Law of Conservation of Mass
+        definition:
+          ru: масса веществ, вступивших в реакцию, равна массе продуктов.
+          kk: Реакцияға түскен заттардың массасы өнімдердің массасына тең.
+          en: The mass of substances that entered into the reaction is equal to the mass of the products.
+      - code: law-of-constancy-of-composition
+        term:
+          ru: Закон постоянства состава
+          kk: Құрамның тұрақтылық заңы
+          en: Law of Constancy of Composition
+        definition:
+          ru: каждое чистое вещество имеет постоянный качественный и количественный состав.
+          kk: Әрбір таза заттың тұрақты сапалық және сандық құрамы болады.
+          en: Every pure substance has a constant qualitative and quantitative composition.
+      - code: allotropy
+        term:
+          ru: Аллотропия
+          kk: Аллотропия
+          en: Allotropy
+        definition:
+          ru: способность элемента образовывать несколько простых веществ (алмаз, графит).
+          kk: элементтің бірнеше жай заттарды (алмас, графит) түзу қабілеті.
+          en: the ability of an element to form several simple substances (diamond, graphite).
+      - code: physical-phenomena
+        term:
+          ru: Физические явления
+          kk: Физикалық құбылыстар
+          en: Physical phenomena
+        definition:
+          ru: изменения формы или состояния вещества без изменения состава.
+          kk: заттың құрамын өзгертпестен оның пішінінің немесе күйінің өзгеруі.
+          en: changes in the form or state of a substance without changing its composition.
+      - code: chemical-phenomena
+        term:
+          ru: Химические явления
+          kk: Химиялық құбылыстар
+          en: Chemical phenomena
+        definition:
+          ru: превращения веществ в другие вещества.
+          kk: заттардың басқа заттарға айналуы.
+          en: transformation of substances into other substances.
+      - code: simple-substances
+        term:
+          ru: Простые вещества
+          kk: Қарапайым заттар
+          en: Simple substances
+        definition:
+          ru: состоят из атомов одного элемента.
+          kk: бір элемент атомдарынан тұрады.
+          en: consist of atoms of one element.
+      - code: complex-substances
+        term:
+          ru: Сложные вещества
+          kk: Күрделі заттар
+          en: Complex substances
+        definition:
+          ru: состоят из атомов разных элементов.
+          kk: әртүрлі элементтердің атомдарынан тұрады.
+          en: consist of atoms of different elements.
+      - code: mixture
+        term:
+          ru: Смесь
+          kk: Қоспа
+          en: Mixture
+        definition:
+          ru: физическое сочетание нескольких веществ, каждое из которых сохраняет свойства.
+          kk: әрқайсысы қасиеттерін сақтайтын бірнеше заттардың физикалық комбинациясы.
+          en: a physical combination of several substances, each of which retains properties.
+      - code: solution
+        term:
+          ru: Раствор
+          kk: Шешім
+          en: Solution
+        definition:
+          ru: гомогенная смесь переменного состава.
+          kk: өзгермелі құрамды біртекті қоспасы.
+          en: homogeneous mixture of variable composition.
+      - code: solubility
+        term:
+          ru: Растворимость
+          kk: Ерігіштік
+          en: Solubility
+        definition:
+          ru: способность вещества растворяться в растворителе.
+          kk: заттың еріткіште еру қабілеті.
+          en: the ability of a substance to dissolve in a solvent.
+      - code: concentration
+        term:
+          ru: Концентрация
+          kk: Шоғырлану
+          en: Concentration
+        definition:
+          ru: количественное содержание растворенного вещества.
+          kk: еріген заттың сандық құрамы.
+          en: quantitative content of dissolved substance.
+      - code: mass-fraction
+        term:
+          ru: Массовая доля
+          kk: Массалық үлес
+          en: Mass fraction
+        definition:
+          ru: отношение массы вещества к общей массе раствора.
+          kk: зат массасының ерітіндінің жалпы массасына қатынасы.
+          en: the ratio of the mass of a substance to the total mass of a solution.
+      - code: molar-concentration
+        term:
+          ru: Молярная концентрация
+          kk: Молярлық концентрация
+          en: Molar concentration
+        definition:
+          ru: число моль вещества в 1 литре раствора (моль/л).
+          kk: 1 литр ерітіндідегі заттың моль саны (моль/л).
+          en: the number of moles of a substance in 1 liter of solution (mol/L).
+      - code: saturated-solution
+        term:
+          ru: Насыщенный раствор
+          kk: Қаныққан ерітінді
+          en: Saturated solution
+        definition:
+          ru: раствор, в котором вещество при данных условиях больше не растворяется.
+          kk: берілген шарттарда зат енді ерімейтін ерітінді.
+          en: a solution in which a substance no longer dissolves under given conditions.
+      - code: crystallization
+        term:
+          ru: Кристаллизация
+          kk: Кристалдану
+          en: Crystallization
+        definition:
+          ru: процесс образования кристаллов из раствора или расплава.
+          kk: ерітіндіден немесе балқымадан кристалдардың түзілу процесі.
+          en: the process of formation of crystals from a solution or melt.
+      - code: distillation
+        term:
+          ru: Дистилляция
+          kk: Дистилляция
+          en: Distillation
+        definition:
+          ru: метод очистки жидкостей путем испарения и конденсации.
+          kk: сұйықтарды булану және конденсациялау арқылы тазарту әдісі.
+          en: a method of purifying liquids by evaporation and condensation.
+      - code: filtration
+        term:
+          ru: Фильтрация
+          kk: Сүзу
+          en: Filtration
+        definition:
+          ru: разделение смеси через пористую перегородку.
+          kk: кеуекті қалқа арқылы қоспаны бөлу.
+          en: separation of the mixture through a porous partition.
+      - code: adsorption
+        term:
+          ru: Адсорбция
+          kk: Адсорбция
+          en: Adsorption
+        definition:
+          ru: поглощение вещества поверхностью другого тела.
+          kk: затты басқа дененің бетіне сіңіру.
+          en: absorption of a substance by the surface of another body.
+      - code: exothermic-reaction
+        term:
+          ru: Экзотермическая реакция
+          kk: Экзотермиялық реакция
+          en: Exothermic reaction
+        definition:
+          ru: протекает с выделением тепла.
+          kk: жылу бөлінуімен жүреді.
+          en: proceeds with the release of heat.
+      - code: endothermic-reaction
+        term:
+          ru: Эндотермическая реакция
+          kk: Эндотермиялық реакция
+          en: Endothermic reaction
+        definition:
+          ru: протекает с поглощением тепла.
+          kk: жылуды сіңірумен жүреді.
+          en: proceeds with the absorption of heat.
+      - code: catalyst
+        term:
+          ru: Катализатор
+          kk: Катализатор
+          en: Catalyst
+        definition:
+          ru: вещество, ускоряющее реакцию, но не расходующееся в ней.
+          kk: реакцияны тездететін, бірақ оған жұмсалмайтын зат.
+          en: a substance that speeds up a reaction but is not consumed in it.
+      - code: inhibitor
+        term:
+          ru: Ингибитор
+          kk: Ингибитор
+          en: Inhibitor
+        definition:
+          ru: вещество, замедляющее реакцию.
+          kk: реакцияны бәсеңдететін зат.
+          en: a substance that slows down a reaction.
+      - code: reagent
+        term:
+          ru: Реагент
+          kk: Реагент
+          en: Reagent
+        definition:
+          ru: исходное вещество, вступающее в реакцию.
+          kk: реакцияға түсетін бастапқы материал.
+          en: the starting material that reacts.
+      - code: reaction-product
+        term:
+          ru: Продукт реакции
+          kk: Реакция өнімі
+          en: Reaction product
+        definition:
+          ru: вещество, образовавшееся в результате реакции.
+          kk: реакция нәтижесінде түзілген зат.
+          en: substance formed as a result of a reaction.
+      - code: chemical-equation
+        term:
+          ru: Химическое уравнение
+          kk: Химиялық теңдеу
+          en: Chemical equation
+        definition:
+          ru: запись химической реакции с помощью формул.
+          kk: формулалар арқылы химиялық реакцияны жазу.
+          en: recording a chemical reaction using formulas.
+      - code: chemical-reaction
+        term:
+          ru: Химическая реакция
+          kk: Химиялық реакция
+          en: Chemical reaction
+        definition:
+          ru: процесс превращения веществ.
+          kk: заттардың түрлену процесі.
+          en: process of transformation of substances.
+      - code: reactivity
+        term:
+          ru: Реакционная способность
+          kk: Реактивтілік
+          en: Reactivity
+        definition:
+          ru: способность элемента вступать в реакции.
+          kk: элементтің әрекет ету қабілеті.
+          en: the ability of an element to react.
+  - code: inorganic
+    position: 3
+    title:
+      ru: Неорганическая химия
+      kk: Бейорганикалық химия
+      en: Inorganic chemistry
+    terms:
+      - code: oxides
+        term:
+          ru: Оксиды
+          kk: Оксидтер
+          en: Oxides
+        definition:
+          ru: бинарные соединения, где кислород имеет степень окисления -2.
+          kk: оттегінің тотығу дәрежесі -2 болатын екілік қосылыстар.
+          en: binary compounds where oxygen has an oxidation state of -2.
+      - code: acidic-oxides
+        term:
+          ru: Кислотные оксиды
+          kk: Қышқыл оксидтер
+          en: Acidic oxides
+        definition:
+          ru: оксиды, которым соответствуют кислоты.
+          kk: қышқылдар сәйкес келетін оксидтер.
+          en: oxides to which acids correspond.
+      - code: basic-oxides
+        term:
+          ru: Основные оксиды
+          kk: Негізгі оксидтер
+          en: Basic oxides
+        definition:
+          ru: оксиды, которым соответствуют основания.
+          kk: негіздер сәйкес келетін оксидтер.
+          en: oxides to which bases correspond.
+      - code: amphoteric-oxides
+        term:
+          ru: Амфотерные оксиды
+          kk: Амфотерлі оксидтер
+          en: Amphoteric oxides
+        definition:
+          ru: оксиды, проявляющие кислотные и основные свойства.
+          kk: қышқылдық және негіздік қасиеттерді көрсететін оксидтер.
+          en: oxides exhibiting acidic and basic properties.
+      - code: grounds
+        term:
+          ru: Основания
+          kk: Негіздер
+          en: Grounds
+        definition:
+          ru: гидроксиды металлов, образующие в воде ионы OH⁻.
+          kk: суда OH⁻ иондарын түзетін металл гидроксидтері.
+          en: metal hydroxides that form OH⁻ ions in water.
+      - code: alkalis
+        term:
+          ru: Щелочи
+          kk: Сілтілер
+          en: Alkalis
+        definition:
+          ru: растворимые в воде основания.
+          kk: суда еритін негіздер.
+          en: water-soluble bases.
+      - code: acids
+        term:
+          ru: Кислоты
+          kk: Қышқылдар
+          en: Acids
+        definition:
+          ru: вещества, содержащие водород, замещаемый металлом.
+          kk: құрамында сутегі бар заттар металмен ауыстырылады.
+          en: substances containing hydrogen replaced by a metal.
+      - code: salts
+        term:
+          ru: Соли
+          kk: Тұздар
+          en: Salts
+        definition:
+          ru: продукты замещения водорода в кислоте на металл.
+          kk: қышқылдағы сутекті металмен алмастыру өнімдері.
+          en: products of the replacement of hydrogen in an acid with a metal.
+      - code: medium-salts
+        term:
+          ru: Средние соли
+          kk: Орташа тұздар
+          en: Medium salts
+        definition:
+          ru: соли, где водород полностью замещен металлом.
+          kk: сутегі толығымен металмен ауыстырылатын тұздар.
+          en: salts where the hydrogen is completely replaced by a metal.
+      - code: acid-salts
+        term:
+          ru: Кислые соли
+          kk: Қышқыл тұздар
+          en: Acid salts
+        definition:
+          ru: соли, где водород замещен частично.
+          kk: сутегі ішінара ауыстырылатын тұздар.
+          en: salts where hydrogen is partially replaced.
+      - code: basic-salts
+        term:
+          ru: Основные соли
+          kk: Негізгі тұздар
+          en: Basic salts
+        definition:
+          ru: соли, где гидроксид-группы основания частично замещены кислотным остатком.
+          kk: негіздің гидроксид топтары қышқыл қалдығымен жартылай ауыстырылған тұздар.
+          en: salts in which the hydroxide groups of a base are partly replaced by an acid residue.
+      - code: amphoteric-hydroxides
+        term:
+          ru: Амфотерные гидроксиды
+          kk: Амфотерлі гидроксидтер
+          en: Amphoteric hydroxides
+        definition:
+          ru: проявляют свойства кислот и оснований.
+          kk: қышқылдар мен негіздердің қасиеттерін көрсетеді.
+          en: exhibit properties of acids and bases.
+      - code: electrolytic-dissociation
+        term:
+          ru: Электролитическая диссоциация
+          kk: Электролиттік диссоциация
+          en: Electrolytic dissociation
+        definition:
+          ru: распад на ионы при растворении.
+          kk: еріген кезде иондарға ыдырау.
+          en: decomposition into ions upon dissolution.
+      - code: electrolytes
+        term:
+          ru: Электролиты
+          kk: Электролиттер
+          en: Electrolytes
+        definition:
+          ru: вещества, растворы которых проводят ток.
+          kk: ерітінділері ток өткізетін заттар.
+          en: substances whose solutions conduct current.
+      - code: non-electrolytes
+        term:
+          ru: Неэлектролиты
+          kk: Бейэлектролиттер
+          en: Non-electrolytes
+        definition:
+          ru: вещества, растворы которых ток не проводят.
+          kk: ерітінділері ток өткізбейтін заттар.
+          en: substances whose solutions do not conduct current.
+      - code: cation
+        term:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        definition:
+          ru: положительно заряженный ион.
+          kk: оң зарядталған ион.
+          en: positively charged ion.
+      - code: anion
+        term:
+          ru: Анион
+          kk: Анион
+          en: Anion
+        definition:
+          ru: отрицательно заряженный ион.
+          kk: теріс зарядталған ион.
+          en: negatively charged ion.
+      - code: ion-exchange-reactions
+        term:
+          ru: Реакции ионного обмена
+          kk: Ион алмасу реакциялары
+          en: Ion exchange reactions
+        definition:
+          ru: реакции между электролитами в растворах.
+          kk: ерітінділердегі электролиттер арасындағы реакциялар.
+          en: reactions between electrolytes in solutions.
+      - code: hydrolysis-of-salts
+        term:
+          ru: Гидролиз солей
+          kk: Тұздардың гидролизі
+          en: Hydrolysis of salts
+        definition:
+          ru: взаимодействие ионов соли с водой.
+          kk: тұз иондарының сумен әрекеттесуі.
+          en: interaction of salt ions with water.
+      - code: oxidant
+        term:
+          ru: Окислитель
+          kk: Тотықтырғыш
+          en: Oxidant
+        definition:
+          ru: атом, принимающий электроны.
+          kk: электрондарды қабылдайтын атом.
+          en: an atom that accepts electrons.
+      - code: reducing-agent
+        term:
+          ru: Восстановитель
+          kk: Тотықсыздандырғыш
+          en: Reducing agent
+        definition:
+          ru: атом, отдающий электроны.
+          kk: электрондарды беретін атом.
+          en: an atom that donates electrons.
+      - code: oxidation
+        term:
+          ru: Окисление
+          kk: Тотығу
+          en: Oxidation
+        definition:
+          ru: процесс отдачи электронов.
+          kk: электронды донорлық процесс.
+          en: electron donation process.
+      - code: recovery
+        term:
+          ru: Восстановление
+          kk: Қалпына келтіру
+          en: Recovery
+        definition:
+          ru: процесс принятия электронов.
+          kk: электрондарды қабылдау процесі.
+          en: process of accepting electrons.
+      - code: electrolysis
+        term:
+          ru: Электролиз
+          kk: Электролиз
+          en: Electrolysis
+        definition:
+          ru: процессы на электродах при прохождении тока через раствор/расплав.
+          kk: ерітінді немесе балқыма арқылы ток өткенде электродтарда жүретін процестер.
+          en: processes at the electrodes when a current passes through a solution or a melt.
+      - code: anode
+        term:
+          ru: Анод
+          kk: Анод
+          en: Anode
+        definition:
+          ru: положительно заряженный электрод (при электролизе).
+          kk: оң зарядталған электрод (электролиз кезінде).
+          en: positively charged electrode (in electrolysis).
+      - code: cathode
+        term:
+          ru: Катод
+          kk: Катод
+          en: Cathode
+        definition:
+          ru: отрицательно заряженный электрод (при электролизе).
+          kk: теріс зарядталған электрод (электролиз кезінде).
+          en: negatively charged electrode (in electrolysis).
+      - code: metals
+        term:
+          ru: Металлы
+          kk: Металдар
+          en: Metals
+        definition:
+          ru: простые вещества с высокой проводимостью, блеском и пластичностью.
+          kk: жоғары өткізгіштігі, жылтырлығы және пластикасы бар қарапайым заттар.
+          en: simple substances with high conductivity, brilliance and plasticity.
+      - code: corrosion
+        term:
+          ru: Коррозия
+          kk: Коррозия
+          en: Corrosion
+        definition:
+          ru: разрушение металлов при взаимодействии со средой.
+          kk: қоршаған ортамен әрекеттесу кезінде металдардың бұзылуы.
+          en: destruction of metals when interacting with the environment.
+      - code: alloys
+        term:
+          ru: Сплавы
+          kk: Қорытпалар
+          en: Alloys
+        definition:
+          ru: материалы из металла и других металлов или неметаллов (например, сталь — железо с углеродом).
+          kk: металл мен басқа металдардан немесе бейметалдардан тұратын материалдар (мысалы, болат — көміртекті темір).
+          en: materials made of a metal and other metals or nonmetals (for example, steel is iron with carbon).
+      - code: nonmetals
+        term:
+          ru: Неметаллы
+          kk: Бейметалдар
+          en: Nonmetals
+        definition:
+          ru: простые вещества с неметаллическими свойствами.
+          kk: металл емес қасиеттері бар қарапайым заттар.
+          en: simple substances with non-metallic properties.
+      - code: halogens
+        term:
+          ru: Галогены
+          kk: Галогендер
+          en: Halogens
+        definition:
+          ru: элементы 17-й группы (F, Cl, Br, I).
+          kk: 17-топтың элементтері (F, Cl, Br, I).
+          en: elements of group 17 (F, Cl, Br, I).
+      - code: alkali-metals
+        term:
+          ru: Щелочные металлы
+          kk: Сілтілік металдар
+          en: Alkali metals
+        definition:
+          ru: элементы 1-й группы (Li, Na, K и др.).
+          kk: 1-топтың элементтері (Li, Na, K және т.б.).
+          en: elements of group 1 (Li, Na, K, etc.).
+      - code: transition-elements
+        term:
+          ru: Переходные элементы
+          kk: Өтпелі элементтер
+          en: Transition elements
+        definition:
+          ru: элементы d-блока.
+          kk: d-блок элементтері.
+          en: d-block elements.
+      - code: complex-connections
+        term:
+          ru: Комплексные соединения
+          kk: Күрделі байланыстар
+          en: Complex connections
+        definition:
+          ru: сложные соединения с центральным атомом-комплексообразователем.
+          kk: орталық комплекс түзуші атомы бар күрделі қосылыстар.
+          en: complex compounds with a central complexing atom.
+      - code: indicator
+        term:
+          ru: Индикатор
+          kk: Көрсеткіш
+          en: Indicator
+        definition:
+          ru: вещество, меняющее цвет в зависимости от pH среды.
+          kk: қоршаған ортаның рН-ына байланысты түсін өзгертетін зат.
+          en: a substance that changes color depending on the pH of the environment.
+      - code: ph
+        term:
+          ru: pH
+          kk: pH
+          en: pH
+        definition:
+          ru: показатель кислотности среды (отрицательный логарифм концентрации H⁺).
+          kk: ортаның қышқылдығының көрсеткіші (H⁺ концентрациясының теріс логарифмі).
+          en: indicator of the acidity of the medium (negative logarithm of the concentration H⁺).
+      - code: buffer-solutions
+        term:
+          ru: Буферные растворы
+          kk: Буферлік ерітінділер
+          en: Buffer solutions
+        definition:
+          ru: растворы с устойчивым уровнем pH.
+          kk: тұрақты рН деңгейі бар ерітінділер.
+          en: solutions with a stable pH level.
+      - code: solubility-product
+        term:
+          ru: Произведение растворимости
+          kk: Ерігіштік өнімі
+          en: Solubility product
+        definition:
+          ru: произведение концентраций ионов в насыщенном растворе.
+          kk: қаныққан ерітіндідегі ион концентрацияларының көбейтіндісі.
+          en: product of ion concentrations in a saturated solution.
+      - code: reaction-speed
+        term:
+          ru: Скорость реакции
+          kk: Реакция жылдамдығы
+          en: Reaction speed
+        definition:
+          ru: изменение концентрации веществ за единицу времени.
+          kk: уақыт бірлігіндегі заттардың концентрациясының өзгеруі.
+          en: change in the concentration of substances per unit of time.
+  - code: organic
+    position: 4
+    title:
+      ru: Органическая химия
+      kk: Органикалық химия
+      en: Organic chemistry
+    terms:
+      - code: organic-compounds
+        term:
+          ru: Органические соединения
+          kk: Органикалық қосылыстар
+          en: Organic compounds
+        definition:
+          ru: соединения углерода с другими элементами.
+          kk: көміртектің басқа элементтермен қосылыстары.
+          en: compounds of carbon with other elements.
+      - code: hydrocarbons
+        term:
+          ru: Углеводороды
+          kk: Көмірсутектер
+          en: Hydrocarbons
+        definition:
+          ru: соединения, состоящие только из C и H.
+          kk: тек С және Н-дан тұратын қосылыстар.
+          en: compounds consisting only of C and H.
+      - code: homologues
+        term:
+          ru: Гомологи
+          kk: Гомологтар
+          en: Homologues
+        definition:
+          ru: вещества с общим строением, отличающиеся на группу -CH₂-.
+          kk: -CH₂- тобы бойынша ерекшеленетін жалпы құрылымы бар заттар.
+          en: substances with a general structure that differ by the group -CH₂-.
+      - code: homologous-series
+        term:
+          ru: Гомологический ряд
+          kk: Гомологиялық қатар
+          en: Homologous series
+        definition:
+          ru: ряд веществ с общей формулой и сходным строением.
+          kk: жалпы формуласы және ұқсас құрылымы бар бірқатар заттар.
+          en: a number of substances with a general formula and similar structure.
+      - code: isomerism
+        term:
+          ru: Изомерия
+          kk: Изомерия
+          en: Isomerism
+        definition:
+          ru: явление существования веществ с одной формулой, но разным строением.
+          kk: формуласы бірдей, бірақ құрылымы әртүрлі заттардың болуы құбылысы.
+          en: the phenomenon of the existence of substances with the same formula, but different structures.
+      - code: structural-formula
+        term:
+          ru: Структурная формула
+          kk: Құрылымдық формула
+          en: Structural formula
+        definition:
+          ru: графическое изображение связей в молекуле.
+          kk: молекуладағы байланыстардың графикалық көрінісі.
+          en: graphical representation of the bonds in a molecule.
+      - code: alkanes
+        term:
+          ru: Алканы
+          kk: Алкандар
+          en: Alkanes
+        definition:
+          ru: насыщенные углеводороды (CₙH₂ₙ₊₂).
+          kk: қаныққан көмірсутектер (CₙH₂ₙ₊₂).
+          en: saturated hydrocarbons (CₙH₂ₙ₊₂).
+      - code: alkenes
+        term:
+          ru: Алкены
+          kk: Алкендер
+          en: Alkenes
+        definition:
+          ru: углеводороды с двойной связью (CₙH₂ₙ).
+          kk: қос байланысы бар көмірсутектер (CₙH₂ₙ).
+          en: hydrocarbons with a double bond (CₙH₂ₙ).
+      - code: alkynes
+        term:
+          ru: Алкины
+          kk: Алкиндер
+          en: Alkynes
+        definition:
+          ru: углеводороды с тройной связью (CₙH₂ₙ₋₂).
+          kk: үштік байланысы бар көмірсутектер (CₙH₂ₙ₋₂).
+          en: hydrocarbons with a triple bond (CₙH₂ₙ₋₂).
+      - code: alcadienes
+        term:
+          ru: Алкадиены
+          kk: Алкадиендер
+          en: Alcadienes
+        definition:
+          ru: углеводороды с двумя двойными связями.
+          kk: екі қос байланысы бар көмірсутектер.
+          en: hydrocarbons with two double bonds.
+      - code: cycloalkanes
+        term:
+          ru: Циклоалканы
+          kk: Циклоалкандар
+          en: Cycloalkanes
+        definition:
+          ru: насыщенные углеводороды циклического строения.
+          kk: циклдік құрылымды қаныққан көмірсутектер.
+          en: saturated hydrocarbons of cyclic structure.
+      - code: arenas
+        term:
+          ru: Арены
+          kk: Ареналар
+          en: Arenas
+        definition:
+          ru: ароматические углеводороды (бензол и гомологи).
+          kk: ароматты көмірсутектер (бензол және гомологтар).
+          en: aromatic hydrocarbons (benzene and homologues).
+      - code: benzene
+        term:
+          ru: Бензол
+          kk: Бензол
+          en: Benzene
+        definition:
+          ru: простейший ароматический углеводород (C₆H₆).
+          kk: қарапайым ароматты көмірсутек (C₆H₆).
+          en: the simplest aromatic hydrocarbon (C₆H₆).
+      - code: functional-group
+        term:
+          ru: Функциональная группа
+          kk: Функционалды топ
+          en: Functional group
+        definition:
+          ru: группа атомов, определяющая химические свойства вещества.
+          kk: заттың химиялық қасиеттерін анықтайтын атомдар тобы.
+          en: a group of atoms that determines the chemical properties of a substance.
+      - code: alcohols
+        term:
+          ru: Спирты
+          kk: Алкогольдер
+          en: Alcohols
+        definition:
+          ru: производные углеводородов с группой -OH.
+          kk: -OH тобы бар көмірсутектердің туындылары.
+          en: derivatives of hydrocarbons with the -OH group.
+      - code: phenols
+        term:
+          ru: Фенолы
+          kk: Фенолдар
+          en: Phenols
+        definition:
+          ru: производные бензола с группой -OH у кольца.
+          kk: сақинасында -OH тобы бар бензол туындылары.
+          en: benzene derivatives with an -OH group on the ring.
+      - code: aldehydes
+        term:
+          ru: Альдегиды
+          kk: Альдегидтер
+          en: Aldehydes
+        definition:
+          ru: содержат группу -CHO.
+          kk: құрамында -CHO тобы бар.
+          en: contain the -CHO group.
+      - code: ketones
+        term:
+          ru: Кетоны
+          kk: Кетондар
+          en: Ketones
+        definition:
+          ru: содержат карбонильную группу -CO- между радикалами.
+          kk: Радикалдар арасында -СО- карбонил тобы бар.
+          en: contain a carbonyl group -CO- between the radicals.
+      - code: carboxylic-acids
+        term:
+          ru: Карбоновые кислоты
+          kk: Карбон қышқылдары
+          en: Carboxylic acids
+        definition:
+          ru: содержат группу -COOH.
+          kk: құрамында -COOH тобы бар.
+          en: contain the -COOH group.
+      - code: esters
+        term:
+          ru: Сложные эфиры
+          kk: Күрделі эфирлер
+          en: Esters
+        definition:
+          ru: продукты взаимодействия кислот и спиртов.
+          kk: қышқылдар мен спирттердің әрекеттесу өнімдері.
+          en: products of the interaction of acids and alcohols.
+      - code: fats
+        term:
+          ru: Жиры
+          kk: Майлар
+          en: Fats
+        definition:
+          ru: сложные эфиры глицерина и высших карбоновых кислот.
+          kk: глицерин және жоғары карбон қышқылдарының күрделі эфирлері.
+          en: esters of glycerol and higher carboxylic acids.
+      - code: carbohydrates
+        term:
+          ru: Углеводы
+          kk: Көмірсулар
+          en: Carbohydrates
+        definition:
+          ru: органические соединения общей формулы Cₙ(H₂O)ₘ.
+          kk: жалпы формуласы Cₙ(H₂O)ₘ органикалық қосылыстар.
+          en: organic compounds of the general formula Cₙ(H₂O)ₘ.
+      - code: monosaccharides
+        term:
+          ru: Моносахариды
+          kk: Моносахаридтер
+          en: Monosaccharides
+        definition:
+          ru: простейшие углеводы (глюкоза, фруктоза).
+          kk: қарапайым көмірсулар (глюкоза, фруктоза).
+          en: simple carbohydrates (glucose, fructose).
+      - code: disaccharides
+        term:
+          ru: Дисахариды
+          kk: Дисахаридтер
+          en: Disaccharides
+        definition:
+          ru: состоят из двух остатков моносахаридов (сахароза).
+          kk: екі моносахарид қалдықтарынан (сахароза) тұрады.
+          en: consist of two monosaccharide residues (sucrose).
+      - code: polysaccharides
+        term:
+          ru: Полисахариды
+          kk: Полисахаридтер
+          en: Polysaccharides
+        definition:
+          ru: природные полимеры углеводов.
+          kk: көмірсулардың табиғи полимерлері.
+          en: natural polymers of carbohydrates.
+      - code: glucose
+        term:
+          ru: Глюкоза
+          kk: Глюкоза
+          en: Glucose
+        definition:
+          ru: основной моносахарид (C₆H₁₂O₆).
+          kk: негізгі моносахарид (C₆H₁₂O₆).
+          en: main monosaccharide (C₆H₁₂O₆).
+      - code: sucrose
+        term:
+          ru: Сахароза
+          kk: Сахароза
+          en: Sucrose
+        definition:
+          ru: тростниковый сахар.
+          kk: қамыс қант.
+          en: cane sugar.
+      - code: starch
+        term:
+          ru: Крахмал
+          kk: Крахмал
+          en: Starch
+        definition:
+          ru: полисахарид, резервное вещество растений.
+          kk: полисахарид, өсімдіктердің резервтік заты.
+          en: polysaccharide, reserve substance of plants.
+      - code: cellulose
+        term:
+          ru: Целлюлоза
+          kk: Целлюлоза
+          en: Cellulose
+        definition:
+          ru: полисахарид, основа клеточных стенок растений.
+          kk: полисахарид, өсімдік жасушасының қабырғаларының негізі.
+          en: polysaccharide, the basis of plant cell walls.
+      - code: amines
+        term:
+          ru: Амины
+          kk: Аминдер
+          en: Amines
+        definition:
+          ru: производные аммиака.
+          kk: аммиак туындылары.
+          en: ammonia derivatives.
+      - code: amino-acids
+        term:
+          ru: Аминокислоты
+          kk: Аминқышқылдары
+          en: Amino acids
+        definition:
+          ru: содержат и аминогруппу, и карбоксильную группу.
+          kk: құрамында амин тобы да, карбоксил тобы да бар.
+          en: contain both an amino group and a carboxyl group.
+      - code: proteins
+        term:
+          ru: Белки
+          kk: Ақуыздар
+          en: Proteins
+        definition:
+          ru: природные полимеры из аминокислот.
+          kk: аминқышқылдарынан тұратын табиғи полимерлер.
+          en: natural polymers of amino acids.
+      - code: peptide-bond
+        term:
+          ru: Пептидная связь
+          kk: Пептидтік байланыс
+          en: Peptide bond
+        definition:
+          ru: связь между аминокислотами в белках (-CONH-).
+          kk: ақуыздардағы аминқышқылдары арасындағы байланыс (-CONH-).
+          en: bond between amino acids in proteins (-CONH-).
+      - code: nucleic-acids
+        term:
+          ru: Нуклеиновые кислоты
+          kk: Нуклеин қышқылдары
+          en: Nucleic acids
+        definition:
+          ru: биополимеры (ДНК, РНК).
+          kk: биополимерлер (ДНҚ, РНҚ).
+          en: biopolymers (DNA, RNA).
+      - code: polymers
+        term:
+          ru: Полимеры
+          kk: Полимерлер
+          en: Polymers
+        definition:
+          ru: высокомолекулярные соединения.
+          kk: жоғары молекулалық қосылыстар.
+          en: high molecular weight compounds.
+      - code: monomer
+        term:
+          ru: Мономер
+          kk: Мономер
+          en: Monomer
+        definition:
+          ru: низкомолекулярное вещество, из которого строится полимер.
+          kk: полимер түзілетін төмен молекулалық зат.
+          en: a low molecular weight substance from which a polymer is built.
+      - code: polymerization
+        term:
+          ru: Полимеризация
+          kk: Полимерлену
+          en: Polymerization
+        definition:
+          ru: реакция образования полимера путем присоединения мономеров.
+          kk: мономерлердің қосылуы арқылы полимер түзілу реакциясы.
+          en: polymer formation reaction by addition of monomers.
+      - code: polycondensation
+        term:
+          ru: Поликонденсация
+          kk: Поликонденсация
+          en: Polycondensation
+        definition:
+          ru: синтез полимера с выделением побочного продукта (воды).
+          kk: жанама өнім (су) бөле отырып полимер синтездеу.
+          en: synthesis of a polymer with the release of a by-product (water).
+      - code: substitution-reaction
+        term:
+          ru: Реакция замещения
+          kk: Орынбасу реакциясы
+          en: Substitution reaction
+        definition:
+          ru: атом водорода меняется на другой атом/группу.
+          kk: сутегі атомы басқа атомға/топқа алмасады.
+          en: a hydrogen atom is replaced by another atom/group.
+      - code: addition-reaction
+        term:
+          ru: Реакция присоединения
+          kk: Қосылу реакциясы
+          en: Addition reaction
+        definition:
+          ru: разрыв кратных связей и присоединение атомов.
+          kk: еселі байланыстардың үзілуі және атомдардың қосылуы.
+          en: breaking of multiple bonds and addition of atoms.
+      - code: dehydration
+        term:
+          ru: Дегидратация
+          kk: Дегидратация
+          en: Dehydration
+        definition:
+          ru: отщепление воды.
+          kk: судың бөлінуі.
+          en: cleavage of water.
+      - code: hydrogenation
+        term:
+          ru: Гидрирование
+          kk: Гидрлеу
+          en: Hydrogenation
+        definition:
+          ru: присоединение водорода.
+          kk: сутегінің қосылуы.
+          en: addition of hydrogen.
+      - code: oxidation-of-organics
+        term:
+          ru: Окисление органики
+          kk: Органиканы тотықтыру
+          en: Oxidation of organics
+        definition:
+          ru: превращения под действием окислителей.
+          kk: тотықтырғыштардың әсерінен болатын түрленулер.
+          en: transformations under the action of oxidizing agents.
+      - code: pyrolysis
+        term:
+          ru: Пиролиз
+          kk: Пиролиз
+          en: Pyrolysis
+        definition:
+          ru: разложение органики при нагревании без воздуха.
+          kk: ауасыз қыздырғанда органиканың ыдырауы.
+          en: decomposition of organics when heated without air.
+      - code: oil
+        term:
+          ru: Нефть
+          kk: Мұнай
+          en: Oil
+        definition:
+          ru: смесь жидких углеводородов.
+          kk: сұйық көмірсутектердің қоспасы.
+          en: a mixture of liquid hydrocarbons.
+      - code: natural-gas
+        term:
+          ru: Природный газ
+          kk: Табиғи газ
+          en: Natural gas
+        definition:
+          ru: смесь газов (метан и др.).
+          kk: газдар қоспасы (метан және т.б.).
+          en: a mixture of gases (methane, etc.).
+      - code: cracking
+        term:
+          ru: Крекинг
+          kk: Крекинг
+          en: Cracking
+        definition:
+          ru: разрыв длинных цепей углеводородов.
+          kk: ұзын көмірсутек тізбектерінің үзілуі.
+          en: breaking of long hydrocarbon chains.
+      - code: nucleophile
+        term:
+          ru: Нуклеофил
+          kk: Нуклеофил
+          en: Nucleophile
+        definition:
+          ru: реагент, предоставляющий электронную пару для связи.
+          kk: байланыс үшін электрон жұбын беретін реагент.
+          en: a reagent providing an electron pair for a bond.
+      - code: electrophile
+        term:
+          ru: Электрофил
+          kk: Электрофил
+          en: Electrophile
+        definition:
+          ru: реагент, принимающий электронную пару.
+          kk: электрон жұбын қабылдайтын реагент.
+          en: a reagent accepting an electron pair.
+      - code: radical
+        term:
+          ru: Радикал
+          kk: Радикал
+          en: Radical
+        definition:
+          ru: частица с неспаренным электроном.
+          kk: жұптаспаған электроны бар бөлшек.
+          en: a particle with an unpaired electron.
+      - code: chirality
+        term:
+          ru: Хиральность
+          kk: Хиральдылық
+          en: Chirality
+        definition:
+          ru: свойство молекулы не совмещаться со своим зеркальным отражением.
+          kk: молекуланың өзінің айнадағы бейнесімен сәйкес келмеу қасиеті.
+          en: the property of a molecule not to be superimposable on its mirror image.
+      - code: geometric-isomerism
+        term:
+          ru: Геометрическая изомерия
+          kk: Геометриялық изомерия
+          en: Geometric isomerism
+        definition:
+          ru: различие в пространственном расположении групп у двойной связи.
+          kk: қос байланыстағы топтардың кеңістікте орналасуындағы айырмашылық.
+          en: difference in the spatial arrangement of groups at a double bond.
+      - code: homology
+        term:
+          ru: Гомология
+          kk: Гомология
+          en: Homology
+        definition:
+          ru: закономерное отличие в составе (группа -CH₂-).
+          kk: құрамдағы заңды айырмашылық (-CH₂- тобы).
+          en: regular difference in composition (-CH₂- group).
+      - code: hydroxyl-group
+        term:
+          ru: Гидроксильная группа
+          kk: Гидроксил тобы
+          en: Hydroxyl group
+        definition:
+          ru: группа -OH.
+          kk: -OH тобы.
+          en: -OH group.
+      - code: carboxyl-group
+        term:
+          ru: Карбоксильная группа
+          kk: Карбоксил тобы
+          en: Carboxyl group
+        definition:
+          ru: группа -COOH.
+          kk: -COOH тобы.
+          en: -COOH group.
+      - code: aldehyde-group
+        term:
+          ru: Альдегидная группа
+          kk: Альдегид тобы
+          en: Aldehyde group
+        definition:
+          ru: группа -CHO.
+          kk: -CHO тобы.
+          en: -CHO group.
+  - code: physical
+    position: 5
+    title:
+      ru: Физическая химия и методы исследования
+      kk: Физикалық химия және зерттеу әдістері
+      en: Physical chemistry and research methods
+    terms:
+      - code: gaseous-state
+        term:
+          ru: Газообразное состояние
+          kk: Газ тәрізді күй
+          en: Gaseous state
+        definition:
+          ru: агрегатное состояние вещества с высокой энергией частиц.
+          kk: бөлшектердің энергиясы жоғары заттың агрегаттық күйі.
+          en: physical state of a substance with high particle energy.
+      - code: redox-oxidation-reduction-reactions
+        term:
+          ru: ОВР (окислительно-восстановительные реакции)
+          kk: ТТР (тотығу-тотықсыздану реакциялары)
+          en: Redox (oxidation-reduction reactions)
+        definition:
+          ru: реакции с изменением степеней окисления.
+          kk: тотығу дәрежелерінің өзгеруімен жүретін реакциялар.
+          en: reactions with a change in oxidation states.
+      - code: chemical-equilibrium
+        term:
+          ru: Химическое равновесие
+          kk: Химиялық тепе-теңдік
+          en: Chemical equilibrium
+        definition:
+          ru: состояние, когда скорости прямой и обратной реакций равны.
+          kk: тура және кері реакциялардың жылдамдықтары тең болатын күй.
+          en: a state when the rates of the forward and reverse reactions are equal.
+      - code: le-chatelier-s-principle
+        term:
+          ru: Принцип Ле Шателье
+          kk: Ле Шателье принципі
+          en: Le Chatelier's principle
+        definition:
+          ru: внешнее воздействие смещает равновесие в сторону компенсации этого воздействия.
+          kk: сыртқы әсер тепе-теңдікті осы әсерді өтеу жағына ығыстырады.
+          en: an external influence shifts the equilibrium to compensate for this influence.
+      - code: gibbs-energy
+        term:
+          ru: Энергия Гиббса
+          kk: Гиббс энергиясы
+          en: Gibbs energy
+        definition:
+          ru: критерий самопроизвольности реакции.
+          kk: реакцияның өздігінен жүру критерийі.
+          en: a criterion for the spontaneity of a reaction.
+      - code: entropy
+        term:
+          ru: Энтропия
+          kk: Энтропия
+          en: Entropy
+        definition:
+          ru: мера беспорядка системы.
+          kk: жүйедегі ретсіздік өлшемі.
+          en: a measure of the disorder of a system.
+      - code: enthalpy
+        term:
+          ru: Энтальпия
+          kk: Энтальпия
+          en: Enthalpy
+        definition:
+          ru: теплосодержание системы.
+          kk: жүйенің жылу мөлшері.
+          en: the heat content of a system.
+      - code: hess-s-law
+        term:
+          ru: Закон Гесса
+          kk: Гесс заңы
+          en: Hess's law
+        definition:
+          ru: тепловой эффект зависит только от начального и конечного состояния.
+          kk: жылу эффектісі тек бастапқы және соңғы күйге тәуелді.
+          en: the thermal effect depends only on the initial and final state.
+      - code: thermochemistry
+        term:
+          ru: Термохимия
+          kk: Термохимия
+          en: Thermochemistry
+        definition:
+          ru: раздел химии о тепловых эффектах.
+          kk: жылу эффектілері туралы химия бөлімі.
+          en: a branch of chemistry about thermal effects.
+      - code: activation-energy
+        term:
+          ru: Активационная энергия
+          kk: Активтену энергиясы
+          en: Activation energy
+        definition:
+          ru: энергия, нужная для запуска реакции.
+          kk: реакцияны бастау үшін қажетті энергия.
+          en: the energy needed to start a reaction.
+      - code: dissociation-coefficient
+        term:
+          ru: Коэффициент диссоциации
+          kk: Диссоциация коэффициенті
+          en: Dissociation coefficient
+        definition:
+          ru: доля молекул, распавшихся на ионы.
+          kk: иондарға ыдыраған молекулалардың үлесі.
+          en: the fraction of molecules that have broken down into ions.
+      - code: equilibrium-constant
+        term:
+          ru: Константа равновесия
+          kk: Тепе-теңдік константасы
+          en: Equilibrium constant
+        definition:
+          ru: отношение произведений концентраций продуктов к реагентам.
+          kk: өнімдер концентрацияларының көбейтіндісінің реагенттерге қатынасы.
+          en: the ratio of the products of the concentrations of the products to the reactants.
+      - code: ideal-gas-equation
+        term:
+          ru: Уравнение идеального газа
+          kk: Идеал газ теңдеуі
+          en: Ideal gas equation
+        definition:
+          ru: PV = nRT.
+          kk: PV = nRT.
+          en: PV = nRT.
+      - code: chromatography
+        term:
+          ru: Хроматография
+          kk: Хроматография
+          en: Chromatography
+        definition:
+          ru: метод разделения смесей путем адсорбции.
+          kk: адсорбция арқылы қоспаларды бөлу әдісі.
+          en: a method of separating mixtures by adsorption.
+      - code: spectroscopy
+        term:
+          ru: Спектроскопия
+          kk: Спектроскопия
+          en: Spectroscopy
+        definition:
+          ru: изучение взаимодействия света с веществом.
+          kk: жарықтың затпен өзара әрекеттесуін зерттеу.
+          en: the study of the interaction of light with matter.
+      - code: titration
+        term:
+          ru: Титрование
+          kk: Титрлеу
+          en: Titration
+        definition:
+          ru: метод измерения концентрации через реакцию нейтрализации.
+          kk: бейтараптану реакциясы арқылы концентрацияны өлшеу әдісі.
+          en: a method of measuring concentration through a neutralization reaction.
+      - code: analytical-chemistry
+        term:
+          ru: Аналитическая химия
+          kk: Аналитикалық химия
+          en: Analytical chemistry
+        definition:
+          ru: наука о методах определения состава.
+          kk: құрамды анықтау әдістері туралы ғылым.
+          en: the science of methods for determining composition.
+      - code: qualitative-reactions
+        term:
+          ru: Качественные реакции
+          kk: Сапалық реакциялар
+          en: Qualitative reactions
+        definition:
+          ru: реакции для обнаружения конкретных ионов/веществ.
+          kk: нақты иондарды/заттарды анықтауға арналған реакциялар.
+          en: reactions to detect specific ions/substances.
+      - code: photosynthesis
+        term:
+          ru: Фотосинтез
+          kk: Фотосинтез
+          en: Photosynthesis
+        definition:
+          ru: процесс образования органики из CO₂ и H₂O под действием света.
+          kk: жарықтың әсерінен CO₂ мен H₂O-дан органикалық заттардың түзілу процесі.
+          en: the process of formation of organic matter from CO₂ and H₂O under the action of light.
+      - code: enzymes
+        term:
+          ru: Ферменты
+          kk: Ферменттер
+          en: Enzymes
+        definition:
+          ru: биологические катализаторы белковой природы.
+          kk: ақуыздық табиғаты бар биологиялық катализаторлар.
+          en: biological catalysts of a protein nature.
+      - code: biochemistry
+        term:
+          ru: Биохимия
+          kk: Биохимия
+          en: Biochemistry
+        definition:
+          ru: химия живых организмов.
+          kk: тірі организмдердің химиясы.
+          en: the chemistry of living organisms.
+      - code: electrochemical-series
+        term:
+          ru: Электрохимический ряд
+          kk: Электрохимиялық қатар
+          en: Electrochemical series
+        definition:
+          ru: список металлов в порядке убывания их активности.
+          kk: металдардың белсенділігінің кему ретімен тізімі.
+          en: a list of metals in order of decreasing activity.
+      - code: galvanic-cell
+        term:
+          ru: Гальванический элемент
+          kk: Гальваникалық элемент
+          en: Galvanic cell
+        definition:
+          ru: источник тока, основанный на ОВР.
+          kk: ТТР-ге негізделген ток көзі.
+          en: a current source based on a redox reaction.
+      - code: accumulator
+        term:
+          ru: Аккумулятор
+          kk: Аккумулятор
+          en: Accumulator
+        definition:
+          ru: обратимый химический источник тока.
+          kk: қайтымды химиялық ток көзі.
+          en: a reversible chemical current source.
+      - code: passivation
+        term:
+          ru: Пассивация
+          kk: Пассивация
+          en: Passivation
+        definition:
+          ru: образование защитной пленки на металле.
+          kk: металда қорғаныш қабықшасының түзілуі.
+          en: formation of a protective film on a metal.
+      - code: pauling-electronegativity
+        term:
+          ru: Электроотрицательность по Полингу
+          kk: Полинг бойынша электртерістік
+          en: Pauling electronegativity
+        definition:
+          ru: шкала относительной электроотрицательности.
+          kk: салыстырмалы электртерістік шкаласы.
+          en: a scale of relative electronegativity.
+      - code: ionization-energy
+        term:
+          ru: Энергия ионизации
+          kk: Иондану энергиясы
+          en: Ionization energy
+        definition:
+          ru: энергия для отрыва электрона от атома.
+          kk: атомнан электронды бөліп алуға қажетті энергия.
+          en: the energy to remove an electron from an atom.
+      - code: electron-affinity
+        term:
+          ru: Электронное сродство
+          kk: Электрон тартқыштық
+          en: Electron affinity
+        definition:
+          ru: энергия, выделяющаяся при присоединении электрона.
+          kk: электрон қосылған кезде бөлінетін энергия.
+          en: the energy released when an electron is attached.
+      - code: coordination-number
+        term:
+          ru: Координационное число
+          kk: Координациялық сан
+          en: Coordination number
+        definition:
+          ru: число частиц, окружающих центральный атом в комплексе.
+          kk: кешендегі орталық атомды қоршап тұрған бөлшектердің саны.
+          en: the number of particles surrounding the central atom in a complex.
+      - code: state-of-aggregation
+        term:
+          ru: Агрегатное состояние
+          kk: Агрегаттық күй
+          en: State of aggregation
+        definition:
+          ru: твердое, жидкое или газообразное состояние.
+          kk: қатты, сұйық немесе газ тәрізді күй.
+          en: solid, liquid or gaseous state.
+      - code: melting
+        term:
+          ru: Плавление
+          kk: Балқу
+          en: Melting
+        definition:
+          ru: переход из твердого состояния в жидкое.
+          kk: қатты күйден сұйық күйге өту.
+          en: transition from a solid state to a liquid.
+      - code: evaporation
+        term:
+          ru: Испарение
+          kk: Булану
+          en: Evaporation
+        definition:
+          ru: переход из жидкости в газ.
+          kk: сұйықтықтан газға өту.
+          en: transition from a liquid to a gas.
+      - code: sublimation
+        term:
+          ru: Сублимация
+          kk: Сублимация
+          en: Sublimation
+        definition:
+          ru: переход из твердого в газообразное минуя жидкое.
+          kk: сұйық күйді аттап өтіп, қатты күйден газға өту.
+          en: transition from solid to gaseous bypassing the liquid.
+      - code: boiling-point
+        term:
+          ru: Температура кипения
+          kk: Қайнау температурасы
+          en: Boiling point
+        definition:
+          ru: температура, при которой давление пара равно внешнему.
+          kk: бу қысымы сыртқы қысымға тең болатын температура.
+          en: the temperature at which the vapor pressure equals the external pressure.
+      - code: freezing-point
+        term:
+          ru: Точка замерзания
+          kk: Қату нүктесі
+          en: Freezing point
+        definition:
+          ru: температура перехода жидкости в твердое состояние.
+          kk: сұйықтықтың қатты күйге өту температурасы.
+          en: the temperature of transition of a liquid to a solid state.
+      - code: radioactivity
+        term:
+          ru: Радиоактивность
+          kk: Радиоактивтілік
+          en: Radioactivity
+        definition:
+          ru: самопроизвольный распад ядер.
+          kk: ядролардың өздігінен ыдырауы.
+          en: spontaneous decay of nuclei.
+      - code: half-life
+        term:
+          ru: Период полураспада
+          kk: Жартылай ыдырау периоды
+          en: Half-life
+        definition:
+          ru: время распада половины радиоактивного вещества.
+          kk: радиоактивті заттың жартысының ыдырау уақыты.
+          en: the time for half of a radioactive substance to decay.
+      - code: synthesis
+        term:
+          ru: Синтез
+          kk: Синтез
+          en: Synthesis
+        definition:
+          ru: получение сложных веществ из простых.
+          kk: қарапайым заттардан күрделі заттарды алу.
+          en: the production of complex substances from simple ones.
+      - code: analysis
+        term:
+          ru: Анализ
+          kk: Анализ
+          en: Analysis
+        definition:
+          ru: определение химического состава вещества.
+          kk: заттың химиялық құрамын анықтау.
+          en: determination of the chemical composition of a substance.
+      - code: laboratory-glassware
+        term:
+          ru: Лабораторная посуда
+          kk: Зертханалық ыдыстар
+          en: Laboratory glassware
+        definition:
+          ru: колбы, пробирки, бюретки и пр.
+          kk: колбалар, сынауықтар, бюреткалар және т.б.
+          en: flasks, test tubes, burettes, etc.
+      - code: safety-engineering
+        term:
+          ru: Техника безопасности
+          kk: Қауіпсіздік техникасы
+          en: Safety engineering
+        definition:
+          ru: правила работы для предотвращения травм.
+          kk: жарақаттануды болдырмау үшін жұмыс ережелері.
+          en: work rules to prevent injuries.

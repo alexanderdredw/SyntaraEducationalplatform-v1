@@ -200,6 +200,55 @@ describe('base content (integration)', () => {
     }
   });
 
+  it('API-S-22, API-PUB-14, REQ-GLOS-01…04 glossary: a guest and a student read it (sections in order, terms A–Z, KK/EN «на проверке»); no glossary or not visible → 404', async () => {
+    const subjectIdByCode = async (code: string) =>
+      (
+        await stack.db
+          .select({ id: schema.subjects.id })
+          .from(schema.subjects)
+          .where(eq(schema.subjects.code, code))
+      )[0]!.id;
+    const chemistry = await subjectIdByCode('chemistry');
+    const page = await guest(`/api/public/subjects/${chemistry}`).expect(200);
+    expect(page.body.hasGlossary).toBe(true);
+    const anatomy = await guest(`/api/public/subjects/${B.subjectAnatomy}`).expect(200);
+    expect(anatomy.body).not.toHaveProperty('hasGlossary');
+
+    const ru = await guest(`/api/public/subjects/${chemistry}/glossary`).expect(200);
+    expect(ru.body.subject).toEqual({ id: chemistry, title: 'Химия' });
+    expect(ru.body.needsReview).toBe(false);
+    expect(ru.body.sections.map((s: { title: string }) => s.title)).toEqual([
+      'Общая химия и строение атома',
+      'Основные химические понятия и законы',
+      'Неорганическая химия',
+      'Органическая химия',
+      'Физическая химия и методы исследования',
+    ]);
+    const total = ru.body.sections.reduce((n: number, s: { terms: unknown[] }) => n + s.terms.length, 0);
+    expect(total).toBe(212);
+    const firstTerms = ru.body.sections[0].terms.map((t: { term: string }) => t.term);
+    expect(firstTerms).toEqual([...firstTerms].sort((a, b) => a.localeCompare(b, 'ru')));
+    expect(ru.body.sections[0].terms.find((t: { term: string }) => t.term === 'Атом').definition).toContain(
+      'наименьшая частица',
+    );
+    const en = await guest(`/api/public/subjects/${chemistry}/glossary`, 'en').expect(200);
+    expect(en.body.needsReview).toBe(true);
+    expect(en.body.sections[0].title).toBe('General chemistry and atomic structure');
+    const studentView = await as(student).get(`/api/student/subjects/${chemistry}/glossary`).expect(200);
+    expect(studentView.body.sections).toHaveLength(5);
+
+    // Нет глоссария, нет предмета, не вошёл, личный предмет учителя для гостя — 404 / 401.
+    await guest(`/api/public/subjects/${B.subjectAnatomy}/glossary`).expect(404);
+    await as(student).get(`/api/student/subjects/${B.subjectAnatomy}/glossary`).expect(404);
+    await guest(`/api/public/subjects/00000000-0000-4000-8000-000000000000/glossary`).expect(404);
+    await http().get(`/api/student/subjects/${chemistry}/glossary`).expect(401);
+    const own = await as(teacher)
+      .post('/api/teacher/subjects', { translations: { ru: { title: 'Химия класса' } } })
+      .expect(201);
+    await guest(`/api/public/subjects/${own.body.id}/glossary`).expect(404);
+    await as(student).get(`/api/student/subjects/${own.body.id}/glossary`).expect(404);
+  });
+
   it('BR-CNT-05, REQ-ST-LES-07 language marks: KK is «на проверке»; EN has its own sixth section', async () => {
     const kk = await guest(`/api/public/topics/${B.topicCardio}`, 'kk').expect(200);
     expect(kk.body).toMatchObject({ locale: 'kk', needsReview: true, title: 'Жүрек-қантамыр жүйесі' });

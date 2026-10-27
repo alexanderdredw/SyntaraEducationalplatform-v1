@@ -8,6 +8,7 @@ import { DB } from '../../infra/tokens';
 import { GamificationService } from '../gamification/gamification.service';
 import {
   type CatalogDto,
+  type GlossaryDto,
   type LessonDto,
   type PublicSubjectPageDto,
   type SectionDto,
@@ -19,6 +20,7 @@ import { VisibilityService } from './visibility.service';
 const { catalogSections, catalogSectionTranslations: cst, subjects, subjectTranslations: st } = schema;
 const { topics, topicVersions, learningEvents, topicMastery, quizAttempts, quizzes } = schema;
 const { subjectChapters, subjectChapterTranslations } = schema;
+const { glossarySections, glossarySectionTranslations, glossaryTerms, glossaryTermTranslations } = schema;
 
 const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 
@@ -121,11 +123,18 @@ export class StudentContentService {
         .orderBy(asc(topics.position)),
     ]);
     const tr = pickTranslation(translations, locale);
-    const chapters = await this.chapters(
-      subjectId,
-      rows.map((r) => ({ id: r.id, chapterId: r.chapterId })),
-      locale,
-    );
+    const [chapters, [glossary]] = await Promise.all([
+      this.chapters(
+        subjectId,
+        rows.map((r) => ({ id: r.id, chapterId: r.chapterId })),
+        locale,
+      ),
+      this.db
+        .select({ id: glossarySections.id })
+        .from(glossarySections)
+        .where(eq(glossarySections.subjectId, subjectId))
+        .limit(1),
+    ]);
     return {
       id: subjectId,
       title: tr?.title ?? '',
@@ -136,6 +145,75 @@ export class StudentContentService {
         return { id: r.id, number: r.position, title: t?.title ?? '' };
       }),
       ...(chapters.length ? { chapters } : {}),
+      ...(glossary ? { hasGlossary: true } : {}),
+    };
+  }
+
+  /**
+   * API-S-22 / API-PUB-14 (REQ-GLOS-01…04): глоссарий видимого предмета — разделы по порядку, термины по алфавиту
+   * языка ответа; перевода нет — RU (как у уроков). Предмет не виден или без глоссария → 404 (BR-VIS-01/04).
+   */
+  async glossary(viewer: Viewer, subjectId: string, locale: Locale): Promise<GlossaryDto> {
+    const visible =
+      viewer === null
+        ? await this.visibility.canGuestSeeSubject(subjectId)
+        : await this.visibility.canStudentSeeSubject(viewer, subjectId);
+    if (!visible) throw notFound();
+    const sections = await this.db
+      .select()
+      .from(glossarySections)
+      .where(eq(glossarySections.subjectId, subjectId))
+      .orderBy(asc(glossarySections.position));
+    if (sections.length === 0) throw notFound();
+    const sectionIds = sections.map((s) => s.id);
+    const [subjectTr, sectionTr, terms] = await Promise.all([
+      this.db.select().from(st).where(eq(st.subjectId, subjectId)),
+      this.db
+        .select()
+        .from(glossarySectionTranslations)
+        .where(inArray(glossarySectionTranslations.sectionId, sectionIds)),
+      this.db.select().from(glossaryTerms).where(inArray(glossaryTerms.sectionId, sectionIds)),
+    ]);
+    const termTr = terms.length
+      ? await this.db
+          .select()
+          .from(glossaryTermTranslations)
+          .where(
+            inArray(
+              glossaryTermTranslations.termId,
+              terms.map((t) => t.id),
+            ),
+          )
+      : [];
+    const collator = new Intl.Collator(locale, { sensitivity: 'base' });
+    let needsReview = false;
+    const result = sections.map((s) => {
+      const title = pickTranslation(
+        sectionTr.filter((t) => t.sectionId === s.id),
+        locale,
+      );
+      if (title?.needsReview) needsReview = true;
+      return {
+        id: s.id,
+        title: title?.title ?? '',
+        terms: terms
+          .filter((t) => t.sectionId === s.id)
+          .flatMap((t) => {
+            const tr = pickTranslation(
+              termTr.filter((x) => x.termId === t.id),
+              locale,
+            );
+            if (!tr) return [];
+            if (tr.needsReview) needsReview = true;
+            return [{ id: t.id, term: tr.term, definition: tr.definition }];
+          })
+          .sort((a, b) => collator.compare(a.term, b.term)),
+      };
+    });
+    return {
+      subject: { id: subjectId, title: pickTranslation(subjectTr, locale)?.title ?? '' },
+      sections: result,
+      needsReview,
     };
   }
 

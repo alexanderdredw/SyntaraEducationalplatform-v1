@@ -32,6 +32,7 @@ import {
   AiDraftResponse,
   CatalogDto,
   CreatedIdDto,
+  GlossaryDto,
   GrantAccessBody,
   LessonDto,
   PublicSubjectPageDto,
@@ -284,6 +285,14 @@ export class StudentContentController {
     return this.content.subject(req.user!.id, id, locale(req));
   }
 
+  /** API-S-22 (REQ-GLOS-01…04): глоссарий предмета; не виден или нет глоссария → 404. */
+  @Get('subjects/:id/glossary')
+  @ApiOkResponse({ type: GlossaryDto })
+  @ApiNotFoundResponse()
+  glossary(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<GlossaryDto> {
+    return this.content.glossary(req.user!.id, id, locale(req));
+  }
+
   /** API-S-17 (REQ-ST-LES-04): повтор с тем же ключом не создаёт события. */
   @Post('events')
   @HttpCode(204)
@@ -339,6 +348,14 @@ export class PublicContentController {
     @Req() req: AuthRequest,
   ): Promise<PublicSubjectPageDto> {
     return this.content.guestSubject(id, locale(req));
+  }
+
+  /** API-PUB-14 (REQ-GLOS-02): глоссарий базового предмета для гостя; не базовый или нет глоссария → 404. */
+  @Get('subjects/:id/glossary')
+  @ApiOkResponse({ type: GlossaryDto })
+  @ApiNotFoundResponse()
+  glossary(@Param('id', new UuidParamPipe()) id: string, @Req() req: AuthRequest): Promise<GlossaryDto> {
+    return this.content.glossary(null, id, locale(req));
   }
 
   /** API-PUB-13: «Обзор» базового урока; quizId = null. Не базовый или не опубликован → 404. */

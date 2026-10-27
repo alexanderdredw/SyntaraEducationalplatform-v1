@@ -260,3 +260,73 @@ export const topicMaterials = pgTable(
   },
   (t) => [primaryKey({ columns: [t.topicId, t.mediaId] })],
 );
+
+/**
+ * Глоссарий базового предмета (REQ-GLOS-01…06, docs/CHEM_TZ.md 6.2): разделы с терминами из glossary.yaml
+ * в папке предмета. Сопоставление при импорте — по кодам (раздел — в предмете, термин — в разделе).
+ */
+export const glossarySections = pgTable(
+  'glossary_sections',
+  {
+    id: id(),
+    subjectId: uuid('subject_id')
+      .notNull()
+      .references(() => subjects.id),
+    code: text('code').notNull(),
+    position: integer('position').notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    unique('glossary_sections_subject_code').on(t.subjectId, t.code),
+    check('glossary_sections_position', sql`${t.position} >= 1`),
+  ],
+);
+
+export const glossarySectionTranslations = pgTable(
+  'glossary_section_translations',
+  {
+    sectionId: uuid('section_id').references(() => glossarySections.id),
+    locale: localeEnum('locale'),
+    title: text('title').notNull(),
+    /** Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05). */
+    needsReview: boolean('needs_review').notNull().default(false),
+  },
+  (t) => [
+    primaryKey({ columns: [t.sectionId, t.locale] }),
+    check('glossary_section_tr_title_len', sql`length(${t.title}) <= 150`),
+  ],
+);
+
+export const glossaryTerms = pgTable(
+  'glossary_terms',
+  {
+    id: id(),
+    sectionId: uuid('section_id')
+      .notNull()
+      .references(() => glossarySections.id),
+    code: text('code').notNull(),
+    position: integer('position').notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    unique('glossary_terms_section_code').on(t.sectionId, t.code),
+    index('ix_glossary_terms_section').on(t.sectionId, t.position),
+  ],
+);
+
+export const glossaryTermTranslations = pgTable(
+  'glossary_term_translations',
+  {
+    termId: uuid('term_id').references(() => glossaryTerms.id),
+    locale: localeEnum('locale'),
+    term: text('term').notNull(),
+    definition: text('definition').notNull(),
+    /** Перевод подготовлен ИИ и ждёт вычитки человеком (BR-CNT-05). */
+    needsReview: boolean('needs_review').notNull().default(false),
+  },
+  (t) => [
+    primaryKey({ columns: [t.termId, t.locale] }),
+    check('glossary_term_tr_term_len', sql`length(${t.term}) <= 150`),
+    check('glossary_term_tr_definition_len', sql`length(${t.definition}) <= 1000`),
+  ],
+);

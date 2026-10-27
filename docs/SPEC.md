@@ -311,6 +311,7 @@ pnpm lint && pnpm typecheck
 | /learn/class | Мой класс (REQ-NAV-11) | student | — | 8.4.10 |
 | /learn/sections/:id | Раздел каталога | student; гость (BR-VIS-04) | U03 | 8.4.2 |
 | /learn/subjects/:id | Предмет: темы и их статусы | student; гость — базовый предмет, без статусов (BR-VIS-04) | — | 8.4.2 |
+| /learn/subjects/:id/glossary | Глоссарий предмета (REQ-GLOS-02…06) | student; гость — базовый предмет (BR-VIS-04); нет глоссария → 404 | — | 8.4.2 |
 | /learn/topics/:id?tab=overview|quiz|ai | Урок | student; гость — «Обзор» базового урока, на «Квиз» и «Syntara AI» — приглашение войти (REQ-ST-LES-06) | U04–U07, U09, U11, U12 | 8.4.3–8.4.5 |
 | /learn/assistant | Учебный помощник | student | U02 | 8.4.5 |
 | /learn/progress | Мои показатели | student | U08 | 8.4.6 |
@@ -478,6 +479,17 @@ CREATE TABLE subject_chapter_translations (chapter_id uuid REFERENCES subject_ch
   title text NOT NULL CHECK (length(title) <= 150), needs_review boolean NOT NULL DEFAULT false,
   PRIMARY KEY (chapter_id, locale));
 ALTER TABLE topics ADD COLUMN chapter_id uuid REFERENCES subject_chapters;
+-- Глоссарий базового предмета (REQ-GLOS-01, миграция 0014): glossary.yaml в папке предмета; коды — ключи импорта.
+CREATE TABLE glossary_sections (id uuid PRIMARY KEY, subject_id uuid NOT NULL REFERENCES subjects, code text NOT NULL,
+  position int NOT NULL CHECK (position >= 1), UNIQUE (subject_id, code));
+CREATE TABLE glossary_section_translations (section_id uuid REFERENCES glossary_sections, locale locale,
+  title text NOT NULL CHECK (length(title) <= 150), needs_review boolean NOT NULL DEFAULT false,
+  PRIMARY KEY (section_id, locale));
+CREATE TABLE glossary_terms (id uuid PRIMARY KEY, section_id uuid NOT NULL REFERENCES glossary_sections,
+  code text NOT NULL, position int NOT NULL, UNIQUE (section_id, code));
+CREATE TABLE glossary_term_translations (term_id uuid REFERENCES glossary_terms, locale locale,
+  term text NOT NULL CHECK (length(term) <= 150), definition text NOT NULL CHECK (length(definition) <= 1000),
+  needs_review boolean NOT NULL DEFAULT false, PRIMARY KEY (term_id, locale));
 ```
 
 ## 5.5 Квизы и задания
@@ -774,7 +786,8 @@ CREATE TABLE known_devices (
 | API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
 | API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
 | API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
-| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }], chapters? }` — без статусов; `chapters: [{ id, title, topicIds }]` — только у предмета с главами (BR-CHAP-03, BR-CHAP-05); не базовый → 404 |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }], chapters? }` — без статусов; `chapters: [{ id, title, topicIds }]` — только у предмета с главами (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); не базовый → 404 |
+| API-PUB-14 | GET /api/public/subjects/:id/glossary | — | Глоссарий базового предмета для гостя (REQ-GLOS-02): как API-S-22; не базовый или без глоссария → 404 |
 | API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
 
 ## 6.3 Аутентификация и профиль
@@ -863,9 +876,10 @@ CREATE TABLE known_devices (
 | API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
 | API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
 | API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
-| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); предмет не виден (BR-VIS-01) → 404 |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); предмет не виден (BR-VIS-01) → 404 |
 | API-S-19 | GET /api/student/class/overview | «Мой класс» (REQ-NAV-11), только чтение: `{ class: StudentClassDto | null, subjects: [{ id, title, description, topicsTotal, topicsMastered, isNew }], upcomingAssignments: StudentAssignmentDto[] }` — предметы, выданные действующему классу ученика (без отзыва, не в архиве); `topicsMastered` — темы с mastered_at; `isNew` — выдан после отметки `nav_seen('class')` (нет отметки — новый); до 3 несданных заданий, ближайший срок — первым (как API-S-10). Путь — `class/overview`: `GET /api/student/class` занят API-S-02, существующие операции не меняются (TODO(OWNER): подтвердить путь). |
 | API-S-20 | GET /api/student/nav-badges | `{ assignmentsOpen, assignmentsOverdue, classHasNew, achievementsHasNew }` (REQ-NAV-14): несданные задания API-S-10 и из них просроченные; предмет выдан классу или бейдж получен позже отметки `nav_seen` (нет отметки — всё новое). |
+| API-S-22 | GET /api/student/subjects/:id/glossary | Глоссарий предмета (REQ-GLOS-01…04): `{ subject: { id, title }, sections: [{ id, title, terms: [{ id, term, definition }] }], needsReview }` — разделы по position, термины по алфавиту языка ответа (Intl.Collator), перевода нет — RU; `needsReview` — показан перевод на проверке; предмет не виден (BR-VIS-01) или без глоссария → 404 |
 | API-S-21 | POST /api/student/nav-seen | `{ section: 'class'|'achievements' }` → 204; отметка «раздел открыт сейчас» (upsert). Иной section → 400. |
 
 ## 6.6 Служебная поддержка
@@ -1339,6 +1353,17 @@ REQ-CHEM-04 Урок «Учёные-химики»: раздел на каждо
           public domain с Wikimedia Commons (Ходжкин — без портрета); квиз — 13 отобранных вопросов с именем учёного.
 REQ-CHEM-05 Картинки — WebP ≤ 300 КБ, ширина ≤ 1200 px, с source, license (и author у портретов).
 REQ-CHEM-06 pnpm content:check и content:import --dry-run без ошибок; «Химия» в каталоге не «Скоро».
+REQ-GLOS-01 Глоссарий предмета: glossary.yaml в папке предмета — sections: [{ code, position, title, terms: [{ code,
+          term, definition }] }]; RU обязателен, KK и EN — needs_review (review: { kk, en }); коды разделов и терминов
+          уникальны в предмете; на каждом языке у термина — и название (≤ 150), и определение (≤ 1000). Проверка —
+          content:check, импорт — вместе с предметом (5.4, миграция 0014); удалённый из файла термин удаляется.
+REQ-GLOS-02 На странице предмета — кнопка «Глоссарий» (только если у предмета он есть, hasGlossary) →
+          /learn/subjects/:id/glossary; гостю — так же для базовых предметов (BR-VIS-04). API-S-22, API-PUB-14.
+REQ-GLOS-03 Поиск по термину и определению без учёта регистра и «ё/е», совпадения подсвечены; пустой результат —
+          «Ничего не найдено»; число найденных — для экранного диктора.
+REQ-GLOS-04 Разделы — как в источнике; внутри — по алфавиту языка интерфейса.
+REQ-GLOS-05 Телефон 390 px — одна колонка, поле поиска закреплено сверху.
+REQ-GLOS-06 Хлебные крошки «Каталог / {Предмет} / Глоссарий»; в панели активен «Каталог».
 ```
 
 ## 7.12 Battle (итерация 10.5)
@@ -2391,3 +2416,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-27 | 3.3 REQ-GEN-SHELL-04: поведение плавающих кнопок на телефоне — не закрывают поля ввода и текст (размер, ряд, скрытие при фокусе и над содержимым, отступ в конце страницы) | Замечание владельца к форме учителя |
 | 2026-10-27 | Перенос атласа химии (docs/CHEM_TZ.md), C1 «Главы»: 5.4 `subject_chapters`, `subject_chapter_translations`, `topics.chapter_id` (миграция 0013); 6.2 API-PUB-12 и 6.5 API-S-18 — необязательное поле `chapters`; 7.11 BR-CHAP-01…05; 8.4.2 REQ-ST-CAT-04 (главы); 13 AC-CHEM-01…13 | Решения владельца 2026-10-27 (CHEM_TZ, раздел 2; ответы на вопросы C0) |
 | 2026-10-27 | Перенос атласа химии, C2 «Контент»: 7.11 REQ-CHEM-01…06; «Химия» наполнена (content/natural-sciences/01-chemistry, конвертер и файлы правок в scripts/content-import/) | Решения владельца по C0 (В-1…В-17) |
+| 2026-10-27 | Перенос атласа химии, C3 «Глоссарий»: 4 маршрут /learn/subjects/:id/glossary; 5.4 таблицы глоссария (миграция 0014); 6.2 API-PUB-14, API-PUB-12 `hasGlossary`; 6.5 API-S-22, API-S-18 `hasGlossary`; 7.11 REQ-GLOS-01…06. Тексты «Поиск по глоссарию», «Термин или определение», «Найдено: {count}» — needs_confirmation | docs/CHEM_TZ.md 6.2 |

@@ -65,6 +65,29 @@ export const SubjectFile = z.strictObject({
 });
 export type SubjectFile = z.infer<typeof SubjectFile>;
 
+const review = z.enum(['needs_review', 'reviewed'], 'review: needs_review или reviewed');
+
+/**
+ * glossary.yaml в папке предмета (REQ-GLOS-01): разделы с терминами; RU обязателен, KK и EN — с пометкой проверки
+ * (без review — needs_review). Коды — постоянные ключи импорта: разделов и терминов — в предмете.
+ */
+export const GlossaryFile = z.strictObject({
+  review: z.strictObject({ kk: review.optional(), en: review.optional() }).optional(),
+  sections: z
+    .array(
+      z.strictObject({
+        code,
+        position,
+        title: localized(150),
+        terms: z
+          .array(z.strictObject({ code, term: localized(150), definition: localized(1000) }))
+          .min(1, 'хотя бы один термин'),
+      }),
+    )
+    .min(1, 'хотя бы один раздел'),
+});
+export type GlossaryFile = z.infer<typeof GlossaryFile>;
+
 export const MediaEntry = z.strictObject({
   file: z.string().regex(/^media\/[A-Za-z0-9._-]+$/, 'путь вида media/<имя файла>'),
   source: text(500),
@@ -150,6 +173,20 @@ export interface ChapterModel {
   translations: Partial<Record<Locale, { title: string; needsReview: boolean }>>;
 }
 
+export interface GlossaryModel {
+  file: string;
+  sections: Array<{
+    code: string;
+    position: number;
+    translations: Partial<Record<Locale, { title: string; needsReview: boolean }>>;
+    terms: Array<{
+      code: string;
+      position: number;
+      translations: Partial<Record<Locale, { term: string; definition: string; needsReview: boolean }>>;
+    }>;
+  }>;
+}
+
 export interface SubjectModel {
   code: string;
   sectionCode: string;
@@ -157,6 +194,8 @@ export interface SubjectModel {
   translations: Partial<Record<Locale, { title: string; description?: string }>>;
   /** Главы по position; пусто — предмет без глав (BR-CHAP-02). */
   chapters: ChapterModel[];
+  /** Глоссарий (REQ-GLOS-01); нет файла — нет глоссария. */
+  glossary?: GlossaryModel;
   file: string;
 }
 

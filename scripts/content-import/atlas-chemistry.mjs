@@ -427,6 +427,47 @@ async function chemistsTopic() {
   write(`${dir}/quiz.yaml`, yaml({ questions }));
 }
 
+/* ---------- Глоссарий (REQ-GLOS-01, CHEM_MAP 1.6, 3.7) ---------- */
+
+const slug = (s) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+function glossary() {
+  const data = runData('js/data/glossary-data.js', 'glossaryData');
+  const fix = FIX.glossary ?? {};
+  const used = new Set();
+  const sections = data.map((s, si) => ({
+    code: fix.sections[si],
+    position: si + 1,
+    title: Object.fromEntries(LANGS.map((l) => [l, text(l, s.titleKey)])),
+    terms: s.terms
+      .map((t) => ({ t, n: Number(t.termKey.split('.').pop()) }))
+      .filter(({ n }) => !(fix.remove ?? []).includes(n))
+      .map(({ t, n }) => {
+        // Код — слаг английского термина (постоянный ключ импорта); совпадения получают номер.
+        let code = slug(text('en', t.termKey)) || `term-${n}`;
+        for (let k = 2; used.has(code); k++) code = `${slug(text('en', t.termKey))}-${k}`;
+        used.add(code);
+        return {
+          code,
+          term: Object.fromEntries(LANGS.map((l) => [l, text(l, t.termKey)])),
+          definition: Object.fromEntries(
+            LANGS.map((l) => [l, fix.definitions?.[n]?.[l] ?? text(l, t.defKey)]),
+          ),
+        };
+      }),
+  }));
+  write(
+    'glossary.yaml',
+    `# Глоссарий «Химии» (REQ-GLOS-01). Создан конвертером scripts/content-import/atlas-chemistry.mjs — правки в
+# atlas-chemistry.fixes.yaml (раздел glossary), а не здесь. KK и EN — перевод ИИ, на проверке.
+${yaml({ review: { kk: 'needs_review', en: 'needs_review' }, sections })}`,
+  );
+}
+
 /* ---------- Запуск ---------- */
 
 write(
@@ -440,6 +481,7 @@ for (const it of items
   .sort((a, b) => a.atomicNumber - b.atomicNumber))
   await elementTopic(it);
 await chemistsTopic();
+glossary();
 
 if (problems.length) {
   for (const p of problems) console.error(`[atlas] ${p}`);

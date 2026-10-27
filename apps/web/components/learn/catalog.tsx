@@ -305,6 +305,7 @@ function ChapterList({ subject }: { subject: Subject & { chapters: NonNullable<S
 export function StudentSubject({ id }: { id: string }) {
   const t = useTranslations('student.subject');
   const tc = useTranslations('student.myClass');
+  const tg = useTranslations('student.glossary');
   const { guest } = useLearnViewer();
   const subject = useApi<Subject>(['student', 'subject', id], `/api/student/subjects/${id}`);
   // Предмет учителя: назад — в «Мой класс», в панели активен «Мой класс» (REQ-NAV-11, п. 3; REQ-NAV-13).
@@ -318,6 +319,16 @@ export function StudentSubject({ id }: { id: string }) {
     >
       {subject.data?.description ? (
         <p className="text-[var(--text-muted)]">{subject.data.description}</p>
+      ) : null}
+      {/* REQ-GLOS-02: кнопка — только если у предмета есть глоссарий. */}
+      {subject.data?.hasGlossary ? (
+        <AppLink
+          href={`/learn/subjects/${id}/glossary`}
+          data-testid="subject-glossary-link"
+          className="inline-flex min-h-11 w-fit items-center rounded-[var(--radius-pill)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-medium hover:border-[var(--border-strong)]"
+        >
+          {tg('title')}
+        </AppLink>
       ) : null}
       <section aria-labelledby="subject-topics" className="flex flex-col gap-3">
         <h2 id="subject-topics" className="text-cabinet-block font-semibold">

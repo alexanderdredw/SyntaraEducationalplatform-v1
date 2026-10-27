@@ -1353,6 +1353,50 @@
         ]
       }
     },
+    "/api/student/subjects/{id}/glossary": {
+      "get": {
+        "operationId": "StudentContentController_glossary",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/api/student/events": {
       "post": {
         "operationId": "StudentContentController_events",
@@ -1509,6 +1553,39 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PublicSubjectPageDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/public/subjects/{id}/glossary": {
+      "get": {
+        "operationId": "PublicContentController_glossary",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlossaryDto"
                 }
               }
             }
@@ -7564,6 +7641,10 @@
             "items": {
               "$ref": "#/components/schemas/SubjectChapterDto"
             }
+          },
+          "hasGlossary": {
+            "type": "boolean",
+            "description": "У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет"
           }
         },
         "required": [
@@ -7571,6 +7652,73 @@
           "title",
           "description",
           "topics"
+        ]
+      },
+      "GlossaryTermDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "term": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "term",
+          "definition"
+        ]
+      },
+      "GlossarySectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "terms": {
+            "description": "По алфавиту языка ответа (REQ-GLOS-04)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlossaryTermDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "terms"
+        ]
+      },
+      "GlossaryDto": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/LessonSubjectDto"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlossarySectionDto"
+            }
+          },
+          "needsReview": {
+            "type": "boolean",
+            "description": "Показанный перевод подготовлен ИИ и ждёт вычитки — пометка «На проверке» (BR-CNT-05)"
+          }
+        },
+        "required": [
+          "subject",
+          "sections",
+          "needsReview"
         ]
       },
       "LessonEventBody": {
@@ -7643,6 +7791,10 @@
             "items": {
               "$ref": "#/components/schemas/SubjectChapterDto"
             }
+          },
+          "hasGlossary": {
+            "type": "boolean",
+            "description": "У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет"
           }
         },
         "required": [

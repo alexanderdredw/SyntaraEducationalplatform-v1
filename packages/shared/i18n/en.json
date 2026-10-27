@@ -1254,6 +1254,14 @@
       "noAssignments": "No assignments",
       "joinHint": "Your teacher gives you the code. Once you join, subjects and assignments from your teacher appear here",
       "back": "← My class"
+    },
+    "glossary": {
+      "title": "Glossary",
+      "catalog": "Catalog",
+      "search": "Search the glossary",
+      "placeholder": "Term or definition",
+      "empty": "Nothing found",
+      "found": "Found: {count}"
     }
   },
   "privacy": {

@@ -9,6 +9,8 @@ import {
   type ContentCatalog,
   type ContentError,
   CONTENT_LOCALES,
+  GlossaryFile,
+  type GlossaryModel,
   IMAGE_TYPES,
   type LocaleTexts,
   MAX_IMAGE_BYTES,
@@ -120,6 +122,11 @@ export function readContent(
           .sort((a, b) => a.position - b.position),
         file: rel(file),
       };
+      const glossaryPath = join(subjectPath, 'glossary.yaml');
+      if (existsSync(glossaryPath)) {
+        const glossary = yamlFile(glossaryPath, GlossaryFile);
+        if (glossary) subject.glossary = glossaryModel(rel(glossaryPath), glossary, errors);
+      }
       catalog.subjects.push(subject);
       const subjectTopics: TopicModel[] = [];
       for (const topicDir of dirs(subjectPath)) {
@@ -172,6 +179,65 @@ function translations(
     if (t) result[l] = { title: t, ...(description?.[l] ? { description: description[l] } : {}) };
   }
   return result;
+}
+
+/**
+ * Глоссарий (REQ-GLOS-01): коды разделов и терминов уникальны в предмете, номера разделов — тоже; у термина на
+ * каждом языке есть и название, и определение. KK и EN без пометки review — needs_review (BR-CNT-05).
+ */
+function glossaryModel(file: string, data: GlossaryFile, errors: ContentError[]): GlossaryModel {
+  const needsReview = (l: Locale) =>
+    l !== 'ru' && (data.review?.[l as 'kk' | 'en'] ?? 'needs_review') !== 'reviewed';
+  const sections = data.sections.map((s) => ({ ...s, file }));
+  checkUnique(sections, (s) => s.code, 'sections', 'код раздела глоссария повторяется', errors);
+  checkUnique(
+    sections,
+    (s) => String(s.position),
+    'sections',
+    'порядковый номер раздела глоссария повторяется',
+    errors,
+  );
+  checkUnique(
+    data.sections.flatMap((s) => s.terms.map((t) => ({ ...t, file }))),
+    (t) => t.code,
+    'terms',
+    'код термина повторяется',
+    errors,
+  );
+  return {
+    file,
+    sections: data.sections
+      .map((s, si) => ({
+        code: s.code,
+        position: s.position,
+        translations: Object.fromEntries(
+          CONTENT_LOCALES.flatMap((l) =>
+            s.title[l] ? [[l, { title: s.title[l]!, needsReview: needsReview(l) }]] : [],
+          ),
+        ),
+        terms: s.terms.map((t, ti) => {
+          for (const l of CONTENT_LOCALES)
+            if (Boolean(t.term[l]) !== Boolean(t.definition[l]))
+              errors.push({
+                file,
+                field: `sections.${si}.terms.${ti} (${t.code})`,
+                message: `на языке ${l} нужны и термин, и определение`,
+              });
+          return {
+            code: t.code,
+            position: ti + 1,
+            translations: Object.fromEntries(
+              CONTENT_LOCALES.flatMap((l) =>
+                t.term[l] && t.definition[l]
+                  ? [[l, { term: t.term[l]!, definition: t.definition[l]!, needsReview: needsReview(l) }]]
+                  : [],
+              ),
+            ),
+          };
+        }),
+      }))
+      .sort((a, b) => a.position - b.position),
+  };
 }
 
 function chapterTranslations(c: {

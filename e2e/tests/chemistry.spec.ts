@@ -143,4 +143,77 @@ test.describe('Химия из «Молекулярного атласа»', () 
       }
     });
   }
+
+  test('AC-CHEM-08, REQ-GLOS-02…06 a guest: «Глоссарий» from the subject page; sections, search ignoring case and ё/е with highlight; «Ничего не найдено»', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+    await page.getByTestId('subject-glossary-link').click();
+    await expect(page).toHaveURL(new RegExp(`/ru/learn/subjects/${ids.subjectId}/glossary$`));
+    await expect(page.getByRole('heading', { level: 1, name: ru.student.glossary.title })).toBeVisible();
+    const crumbs = page.getByRole('navigation', { name: ru.student.lesson.breadcrumbs });
+    await expect(crumbs).toHaveText(/Каталог\s*\/\s*Химия\s*\/\s*Глоссарий/);
+    await expect(page.getByTestId('glossary-section')).toHaveCount(5);
+    await expect(page.getByTestId('glossary-term')).toHaveCount(212);
+    const search = page.getByRole('searchbox', { name: ru.student.glossary.search });
+    // «ЗАВЕРШЕННОЙ» находит «завершённой»; совпадение подсвечено.
+    await search.fill('ЗАВЕРШЕННОЙ');
+    await expect(page.getByTestId('glossary-term')).toHaveCount(1);
+    await expect(page.getByTestId('glossary-term').locator('mark')).toHaveText('завершённой');
+    await search.fill('атом');
+    await expect(page.getByTestId('glossary-term').first().locator('mark').first()).toBeVisible();
+    await search.fill('нет такого термина');
+    await expect(page.getByText(ru.student.glossary.empty)).toBeVisible();
+    await expect(page.getByTestId('glossary-term')).toHaveCount(0);
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test('AC-CHEM-08 a student: the glossary in KK and EN is «На проверке»; «Каталог» is active; subjects without a glossary have no button', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await signInStudent(page, baseURL!);
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}/glossary`);
+    await expect(page.getByTestId('glossary-term').first()).toBeVisible();
+    await expect(
+      page.locator('[aria-current="page"]').filter({ hasText: ru.cabinet.nav.studentCatalog }),
+    ).toHaveCount(1);
+    for (const locale of ['kk', 'en'] as const) {
+      await page.goto(`/${locale}/learn/subjects/${ids.subjectId}/glossary`);
+      await expect(page.getByTestId('glossary-needs-review')).toBeVisible();
+      await expect(
+        page.getByRole('heading', { level: 1, name: bundles[locale].student.glossary.title }),
+      ).toBeVisible();
+    }
+    const catalog = await (await (await request.newContext({ baseURL })).get('/api/public/catalog')).json();
+    const biology = catalog.sections.find((s: { title: string }) => s.title === 'Биология');
+    const section = await (
+      await (await request.newContext({ baseURL })).get(`/api/public/sections/${biology.id}`)
+    ).json();
+    const anatomy = section.subjects.find((s: { title: string }) => s.title === 'Анатомия человека');
+    await page.goto(`/ru/learn/subjects/${anatomy.id}`);
+    await expect(page.getByTestId('student-topic').first()).toBeVisible();
+    await expect(page.getByTestId('subject-glossary-link')).toHaveCount(0);
+    const res = await page.goto(`/ru/learn/subjects/${anatomy.id}/glossary`);
+    expect(res?.status()).toBe(404);
+  });
+
+  test('REQ-GLOS-05 phone 390 px: one column, the search field stays on top while scrolling; no horizontal scroll', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}/glossary`);
+    const terms = page.getByTestId('glossary-term');
+    await expect(terms.nth(1)).toBeVisible();
+    const [a, b] = [await terms.nth(0).boundingBox(), await terms.nth(1).boundingBox()];
+    expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
+    await page.mouse.wheel(0, 3000);
+    await expect(page.getByTestId('glossary-search')).toBeInViewport();
+    expect(await hasHorizontalScroll(page)).toBe(false);
+  });
 });
