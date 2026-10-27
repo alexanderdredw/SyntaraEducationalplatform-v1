@@ -1,4 +1,4 @@
-import { type HTMLAttributes, type ReactNode } from 'react';
+import { type HTMLAttributes, type ReactNode, type Ref } from 'react';
 import { cn } from './cn';
 
 /**
@@ -94,12 +94,27 @@ export function Sidebar({
 
 /**
  * FloatingHelp: плавающие кнопки справа внизу (REQ-GEN-SHELL-04). Поднимаются над cookie-баннером:
- * баннер публикует свою высоту в CSS-переменной --cookie-banner-h.
+ * баннер публикует свою высоту в CSS-переменной --cookie-banner-h. На телефоне (< 768 px) — в ряд; `hidden` —
+ * кнопки убраны с экрана (поле ввода в фокусе или под ними поля и текст), но фокус с клавиатуры их возвращает.
  */
-export function FloatingHelp({ children }: { children: ReactNode }) {
+export function FloatingHelp({
+  children,
+  hidden = false,
+  ref,
+}: {
+  children: ReactNode;
+  hidden?: boolean;
+  ref?: Ref<HTMLDivElement>;
+}) {
   return (
     <div
-      className="fixed right-4 z-30 flex flex-col items-center gap-3"
+      ref={ref}
+      data-testid="floating-help"
+      data-hidden={hidden ? 'true' : 'false'}
+      className={cn(
+        'fixed right-4 z-30 flex items-center gap-2 transition-opacity duration-150 motion-reduce:transition-none md:flex-col md:gap-3',
+        hidden && 'pointer-events-none opacity-0 focus-within:pointer-events-auto focus-within:opacity-100',
+      )}
       style={{ bottom: 'calc(var(--cookie-banner-h, 0px) + 16px)' }}
     >
       {children}

@@ -35,7 +35,8 @@ export async function PublicShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <PublicHeader enabledLocales={enabledLocales} cabinetHref={cabinetHref} />
-      <main id="main" tabIndex={-1} className="flex-1 outline-none">
+      {/* REQ-GEN-SHELL-04: на телефоне — место под плавающими кнопками в конце содержимого. */}
+      <main id="main" tabIndex={-1} className="flex-1 outline-none max-md:pb-20">
         {children}
       </main>
       <SiteFooter supportEmail={supportEmail} />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Popover } from 'radix-ui';
 import { Lightbulb, MessageCircle, X } from 'lucide-react';
@@ -7,11 +8,13 @@ import { FloatingHelp as FloatingHelpFrame } from '@syntara/ui';
 import { usePathname } from '@/i18n/navigation';
 import { AppLink } from '../app-link';
 import { helpKey } from './nav-items';
+import { useFloatingClearance } from './use-floating-clearance';
 
 /**
  * Плавающие кнопки справа внизу (REQ-GEN-SHELL-04): «?» — краткая справка по странице и ссылки поддержки,
  * синяя — публичный помощник (/ai). В кабинетах между ними — жёлтая «лампочка» (PH-32; содержимое — Q-21,
- * пока заглушка PH-24). Поднимаются над cookie-баннером (переменная --cookie-banner-h).
+ * пока заглушка PH-24). Поднимаются над cookie-баннером (переменная --cookie-banner-h). На телефоне — меньше (44 px) и
+ * в ряд; не закрывают поля ввода и текст (useFloatingClearance).
  */
 export function FloatingHelp({
   supportEmail,
@@ -23,11 +26,13 @@ export function FloatingHelp({
   const t = useTranslations('help');
   const tc = useTranslations();
   const pathname = usePathname();
+  const frame = useRef<HTMLDivElement>(null);
+  const hidden = useFloatingClearance(frame);
   const round =
-    'inline-flex size-12 items-center justify-center rounded-full shadow-fab hover:brightness-110 active:scale-95';
+    'inline-flex size-11 md:size-12 items-center justify-center rounded-full shadow-fab hover:brightness-110 active:scale-95';
 
   return (
-    <FloatingHelpFrame>
+    <FloatingHelpFrame ref={frame} hidden={hidden}>
       <Popover.Root>
         <Popover.Trigger
           aria-label={t('open')}

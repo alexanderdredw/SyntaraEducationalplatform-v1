@@ -128,6 +128,12 @@ test.describe('Оболочка и навигация', () => {
 
   test('REQ-GEN-SHELL-04 floating «?» shows page help; the blue button opens /ai', async ({ page }) => {
     await page.goto('/ru/schools');
+    // На телефоне кнопки убраны, пока под ними текст; в конце содержимого (отступ под кнопками) — видны.
+    await page.evaluate(() => {
+      const end = document.getElementById('main')!.getBoundingClientRect().bottom + scrollY;
+      window.scrollTo({ top: end - innerHeight, behavior: 'instant' });
+    });
+    await expect(page.getByTestId('floating-help')).toHaveAttribute('data-hidden', 'false');
     await page.getByRole('button', { name: ru.help.open }).click();
     await expect(page.getByText(ru.help.pages.schools)).toBeVisible();
     await expect(page.getByRole('link', { name: ru.help.supportLink })).toBeVisible();

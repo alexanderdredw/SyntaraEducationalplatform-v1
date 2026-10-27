@@ -54,7 +54,8 @@ export async function CabinetShell({
         {/* Контент и футер — правее закреплённой панели навигации (эталоны T04, U13: футер начинается у её края). */}
         <div className="flex flex-1 flex-col md:pl-[calc(var(--nav-w)+1rem)]">
           {role === 'teacher' && me.emailVerified === false ? <VerifyEmailBanner /> : null}
-          <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none">
+          {/* REQ-GEN-SHELL-04: на телефоне — место под плавающими кнопками в конце содержимого. */}
+          <main id="main" tabIndex={-1} className="min-w-0 flex-1 outline-none max-md:pb-20">
             {children}
           </main>
           <SiteFooter supportEmail={supportEmail} cabinetHref={HOME_BY_ROLE[role]} />

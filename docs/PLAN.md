@@ -735,6 +735,7 @@ AC-VIS-01 и регресс всех AC; REQ-NFR-SEC-01..07, DATA-01..03, PERF-0
 - [x] Учитель: `/auth/start?role=teacher` — вкладка «Регистрация» (Имя, Фамилия, Email, Пароль, Школа — необязательно), `/auth/login?role=teacher` — вкладка «Вход» (Email, Пароль, «Забыли пароль?» с пояснением); обращение на «вы»; прежняя форма `StartChoice` удалена.
 - [x] API-AUTH-03: `firstName`/`lastName` → user_profiles, display_name «Имя Фамилия»; необязательная школа (`schoolId`/`schoolName`, как у ученика) — нужна для поля «Школа»; прежнее тело с `displayName` принимается. SPEC 6.3, 8.2, журнал 16.
 - [x] Тексты `teacherAuth.*` RU/KK/EN, `needs_confirmation.json`; e2e `teacher-auth.spec.ts` (+ обновлены accounts, login-role, student-auth, nav); снимки — `docs/media/auth/` (`node e2e/scripts/teacher-auth-shots.mjs`).
+- [x] Принято владельцем (2026-10-27). Правка: плавающие кнопки на телефоне не закрывают поля и текст (REQ-GEN-SHELL-04) — `use-floating-clearance.ts`, отступ `main` на телефоне; e2e `floating-help.spec.ts` (формы ученика и учителя, урок, квиз, Battle, профиль на 320/390 px); снимки «после» — `docs/media/mobile-fab/` (`node e2e/scripts/floating-help-shots.mjs`), формы учителя пересняты.
 
 ### В работе — приведение интерфейса к эталонам (docs/UX_AI_TZ.md, 2026-10-19)
 - [x] Шаг 1–2: скрипт съёмки `e2e/scripts/ux-audit-shots.mjs`, аудит `docs/UX_AUDIT.md` (коммит `0f612c2`).
