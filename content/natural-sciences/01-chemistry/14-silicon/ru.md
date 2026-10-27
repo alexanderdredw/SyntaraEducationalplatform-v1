@@ -2,6 +2,10 @@
 code: silicon
 chapter: elements
 position: 14
+element:
+  symbol: Si
+  number: 14
+  group: metalloid
 title: Кремний
 description: Основа современной электроники и второй по распространенности элемент в земной коре.
 funFact: Кремний дал название «Кремниевой долине» — мировому центру технологий. Он составляет 28% коры Земли.

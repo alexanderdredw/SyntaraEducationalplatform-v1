@@ -1045,7 +1045,22 @@
     "teacherAuth.forgotNote": "Форма учителя в стиле формы ученика (2026-10-26, задача владельца): текст дан владельцем",
     "student.glossary.search": "Подпись поля поиска в глоссарии (REQ-GLOS-03) — в docs/CHEM_TZ.md текст не задан",
     "student.glossary.placeholder": "Подсказка в поле поиска глоссария (REQ-GLOS-03) — текст не задан",
-    "student.glossary.found": "Число найденных терминов для экранного диктора (REQ-GLOS-03) — текст не задан"
+    "student.glossary.found": "Число найденных терминов для экранного диктора (REQ-GLOS-03) — текст не задан",
+    "student.periodicTable.legend": "Заголовок легенды-фильтра семейств (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.view": "Подпись переключателя вида таблицы (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.asTable": "Вариант «таблицей» (в ТЗ только «Списком») (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.lanthanides": "Подпись ряда лантаноидов (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.actinides": "Подпись ряда актиноидов (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.alkali_metal": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.alkaline_earth": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.transition_metal": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.post_transition": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.metalloid": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.nonmetal": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.halogen": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.noble_gas": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.lanthanide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан",
+    "student.periodicTable.families.actinide": "Названия 10 семейств элементов (из атласа) (REQ-PTBL) — в docs/CHEM_TZ.md текст не задан"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

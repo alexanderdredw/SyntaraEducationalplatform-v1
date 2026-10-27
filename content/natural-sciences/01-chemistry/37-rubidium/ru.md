@@ -2,6 +2,10 @@
 code: rubidium
 chapter: elements
 position: 37
+element:
+  symbol: Rb
+  number: 37
+  group: alkali_metal
 title: Рубидий
 description: Мягкий щелочной металл, используемый в атомных часах и лазерных технологиях.
 funFact: Рубидий настолько активен, что может воспламениться на воздухе просто от влажности.

@@ -2,6 +2,10 @@
 code: calcium
 chapter: elements
 position: 20
+element:
+  symbol: Ca
+  number: 20
+  group: alkaline_earth
 title: Кальций
 description: Самый распространённый металл в теле человека, основа костей, зубов и строительного материала.
 funFact: В теле взрослого человека содержится около 1 кг кальция — почти весь он в костях и зубах.

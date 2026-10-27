@@ -2,6 +2,10 @@
 code: fluorine
 chapter: elements
 position: 9
+element:
+  symbol: F
+  number: 9
+  group: halogen
 title: Фтор
 description: Универсальный галоген, необходимый для различных промышленных и биологических процессов.
 funFact: 'Фтор — самый реакционноспособный элемент: он реагирует даже с благородными газами ксеноном и криптоном.'

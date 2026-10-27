@@ -2,6 +2,10 @@
 code: aluminium
 chapter: elements
 position: 13
+element:
+  symbol: Al
+  number: 13
+  group: post_transition
 title: Алюминий
 description: Самый распространенный металл в земной коре, легкий и устойчивый к коррозии.
 funFact: До 1886 года алюминий ценился дороже золота — его производство было крайне дорогостоящим.

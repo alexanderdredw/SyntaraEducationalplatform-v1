@@ -2,6 +2,10 @@
 code: phosphorus
 chapter: elements
 position: 15
+element:
+  symbol: P
+  number: 15
+  group: nonmetal
 title: Фосфор
 description: Жизненно важный элемент, входящий в состав ДНК, костей и обеспечивающий перенос энергии в клетках.
 funFact: Фосфор был открыт в 1669 году при перегонке мочи — его назвали «холодным огнём» из-за свечения в темноте.

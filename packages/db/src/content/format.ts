@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { type Locale } from '@syntara/shared';
+import { ELEMENT_FAMILIES, type Locale } from '@syntara/shared';
 
 /**
  * Формат базовой программы (BR-CNT-02, docs/CONTENT_GUIDE.md):
@@ -62,6 +62,8 @@ export const SubjectFile = z.strictObject({
   description: localizedOptional(1000).optional(),
   /** Главы (BR-CHAP-01): необязательно; если есть — у каждой темы обязателен chapter. */
   chapters: z.array(ChapterEntry).min(1, 'хотя бы одна глава').optional(),
+  /** Блоки страницы предмета (REQ-PTBL-01): periodic-table — таблица Менделеева над главами. */
+  blocks: z.array(z.enum(['periodic-table'], 'блок: periodic-table')).optional(),
 });
 export type SubjectFile = z.infer<typeof SubjectFile>;
 
@@ -110,6 +112,14 @@ export const RuFrontMatter = z.strictObject({
   position,
   /** Код главы из subject.yaml (BR-CHAP-01). */
   chapter: code.optional(),
+  /** Химический элемент урока (REQ-PTBL-04): ячейка таблицы Менделеева ведёт на урок. */
+  element: z
+    .strictObject({
+      symbol: z.string().regex(/^[A-Z][a-z]{0,2}$/, 'символ элемента, например O или Fe'),
+      number: z.number().int('целое число').min(1, 'от 1').max(118, 'до 118'),
+      group: z.enum(ELEMENT_FAMILIES, `семейство: ${ELEMENT_FAMILIES.join(', ')}`),
+    })
+    .optional(),
   ...lessonTexts,
   illustration: z
     .string()
@@ -196,6 +206,8 @@ export interface SubjectModel {
   chapters: ChapterModel[];
   /** Глоссарий (REQ-GLOS-01); нет файла — нет глоссария. */
   glossary?: GlossaryModel;
+  /** Блоки страницы (REQ-PTBL-01). */
+  blocks: string[];
   file: string;
 }
 
@@ -238,6 +250,8 @@ export interface TopicModel {
   position: number;
   /** Код главы (без кода предмета); у предмета без глав — нет. */
   chapterCode?: string;
+  /** Номер химического элемента (REQ-PTBL-04). */
+  elementNumber?: number;
   dir: string;
   translations: Partial<Record<Locale, LocaleTexts>>;
   illustration?: string;

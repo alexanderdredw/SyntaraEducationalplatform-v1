@@ -2,6 +2,10 @@
 code: oxygen
 chapter: elements
 position: 8
+element:
+  symbol: O
+  number: 8
+  group: nonmetal
 title: Кислород
 description: Жизненно важный газ, необходимый для аэробного дыхания и горения.
 funFact: Кислород — третий по распространённости элемент во Вселенной и первый по массе в земной коре (46%).

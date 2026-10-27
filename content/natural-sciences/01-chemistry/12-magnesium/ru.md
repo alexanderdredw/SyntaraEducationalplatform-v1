@@ -2,6 +2,10 @@
 code: magnesium
 chapter: elements
 position: 12
+element:
+  symbol: Mg
+  number: 12
+  group: alkaline_earth
 title: Магний
 description: Легкий металл, необходимый для фотосинтеза растений и работы мышц человека.
 funFact: Магний — центральный атом молекулы хлорофилла, без которого невозможен фотосинтез растений.

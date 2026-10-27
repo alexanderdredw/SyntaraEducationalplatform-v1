@@ -2,6 +2,10 @@
 code: hydrogen
 chapter: elements
 position: 1
+element:
+  symbol: H
+  number: 1
+  group: nonmetal
 title: Водород
 description: Самый лёгкий и распространённый элемент во Вселенной, основа звёзд и жизни.
 funFact: Водород — единственный элемент, который может существовать без нейтронов в своей самой распространенной форме (Протий).

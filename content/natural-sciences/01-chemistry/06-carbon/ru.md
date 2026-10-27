@@ -2,6 +2,10 @@
 code: carbon
 chapter: elements
 position: 6
+element:
+  symbol: C
+  number: 6
+  group: nonmetal
 title: Углерод
 description: Универсальный неметалл, необходимый для различных научных и промышленных применений.
 illustration: media/carbon-atom.webp

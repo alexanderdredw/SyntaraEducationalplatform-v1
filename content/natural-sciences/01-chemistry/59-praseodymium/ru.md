@@ -2,6 +2,10 @@
 code: praseodymium
 chapter: elements
 position: 59
+element:
+  symbol: Pr
+  number: 59
+  group: lanthanide
 title: Празеодим
 description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
 illustration: media/praseodymium-atom.webp

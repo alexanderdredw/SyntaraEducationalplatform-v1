@@ -149,6 +149,19 @@
   --activity-3: color-mix(in srgb, var(--accent) 76%, var(--surface));
   --activity-4: var(--accent-bright);
 
+  /* REQ-PTBL-03: семейства элементов в таблице Менделеева — заливка ячейки (смешивается с --surface) и рамка. */
+  --family-alkali_metal: #fb923c;
+  --family-alkaline_earth: #facc15;
+  --family-transition_metal: #60a5fa;
+  --family-post_transition: #2dd4bf;
+  --family-metalloid: #a3e635;
+  --family-nonmetal: #4ade80;
+  --family-halogen: #22d3ee;
+  --family-noble_gas: #c084fc;
+  --family-lanthanide: #f472b6;
+  --family-actinide: #f87171;
+  --family-mix: 22%;
+
   color-scheme: dark;
 }
 
@@ -196,6 +209,18 @@
   --activity-2: color-mix(in srgb, var(--accent) 45%, #ffffff);
   --activity-3: color-mix(in srgb, var(--accent) 70%, #ffffff);
   --activity-4: var(--accent);
+  /* REQ-PTBL-03: семейства в светлой теме — темнее, чтобы рамка была заметна на белом. */
+  --family-alkali_metal: #c2410c;
+  --family-alkaline_earth: #a16207;
+  --family-transition_metal: #1d4ed8;
+  --family-post_transition: #0f766e;
+  --family-metalloid: #4d7c0f;
+  --family-nonmetal: #15803d;
+  --family-halogen: #0e7490;
+  --family-noble_gas: #7e22ce;
+  --family-lanthanide: #be185d;
+  --family-actinide: #b91c1c;
+  --family-mix: 14%;
   color-scheme: light;
 }
 

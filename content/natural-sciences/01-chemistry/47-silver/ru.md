@@ -2,6 +2,10 @@
 code: silver
 chapter: elements
 position: 47
+element:
+  symbol: Ag
+  number: 47
+  group: transition_metal
 title: Серебро
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/silver-atom.webp

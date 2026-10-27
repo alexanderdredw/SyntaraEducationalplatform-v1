@@ -2,6 +2,10 @@
 code: potassium
 chapter: elements
 position: 19
+element:
+  symbol: K
+  number: 19
+  group: alkali_metal
 title: Калий
 description: Жизненно необходимый щелочной металл, регулирующий работу сердца и нервов; ключевое удобрение.
 funFact: Калий-40 — естественно радиоактивный изотоп, присутствующий в бананах и в теле человека.

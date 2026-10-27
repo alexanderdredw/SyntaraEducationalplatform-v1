@@ -2,6 +2,10 @@
 code: selenium
 chapter: elements
 position: 34
+element:
+  symbol: Se
+  number: 34
+  group: nonmetal
 title: Селен
 description: Фоточувствительный неметалл, способный преобразовывать свет в электричество.
 funFact: 'Селен — отличный фотопроводник: его электрическое сопротивление падает в тысячи раз при освещении.'

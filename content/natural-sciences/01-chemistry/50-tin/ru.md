@@ -2,6 +2,10 @@
 code: tin
 chapter: elements
 position: 50
+element:
+  symbol: Sn
+  number: 50
+  group: post_transition
 title: Олово
 description: Универсальный другой металл, необходимый для различных научных и промышленных применений.
 illustration: media/tin-atom.webp

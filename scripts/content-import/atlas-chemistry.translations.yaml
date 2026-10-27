@@ -334,7 +334,7 @@ quiz:
         }
   carbon:
     q1:
-      kk: { text: 'Көміртек атомының ядросында қанша протон бар?', options: ['6', '12', '14', '8'] }
+      kk: { text: 'Көміртегі атомының ядросында қанша протон бар?', options: ['6', '12', '14', '8'] }
       en: { text: 'How many protons are in the nucleus of a carbon atom?', options: ['6', '12', '14', '8'] }
     q2:
       kk:
@@ -3426,7 +3426,7 @@ quiz:
         }
   antimony:
     q1:
-      kk: { text: 'Сурьма атомының ядросында қанша протон бар?', options: ['51', '70', '121', '123'] }
+      kk: { text: 'Сүрме атомының ядросында қанша протон бар?', options: ['51', '70', '121', '123'] }
       en:
         {
           text: 'How many protons are in the nucleus of an antimony atom?',
@@ -3478,7 +3478,7 @@ quiz:
             ],
         }
     q5:
-      kk: { text: 'Қосылыстардағы сурьмаға қай тотығу дәрежесі тән ЕМЕС?', options: ['-3', '+2', '+3', '+5'] }
+      kk: { text: 'Қосылыстардағы сүрмеға қай тотығу дәрежесі тән ЕМЕС?', options: ['-3', '+2', '+3', '+5'] }
       en:
         {
           text: 'Which oxidation state is NOT typical of antimony in compounds?',

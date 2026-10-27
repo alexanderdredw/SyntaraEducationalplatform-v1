@@ -2,6 +2,10 @@
 code: barium
 chapter: elements
 position: 56
+element:
+  symbol: Ba
+  number: 56
+  group: alkaline_earth
 title: Барий
 description: Универсальный щелочноземельный металл, необходимый для различных научных и промышленных применений.
 illustration: media/barium-atom.webp

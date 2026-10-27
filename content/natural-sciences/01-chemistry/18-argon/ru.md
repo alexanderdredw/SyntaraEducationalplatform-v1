@@ -2,6 +2,10 @@
 code: argon
 chapter: elements
 position: 18
+element:
+  symbol: Ar
+  number: 18
+  group: noble_gas
 title: Аргон
 description: Третий по распространённости газ атмосферы, абсолютно инертный; используется в сварке и лампах.
 funFact: Аргон составляет 0.93% атмосферы Земли — это в 23 раза больше, чем углекислого газа.

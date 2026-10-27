@@ -2,6 +2,10 @@
 code: germanium
 chapter: elements
 position: 32
+element:
+  symbol: Ge
+  number: 32
+  group: metalloid
 title: Германий
 description: Полупроводник, сыгравший ключевую роль в создании первых транзисторов и современной оптики.
 funFact: Первый в мире транзистор (1947 г.) был сделан из германия, а не из кремния.

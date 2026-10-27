@@ -2,6 +2,10 @@
 code: gallium
 chapter: elements
 position: 31
+element:
+  symbol: Ga
+  number: 31
+  group: post_transition
 title: Галлий
 description: Металл, который плавится на ладони, основа современной полупроводниковой электроники.
 funFact: Галлий был предсказан Менделеевым как «экаалюминий» и открыт всего через 4 года спектральным методом.

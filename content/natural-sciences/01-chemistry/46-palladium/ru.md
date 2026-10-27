@@ -2,6 +2,10 @@
 code: palladium
 chapter: elements
 position: 46
+element:
+  symbol: Pd
+  number: 46
+  group: transition_metal
 title: Палладий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/palladium-atom.webp

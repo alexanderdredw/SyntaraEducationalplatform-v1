@@ -2486,6 +2486,17 @@ export interface components {
             title: string;
             topicIds: string[];
         };
+        PeriodicTableElementDto: {
+            number: number;
+            /**
+             * Format: uuid
+             * @description Опубликованный урок элемента
+             */
+            topicId: string;
+        };
+        PeriodicTableDto: {
+            elements: components["schemas"]["PeriodicTableElementDto"][];
+        };
         StudentSubjectDto: {
             /** Format: uuid */
             id: string;
@@ -2496,6 +2507,8 @@ export interface components {
             chapters?: components["schemas"]["SubjectChapterDto"][];
             /** @description У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет */
             hasGlossary?: boolean;
+            /** @description Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml */
+            periodicTable?: components["schemas"]["PeriodicTableDto"];
         };
         GlossaryTermDto: {
             /** Format: uuid */
@@ -2540,6 +2553,8 @@ export interface components {
             chapters?: components["schemas"]["SubjectChapterDto"][];
             /** @description У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет */
             hasGlossary?: boolean;
+            /** @description Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml */
+            periodicTable?: components["schemas"]["PeriodicTableDto"];
         };
         UploadUrlBody: {
             /** @enum {string} */

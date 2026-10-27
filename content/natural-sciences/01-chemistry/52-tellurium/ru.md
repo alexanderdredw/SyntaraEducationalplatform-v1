@@ -2,6 +2,10 @@
 code: tellurium
 chapter: elements
 position: 52
+element:
+  symbol: Te
+  number: 52
+  group: metalloid
 title: Теллур
 description: Универсальный полуметалл, необходимый для различных научных и промышленных применений.
 illustration: media/tellurium-atom.webp

@@ -2,6 +2,10 @@
 code: krypton
 chapter: elements
 position: 36
+element:
+  symbol: Kr
+  number: 36
+  group: noble_gas
 title: Криптон
 description: Редкий благородный газ, используемый в мощных лазерах и энергосберегающих окнах.
 funFact: С 1960 по 1983 год эталон метра определялся через длину волны излучения изотопа криптона-86.

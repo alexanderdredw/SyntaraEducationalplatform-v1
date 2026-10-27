@@ -4,7 +4,7 @@ questions:
     difficulty: easy
     text:
       ru: Какое количество протонов содержится в ядре атома сурьмы?
-      kk: Сурьма атомының ядросында қанша протон бар?
+      kk: Сүрме атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an antimony atom?
     options:
       - text:
@@ -104,7 +104,7 @@ questions:
     difficulty: hard
     text:
       ru: Какая степень окисления НЕ является типичной для сурьмы в соединениях?
-      kk: Қосылыстардағы сурьмаға қай тотығу дәрежесі тән ЕМЕС?
+      kk: Қосылыстардағы сүрмеға қай тотығу дәрежесі тән ЕМЕС?
       en: Which oxidation state is NOT typical of antimony in compounds?
     options:
       - text:

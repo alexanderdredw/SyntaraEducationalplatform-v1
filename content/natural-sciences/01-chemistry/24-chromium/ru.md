@@ -2,6 +2,10 @@
 code: chromium
 chapter: elements
 position: 24
+element:
+  symbol: Cr
+  number: 24
+  group: transition_metal
 title: Хром
 description: Твёрдый, блестящий металл, основа нержавеющей стали и декоративных защитных покрытий.
 funFact: Именно хром делает рубины красными, а изумруды — зелёными, хотя сам металл серебристый.

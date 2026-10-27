@@ -290,6 +290,8 @@ const SUBJECT = {
     kk: 'Элементтер, реакциялар, молекулалық құрылымдар',
     en: 'Elements, reactions, molecular structures',
   },
+  // REQ-PTBL-01: таблица Менделеева над главами.
+  blocks: ['periodic-table'],
   chapters: [
     {
       code: 'elements',
@@ -343,7 +345,14 @@ async function elementTopic(it) {
       )
       .join('\n\n');
     const head = {
-      ...(l === 'ru' ? { code, chapter: 'elements', position: it.atomicNumber } : {}),
+      ...(l === 'ru'
+        ? {
+            code,
+            chapter: 'elements',
+            position: it.atomicNumber,
+            element: { symbol: it.symbol, number: it.atomicNumber, group: it.groupKey },
+          }
+        : {}),
       title,
       description: text(l, it.descKey),
       ...(fact ? { funFact: fact } : {}),

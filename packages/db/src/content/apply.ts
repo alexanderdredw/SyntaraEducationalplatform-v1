@@ -184,6 +184,7 @@ export async function applyCatalog(
           position: s.position,
           isOfficial: true,
           inPublicCatalog: true,
+          blocks: s.blocks,
         })
         .returning({ id: subjects.id });
       summary.subjects.created++;
@@ -192,11 +193,19 @@ export async function applyCatalog(
       row.position !== s.position ||
       row.archivedAt ||
       !row.inPublicCatalog ||
-      !row.isOfficial
+      !row.isOfficial ||
+      row.blocks.join() !== s.blocks.join()
     ) {
       await tx
         .update(subjects)
-        .set({ sectionId, position: s.position, archivedAt: null, inPublicCatalog: true, isOfficial: true })
+        .set({
+          sectionId,
+          position: s.position,
+          archivedAt: null,
+          inPublicCatalog: true,
+          isOfficial: true,
+          blocks: s.blocks,
+        })
         .where(eq(subjects.id, row.id));
       summary.subjects.updated++;
     }
@@ -365,10 +374,11 @@ export async function applyCatalog(
     let [row] = await tx.select().from(topics).where(eq(topics.code, t.code));
     const coverMediaId = mediaId(t, t.illustration);
     const chapterId = t.chapterCode ? (chapterIds.get(`${t.subjectCode}#${t.chapterCode}`) ?? null) : null;
+    const elementNumber = t.elementNumber ?? null;
     if (!row) {
       [row] = await tx
         .insert(topics)
-        .values({ code: t.code, subjectId, position: t.position, coverMediaId, chapterId })
+        .values({ code: t.code, subjectId, position: t.position, coverMediaId, chapterId, elementNumber })
         .returning();
       summary.topics.created++;
     } else if (
@@ -376,12 +386,21 @@ export async function applyCatalog(
       row.position !== t.position ||
       row.coverMediaId !== coverMediaId ||
       row.chapterId !== chapterId ||
+      row.elementNumber !== elementNumber ||
       row.archivedAt ||
       row.coverUrl
     ) {
       await tx
         .update(topics)
-        .set({ subjectId, position: t.position, coverMediaId, chapterId, coverUrl: null, archivedAt: null })
+        .set({
+          subjectId,
+          position: t.position,
+          coverMediaId,
+          chapterId,
+          elementNumber,
+          coverUrl: null,
+          archivedAt: null,
+        })
         .where(eq(topics.id, row.id));
       summary.topics.updated++;
     }

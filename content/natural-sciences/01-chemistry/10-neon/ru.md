@@ -2,6 +2,10 @@
 code: neon
 chapter: elements
 position: 10
+element:
+  symbol: Ne
+  number: 10
+  group: noble_gas
 title: Неон
 description: Благородный газ, известный своим ярким красно-оранжевым свечением в газоразрядных лампах.
 funFact: Неон даёт самое яркое свечение среди благородных газов в разрядных трубках.

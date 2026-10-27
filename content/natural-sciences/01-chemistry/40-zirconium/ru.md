@@ -2,6 +2,10 @@
 code: zirconium
 chapter: elements
 position: 40
+element:
+  symbol: Zr
+  number: 40
+  group: transition_metal
 title: Цирконий
 description: Металл с уникальной прозрачностью для нейтронов, основа оболочек ядерного топлива.
 funFact: Цирконий почти не поглощает нейтроны, что делает его незаменимым материалом для строительства ядерных реакторов.

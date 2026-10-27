@@ -2,6 +2,10 @@
 code: scandium
 chapter: elements
 position: 21
+element:
+  symbol: Sc
+  number: 21
+  group: transition_metal
 title: Скандий
 description: Лёгкий переходный металл, используемый в аэрокосмических сплавах и высокоинтенсивных лампах.
 funFact: Скандий — один из самых редких и дорогих металлов, его мировое производство составляет всего несколько тонн в год.

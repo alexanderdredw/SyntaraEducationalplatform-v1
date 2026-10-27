@@ -4,7 +4,7 @@ questions:
     difficulty: easy
     text:
       ru: Какое количество протонов содержится в ядре атома углерода?
-      kk: Көміртек атомының ядросында қанша протон бар?
+      kk: Көміртегі атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a carbon atom?
     options:
       - text:

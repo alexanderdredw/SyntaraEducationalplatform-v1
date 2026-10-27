@@ -216,4 +216,91 @@ test.describe('Химия из «Молекулярного атласа»', () 
     await expect(page.getByTestId('glossary-search')).toBeInViewport();
     expect(await hasHorizontalScroll(page)).toBe(false);
   });
+  test('AC-CHEM-09, REQ-PTBL-02…07 the periodic table: 118 cells, 60 lessons and «Скоро», aria-label, legend filter, keyboard', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+    const table = page.getByTestId('periodic-table');
+    await expect(table.getByRole('heading', { name: ru.student.periodicTable.title })).toBeVisible();
+    const cells = table.getByTestId('ptable-cell');
+    await expect(cells).toHaveCount(118);
+    await expect(table.locator('a[data-testid="ptable-cell"]')).toHaveCount(60);
+    await expect(table.locator('[data-testid="ptable-cell"][data-status="soon"]')).toHaveCount(58);
+    const oxygen = table.locator('[data-number="8"]');
+    await expect(oxygen).toHaveAttribute('aria-label', 'Кислород, O, номер 8, неметалл');
+    await expect(table.locator('[data-number="79"]')).toHaveAttribute(
+      'aria-label',
+      /Золото, Au, номер 79, .*Скоро/,
+    );
+    // Легенда-фильтр: семейство подсвечено, остальные приглушены; повторное нажатие снимает фильтр.
+    const legend = table.getByRole('button', { name: /неметалл/i }).first();
+    await legend.click();
+    await expect(legend).toHaveAttribute('aria-pressed', 'true');
+    await expect(oxygen).not.toHaveAttribute('data-dimmed');
+    await expect(table.locator('[data-number="26"]')).toHaveAttribute('data-dimmed', 'true');
+    await legend.click();
+    await expect(table.locator('[data-dimmed]')).toHaveCount(0);
+    // Клавиатура: H → (→) He, (↓) Li; Enter открывает урок.
+    const hydrogen = table.locator('[data-number="1"]');
+    await hydrogen.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(table.locator('[data-number="2"]')).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowDown');
+    await expect(table.locator('[data-number="3"]')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('heading', { level: 1, name: 'Литий' })).toBeVisible();
+  });
+
+  test('REQ-PTBL-05 a student: the opened topic shows «в процессе» on its cell', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await signInStudent(page, baseURL!);
+    await page.goto(`/ru/learn/topics/${ids.oxygen}`);
+    await expect(page.getByRole('heading', { level: 1, name: 'Кислород' })).toBeVisible();
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+    const oxygen = page.getByTestId('periodic-table').locator('[data-number="8"]');
+    await expect(oxygen).toHaveAttribute('data-status', 'started');
+    await expect(oxygen).toHaveAttribute('aria-label', /в процессе$/);
+  });
+
+  for (const width of [320, 390]) {
+    test(`AC-CHEM-09, REQ-PTBL-08 phone ${width} px: the table scrolls inside the block, the page does not; «Списком» shows 118 elements`, async ({
+      page,
+      baseURL,
+    }) => {
+      const ids = await chemistryIds(await request.newContext({ baseURL }));
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+      const scroller = page.getByTestId('ptable-scroll');
+      await expect(scroller).toBeVisible();
+      expect(await scroller.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+      expect(await hasHorizontalScroll(page)).toBe(false);
+      await page.getByRole('radio', { name: ru.student.periodicTable.asList }).click();
+      await expect(page.getByTestId('ptable-list-item')).toHaveCount(118);
+      expect(await hasHorizontalScroll(page)).toBe(false);
+    });
+  }
+
+  for (const theme of ['dark', 'light'] as const) {
+    test(`AC-CHEM-11 ${theme} theme: the subject page with the table has no serious axe violations; reduced motion — no transitions`, async ({
+      page,
+      context,
+      baseURL,
+    }) => {
+      const ids = await chemistryIds(await request.newContext({ baseURL }));
+      await context.addCookies([{ name: 'theme', value: theme, url: baseURL! }]);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+      const cell = page.getByTestId('periodic-table').locator('[data-number="8"]');
+      await expect(cell).toBeVisible();
+      const duration = await cell.evaluate((el) => parseFloat(getComputedStyle(el).transitionDuration));
+      expect(duration).toBeLessThan(0.01);
+      await expectNoSeriousA11yViolations(page);
+    });
+  }
 });

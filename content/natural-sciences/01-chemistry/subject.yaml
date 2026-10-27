@@ -10,6 +10,8 @@ description:
   ru: Элементы, реакции, молекулярные структуры
   kk: Элементтер, реакциялар, молекулалық құрылымдар
   en: Elements, reactions, molecular structures
+blocks:
+  - periodic-table
 chapters:
   - code: elements
     position: 1

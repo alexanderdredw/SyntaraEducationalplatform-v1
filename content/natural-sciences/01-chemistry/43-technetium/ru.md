@@ -2,6 +2,10 @@
 code: technetium
 chapter: elements
 position: 43
+element:
+  symbol: Tc
+  number: 43
+  group: transition_metal
 title: Технеций
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/technetium-atom.webp

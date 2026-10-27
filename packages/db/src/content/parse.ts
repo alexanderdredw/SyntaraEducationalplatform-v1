@@ -3,7 +3,13 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, relative, sep } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { type z } from 'zod';
-import { isSpreadsheetContent, isSpreadsheetName, type Locale, QuestionDto } from '@syntara/shared';
+import {
+  isSpreadsheetContent,
+  isSpreadsheetName,
+  type Locale,
+  periodicElement,
+  QuestionDto,
+} from '@syntara/shared';
 import {
   type ChapterModel,
   type ContentCatalog,
@@ -120,6 +126,7 @@ export function readContent(
         chapters: (data.chapters ?? [])
           .map((c) => ({ code: c.code, position: c.position, translations: chapterTranslations(c) }))
           .sort((a, b) => a.position - b.position),
+        blocks: data.blocks ?? [],
         file: rel(file),
       };
       const glossaryPath = join(subjectPath, 'glossary.yaml');
@@ -134,6 +141,13 @@ export function readContent(
         if (topic) subjectTopics.push(topic);
       }
       arrangeChapters(subject, subjectTopics, errors);
+      checkUnique(
+        subjectTopics.filter((t) => t.elementNumber).map((t) => ({ ...t, file: `${t.dir}/ru.md` })),
+        (t) => String(t.elementNumber),
+        'element.number',
+        'элемент уже есть в другой теме предмета',
+        errors,
+      );
       catalog.topics.push(...subjectTopics);
     }
   }
@@ -488,6 +502,7 @@ function readTopic(
     subjectCode,
     position: ru.position,
     ...(ru.chapter ? { chapterCode: ru.chapter } : {}),
+    ...(ru.element ? { elementNumber: ru.element.number } : {}),
     dir: dirRel,
     translations: {},
     ...(ru.illustration ? { illustration: ru.illustration } : {}),
@@ -513,6 +528,16 @@ function readTopic(
     if (!doc) continue;
     const t = validate(rel(join(topicPath, `${l}.md`)), doc.front, TranslationFrontMatter);
     if (t) topic.translations[l] = texts(t, doc, t.review === 'needs_review');
+  }
+  // REQ-PTBL-02: символ и семейство — как в данных таблицы (packages/shared/src/periodic-table.ts).
+  if (ru.element) {
+    const known = periodicElement(ru.element.number);
+    if (known && (known.symbol !== ru.element.symbol || known.family !== ru.element.group))
+      errors.push({
+        file: rel(ruPath),
+        field: 'element',
+        message: `элемент ${ru.element.number} — ${known.symbol}, семейство ${known.family}`,
+      });
   }
   if (ru.illustration && !ru.illustrationAlt)
     errors.push({ file: rel(ruPath), field: 'illustrationAlt', message: 'у иллюстрации нет подписи' });

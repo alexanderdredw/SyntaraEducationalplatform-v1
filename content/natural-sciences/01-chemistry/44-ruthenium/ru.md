@@ -2,6 +2,10 @@
 code: ruthenium
 chapter: elements
 position: 44
+element:
+  symbol: Ru
+  number: 44
+  group: transition_metal
 title: Рутений
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/ruthenium-atom.webp

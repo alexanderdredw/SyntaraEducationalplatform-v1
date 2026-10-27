@@ -2,6 +2,10 @@
 code: neodymium
 chapter: elements
 position: 60
+element:
+  symbol: Nd
+  number: 60
+  group: lanthanide
 title: Неодим
 description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
 illustration: media/neodymium-atom.webp

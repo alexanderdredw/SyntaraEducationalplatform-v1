@@ -2,6 +2,10 @@
 code: lanthanum
 chapter: elements
 position: 57
+element:
+  symbol: La
+  number: 57
+  group: lanthanide
 title: Лантан
 description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
 illustration: media/lanthanum-atom.webp

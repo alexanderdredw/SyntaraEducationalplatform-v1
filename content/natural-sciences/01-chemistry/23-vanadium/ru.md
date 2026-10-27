@@ -2,6 +2,10 @@
 code: vanadium
 chapter: elements
 position: 23
+element:
+  symbol: V
+  number: 23
+  group: transition_metal
 title: Ванадий
 description: Твёрдый металл, используемый для создания сверхпрочных стальных сплавов и мощных батарей.
 funFact: 'Соединения ванадия имеют четыре разных цвета в зависимости от степени окисления: фиолетовый, зелёный, синий и жёлтый.'

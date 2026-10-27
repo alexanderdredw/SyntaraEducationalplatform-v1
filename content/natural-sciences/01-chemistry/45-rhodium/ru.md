@@ -2,6 +2,10 @@
 code: rhodium
 chapter: elements
 position: 45
+element:
+  symbol: Rh
+  number: 45
+  group: transition_metal
 title: Родий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/rhodium-atom.webp

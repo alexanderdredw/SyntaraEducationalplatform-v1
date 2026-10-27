@@ -2,6 +2,10 @@
 code: nitrogen
 chapter: elements
 position: 7
+element:
+  symbol: N
+  number: 7
+  group: nonmetal
 title: Азот
 description: Газ, составляющий 78% атмосферы, основа белков и нуклеиновых кислот.
 funFact: Азот составляет 78% воздуха и является основой всех аминокислот и ДНК.

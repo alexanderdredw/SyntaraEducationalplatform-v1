@@ -2,6 +2,10 @@
 code: molybdenum
 chapter: elements
 position: 42
+element:
+  symbol: Mo
+  number: 42
+  group: transition_metal
 title: Молибден
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/molybdenum-atom.webp

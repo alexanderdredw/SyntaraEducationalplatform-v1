@@ -178,6 +178,12 @@ describe('base content (integration)', () => {
       [3, 'Литий'],
     ]);
     expect(page.body.topics.at(-1)).toMatchObject({ number: 61, title: 'Учёные-химики' });
+    // REQ-PTBL-01, REQ-PTBL-04: блок таблицы — 60 элементов с уроками (номер → тема); у «Анатомии» блока нет.
+    const cells = page.body.periodicTable.elements as Array<{ number: number; topicId: string }>;
+    expect(cells.map((e) => e.number)).toEqual(Array.from({ length: 60 }, (_, i) => i + 1));
+    expect(cells[7]!.topicId).toBe(page.body.topics[7].id);
+    const anatomyPage = await guest(`/api/public/subjects/${B.subjectAnatomy}`).expect(200);
+    expect(anatomyPage.body).not.toHaveProperty('periodicTable');
 
     const oxygenId = page.body.topics[7].id;
     const lesson = await as(student).get(`/api/student/topics/${oxygenId}`).expect(200);

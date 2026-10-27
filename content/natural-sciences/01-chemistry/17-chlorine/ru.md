@@ -2,6 +2,10 @@
 code: chlorine
 chapter: elements
 position: 17
+element:
+  symbol: Cl
+  number: 17
+  group: halogen
 title: Хлор
 description: Жёлто-зелёный токсичный газ-галоген, основа дезинфекции воды и производства ПВХ.
 funFact: Хлор применялся как химическое оружие в Первой мировой войне — первый массовый газовый удар был в 1915 году.

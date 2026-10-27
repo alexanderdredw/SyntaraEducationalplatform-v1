@@ -106,13 +106,14 @@ export class StudentContentService {
   }
 
   private async subjectPage(subjectId: string, locale: Locale): Promise<PublicSubjectPageDto> {
-    const [translations, rows] = await Promise.all([
+    const [translations, rows, [subject]] = await Promise.all([
       this.db.select().from(st).where(eq(st.subjectId, subjectId)),
       this.db
         .select({
           id: topics.id,
           position: topics.position,
           chapterId: topics.chapterId,
+          elementNumber: topics.elementNumber,
           snapshot: topicVersions.snapshot,
         })
         .from(topics)
@@ -121,6 +122,7 @@ export class StudentContentService {
           and(eq(topics.subjectId, subjectId), eq(topics.status, 'published'), isNull(topics.archivedAt)),
         )
         .orderBy(asc(topics.position)),
+      this.db.select({ blocks: subjects.blocks }).from(subjects).where(eq(subjects.id, subjectId)),
     ]);
     const tr = pickTranslation(translations, locale);
     const [chapters, [glossary]] = await Promise.all([
@@ -146,6 +148,16 @@ export class StudentContentService {
       }),
       ...(chapters.length ? { chapters } : {}),
       ...(glossary ? { hasGlossary: true } : {}),
+      // REQ-PTBL-01, REQ-PTBL-04: ячейки с уроками — только опубликованные темы с номером элемента.
+      ...(subject?.blocks.includes('periodic-table')
+        ? {
+            periodicTable: {
+              elements: rows.flatMap((r) =>
+                r.elementNumber ? [{ number: r.elementNumber, topicId: r.id }] : [],
+              ),
+            },
+          }
+        : {}),
     };
   }
 

@@ -9,6 +9,7 @@ import {
   jsonb,
   pgTable,
   primaryKey,
+  smallint,
   text,
   unique,
   uniqueIndex,
@@ -51,9 +52,15 @@ export const subjects = pgTable(
     code: text('code').unique(),
     /** Порядок базового предмета в каталоге — из subject.yaml (решение владельца 2026-10-17); у предметов учителей — NULL. */
     position: integer('position'),
+    /** Блоки страницы базового предмета из subject.yaml (REQ-PTBL-01): пока только 'periodic-table'. */
+    blocks: text('blocks')
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
     ...timestamps,
   },
   (t) => [
+    check('subjects_blocks', sql`${t.blocks} <@ ARRAY['periodic-table']::text[]`),
     check('subjects_official_or_owner', sql`${t.isOfficial} OR ${t.ownerId} IS NOT NULL`),
     check('subjects_code_official', sql`${t.code} IS NULL OR ${t.isOfficial}`),
     check(
@@ -173,9 +180,17 @@ export const topics = pgTable(
     code: text('code').unique(),
     /** Глава базового предмета (BR-CHAP-01); NULL — предмет без глав и все темы учителей. */
     chapterId: uuid('chapter_id').references((): AnyPgColumn => subjectChapters.id),
+    /** Номер химического элемента урока (REQ-PTBL-04): ячейка таблицы Менделеева ведёт на урок. */
+    elementNumber: smallint('element_number'),
     ...timestamps,
   },
-  (t) => [index('ix_topics_subject').on(t.subjectId, t.position)],
+  (t) => [
+    index('ix_topics_subject').on(t.subjectId, t.position),
+    check('topics_element_number', sql`${t.elementNumber} BETWEEN 1 AND 118`),
+    uniqueIndex('ux_topics_subject_element')
+      .on(t.subjectId, t.elementNumber)
+      .where(sql`element_number IS NOT NULL`),
+  ],
 );
 
 export const topicTranslations = pgTable(

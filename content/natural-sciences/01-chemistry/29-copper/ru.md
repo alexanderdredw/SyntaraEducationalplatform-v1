@@ -2,6 +2,10 @@
 code: copper
 chapter: elements
 position: 29
+element:
+  symbol: Cu
+  number: 29
+  group: transition_metal
 title: Медь
 description: Один из лучших проводников электричества, первый металл, освоенный человеком.
 funFact: Медь обладает природными антибактериальными свойствами — на медных ручках дверей бактерии погибают за считанные часы.

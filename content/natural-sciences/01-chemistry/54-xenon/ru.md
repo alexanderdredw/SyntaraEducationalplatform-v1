@@ -2,6 +2,10 @@
 code: xenon
 chapter: elements
 position: 54
+element:
+  symbol: Xe
+  number: 54
+  group: noble_gas
 title: Ксенон
 description: Универсальный благородный газ, необходимый для различных научных и промышленных применений.
 illustration: media/xenon-atom.webp

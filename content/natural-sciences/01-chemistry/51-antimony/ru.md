@@ -2,6 +2,10 @@
 code: antimony
 chapter: elements
 position: 51
+element:
+  symbol: Sb
+  number: 51
+  group: metalloid
 title: Сурьма
 description: Универсальный полуметалл, необходимый для различных научных и промышленных применений.
 illustration: media/antimony-atom.webp

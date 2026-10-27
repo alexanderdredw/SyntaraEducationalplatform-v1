@@ -278,6 +278,21 @@ const chaptersProperty = {
     'Главы предмета (BR-CHAP-01…05): есть только у базовых предметов с главами; без глав поля нет — темы списком',
 };
 
+class PeriodicTableElementDto {
+  @ApiProperty({ minimum: 1, maximum: 118 }) number: number;
+  @ApiProperty({ format: 'uuid', description: 'Опубликованный урок элемента' }) topicId: string;
+}
+
+/** REQ-PTBL-01, REQ-PTBL-04: блок «Периодическая таблица» — элементы с уроками; остальные ячейки — «Скоро». */
+class PeriodicTableDto {
+  @ApiProperty({ type: PeriodicTableElementDto, isArray: true }) elements: PeriodicTableElementDto[];
+}
+
+const periodicTableProperty = {
+  type: PeriodicTableDto,
+  description: 'Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml',
+};
+
 const hasGlossaryProperty = {
   type: Boolean,
   description: 'У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет',
@@ -291,6 +306,7 @@ export class StudentSubjectDto {
   @ApiProperty({ type: StudentTopicItemDto, isArray: true }) topics: StudentTopicItemDto[];
   @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
   @ApiPropertyOptional(hasGlossaryProperty) hasGlossary?: boolean;
+  @ApiPropertyOptional(periodicTableProperty) periodicTable?: PeriodicTableDto;
 }
 
 class PublicTopicItemDto {
@@ -307,6 +323,7 @@ export class PublicSubjectPageDto {
   @ApiProperty({ type: PublicTopicItemDto, isArray: true }) topics: PublicTopicItemDto[];
   @ApiPropertyOptional(chaptersProperty) chapters?: SubjectChapterDto[];
   @ApiPropertyOptional(hasGlossaryProperty) hasGlossary?: boolean;
+  @ApiPropertyOptional(periodicTableProperty) periodicTable?: PeriodicTableDto;
 }
 
 class GlossaryTermDto {

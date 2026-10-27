@@ -2,6 +2,10 @@
 code: iodine
 chapter: elements
 position: 53
+element:
+  symbol: I
+  number: 53
+  group: halogen
 title: Йод
 description: Универсальный галоген, необходимый для различных научных и промышленных применений.
 illustration: media/iodine-atom.webp

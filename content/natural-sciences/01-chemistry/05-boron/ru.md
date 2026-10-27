@@ -2,6 +2,10 @@
 code: boron
 chapter: elements
 position: 5
+element:
+  symbol: B
+  number: 5
+  group: metalloid
 title: Бор
 description: Полуметаллы, применяемый в стекловолокне, ядерных реакторах и удобрениях.
 funFact: Бор — единственный полуметалл в группе 13 и один из самых твёрдых элементов.

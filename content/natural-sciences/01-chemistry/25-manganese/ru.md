@@ -2,6 +2,10 @@
 code: manganese
 chapter: elements
 position: 25
+element:
+  symbol: Mn
+  number: 25
+  group: transition_metal
 title: Марганец
 description: Незаменимый элемент в металлургии, делающий сталь твёрдой и устойчивой к износу.
 funFact: Марганец настолько важен для производства стали, что без него современная промышленность просто бы остановилась — альтернативы ему нет.

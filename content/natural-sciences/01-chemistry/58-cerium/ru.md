@@ -2,6 +2,10 @@
 code: cerium
 chapter: elements
 position: 58
+element:
+  symbol: Ce
+  number: 58
+  group: lanthanide
 title: Церий
 description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
 illustration: media/cerium-atom.webp

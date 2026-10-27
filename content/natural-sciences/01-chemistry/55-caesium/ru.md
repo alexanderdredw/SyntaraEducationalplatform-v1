@@ -2,6 +2,10 @@
 code: caesium
 chapter: elements
 position: 55
+element:
+  symbol: Cs
+  number: 55
+  group: alkali_metal
 title: Цезий
 description: Универсальный щелочной металл, необходимый для различных научных и промышленных применений.
 illustration: media/caesium-atom.webp

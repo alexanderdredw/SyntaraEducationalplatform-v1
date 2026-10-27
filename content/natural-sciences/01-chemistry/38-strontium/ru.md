@@ -2,6 +2,10 @@
 code: strontium
 chapter: elements
 position: 38
+element:
+  symbol: Sr
+  number: 38
+  group: alkaline_earth
 title: Стронций
 description: Щелочноземельный металл, дарящий ярко-красный цвет фейерверкам.
 funFact: Именно соли стронция отвечают за сочный красный цвет праздничных салютов.

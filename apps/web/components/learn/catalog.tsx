@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 import { Accordion, EmptyState, Pill, Skeleton } from '@syntara/ui';
@@ -10,6 +11,11 @@ import { AppLink } from '../app-link';
 import { useClassOverview, useIsClassSubject, useReportSubject } from '../cabinet/nav-state';
 import { MY_CLASS_HREF } from '../cabinet/nav';
 import { useLearnViewer } from './viewer';
+
+/** REQ-PTBL-08: таблица Менделеева — отдельный чанк, загружается только на странице предмета с блоком. */
+const PeriodicTable = dynamic(() => import('./periodic-table'), {
+  loading: () => <Skeleton className="h-96" />,
+});
 
 type Catalog = components['schemas']['CatalogDto'];
 type Section = components['schemas']['SectionDto'];
@@ -329,6 +335,13 @@ export function StudentSubject({ id }: { id: string }) {
         >
           {tg('title')}
         </AppLink>
+      ) : null}
+      {/* REQ-PTBL-01: блок над главами — только если включён в subject.yaml. */}
+      {subject.data?.periodicTable ? (
+        <PeriodicTable
+          elements={subject.data.periodicTable.elements}
+          statuses={new Map(subject.data.topics.map((topic) => [topic.id, topic.status]))}
+        />
       ) : null}
       <section aria-labelledby="subject-topics" className="flex flex-col gap-3">
         <h2 id="subject-topics" className="text-cabinet-block font-semibold">

@@ -2,6 +2,10 @@
 code: iron
 chapter: elements
 position: 26
+element:
+  symbol: Fe
+  number: 26
+  group: transition_metal
 title: Железо
 description: Самый важный металл человеческой цивилизации, основа стали и переносчик кислорода в крови.
 funFact: Ядро Земли на 80% состоит из железа, что создает магнитное поле, защищающее нас от космической радиации.

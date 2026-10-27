@@ -48,6 +48,7 @@ describe('migrations (integration)', () => {
       '0012_opt_indexes',
       '0013_subject_chapters',
       '0014_glossary',
+      '0015_periodic_table',
     ]);
     expect(await tables()).toBe(70);
     expect(await enums()).toBe(18);
@@ -55,6 +56,7 @@ describe('migrations (integration)', () => {
 
   it('AG-09 rolls back every migration to an empty schema', async () => {
     expect(await rollback(db, Number.MAX_SAFE_INTEGER)).toEqual([
+      '0015_periodic_table',
       '0014_glossary',
       '0013_subject_chapters',
       '0012_opt_indexes',
@@ -85,6 +87,15 @@ describe('migrations (integration)', () => {
   it('AG-09 re-applies after a full rollback and supports step-by-step rollback', async () => {
     await migrateUp(db);
     expect(await tables()).toBe(70);
+    // 0015 (REQ-PTBL-01, REQ-PTBL-04): столбцы subjects.blocks и topics.element_number; откат убирает только их.
+    const columns = () =>
+      count(
+        db,
+        sql`select count(*) as n from information_schema.columns where (table_name, column_name) in (('subjects', 'blocks'), ('topics', 'element_number'))`,
+      );
+    expect(await columns()).toBe(2);
+    expect(await rollback(db, 1)).toEqual(['0015_periodic_table']);
+    expect(await columns()).toBe(0);
     // 0014 (REQ-GLOS-01): четыре таблицы глоссария; откат удаляет только их.
     expect(await rollback(db, 1)).toEqual(['0014_glossary']);
     expect(await tables()).toBe(66);
@@ -184,7 +195,7 @@ describe('migrations (integration)', () => {
       await count(db, sql`select count(*) as n from pg_trigger where tgname = 'trg_assignments_topic'`),
     ).toBe(0);
     await migrateUp(db);
-    expect(await appliedMigrations(db)).toHaveLength(15);
+    expect(await appliedMigrations(db)).toHaveLength(16);
   });
 
   it('AC-PRF-01 0010 moves every existing name into the profile and keeps display_name; rollback keeps names', async () => {

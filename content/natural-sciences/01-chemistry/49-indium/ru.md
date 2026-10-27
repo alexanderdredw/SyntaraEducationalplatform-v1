@@ -2,6 +2,10 @@
 code: indium
 chapter: elements
 position: 49
+element:
+  symbol: In
+  number: 49
+  group: post_transition
 title: Индий
 description: Универсальный другой металл, необходимый для различных научных и промышленных применений.
 illustration: media/indium-atom.webp

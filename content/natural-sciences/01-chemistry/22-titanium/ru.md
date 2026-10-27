@@ -2,6 +2,10 @@
 code: titanium
 chapter: elements
 position: 22
+element:
+  symbol: Ti
+  number: 22
+  group: transition_metal
 title: Титан
 description: Невероятно прочный и лёгкий металл, обладающий исключительной коррозийной стойкостью.
 funFact: Титан горит даже в атмосфере чистого азота.

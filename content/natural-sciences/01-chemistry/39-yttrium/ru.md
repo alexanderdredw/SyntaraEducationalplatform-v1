@@ -2,6 +2,10 @@
 code: yttrium
 chapter: elements
 position: 39
+element:
+  symbol: Y
+  number: 39
+  group: transition_metal
 title: Иттрий
 description: Редкоземельный металл, ключевой для лазеров, сверхпроводников и люминофоров.
 funFact: Иттрий назван в честь шведской деревни Иттербю, где были найдены сразу четыре новых элемента.

@@ -7615,6 +7615,39 @@
           "topicIds"
         ]
       },
+      "PeriodicTableElementDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 118
+          },
+          "topicId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Опубликованный урок элемента"
+          }
+        },
+        "required": [
+          "number",
+          "topicId"
+        ]
+      },
+      "PeriodicTableDto": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PeriodicTableElementDto"
+            }
+          }
+        },
+        "required": [
+          "elements"
+        ]
+      },
       "StudentSubjectDto": {
         "type": "object",
         "properties": {
@@ -7645,6 +7678,14 @@
           "hasGlossary": {
             "type": "boolean",
             "description": "У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет"
+          },
+          "periodicTable": {
+            "description": "Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PeriodicTableDto"
+              }
+            ]
           }
         },
         "required": [
@@ -7795,6 +7836,14 @@
           "hasGlossary": {
             "type": "boolean",
             "description": "У предмета есть глоссарий — кнопка «Глоссарий» (REQ-GLOS-02); нет глоссария — поля нет"
+          },
+          "periodicTable": {
+            "description": "Блок «Периодическая таблица» (REQ-PTBL-01): только если включён в subject.yaml",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PeriodicTableDto"
+              }
+            ]
           }
         },
         "required": [

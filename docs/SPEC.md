@@ -490,6 +490,11 @@ CREATE TABLE glossary_terms (id uuid PRIMARY KEY, section_id uuid NOT NULL REFER
 CREATE TABLE glossary_term_translations (term_id uuid REFERENCES glossary_terms, locale locale,
   term text NOT NULL CHECK (length(term) <= 150), definition text NOT NULL CHECK (length(definition) <= 1000),
   needs_review boolean NOT NULL DEFAULT false, PRIMARY KEY (term_id, locale));
+-- Таблица Менделеева (REQ-PTBL-01, REQ-PTBL-04, миграция 0015): блоки страницы базового предмета и номер элемента урока.
+ALTER TABLE subjects ADD COLUMN blocks text[] NOT NULL DEFAULT '{}'
+  CONSTRAINT subjects_blocks CHECK (blocks <@ ARRAY['periodic-table']::text[]);
+ALTER TABLE topics ADD COLUMN element_number smallint CONSTRAINT topics_element_number CHECK (element_number BETWEEN 1 AND 118);
+CREATE UNIQUE INDEX ux_topics_subject_element ON topics (subject_id, element_number) WHERE element_number IS NOT NULL;
 ```
 
 ## 5.5 Квизы и задания
@@ -786,7 +791,7 @@ CREATE TABLE known_devices (
 | API-PUB-09 | GET /api/public/schools | `?q=` (≥ 2 символа) | `[{ id, name, city, region }]` — до 10 подтверждённых школ (status = 'active') для автодополнения |
 | API-PUB-10 | GET /api/public/catalog | — | Каталог базовых уроков для гостя (BR-VIS-04): как API-S-04, только базовые предметы; `status: 'available'|'soon'` |
 | API-PUB-11 | GET /api/public/sections/:id | — | Раздел каталога для гостя: как API-S-05, только базовые предметы |
-| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }], chapters? }` — без статусов; `chapters: [{ id, title, topicIds }]` — только у предмета с главами (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); не базовый → 404 |
+| API-PUB-12 | GET /api/public/subjects/:id | — | Базовый предмет для гостя: `{ id, title, description, topics: [{ id, number, title }], chapters? }` — без статусов; `chapters: [{ id, title, topicIds }]` — только у предмета с главами (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); `periodicTable: { elements: [{ number, topicId }] }` — только если в subject.yaml включён блок periodic-table (REQ-PTBL-01); не базовый → 404 |
 | API-PUB-14 | GET /api/public/subjects/:id/glossary | — | Глоссарий базового предмета для гостя (REQ-GLOS-02): как API-S-22; не базовый или без глоссария → 404 |
 | API-PUB-13 | GET /api/public/topics/:id | — | «Обзор» базового урока для гостя: как API-S-06, `quizId` = null; квиз и ИИ — только после входа; не базовый или не опубликован → 404 |
 
@@ -876,7 +881,7 @@ CREATE TABLE known_devices (
 | API-S-15 | GET /api/student/achievements | `{ level, rankTitle, xpTotal, xpToNext, streakDays, badges: [{ code, title, condition, imageUrl, earned, earnedAt }], earnedCount, totalCount }` Плюс `xpPerLevel` (PH-39) для полосы прогресса; ранг — `level_translations`. |
 | API-S-16 | GET /api/me/stats | `{ streakDays, xpTotal, continueTopicId }` для хедера; `streakDays` — 0, если последней активности не было ни сегодня, ни вчера (BR-ST-03); `continueTopicId` — последняя открытая и доступная тема (REQ-ST-HOME-01, PH-34) |
 | API-S-17 | POST /api/student/events | `{ type: 'lesson_opened', topicId, idempotencyKey }` |
-| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); предмет не виден (BR-VIS-01) → 404 |
+| API-S-18 | GET /api/student/subjects/:id | Страница предмета: `{ id, title, description, topics: [{ id, number, title, status: 'mastered'|'started'|'not_started' }], chapters? }` — опубликованные темы по position; `chapters: [{ id, title, topicIds }]` — главы по порядку, только у предмета с главами, пустые главы не показываются (BR-CHAP-03, BR-CHAP-05); `hasGlossary: true` — только если есть глоссарий (REQ-GLOS-02); `periodicTable: { elements: [{ number, topicId }] }` — только если включён блок periodic-table, элементы опубликованных тем (REQ-PTBL-01, REQ-PTBL-04); предмет не виден (BR-VIS-01) → 404 |
 | API-S-19 | GET /api/student/class/overview | «Мой класс» (REQ-NAV-11), только чтение: `{ class: StudentClassDto | null, subjects: [{ id, title, description, topicsTotal, topicsMastered, isNew }], upcomingAssignments: StudentAssignmentDto[] }` — предметы, выданные действующему классу ученика (без отзыва, не в архиве); `topicsMastered` — темы с mastered_at; `isNew` — выдан после отметки `nav_seen('class')` (нет отметки — новый); до 3 несданных заданий, ближайший срок — первым (как API-S-10). Путь — `class/overview`: `GET /api/student/class` занят API-S-02, существующие операции не меняются (TODO(OWNER): подтвердить путь). |
 | API-S-20 | GET /api/student/nav-badges | `{ assignmentsOpen, assignmentsOverdue, classHasNew, achievementsHasNew }` (REQ-NAV-14): несданные задания API-S-10 и из них просроченные; предмет выдан классу или бейдж получен позже отметки `nav_seen` (нет отметки — всё новое). |
 | API-S-22 | GET /api/student/subjects/:id/glossary | Глоссарий предмета (REQ-GLOS-01…04): `{ subject: { id, title }, sections: [{ id, title, terms: [{ id, term, definition }] }], needsReview }` — разделы по position, термины по алфавиту языка ответа (Intl.Collator), перевода нет — RU; `needsReview` — показан перевод на проверке; предмет не виден (BR-VIS-01) или без глоссария → 404 |
@@ -1364,6 +1369,22 @@ REQ-GLOS-03 Поиск по термину и определению без уч
 REQ-GLOS-04 Разделы — как в источнике; внутри — по алфавиту языка интерфейса.
 REQ-GLOS-05 Телефон 390 px — одна колонка, поле поиска закреплено сверху.
 REQ-GLOS-06 Хлебные крошки «Каталог / {Предмет} / Глоссарий»; в панели активен «Каталог».
+REQ-PTBL-01 Блок «Периодическая таблица» над главами страницы предмета включается в subject.yaml: blocks: [periodic-table]
+          (subjects.blocks); у других предметов его нет. В ru.md урока элемента — element: { symbol, number, group }
+          (topics.element_number; символ и семейство сверяются с данными блока, один урок на элемент).
+REQ-PTBL-02 Стандартная раскладка: 18 групп × 7 периодов и отдельные ряды лантаноидов и актиноидов, все 118 элементов;
+          номер, символ, период, группа и семейство — в общем файле данных packages/shared/src/periodic-table.ts,
+          названия — i18n student.periodicTable.elements.<символ> (1–60 — как в уроках, 61–118 — Wikidata).
+REQ-PTBL-03 Ячейка: номер, символ, название (на узкой ячейке — в подсказке). Цвет — по семейству, токены
+          --family-<семейство> (обе темы); есть легенда и aria-label — цвет не единственный носитель смысла.
+REQ-PTBL-04 Элемент с опубликованным уроком — ссылка на урок; без урока — неактивная ячейка с подсказкой «Скоро».
+REQ-PTBL-05 Ученик видит на ячейке статус темы (освоено, в процессе) — из статусов API-S-18, без новых правил.
+REQ-PTBL-06 Легенда-фильтр: нажатие на семейство подсвечивает его элементы (остальные приглушены), повторное — снимает.
+REQ-PTBL-07 Клавиатура: роль grid, стрелки — к ближайшему элементу в направлении, Home/End — край ряда, Enter
+          открывает урок; видимый фокус. aria-label: «Кислород, O, номер 8, неметалл, освоено».
+REQ-PTBL-08 Телефон: таблица прокручивается по горизонтали внутри блока (страница — нет), переключатель «Списком».
+          В «Экономии трафика» и при prefers-reduced-motion — без анимаций. Блок — отдельный чанк (next/dynamic),
+          бюджет JS страницы ≤ 500 КБ (REQ-NFR-PERF-05).
 ```
 
 ## 7.12 Battle (итерация 10.5)
@@ -2417,3 +2438,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-27 | Перенос атласа химии (docs/CHEM_TZ.md), C1 «Главы»: 5.4 `subject_chapters`, `subject_chapter_translations`, `topics.chapter_id` (миграция 0013); 6.2 API-PUB-12 и 6.5 API-S-18 — необязательное поле `chapters`; 7.11 BR-CHAP-01…05; 8.4.2 REQ-ST-CAT-04 (главы); 13 AC-CHEM-01…13 | Решения владельца 2026-10-27 (CHEM_TZ, раздел 2; ответы на вопросы C0) |
 | 2026-10-27 | Перенос атласа химии, C2 «Контент»: 7.11 REQ-CHEM-01…06; «Химия» наполнена (content/natural-sciences/01-chemistry, конвертер и файлы правок в scripts/content-import/) | Решения владельца по C0 (В-1…В-17) |
 | 2026-10-27 | Перенос атласа химии, C3 «Глоссарий»: 4 маршрут /learn/subjects/:id/glossary; 5.4 таблицы глоссария (миграция 0014); 6.2 API-PUB-14, API-PUB-12 `hasGlossary`; 6.5 API-S-22, API-S-18 `hasGlossary`; 7.11 REQ-GLOS-01…06. Тексты «Поиск по глоссарию», «Термин или определение», «Найдено: {count}» — needs_confirmation | docs/CHEM_TZ.md 6.2 |
+| 2026-10-27 | Перенос атласа химии, C4 «Таблица Менделеева»: 5.4 `subjects.blocks`, `topics.element_number` (миграция 0015); 6.2 API-PUB-12 и 6.5 API-S-18 — необязательное `periodicTable`; 7.11 REQ-PTBL-01…08; токены `--family-*` (3.1). Тексты легенды, «Таблицей», подписи рядов и названия семейств — needs_confirmation | docs/CHEM_TZ.md 6.3 |

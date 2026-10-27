@@ -2,6 +2,10 @@
 code: niobium
 chapter: elements
 position: 41
+element:
+  symbol: Nb
+  number: 41
+  group: transition_metal
 title: Ниобий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/niobium-atom.webp

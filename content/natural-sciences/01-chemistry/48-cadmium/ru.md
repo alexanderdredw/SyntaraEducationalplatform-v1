@@ -2,6 +2,10 @@
 code: cadmium
 chapter: elements
 position: 48
+element:
+  symbol: Cd
+  number: 48
+  group: transition_metal
 title: Кадмий
 description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
 illustration: media/cadmium-atom.webp

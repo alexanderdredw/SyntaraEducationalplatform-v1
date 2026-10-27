@@ -139,6 +139,18 @@ describe('content check', () => {
     );
   });
 
+  it('REQ-PTBL-02, REQ-PTBL-04 element in ru.md: symbol and family as in the periodic table data; one topic per element', () => {
+    const chem = 'natural-sciences/01-chemistry';
+    edit(`${chem}/08-oxygen/ru.md`, '  symbol: O\n', '  symbol: Ox\n');
+    edit(`${chem}/09-fluorine/ru.md`, '  number: 9\n', '  number: 8\n');
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/08-oxygen\/ru\.md: element — элемент 8 — O, семейство nonmetal/),
+        expect.stringMatching(/ru\.md: element\.number — элемент уже есть в другой теме предмета: 8/),
+      ]),
+    );
+  });
+
   it('REQ-GLOS-01 glossary.yaml: term codes unique in the subject; every language has both the term and the definition', () => {
     const file = 'natural-sciences/01-chemistry/glossary.yaml';
     edit(file, '      - code: molecule\n', '      - code: atom\n');

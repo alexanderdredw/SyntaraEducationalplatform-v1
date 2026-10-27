@@ -2,6 +2,10 @@
 code: nickel
 chapter: elements
 position: 28
+element:
+  symbol: Ni
+  number: 28
+  group: transition_metal
 title: Никель
 description: Коррозионностойкий металл, используемый в монетах, нержавеющей стали и суперсплавах.
 funFact: Многие метеориты состоят из сплава железа и никеля — именно так люди впервые познакомились с металлическим железом.

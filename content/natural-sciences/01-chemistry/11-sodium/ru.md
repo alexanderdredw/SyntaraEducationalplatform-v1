@@ -2,6 +2,10 @@
 code: sodium
 chapter: elements
 position: 11
+element:
+  symbol: Na
+  number: 11
+  group: alkali_metal
 title: Натрий
 description: Мягкий, серебристый и крайне активный металл, ключевой элемент для жизни и промышленности.
 funFact: Натрий регулирует водно-солевой баланс в клетках — без него невозможна передача нервных импульсов.

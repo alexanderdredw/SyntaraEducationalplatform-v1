@@ -2,6 +2,10 @@
 code: zinc
 chapter: elements
 position: 30
+element:
+  symbol: Zn
+  number: 30
+  group: transition_metal
 title: Цинк
 description: Металл-защитник, используемый для оцинковки стали и в производстве латуни и батареек.
 funFact: Цинк необходим человеку для работы иммунитета, роста и чувства вкуса/запаха.
