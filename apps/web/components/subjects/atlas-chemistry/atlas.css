@@ -4433,3 +4433,22 @@
     bottom: calc(var(--cookie-banner-h, 0px) + 5.2rem);
   }
 }
+
+/* Решение А-15: плитки «Время обучения» нет — три показателя на всю ширину панели. */
+@media (min-width: 769px) {
+  .atlas #syntara-stats-panel {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Режимы Syntara AI — кнопки быстрых действий (у ученика); вид — карточек оригинала. */
+.atlas button.mode-card {
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.atlas button.mode-card:disabled {
+  cursor: default;
+}

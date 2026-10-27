@@ -130,6 +130,10 @@ describe('atlas (integration)', () => {
     const after = await as(student).get(`/api/student/subjects/${chemistry}/atlas`).expect(200);
     expect(after.body.elements[7].status).toBe('started');
     expect(after.body.scientists.status).toBe('not_started');
+    // Решение А-15: показатели Syntara AI — без попыток: слабых тем нет, точности нет, рекомендуется первая тема.
+    expect(after.body.stats).toEqual({ weak: 0, recommended: 'Водород', accuracy: null });
+    const guestData = await guest(`/api/public/subjects/${chemistry}/atlas`).expect(200);
+    expect(guestData.body).not.toHaveProperty('stats');
   });
 
   it('REQ-ATL-01 the lesson «Учёные-химики» gives section codes for /scientists/:code', async () => {

@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
-import { type Locale, periodicElement, type TopicSnapshot } from '@syntara/shared';
+import { and, asc, count, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { type Locale, MASTERY_THRESHOLD, periodicElement, type TopicSnapshot } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { pickTranslation } from '../../common/locale';
@@ -11,6 +11,7 @@ import { StorageService } from '../files/storage.service';
 import { type AtlasDto } from './atlas.dto';
 
 const { subjects, subjectTranslations, topics, topicVersions, mediaFiles, glossarySections } = schema;
+const { quizAttempts, attemptAnswers, quizzes, topicMastery } = schema;
 
 export const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 
@@ -149,6 +150,50 @@ export class AtlasService {
         : null,
       hasGlossary: Boolean(glossary),
       needsReview,
+      ...(viewer === null ? {} : { stats: await this.stats(viewer, elements, locale) }),
+    };
+  }
+
+  /**
+   * Показатели экрана Syntara AI (решение А-15) по данным платформы: слабые темы — с попыткой квиза и лучшим
+   * результатом ниже порога освоения (BR-QZ-07); рекомендуется — слабейшая из них, иначе первая не начатая;
+   * точность — доля верных ответов во всех попытках по темам предмета.
+   */
+  private async stats(studentId: string, elements: AtlasTopicRow[], locale: Locale) {
+    const ids = elements.map((e) => e.id);
+    if (ids.length === 0) return { weak: 0, recommended: null, accuracy: null };
+    const [mastery, [answers]] = await Promise.all([
+      this.db
+        .select({
+          topicId: topicMastery.topicId,
+          best: topicMastery.bestPercent,
+          masteredAt: topicMastery.masteredAt,
+        })
+        .from(topicMastery)
+        .where(and(eq(topicMastery.studentId, studentId), inArray(topicMastery.topicId, ids))),
+      this.db
+        .select({ total: count(), correct: sql<number>`count(*) filter (where ${attemptAnswers.isCorrect})` })
+        .from(attemptAnswers)
+        .innerJoin(quizAttempts, eq(quizAttempts.id, attemptAnswers.attemptId))
+        .innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
+        .where(and(eq(quizAttempts.studentId, studentId), inArray(quizzes.topicId, ids))),
+    ]);
+    const weak = mastery
+      .filter((m) => !m.masteredAt && Number(m.best) < MASTERY_THRESHOLD)
+      .sort((a, b) => Number(a.best) - Number(b.best));
+    const title = (id: string | null) => {
+      const row = elements.find((e) => e.id === id);
+      return row ? (pick(row.snapshot.translations, locale)?.[1].title ?? null) : null;
+    };
+    const seen = new Set(mastery.map((m) => m.topicId));
+    const recommended = weak[0]
+      ? title(weak[0].topicId)
+      : title(elements.find((e) => !seen.has(e.id))?.id ?? null);
+    const total = Number(answers?.total ?? 0);
+    return {
+      weak: weak.length,
+      recommended,
+      accuracy: total ? Math.round((100 * Number(answers?.correct ?? 0)) / total) : null,
     };
   }
 

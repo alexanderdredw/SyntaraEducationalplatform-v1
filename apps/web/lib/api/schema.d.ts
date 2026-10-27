@@ -4043,6 +4043,14 @@ export interface components {
             /** @enum {string} */
             status?: "mastered" | "started" | "not_started";
         };
+        AtlasStatsDto: {
+            /** @description Темы с попыткой квиза, лучший результат ниже порога освоения (PH-38) */
+            weak: number;
+            /** @description Рекомендуется: слабейшая начатая тема, иначе первая не начатая; всё освоено — null */
+            recommended: string | null;
+            /** @description Доля верных ответов в квизах тем предмета, %; нет ответов — null */
+            accuracy: number | null;
+        };
         AtlasDto: {
             subject: components["schemas"]["AtlasSubjectDto"];
             /** @description По атомному номеру */
@@ -4052,6 +4060,8 @@ export interface components {
             hasGlossary: boolean;
             /** @description Показанный перевод ждёт вычитки (BR-CNT-05) */
             needsReview: boolean;
+            /** @description Только у ученика */
+            stats?: components["schemas"]["AtlasStatsDto"];
         };
         AtlasQuizStartBody: {
             /** @enum {string} */

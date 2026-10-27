@@ -13022,6 +13022,30 @@
           "title"
         ]
       },
+      "AtlasStatsDto": {
+        "type": "object",
+        "properties": {
+          "weak": {
+            "type": "number",
+            "description": "Темы с попыткой квиза, лучший результат ниже порога освоения (PH-38)"
+          },
+          "recommended": {
+            "type": "string",
+            "nullable": true,
+            "description": "Рекомендуется: слабейшая начатая тема, иначе первая не начатая; всё освоено — null"
+          },
+          "accuracy": {
+            "type": "number",
+            "nullable": true,
+            "description": "Доля верных ответов в квизах тем предмета, %; нет ответов — null"
+          }
+        },
+        "required": [
+          "weak",
+          "recommended",
+          "accuracy"
+        ]
+      },
       "AtlasDto": {
         "type": "object",
         "properties": {
@@ -13051,6 +13075,14 @@
           "needsReview": {
             "type": "boolean",
             "description": "Показанный перевод ждёт вычитки (BR-CNT-05)"
+          },
+          "stats": {
+            "description": "Только у ученика",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasStatsDto"
+              }
+            ]
           }
         },
         "required": [
