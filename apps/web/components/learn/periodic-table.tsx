@@ -215,8 +215,10 @@ export default function PeriodicTable({
                 {row.map((n, c) => {
                   const marker = (r === 5 || r === 6) && c === 2 ? (r === 5 ? '57–71' : '89–103') : null;
                   const rowLabel = c === 0 && r >= 7 ? t(r === 7 ? 'lanthanides' : 'actinides') : null;
+                  // Подпись ряда лантаноидов и актиноидов — на две пустые колонки, иначе не помещается.
+                  if (r >= 7 && c === 1) return null;
                   return (
-                    <div role="gridcell" key={c} className="min-h-14">
+                    <div role="gridcell" key={c} className={cn('min-h-14', rowLabel && 'col-span-2')}>
                       {n ? (
                         cell(PERIODIC_ELEMENTS[n - 1]!)
                       ) : marker || rowLabel ? (

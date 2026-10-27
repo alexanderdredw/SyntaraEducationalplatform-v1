@@ -343,4 +343,45 @@ test.describe('Химия из «Молекулярного атласа»', () 
     expect(Math.abs(b!.x - a!.x)).toBeLessThan(2);
     expect(await hasHorizontalScroll(page)).toBe(false);
   });
+
+  for (const theme of ['dark', 'light'] as const) {
+    test(`AC-CHEM-11 ${theme}: glossary and «Учёные-химики» have no serious axe violations; widths 768 and 1440 without horizontal scroll`, async ({
+      page,
+      context,
+      baseURL,
+    }) => {
+      const ids = await chemistryIds(await request.newContext({ baseURL }));
+      await context.addCookies([{ name: 'theme', value: theme, url: baseURL! }]);
+      for (const width of [768, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        for (const path of [
+          `/ru/learn/subjects/${ids.subjectId}`,
+          `/ru/learn/subjects/${ids.subjectId}/glossary`,
+          `/ru/learn/topics/${ids.chemists}`,
+        ]) {
+          await page.goto(path);
+          await expect(page.locator('#main')).not.toBeEmpty();
+          expect(await hasHorizontalScroll(page), `${width} ${path}`).toBe(false);
+        }
+      }
+      await expect(page.getByTestId('lesson-timeline')).toBeVisible();
+      await expectNoSeriousA11yViolations(page);
+      await page.goto(`/ru/learn/subjects/${ids.subjectId}/glossary`);
+      await expect(page.getByTestId('glossary-term').first()).toBeVisible();
+      await expectNoSeriousA11yViolations(page);
+    });
+  }
+
+  test('AC-CHEM-11 «Экономия трафика»: no transitions in the periodic table and the legend', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await context.addCookies([{ name: 'data_saver', value: '1', url: baseURL! }]);
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+    const cell = page.getByTestId('periodic-table').locator('[data-number="8"]');
+    await expect(cell).toBeVisible();
+    expect(await cell.evaluate((el) => getComputedStyle(el).transitionDuration)).toMatch(/^0s/);
+  });
 });

@@ -182,6 +182,8 @@ test.describe('Задания, показатели, аналитика (ите�
     // «Карта освоения»: ученики × темы базового предмета, статус — цветом и подписью.
     await expect(page.getByRole('link', { name: tan.mastery })).toHaveAttribute('aria-current', 'page');
     const table = page.getByTestId('mastery-table');
+    // С «Химией» из атласа (AC-CHEM-02) по умолчанию открыт первый базовый предмет — выбираем «Анатомию человека».
+    await choose(page, ta.subject, 'Анатомия человека');
     await expect(table.getByRole('columnheader')).toHaveText([
       ru.teacher.mastery.student,
       'Сердечно-сосудистая система',
