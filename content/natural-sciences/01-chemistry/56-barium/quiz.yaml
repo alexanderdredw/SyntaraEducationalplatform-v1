@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома бария?
+      kk: Барий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a barium atom?
+    options:
+      - text:
+          ru: '82'
+          kk: '82'
+          en: '82'
+      - text:
+          ru: '138'
+          kk: '138'
+          en: '138'
+      - text:
+          ru: '71'
+          kk: '71'
+          en: '71'
+      - text:
+          ru: '56'
+          kk: '56'
+          en: '56'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какова электронная конфигурация атома бария в основном состоянии?
+      kk: Негізгі күйдегі барий атомының электрондық конфигурациясы қандай?
+      en: What is the electron configuration of a barium atom in its ground state?
+    options:
+      - text:
+          ru: '[Xe] 6s²'
+          kk: '[Xe] 6s²'
+          en: '[Xe] 6s²'
+        correct: true
+      - text:
+          ru: '[Rn] 7s²'
+          kk: '[Rn] 7s²'
+          en: '[Rn] 7s²'
+      - text:
+          ru: '[Ar] 4s²'
+          kk: '[Ar] 4s²'
+          en: '[Ar] 4s²'
+      - text:
+          ru: '[Kr] 5s²'
+          kk: '[Kr] 5s²'
+          en: '[Kr] 5s²'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует барий, отдавая свои валентные электроны?
+      kk: Валенттік электрондарын бергенде барий қандай ион түзеді?
+      en: What kind of ion does barium form when it gives away its valence electrons?
+    options:
+      - text:
+          ru: Катион с зарядом +1
+          kk: Заряды +1 катион
+          en: A cation with a charge of +1
+      - text:
+          ru: Анион с зарядом -2
+          kk: Заряды -2 анион
+          en: An anion with a charge of -2
+      - text:
+          ru: Анион с зарядом -1
+          kk: Заряды -1 анион
+          en: An anion with a charge of -1
+      - text:
+          ru: Катион с зарядом +2
+          kk: Заряды +2 катион
+          en: A cation with a charge of +2
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство бария объясняет его использование в качестве геттера в вакуумных трубках?
+      kk: Барийдің қай қасиеті оның вакуумдық түтіктерде геттер ретінде қолданылуын түсіндіреді?
+      en: Which property of barium explains its use as a getter in vacuum tubes?
+    options:
+      - text:
+          ru: Парамагнетизм
+          kk: Парамагнетизмі
+          en: Paramagnetism
+      - text:
+          ru: Высокая химическая активность, позволяющая поглощать газы
+          kk: Газдарды сіңіруге мүмкіндік беретін жоғары химиялық белсенділігі
+          en: High chemical activity that lets it absorb gases
+        correct: true
+      - text:
+          ru: Высокая плотность
+          kk: Жоғары тығыздығы
+          en: High density
+      - text:
+          ru: Низкая температура плавления
+          kk: Балқу температурасының төмендігі
+          en: A low melting point
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему сульфат бария (BaSO₄) безопасен для использования в медицинской диагностике, несмотря на токсичность других соединений бария?
+      kk: Барийдің басқа қосылыстары уытты болса да, барий сульфатын (BaSO₄) медициналық диагностикада пайдалану неге қауіпсіз?
+      en: Why is barium sulfate (BaSO₄) safe to use in medical diagnostics, even though other barium compounds are toxic?
+    options:
+      - text:
+          ru: Он нерастворим в воде и не всасывается в кровь
+          kk: Ол суда ерімейді және қанға сіңбейді
+          en: It is insoluble in water and is not absorbed into the blood
+        correct: true
+      - text:
+          ru: Он нейтрализуется желудочным соком
+          kk: Ол асқазан сөлімен бейтараптанады
+          en: It is neutralised by stomach acid
+      - text:
+          ru: Он быстро разлагается в организме
+          kk: Ол ағзада тез ыдырайды
+          en: It breaks down quickly in the body
+      - text:
+          ru: Он является сильным окислителем
+          kk: Ол күшті тотықтырғыш
+          en: It is a strong oxidising agent

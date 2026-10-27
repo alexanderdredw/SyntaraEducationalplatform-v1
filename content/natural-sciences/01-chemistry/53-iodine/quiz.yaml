@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из следующих утверждений о йоде является верным на основе его атомной структуры?
+      kk: Атомдық құрылысына қарай йод туралы қай тұжырым дұрыс?
+      en: Based on its atomic structure, which statement about iodine is true?
+    options:
+      - text:
+          ru: Йод имеет 53 нейтрона в ядре, что соответствует его атомному номеру.
+          kk: Йодтың ядросында 53 нейтрон бар, бұл оның атомдық нөміріне сәйкес келеді.
+          en: Iodine has 53 neutrons in its nucleus, which matches its atomic number.
+      - text:
+          ru: Йод имеет 53 протона в ядре, что соответствует его атомному номеру.
+          kk: Йодтың ядросында 53 протон бар, бұл оның атомдық нөміріне сәйкес келеді.
+          en: Iodine has 53 protons in its nucleus, which matches its atomic number.
+        correct: true
+      - text:
+          ru: Йод имеет 53 протона и 53 нейтрона в ядре.
+          kk: Йодтың ядросында 53 протон және 53 нейтрон бар.
+          en: Iodine has 53 protons and 53 neutrons in its nucleus.
+      - text:
+          ru: Йод имеет 53 электрона на внешнем энергетическом уровне.
+          kk: Йодтың сыртқы энергетикалық деңгейінде 53 электрон бар.
+          en: Iodine has 53 electrons in its outer energy level.
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов йода является единственным стабильным в природе?
+      kk: Йодтың қай изотопы табиғаттағы жалғыз тұрақты изотоп?
+      en: Which isotope of iodine is the only stable one in nature?
+    options:
+      - text:
+          ru: Йод-123
+          kk: Йод-123
+          en: Iodine-123
+      - text:
+          ru: Йод-125
+          kk: Йод-125
+          en: Iodine-125
+      - text:
+          ru: Йод-127
+          kk: Йод-127
+          en: Iodine-127
+        correct: true
+      - text:
+          ru: Йод-131
+          kk: Йод-131
+          en: Iodine-131
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое физическое свойство йода объясняет его способность переходить из твердого состояния в газообразное без промежуточной жидкой фазы?
+      kk: Йодтың қатты күйден сұйық фазасыз бірден газ күйіне өту қабілетін қай физикалық құбылыс түсіндіреді?
+      en: Which physical property of iodine explains how it turns from a solid directly into a gas, skipping the liquid phase?
+    options:
+      - text:
+          ru: Конденсация
+          kk: Конденсация
+          en: Condensation
+      - text:
+          ru: Кипение
+          kk: Қайнау
+          en: Boiling
+      - text:
+          ru: Плавление
+          kk: Балқу
+          en: Melting
+      - text:
+          ru: Сублимация
+          kk: Сублимация (айдалу)
+          en: Sublimation
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из следующих утверждений о химических свойствах йода является верным?
+      kk: Йодтың химиялық қасиеттері туралы қай тұжырым дұрыс?
+      en: Which statement about the chemical properties of iodine is true?
+    options:
+      - text:
+          ru: Йод образует темно-синий комплекс с крахмалом, что используется как классический тест.
+          kk: Йод крахмалмен қою көк кешен түзеді, бұл классикалық сынама ретінде қолданылады.
+          en: Iodine forms a dark blue complex with starch, which is used as a classic test.
+        correct: true
+      - text:
+          ru: Йод вытесняет хлор из его соединений.
+          kk: Йод хлорды оның қосылыстарынан ығыстырады.
+          en: Iodine displaces chlorine from its compounds.
+      - text:
+          ru: Йод не реагирует с металлами.
+          kk: Йод металдармен әрекеттеспейді.
+          en: Iodine does not react with metals.
+      - text:
+          ru: Йод является самым активным из обычных галогенов.
+          kk: Йод — әдеттегі галогендердің ішіндегі ең белсендісі.
+          en: Iodine is the most reactive of the common halogens.
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение йода связано с его ролью в эндокринной системе?
+      kk: Йодтың қай қолданылуы оның эндокриндік жүйедегі рөлімен байланысты?
+      en: Which use of iodine is related to its role in the endocrine system?
+    options:
+      - text:
+          ru: Добавка в йодированную соль для профилактики зоба.
+          kk: Жемсауды алдын алу үшін йодталған тұзға қосу.
+          en: Adding it to iodised salt to prevent goitre.
+        correct: true
+      - text:
+          ru: Использование в фотографии в виде иодида серебра.
+          kk: Күміс йодиді түрінде фотографияда пайдалану.
+          en: Use in photography as silver iodide.
+      - text:
+          ru: Применение в качестве катализатора для производства уксусной кислоты.
+          kk: Сірке қышқылын өндіруде катализатор ретінде қолдану.
+          en: Use as a catalyst for producing acetic acid.
+      - text:
+          ru: Использование в поляризационных фильтрах ЖК-экранов.
+          kk: Сұйық кристалды экрандардың поляризациялық сүзгілерінде пайдалану.
+          en: Use in polarising filters of LCD screens.

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство индия позволяет использовать его в качестве прозрачного проводящего покрытия для сенсорных экранов?
+      kk: Индийдің қай қасиеті оны сенсорлық экрандарға арналған мөлдір өткізгіш жабын ретінде пайдалануға мүмкіндік береді?
+      en: Which property of indium allows it to be used as a transparent conductive coating for touch screens?
+    options:
+      - text:
+          ru: Низкая температура плавления, позволяющая наносить покрытия распылением
+          kk: Жабынды шашырату арқылы жағуға мүмкіндік беретін төмен балқу температурасы
+          en: A low melting point that allows coatings to be sprayed on
+      - text:
+          ru: Высокая электро- и теплопроводность в сочетании с возможностью образовывать прозрачные оксидные пленки
+          kk: Жоғары электр және жылу өткізгіштігі мен мөлдір оксид қабықшаларын түзу қабілеті
+          en: High electrical and thermal conductivity combined with the ability to form transparent oxide films
+        correct: true
+      - text:
+          ru: Способность издавать треск при сгибании
+          kk: Иілгенде сықырлау дыбысын шығаруы
+          en: Making a crackling sound when bent
+      - text:
+          ru: Чрезвычайная мягкость и способность легко деформироваться
+          kk: Өте жұмсақтығы және оңай пішінін өзгертуі
+          en: Extreme softness and easy deformation
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержится в ядре самого распространенного изотопа индия (Индий-115)?
+      kk: Индийдің ең көп таралған изотопының (индий-115) ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common isotope of indium (indium-115)?
+    options:
+      - text:
+          ru: '49'
+          kk: '49'
+          en: '49'
+      - text:
+          ru: '95'
+          kk: '95'
+          en: '95'
+      - text:
+          ru: '115'
+          kk: '115'
+          en: '115'
+      - text:
+          ru: '66'
+          kk: '66'
+          en: '66'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления наиболее типична для индия в соединениях?
+      kk: Қосылыстардағы индийге қай тотығу дәрежесі ең тән?
+      en: Which oxidation state is most typical of indium in compounds?
+    options:
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему индий относят к категории «других металлов», а не к щелочным металлам, несмотря на его мягкость?
+      kk: Жұмсақ болса да, индий неге сілтілік металдарға емес, «басқа металдар» санатына жатады?
+      en: Why is indium classed among the "other metals" and not the alkali metals, despite its softness?
+    options:
+      - text:
+          ru: Потому что он имеет высокую температуру кипения
+          kk: Өйткені оның қайнау температурасы жоғары
+          en: Because it has a high boiling point
+      - text:
+          ru: Потому что он не реагирует с водой при нормальных условиях
+          kk: Өйткені ол қалыпты жағдайда сумен әрекеттеспейді
+          en: Because it does not react with water under normal conditions
+      - text:
+          ru: Потому что он имеет 3 валентных электрона и находится в 13-й группе, а не в 1-й
+          kk: Өйткені оның 3 валенттік электроны бар және ол 1-топта емес, 13-топта орналасқан
+          en: Because it has 3 valence electrons and is in group 13, not group 1
+        correct: true
+      - text:
+          ru: Потому что он встречается в природе только в виде соединений
+          kk: Өйткені ол табиғатта тек қосылыстар түрінде кездеседі
+          en: Because it occurs in nature only as compounds
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп индия используется в медицинской диагностике для отслеживания лейкоцитов?
+      kk: Медициналық диагностикада лейкоциттерді бақылау үшін индийдің қай изотопы қолданылады?
+      en: Which isotope of indium is used in medical diagnostics to track white blood cells?
+    options:
+      - text:
+          ru: Индий-49
+          kk: Индий-49
+          en: Indium-49
+      - text:
+          ru: Индий-113
+          kk: Индий-113
+          en: Indium-113
+      - text:
+          ru: Индий-111
+          kk: Индий-111
+          en: Indium-111
+        correct: true
+      - text:
+          ru: Индий-115
+          kk: Индий-115
+          en: Indium-115

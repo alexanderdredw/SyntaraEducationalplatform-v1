@@ -1,0 +1,326 @@
+questions:
+  - code: mendeleev-q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Что создал Дмитрий Менделеев?
+      kk: Дмитрий Менделеев не жасады?
+      en: What did Dmitri Mendeleev create?
+    options:
+      - text:
+          ru: Периодическую таблицу
+          kk: Периодтық кестені
+          en: Periodic Table
+        correct: true
+      - text:
+          ru: Микроскоп
+          kk: Микроскоп
+          en: Microscope
+      - text:
+          ru: Батарею
+          kk: Батарея
+          en: Battery
+      - text:
+          ru: Телескоп
+          kk: Телескоп
+          en: Telescope
+  - code: mendeleev-q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: В каком году Менделеев опубликовал периодическую таблицу?
+      kk: Менделеев периодтық кестені қай жылы жариялады?
+      en: In which year did Mendeleev publish the periodic table?
+    options:
+      - text:
+          ru: '1869'
+          kk: '1869'
+          en: '1869'
+        correct: true
+      - text:
+          ru: '1950'
+          kk: '1950'
+          en: '1950'
+      - text:
+          ru: '1900'
+          kk: '1900'
+          en: '1900'
+      - text:
+          ru: '1750'
+          kk: '1750'
+          en: '1750'
+  - code: curie-q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какие элементы открыла Мария Кюри?
+      kk: Мария Кюри қандай элементтерді ашты?
+      en: Which elements did Marie Curie discover?
+    options:
+      - text:
+          ru: Полоний и Радий
+          kk: Полоний мен Радий
+          en: Polonium and Radium
+        correct: true
+      - text:
+          ru: Кислород и Водород
+          kk: Оттегі мен Сутегі
+          en: Oxygen and Hydrogen
+      - text:
+          ru: Золото и Серебро
+          kk: Алтын мен Күміс
+          en: Gold and Silver
+      - text:
+          ru: Железо и Медь
+          kk: Темір мен Мыс
+          en: Iron and Copper
+  - code: curie-q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой термин ввела Мария Кюри?
+      kk: Мария Кюри қандай терминді енгізді?
+      en: Which term did Marie Curie coin?
+    options:
+      - text:
+          ru: Магнетизм
+          kk: Магнетизм
+          en: Magnetism
+      - text:
+          ru: Гравитация
+          kk: Гравитация
+          en: Gravity
+      - text:
+          ru: Радиоактивность
+          kk: Радиоактивтілік
+          en: Radioactivity
+        correct: true
+      - text:
+          ru: Электричество
+          kk: Электр
+          en: Electricity
+  - code: lavoisier-q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой закон сформулировал Антуан Лавуазье?
+      kk: Антуан Лавуазье қандай заңды тұжырымдады?
+      en: Which law did Antoine Lavoisier formulate?
+    options:
+      - text:
+          ru: Гравитации
+          kk: Гравитация
+          en: Gravity
+      - text:
+          ru: Термодинамики
+          kk: Термодинамика
+          en: Thermodynamics
+      - text:
+          ru: Закон сохранения массы
+          kk: Массаның сақталу заңы
+          en: Conservation of Mass
+        correct: true
+      - text:
+          ru: Движения
+          kk: Қозғалыс
+          en: Motion
+  - code: bohr-q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какую модель предложил Нильс Бор?
+      kk: Нильс Бор қандай модельді ұсынды?
+      en: Which model did Niels Bohr propose?
+    options:
+      - text:
+          ru: Солнечную систему
+          kk: Күн жүйесі
+          en: Solar system
+      - text:
+          ru: Двойную спираль ДНК
+          kk: ДНҚ қос спиралі
+          en: DNA double helix
+      - text:
+          ru: Модель атома Бора
+          kk: Бордың атом моделі
+          en: Bohr model of the atom
+        correct: true
+      - text:
+          ru: Модель пудинга с изюмом
+          kk: Мейізді пудинг моделі
+          en: Plum pudding model
+  - code: rutherford-q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Каким экспериментом известен Эрнест Резерфорд?
+      kk: Эрнест Резерфорд қандай тәжірибесімен танымал?
+      en: Which experiment is Ernest Rutherford famous for?
+    options:
+      - text:
+          ru: Эксперимент с каплей масла
+          kk: Май тамшысы тәжірибесі
+          en: Oil drop experiment
+      - text:
+          ru: Эксперимент с двумя щелями
+          kk: Екі саңылау тәжірибесі
+          en: Double-slit experiment
+      - text:
+          ru: Эксперимент с воздушным змеем
+          kk: Батпырауық тәжірибесі
+          en: Kite experiment
+      - text:
+          ru: Эксперимент с золотой фольгой
+          kk: Алтын фольга тәжірибесі
+          en: Gold foil experiment
+        correct: true
+  - code: rutherford-q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Что Эрнест Резерфорд открыл в атоме?
+      kk: Эрнест Резерфорд атомда нені ашты?
+      en: What did Ernest Rutherford discover in the atom?
+    options:
+      - text:
+          ru: Фотон
+          kk: Фотон
+          en: Photon
+      - text:
+          ru: Электрон
+          kk: Электрон
+          en: Electron
+      - text:
+          ru: Кварк
+          kk: Кварк
+          en: Quark
+      - text:
+          ru: Ядро
+          kk: Ядро
+          en: Nucleus
+        correct: true
+  - code: dalton-q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой теорией известен Джон Дальтон?
+      kk: Джон Дальтон қандай теориясымен танымал?
+      en: Which theory is John Dalton known for?
+    options:
+      - text:
+          ru: Атомная теория
+          kk: Атомдық теория
+          en: Atomic theory
+        correct: true
+      - text:
+          ru: Эволюция
+          kk: Эволюция
+          en: Evolution
+      - text:
+          ru: Теория относительности
+          kk: Салыстырмалылық теориясы
+          en: Theory of relativity
+      - text:
+          ru: Теория Большого взрыва
+          kk: Үлкен жарылыс теориясы
+          en: Big Bang theory
+  - code: dalton-q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое нарушение зрения изучал Джон Дальтон?
+      kk: Джон Дальтон көру қабілетінің қандай бұзылысын зерттеді?
+      en: Which vision condition did John Dalton study?
+    options:
+      - text:
+          ru: Дальтонизм
+          kk: Дальтонизм
+          en: Color blindness
+        correct: true
+      - text:
+          ru: Глаукома
+          kk: Глаукома
+          en: Glaucoma
+      - text:
+          ru: Близорукость
+          kk: Жақыннан көрушілік
+          en: Nearsightedness
+      - text:
+          ru: Астигматизм
+          kk: Астигматизм
+          en: Astigmatism
+  - code: pauling-q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое понятие ввёл Лайнус Полинг?
+      kk: Лайнус Полинг қандай ұғымды енгізді?
+      en: Which concept did Linus Pauling introduce?
+    options:
+      - text:
+          ru: Электроотрицательность
+          kk: Электртерістілік
+          en: Electronegativity
+        correct: true
+      - text:
+          ru: Заряд
+          kk: Заряд
+          en: Charge
+      - text:
+          ru: Спин
+          kk: Спин
+          en: Spin
+      - text:
+          ru: Масса
+          kk: Масса
+          en: Mass
+  - code: nobel-q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Что изобрёл Альфред Нобель?
+      kk: Альфред Нобель нені ойлап тапты?
+      en: What did Alfred Nobel invent?
+    options:
+      - text:
+          ru: Динамит
+          kk: Динамит
+          en: Dynamite
+        correct: true
+      - text:
+          ru: Телефон
+          kk: Телефон
+          en: Telephone
+      - text:
+          ru: Самолет
+          kk: Ұшақ
+          en: Airplane
+      - text:
+          ru: Лампочку
+          kk: Шам
+          en: Lightbulb
+  - code: hodgkin-q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Структуру какого витамина определила Дороти Ходжкин?
+      kk: Дороти Ходжкин қай дәрумен құрылымын анықтады?
+      en: Which vitamin's structure did Dorothy Hodgkin determine?
+    options:
+      - text:
+          ru: Витамин B12
+          kk: В12 дәрумені
+          en: Vitamin B12
+        correct: true
+      - text:
+          ru: Витамин C
+          kk: С дәрумені
+          en: Vitamin C
+      - text:
+          ru: Витамин A
+          kk: А дәрумені
+          en: Vitamin A
+      - text:
+          ru: Витамин D
+          kk: Д дәрумені
+          en: Vitamin D

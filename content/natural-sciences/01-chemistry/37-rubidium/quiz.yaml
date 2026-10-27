@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство рубидия объясняет его способность образовывать ионные соединения с галогенами, например, с хлором?
+      kk: Рубидийдің қай қасиеті оның галогендермен, мысалы хлормен, иондық қосылыстар түзу қабілетін түсіндіреді?
+      en: Which property of rubidium explains its ability to form ionic compounds with halogens such as chlorine?
+    options:
+      - text:
+          ru: Рубидий обладает низкой реакционной способностью и не вступает в реакции с галогенами.
+          kk: Рубидийдің реакциялық қабілеті төмен және галогендермен әрекеттеспейді.
+          en: Rubidium has low reactivity and does not react with halogens.
+      - text:
+          ru: Рубидий — один из самых электроположительных металлов, легко отдающий свой единственный валентный электрон.
+          kk: Рубидий — жалғыз валенттік электронын оңай беретін ең электроң металдардың бірі.
+          en: Rubidium is one of the most electropositive metals and easily gives up its single valence electron.
+        correct: true
+      - text:
+          ru: Рубидий имеет высокую электроотрицательность и притягивает электроны галогенов.
+          kk: Рубидийдің электртерістілігі жоғары және галогендердің электрондарын тартады.
+          en: Rubidium has high electronegativity and attracts the electrons of halogens.
+      - text:
+          ru: Рубидий образует ковалентные связи с галогенами за счет общих электронов.
+          kk: Рубидий галогендермен ортақ электрондар арқылы коваленттік байланыс түзеді.
+          en: Rubidium forms covalent bonds with halogens by sharing electrons.
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему рубидий никогда не встречается в природе в свободном виде, а содержится только в соединениях?
+      kk: Рубидий табиғатта неге ешқашан бос күйінде кездеспей, тек қосылыстар құрамында болады?
+      en: Why is rubidium never found free in nature, only in compounds?
+    options:
+      - text:
+          ru: Рубидий имеет очень низкую температуру плавления и испаряется в природе.
+          kk: Рубидийдің балқу температурасы өте төмен және табиғатта буланып кетеді.
+          en: Rubidium has a very low melting point and evaporates in nature.
+      - text:
+          ru: Рубидий — щелочной металл с высокой реакционной способностью, который самовоспламеняется на воздухе и бурно реагирует с водой.
+          kk: Рубидий — ауада өздігінен тұтанатын және сумен қатты әрекеттесетін реакциялық қабілеті жоғары сілтілік металл.
+          en: Rubidium is a highly reactive alkali metal that ignites spontaneously in air and reacts violently with water.
+        correct: true
+      - text:
+          ru: Рубидий — инертный газ, который не образует соединений.
+          kk: Рубидий — қосылыс түзбейтін инертті газ.
+          en: Rubidium is an inert gas that forms no compounds.
+      - text:
+          ru: Рубидий — радиоактивный элемент, который быстро распадается.
+          kk: Рубидий — тез ыдырайтын радиоактивті элемент.
+          en: Rubidium is a radioactive element that decays quickly.
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая особенность строения атома рубидия определяет его принадлежность к щелочным металлам и степень окисления +1?
+      kk: Рубидий атомы құрылысының қай ерекшелігі оның сілтілік металдарға жататынын және +1 тотығу дәрежесін анықтайды?
+      en: Which feature of the rubidium atom makes it an alkali metal with an oxidation state of +1?
+    options:
+      - text:
+          ru: Электронная конфигурация [Kr] 5s¹, то есть один валентный электрон на внешнем энергетическом уровне.
+          kk: '[Kr] 5s¹ электрондық конфигурациясы, яғни сыртқы энергетикалық деңгейдегі бір валенттік электрон.'
+          en: The electron configuration [Kr] 5s¹, i.e. one valence electron in the outer energy level.
+        correct: true
+      - text:
+          ru: Наличие 48 нейтронов в наиболее распространенном изотопе.
+          kk: Ең көп таралған изотопында 48 нейтронның болуы.
+          en: Having 48 neutrons in its most common isotope.
+      - text:
+          ru: Наличие 37 протонов в ядре.
+          kk: Ядросында 37 протонның болуы.
+          en: Having 37 protons in the nucleus.
+      - text:
+          ru: Расположение в 5-м периоде.
+          kk: 5-периодта орналасуы.
+          en: Being in period 5.
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение рубидия напрямую связано с его способностью образовывать катионы и использоваться в медицинской диагностике?
+      kk: Рубидийдің қай қолданылуы оның катион түзу қабілетімен және медициналық диагностикамен тікелей байланысты?
+      en: Which use of rubidium is directly related to its ability to form cations and to medical diagnostics?
+    options:
+      - text:
+          ru: Рубидий применяется в атомных часах для систем GPS.
+          kk: Рубидий GPS жүйелеріне арналған атомдық сағаттарда қолданылады.
+          en: Rubidium is used in atomic clocks for GPS.
+      - text:
+          ru: Рубидий используется в производстве стекла для волоконно-оптических систем.
+          kk: Рубидий талшықты-оптикалық жүйелерге арналған шыны өндірісінде қолданылады.
+          en: Rubidium is used to make glass for fibre-optic systems.
+      - text:
+          ru: Рубидий-82 используется в ПЭТ-визуализации миокарда для диагностики заболеваний сердца.
+          kk: Рубидий-82 жүрек ауруларын анықтау үшін миокардтың ПЭТ-бейнелеуінде қолданылады.
+          en: Rubidium-82 is used in PET imaging of the heart muscle to diagnose heart disease.
+        correct: true
+      - text:
+          ru: Рубидий используется в исследованиях конденсата Бозе-Эйнштейна.
+          kk: Рубидий Бозе-Эйнштейн конденсатын зерттеуде қолданылады.
+          en: Rubidium is used in research on Bose–Einstein condensates.
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из изотопов рубидия используется для определения возраста горных пород и какое свойство делает это возможным?
+      kk: Рубидийдің қай изотопы тау жыныстарының жасын анықтау үшін қолданылады және мұны қай қасиеті мүмкін етеді?
+      en: Which isotope of rubidium is used to date rocks, and which property makes this possible?
+    options:
+      - text:
+          ru: Рубидий-37, так как его атомный номер соответствует числу протонов.
+          kk: Рубидий-37, себебі оның атомдық нөмірі протондар санына сәйкес келеді.
+          en: Rubidium-37, because its atomic number equals the number of protons.
+      - text:
+          ru: Рубидий-87, так как это долгоживущий радиоактивный изотоп, который распадается с течением времени.
+          kk: Рубидий-87, себебі ол уақыт өте ыдырайтын ұзақ өмір сүретін радиоактивті изотоп.
+          en: Rubidium-87, because it is a long-lived radioactive isotope that decays over time.
+        correct: true
+      - text:
+          ru: Рубидий-85, так как он является единственным стабильным изотопом.
+          kk: Рубидий-85, себебі ол жалғыз тұрақты изотоп.
+          en: Rubidium-85, because it is the only stable isotope.
+      - text:
+          ru: Рубидий-82, так как он используется в ПЭТ-визуализации.
+          kk: Рубидий-82, себебі ол ПЭТ-бейнелеуде қолданылады.
+          en: Rubidium-82, because it is used in PET imaging.

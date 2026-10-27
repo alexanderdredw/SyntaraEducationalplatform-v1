@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома мышьяка?
+      kk: Мышьяк атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an arsenic atom?
+    options:
+      - text:
+          ru: '33'
+          kk: '33'
+          en: '33'
+        correct: true
+      - text:
+          ru: '75'
+          kk: '75'
+          en: '75'
+      - text:
+          ru: '42'
+          kk: '42'
+          en: '42'
+      - text:
+          ru: '15'
+          kk: '15'
+          en: '15'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип элемента представляет собой мышьяк?
+      kk: Мышьяк элементтің қай түріне жатады?
+      en: What type of element is arsenic?
+    options:
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+        correct: true
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому мышьяка?
+      kk: Мышьяк атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the arsenic atom?
+    options:
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p²'
+          kk: '[Ar] 3d¹⁰ 4s² 4p²'
+          en: '[Ar] 3d¹⁰ 4s² 4p²'
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p⁴'
+          kk: '[Ar] 3d¹⁰ 4s² 4p⁴'
+          en: '[Ar] 3d¹⁰ 4s² 4p⁴'
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p³'
+          kk: '[Ar] 3d¹⁰ 4s² 4p³'
+          en: '[Ar] 3d¹⁰ 4s² 4p³'
+        correct: true
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p⁵'
+          kk: '[Ar] 3d¹⁰ 4s² 4p⁵'
+          en: '[Ar] 3d¹⁰ 4s² 4p⁵'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство характерно для серой аллотропной формы мышьяка?
+      kk: Мышьяктың сұр аллотропиялық түріне қандай қасиет тән?
+      en: Which property is typical of the grey allotrope of arsenic?
+    options:
+      - text:
+          ru: Растворимость в воде
+          kk: Суда еруі
+          en: Solubility in water
+      - text:
+          ru: Хрупкое твердое вещество с металлическим видом
+          kk: Металл тәрізді сынғыш қатты зат
+          en: A brittle solid with a metallic appearance
+        correct: true
+      - text:
+          ru: Хорошая проводимость электричества
+          kk: Электрді жақсы өткізуі
+          en: Good electrical conductivity
+      - text:
+          ru: Газообразное состояние при комнатной температуре
+          kk: Бөлме температурасында газ күйінде болуы
+          en: Being a gas at room temperature
+  - code: q5
+    type: single_choice
+    difficulty: hard
+    text:
+      ru: Какая степень окисления НЕ является типичной для мышьяка в соединениях?
+      kk: Қосылыстардағы мышьякқа қай тотығу дәрежесі тән ЕМЕС?
+      en: Which oxidation state is NOT typical of arsenic in compounds?
+    options:
+      - text:
+          ru: '+5'
+          kk: '+5'
+          en: '+5'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '-3'
+          kk: '-3'
+          en: '-3'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома теллура?
+      kk: Теллур атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a tellurium atom?
+    options:
+      - text:
+          ru: '78'
+          kk: '78'
+          en: '78'
+      - text:
+          ru: '52'
+          kk: '52'
+          en: '52'
+        correct: true
+      - text:
+          ru: '130'
+          kk: '130'
+          en: '130'
+      - text:
+          ru: '16'
+          kk: '16'
+          en: '16'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип элемента представляет собой теллур согласно классификации по свойствам?
+      kk: Қасиеттері бойынша жіктегенде теллур элементтің қай түріне жатады?
+      en: According to its properties, what type of element is tellurium?
+    options:
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+        correct: true
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому теллура?
+      kk: Теллур атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the tellurium atom?
+    options:
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p⁶'
+          kk: '[Kr] 4d¹⁰ 5s² 5p⁶'
+          en: '[Kr] 4d¹⁰ 5s² 5p⁶'
+      - text:
+          ru: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴'
+          kk: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴'
+          en: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴'
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p⁴'
+          kk: '[Ar] 3d¹⁰ 4s² 4p⁴'
+          en: '[Ar] 3d¹⁰ 4s² 4p⁴'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p⁴'
+          kk: '[Kr] 4d¹⁰ 5s² 5p⁴'
+          en: '[Kr] 4d¹⁰ 5s² 5p⁴'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство теллура подтверждает, что он является полуметаллом?
+      kk: Теллурдың қай қасиеті оның жартылай металл екенін растайды?
+      en: Which property of tellurium confirms that it is a metalloid?
+    options:
+      - text:
+          ru: Электропроводность растет с температурой
+          kk: Электр өткізгіштігі температурамен бірге артады
+          en: Its electrical conductivity increases with temperature
+        correct: true
+      - text:
+          ru: Он растворяется в воде
+          kk: Суда ериді
+          en: It dissolves in water
+      - text:
+          ru: Он имеет металлический блеск
+          kk: Металдық жылтыры бар
+          en: It has a metallic lustre
+      - text:
+          ru: Он хорошо проводит тепло
+          kk: Жылуды жақсы өткізеді
+          en: It conducts heat well
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления теллура является типичной?
+      kk: Теллурға қай тотығу дәрежесі тән?
+      en: Which oxidation state is typical of tellurium?
+    options:
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+        correct: true
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '-3'
+          kk: '-3'
+          en: '-3'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'

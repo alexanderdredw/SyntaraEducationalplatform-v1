@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство атома палладия объясняет его уникальную способность поглощать до 900 объемов водорода?
+      kk: Палладий атомының қай қасиеті оның өз көлемінен 900 есе көп сутегіні сіңіру қабілетін түсіндіреді?
+      en: Which property of the palladium atom explains its unique ability to absorb up to 900 times its own volume of hydrogen?
+    options:
+      - text:
+          ru: Низкая плотность по сравнению с платиной
+          kk: Платинамен салыстырғанда тығыздығының төмендігі
+          en: A low density compared with platinum
+      - text:
+          ru: Большое количество нейтронов в ядре (60 в изотопе ¹⁰⁶Pd)
+          kk: Ядросындағы нейтрондардың көп болуы (¹⁰⁶Pd изотопында 60)
+          en: Many neutrons in the nucleus (60 in ¹⁰⁶Pd)
+      - text:
+          ru: Высокая температура плавления 1555°C
+          kk: Балқу температурасының жоғары болуы, 1555°C
+          en: A high melting point of 1555°C
+      - text:
+          ru: Наличие полностью заполненной 4d-электронной оболочки и пустой 5s-орбитали
+          kk: Толық толған 4d-электрондық қабат пен бос 5s-орбитальдің болуы
+          en: A completely filled 4d shell and an empty 5s orbital
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип частиц образуется, когда атом палладия теряет два электрона, проявляя степень окисления +2?
+      kk: Палладий атомы екі электронын жоғалтып, +2 тотығу дәрежесін көрсеткенде қандай бөлшек түзіледі?
+      en: Which particle forms when a palladium atom loses two electrons and shows an oxidation state of +2?
+    options:
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему палладий, имея атомный номер 46, относят к металлам, а не к неметаллам?
+      kk: Атомдық нөмірі 46 палладий неге бейметалдарға емес, металдарға жатады?
+      en: Why is palladium, with atomic number 46, classed as a metal rather than a nonmetal?
+    options:
+      - text:
+          ru: Он имеет серебристо-белый цвет и назван в честь астероида
+          kk: Оның күміс-ақ түсі бар және астероидтың атымен аталған
+          en: It is silvery-white and named after an asteroid
+      - text:
+          ru: Он хорошо проводит тепло и электричество, а также является блестящим и ковким
+          kk: Ол жылу мен электрді жақсы өткізеді, жылтыр әрі созылғыш
+          en: It conducts heat and electricity well and is shiny and malleable
+        correct: true
+      - text:
+          ru: Его электронная конфигурация заканчивается на 4d¹⁰
+          kk: Оның электрондық конфигурациясы 4d¹⁰-мен аяқталады
+          en: Its electron configuration ends in 4d¹⁰
+      - text:
+          ru: Он расположен в 5-м периоде таблицы Менделеева
+          kk: Ол Менделеев кестесінің 5-периодында орналасқан
+          en: It is in period 5 of the periodic table
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение палладия в медицине основано на использовании его изотопа ¹⁰³Pd?
+      kk: Палладийдің медицинадағы қай қолданылуы оның ¹⁰³Pd изотопын пайдалануға негізделген?
+      en: Which medical use of palladium is based on its isotope ¹⁰³Pd?
+    options:
+      - text:
+          ru: Создание водородных топливных элементов
+          kk: Сутегі отын элементтерін жасау
+          en: Building hydrogen fuel cells
+      - text:
+          ru: Брахитерапия рака простаты
+          kk: Простата обырының брахитерапиясы
+          en: Brachytherapy of prostate cancer
+        correct: true
+      - text:
+          ru: Изготовление зубных коронок и мостов
+          kk: Тіс тәждері мен көпірлерін жасау
+          en: Making dental crowns and bridges
+      - text:
+          ru: Производство каталитических конвертеров
+          kk: Каталитикалық түрлендіргіштер өндірісі
+          en: Producing catalytic converters
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа палладия (¹⁰⁶Pd), если атомный номер элемента равен 46?
+      kk: Элементтің атомдық нөмірі 46 болса, палладийдің ең көп таралған тұрақты изотопының (¹⁰⁶Pd) ядросында қанша нейтрон бар?
+      en: If the atomic number is 46, how many neutrons are in the nucleus of the most common stable isotope of palladium (¹⁰⁶Pd)?
+    options:
+      - text:
+          ru: '106'
+          kk: '106'
+          en: '106'
+      - text:
+          ru: '152'
+          kk: '152'
+          en: '152'
+      - text:
+          ru: '46'
+          kk: '46'
+          en: '46'
+      - text:
+          ru: '60'
+          kk: '60'
+          en: '60'
+        correct: true

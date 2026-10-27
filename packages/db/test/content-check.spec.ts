@@ -25,11 +25,31 @@ describe('content check', () => {
   it('BR-CNT-03 the content/ of the repository is valid', () => {
     const { catalog, errors } = checkContent();
     expect(errors.map(formatError)).toEqual([]);
-    expect(catalog.topics.map((t) => t.code)).toEqual([
+    expect(catalog.topics.filter((t) => t.subjectCode === 'human-anatomy').map((t) => t.code)).toEqual([
       'human-anatomy/cardiovascular-system',
       'human-anatomy/respiratory-system',
       'human-anatomy/digestive-system',
     ]);
+    // AC-CHEM-02: «Химия» — 2 главы, 60 элементов по атомному номеру и «Учёные-химики» (сквозная «Тема N»).
+    const chemistry = catalog.topics
+      .filter((t) => t.subjectCode === 'chemistry')
+      .sort((a, b) => a.position - b.position);
+    expect(catalog.subjects.find((s) => s.code === 'chemistry')!.chapters.map((c) => c.code)).toEqual([
+      'elements',
+      'scientists',
+    ]);
+    expect(chemistry).toHaveLength(61);
+    expect(chemistry.slice(0, 3).map((t) => t.code)).toEqual([
+      'chemistry/hydrogen',
+      'chemistry/helium',
+      'chemistry/lithium',
+    ]);
+    expect(chemistry.map((t) => t.chapterCode).filter((c) => c === 'elements')).toHaveLength(60);
+    expect(chemistry.at(-1)).toMatchObject({
+      code: 'chemistry/chemists',
+      chapterCode: 'scientists',
+      position: 61,
+    });
   });
 
   it('BR-CNT-05 ru.md is required; kk/en need review: needs_review or reviewed', () => {

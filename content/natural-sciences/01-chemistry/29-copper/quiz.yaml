@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство меди делает её основным материалом для электропроводки?
+      kk: Мыстың қай қасиеті оны электр сымдарының негізгі материалы етеді?
+      en: Which property of copper makes it the main material for electrical wiring?
+    options:
+      - text:
+          ru: Способность образовывать патину
+          kk: Патина түзу қабілеті
+          en: The ability to form a patina
+      - text:
+          ru: Красновато-оранжевый цвет
+          kk: Қызғылт-сары түсі
+          en: Its reddish-orange colour
+      - text:
+          ru: Антимикробные свойства
+          kk: Микробқа қарсы қасиеттері
+          en: Antimicrobial properties
+      - text:
+          ru: Исключительная электро- и теплопроводность
+          kk: Ерекше электр және жылу өткізгіштігі
+          en: Exceptional electrical and thermal conductivity
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома меди?
+      kk: Мыс атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a copper atom?
+    options:
+      - text:
+          ru: '29'
+          kk: '29'
+          en: '29'
+        correct: true
+      - text:
+          ru: '34'
+          kk: '34'
+          en: '34'
+      - text:
+          ru: '65'
+          kk: '65'
+          en: '65'
+      - text:
+          ru: '63'
+          kk: '63'
+          en: '63'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому меди?
+      kk: Мыс атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the copper atom?
+    options:
+      - text:
+          ru: '[Ar] 3d⁹ 4s²'
+          kk: '[Ar] 3d⁹ 4s²'
+          en: '[Ar] 3d⁹ 4s²'
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s⁰'
+          kk: '[Ar] 3d¹⁰ 4s⁰'
+          en: '[Ar] 3d¹⁰ 4s⁰'
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s¹'
+          kk: '[Ar] 3d¹⁰ 4s¹'
+          en: '[Ar] 3d¹⁰ 4s¹'
+        correct: true
+      - text:
+          ru: '[Ar] 3d⁸ 4s²'
+          kk: '[Ar] 3d⁸ 4s²'
+          en: '[Ar] 3d⁸ 4s²'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из следующих утверждений о меди является верным?
+      kk: Мыс туралы қай тұжырым дұрыс?
+      en: Which statement about copper is true?
+    options:
+      - text:
+          ru: Медь — это неметалл
+          kk: Мыс — бейметалл
+          en: Copper is a nonmetal
+      - text:
+          ru: Медь является необходимым микроэлементом для всех живых организмов
+          kk: Мыс — барлық тірі организмдерге қажет микроэлемент
+          en: Copper is an essential trace element for all living organisms
+        correct: true
+      - text:
+          ru: Медь имеет только одну степень окисления
+          kk: Мыстың тек бір тотығу дәрежесі бар
+          en: Copper has only one oxidation state
+      - text:
+          ru: Медь не встречается в природе в самородном виде
+          kk: Мыс табиғатта кесек түрінде кездеспейді
+          en: Copper is never found as a native metal
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп меди является самым распространённым в природе?
+      kk: Мыстың қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of copper is the most common in nature?
+    options:
+      - text:
+          ru: Медь-63
+          kk: Мыс-63
+          en: Copper-63
+        correct: true
+      - text:
+          ru: Медь-65
+          kk: Мыс-65
+          en: Copper-65
+      - text:
+          ru: Медь-62
+          kk: Мыс-62
+          en: Copper-62
+      - text:
+          ru: Медь-64
+          kk: Мыс-64
+          en: Copper-64

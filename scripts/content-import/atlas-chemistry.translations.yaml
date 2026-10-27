@@ -1,0 +1,4354 @@
+# Переводы для конвертера atlas-chemistry.mjs (решения владельца 2026-10-27, docs/CHEM_MAP.md):
+# KK и EN квиза элементов — перевод утверждённого RU (В-2), наборы KK/EN атласа не используются; переводы
+# подготовлены ИИ и импортируются с review: needs_review. Порядок вариантов — как в атласе (до перестановки).
+
+quiz:
+  hydrogen:
+    q1:
+      kk: { text: 'Сутегі атомының ядросында қанша протон бар?', options: ['1', '0', '2', '3'] }
+      en: { text: 'How many protons are in the nucleus of a hydrogen atom?', options: ['1', '0', '2', '3'] }
+    q2:
+      kk:
+        {
+          text: 'Сутегі бейметалдармен қосылғанда химиялық байланыстың қандай түрін түзеді?',
+          options: ['Иондық байланыс', 'Коваленттік байланыс', 'Металдық байланыс', 'Сутектік байланыс'],
+        }
+      en:
+        {
+          text: 'What type of chemical bond does hydrogen form with nonmetals?',
+          options: ['Ionic bond', 'Covalent bond', 'Metallic bond', 'Hydrogen bond'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Сутегінің қай изотопы радиоактивті және ғылыми зерттеулерде қолданылады?',
+          options: ['Протий', 'Дейтерий', 'Тритий', 'Сутегі-4'],
+        }
+      en:
+        {
+          text: 'Which isotope of hydrogen is radioactive and used in scientific research?',
+          options: ['Protium', 'Deuterium', 'Tritium', 'Hydrogen-4'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Металдармен қосылыстарда сутегінің тотығу дәрежесі қандай?',
+          options: ['−1', '+1', '0', '+2'],
+        }
+      en:
+        {
+          text: 'What is the oxidation state of hydrogen in compounds with metals?',
+          options: ['−1', '+1', '0', '+2'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Сутегін өндірудің қай әдісі жаңартылатын энергия көздерін пайдаланады және экологиялық таза болып саналады?',
+          options:
+            ['Метанды бумен конверсиялау', '«Жасыл» сутегі өндірісі', 'Көмірді газдандыру', 'Мұнай крекингі'],
+        }
+      en:
+        {
+          text: 'Which method of producing hydrogen uses renewable energy sources and is considered environmentally clean?',
+          options:
+            ['Steam methane reforming', '"Green" hydrogen production', 'Coal gasification', 'Oil cracking'],
+        }
+  helium:
+    q1:
+      kk: { text: 'Гелий атомының ядросында қанша протон бар?', options: ['2', '4', '1', '3'] }
+      en: { text: 'How many protons are in the nucleus of a helium atom?', options: ['2', '4', '1', '3'] }
+    q2:
+      kk:
+        {
+          text: 'Зарядсыз және гелий-4 ядросының құрамына кіретін бөлшек қандай?',
+          options: ['Электрон', 'Нейтрон', 'Протон', 'Ион'],
+        }
+      en:
+        {
+          text: 'Which particle has no charge and is part of the helium-4 nucleus?',
+          options: ['Electron', 'Neutron', 'Proton', 'Ion'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Химиялық қасиеттеріне қарай гелий неге инертті газдарға жатады?',
+          options:
+            [
+              'Жылу өткізгіштігі жоғары',
+              'Ең жеңіл газ',
+              'Химиялық тұрғыдан мүлдем инертті және тұрақты қосылыстар түзбейді',
+              'Асқын аққыштық қасиеті бар',
+            ],
+        }
+      en:
+        {
+          text: 'Based on its chemical properties, why is helium classed as an inert gas?',
+          options:
+            [
+              'It has high thermal conductivity',
+              'It is the lightest gas',
+              'It is completely chemically inert and forms no stable compounds',
+              'It is superfluid',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Гелийдің қай қасиеті оны асқын өткізгіш магниттерді салқындатуға пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Ең төмен қайнау температурасы (−268.9°C)',
+              'Қалыпты қысымда қатпауы',
+              'Жоғары реакциялық қабілеті',
+              'Гелий-3 изотопының болуы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of helium allows it to be used as a coolant for superconducting magnets?',
+          options:
+            [
+              'The lowest boiling point (−268.9°C)',
+              'It does not solidify at normal pressure',
+              'High reactivity',
+              'The existence of the isotope helium-3',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы 1s² болса, гелий атомында қанша валенттік электрон бар?',
+          options: ['1', '2', '0', '4'],
+        }
+      en:
+        {
+          text: 'How many valence electrons does a helium atom have if its electron configuration is 1s²?',
+          options: ['1', '2', '0', '4'],
+        }
+  lithium:
+    q1:
+      kk:
+        {
+          text: 'Литийдің қай қасиеті оны сілтілік металдарға жатқызуға мүмкіндік береді?',
+          options:
+            [
+              'Жоғары химиялық белсенділігі және бірінші топта орналасуы',
+              'Күміс-ақ түсі мен жұмсақтығы',
+              'Барлық қатты заттардың ішіндегі ең аз тығыздығы',
+              'Жалынды қызыл түске бояуы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of lithium makes it an alkali metal?',
+          options:
+            [
+              'High chemical activity and its position in the first group',
+              'Silvery-white colour and softness',
+              'The lowest density of all solids',
+              'It colours a flame red',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы [He] 2s¹ бойынша литий атомында қанша валенттік электрон бар?',
+          options: ['3', '1', '2', '4'],
+        }
+      en:
+        {
+          text: 'How many valence electrons does a lithium atom have according to its electron configuration [He] 2s¹?',
+          options: ['3', '1', '2', '4'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Литий табиғатта неге бос күйінде кездеспейді?',
+          options:
+            [
+              'Балқу температурасы төмен болғандықтан',
+              'Атомдық массасы аз болғандықтан',
+              'Химиялық белсенділігі жоғары болғандықтан',
+              'Тек бір тұрақты изотопы болғандықтан',
+            ],
+        }
+      en:
+        {
+          text: 'Why is lithium never found free in nature?',
+          options:
+            [
+              'Because of its low melting point',
+              'Because of its small atomic mass',
+              'Because of its high chemical activity',
+              'Because it has only one stable isotope',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Литий атомындағы қай бөлшек оның химиялық элемент ретінде қандай екенін анықтайды?',
+          options: ['Протон', 'Нейтрон', 'Электрон', 'Ион'],
+        }
+      en:
+        {
+          text: 'Which particle in a lithium atom determines which chemical element it is?',
+          options: ['Proton', 'Neutron', 'Electron', 'Ion'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Литийдің қай қолданылуы оның жеңіл қорытпалар түзу қабілетімен байланысты?',
+          options:
+            [
+              'Ыстыққа төзімді шыны өндірісі',
+              'Алюминий мен магнийдің авиациялық және ғарыштық қорытпалары',
+              'Литий-иондық аккумуляторлар',
+              'Биполярлық бұзылыстарды емдеу',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of lithium is related to its ability to form light alloys?',
+          options:
+            [
+              'Making heat-resistant glass',
+              'Aerospace alloys with aluminium and magnesium',
+              'Lithium-ion batteries',
+              'Treating bipolar disorder',
+            ],
+        }
+  beryllium:
+    q1:
+      kk: { text: 'Бериллий атомының ядросында қанша протон бар?', options: ['4', '5', '9', '2'] }
+      en: { text: 'How many protons are in the nucleus of a beryllium atom?', options: ['4', '5', '9', '2'] }
+    q2:
+      kk:
+        {
+          text: 'Сілтілік жер металдары тобындағы орны мен амфотерлік қасиеттерін ескергенде, бериллий қосылыстарына химиялық байланыстың қай түрі тән?',
+          options: ['Иондық', 'Коваленттік полюсті', 'Металдық', 'Коваленттік полюссіз'],
+        }
+      en:
+        {
+          text: 'Given its position among the alkaline earth metals and its amphoteric properties, which type of chemical bond is most typical of beryllium compounds?',
+          options: ['Ionic', 'Polar covalent', 'Metallic', 'Nonpolar covalent'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Бериллийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп болып табылады?',
+          options: ['Бериллий-10', 'Бериллий-8', 'Бериллий-9', 'Бериллий-11'],
+        }
+      en:
+        {
+          text: 'Which isotope of beryllium is its only stable natural isotope?',
+          options: ['Beryllium-10', 'Beryllium-8', 'Beryllium-9', 'Beryllium-11'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Бериллийдің қай қасиеті оны рентген түтіктерінің терезелері үшін аса құнды етеді?',
+          options:
+            [
+              'Рентген сәулелерін өткізуі',
+              'Жылу өткізгіштігі жоғары',
+              'Тығыздығы төмен',
+              'Коррозияға төзімді',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of beryllium makes it especially valuable for X-ray tube windows?',
+          options:
+            ['Transparency to X-rays', 'High thermal conductivity', 'Low density', 'Corrosion resistance'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы [He] 2s² бойынша бериллий атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['4', '2', '1', '3'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of a beryllium atom, given its electron configuration [He] 2s²?',
+          options: ['4', '2', '1', '3'],
+        }
+  boron:
+    q1:
+      kk: { text: 'Бор атомының ядросында қанша протон бар?', options: ['5', '6', '10', '11'] }
+      en: { text: 'How many protons are in the nucleus of a boron atom?', options: ['5', '6', '10', '11'] }
+    q2:
+      kk:
+        {
+          text: 'Жіктеу бойынша бор химиялық элементтің қай түріне жатады?',
+          options: ['Металл', 'Жартылай металл', 'Бейметалл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'According to classification, what type of chemical element is boron?',
+          options: ['Metal', 'Metalloid', 'Nonmetal', 'Inert gas'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Бор атомының электрондық конфигурациясы қандай?',
+          options: ['[He] 2s² 2p¹', '[He] 2s² 2p²', '[He] 2s¹ 2p²', '[He] 2s² 2p³'],
+        }
+      en:
+        {
+          text: 'What is the electron configuration of a boron atom?',
+          options: ['[He] 2s² 2p¹', '[He] 2s² 2p²', '[He] 2s¹ 2p²', '[He] 2s² 2p³'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Бордың қай қасиеті оны ядролық реакторларда маңызды етеді?',
+          options:
+            [
+              'Бор-10 изотопының нейтрондарды сіңіруі',
+              'Бөлме температурасында электр өткізгіштігі жоғары',
+              'Бор қышқылын түзуі',
+              'Балқу температурасы төмен',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of boron makes it important in nuclear reactors?',
+          options:
+            [
+              'The ability of the isotope boron-10 to absorb neutrons',
+              'High electrical conductivity at room temperature',
+              'Formation of boric acid',
+              'Low melting point',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Бор қосылыстарының қайсысы аса қатты және оқ өтпейтін кеудешелерде қолданылады?',
+          options: ['Бор қышқылы', 'Бор карбиді', 'Бура', 'Бор оксиді'],
+        }
+      en:
+        {
+          text: 'Which boron compound is superhard and used in body armour?',
+          options: ['Boric acid', 'Boron carbide', 'Borax', 'Boron oxide'],
+        }
+  carbon:
+    q1:
+      kk: { text: 'Көміртек атомының ядросында қанша протон бар?', options: ['6', '12', '14', '8'] }
+      en: { text: 'How many protons are in the nucleus of a carbon atom?', options: ['6', '12', '14', '8'] }
+    q2:
+      kk:
+        {
+          text: '4 валенттік электроны бар көміртек көбіне химиялық байланыстың қай түрін түзеді?',
+          options: ['Иондық байланыс', 'Коваленттік байланыс', 'Металдық байланыс', 'Сутектік байланыс'],
+        }
+      en:
+        {
+          text: 'With 4 valence electrons, which type of chemical bond does carbon mostly form?',
+          options: ['Ionic bond', 'Covalent bond', 'Metallic bond', 'Hydrogen bond'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Көміртектің қай аллотропиялық түрі ең қатты табиғи зат және диэлектрик болып табылады?',
+          options: ['Графит', 'Графен', 'Алмаз', 'Фуллерен'],
+        }
+      en:
+        {
+          text: 'Which allotrope of carbon is the hardest natural substance and an electrical insulator?',
+          options: ['Graphite', 'Graphene', 'Diamond', 'Fullerene'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Археологиялық олжалардың жасын анықтау үшін көміртектің қай изотопы қолданылады?',
+          options: ['Көміртек-14', 'Көміртек-12', 'Көміртек-13', 'Көміртек-11'],
+        }
+      en:
+        {
+          text: 'Which isotope of carbon is used to date archaeological finds?',
+          options: ['Carbon-14', 'Carbon-12', 'Carbon-13', 'Carbon-11'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Көміртектің ең көп таралған изотопында (көміртек-12) қанша нейтрон бар?',
+          options: ['12', '6', '14', '8'],
+        }
+      en:
+        {
+          text: 'How many neutrons does the most common isotope of carbon (carbon-12) have?',
+          options: ['12', '6', '14', '8'],
+        }
+  nitrogen:
+    q1:
+      kk: { text: 'Азот атомының ядросында қанша протон бар?', options: ['7', '14', '5', '2'] }
+      en: { text: 'How many protons are in the nucleus of a nitrogen atom?', options: ['7', '14', '5', '2'] }
+    q2:
+      kk:
+        {
+          text: 'N₂ молекуласындағы атомдарды қандай химиялық байланыс ұстап, оны өте берік етеді?',
+          options: ['Жай байланыс', 'Үш еселі байланыс', 'Қос байланыс', 'Иондық байланыс'],
+        }
+      en:
+        {
+          text: 'Which chemical bond holds the atoms together in the N₂ molecule, making it very strong?',
+          options: ['Single bond', 'Triple bond', 'Double bond', 'Ionic bond'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Азоттың қай изотопы табиғатта ең көп таралған?',
+          options: ['Азот-15', 'Азот-13', 'Азот-14', 'Азот-12'],
+        }
+      en:
+        {
+          text: 'Which isotope of nitrogen is the most common in nature?',
+          options: ['Nitrogen-15', 'Nitrogen-13', 'Nitrogen-14', 'Nitrogen-12'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Азот атомының сыртқы энергетикалық деңгейінде қанша электрон бар?',
+          options: ['5', '2', '7', '3'],
+        }
+      en:
+        {
+          text: 'How many electrons are in the outer energy level of a nitrogen atom?',
+          options: ['5', '2', '7', '3'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Азоттың қай қасиеті оны металлургияда инертті орта жасауға пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Жоғары реакциялық қабілеті',
+              'Бөлме температурасындағы химиялық инерттілігі',
+              'Суда жақсы еруі',
+              'Оксидтер түзу қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of nitrogen allows it to be used to create an inert atmosphere in metallurgy?',
+          options:
+            [
+              'High reactivity',
+              'Chemical inertness at room temperature',
+              'Good solubility in water',
+              'The ability to form oxides',
+            ],
+        }
+  oxygen:
+    q1:
+      kk: { text: 'Оттегі атомының ядросында қанша протон бар?', options: ['8', '16', '2', '6'] }
+      en: { text: 'How many protons are in the nucleus of an oxygen atom?', options: ['8', '16', '2', '6'] }
+    q2:
+      kk:
+        {
+          text: 'Оттегі молекуласына (O₂) химиялық байланыстың қай түрі тән?',
+          options: ['Иондық', 'Коваленттік полюссіз', 'Металдық', 'Коваленттік полюсті'],
+        }
+      en:
+        {
+          text: 'Which type of chemical bond is typical of the oxygen molecule (O₂)?',
+          options: ['Ionic', 'Nonpolar covalent', 'Metallic', 'Polar covalent'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Оттегінің қай қасиеті оған жануды қолдауға, бірақ өзі жанбауға мүмкіндік береді?',
+          options:
+            [
+              'Ол тотықсыздандырғыш',
+              'Ол күшті тотықтырғыш',
+              'Оның парамагниттік қасиеті бар',
+              'Оның қайнау температурасы төмен',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of oxygen lets it support combustion without burning itself?',
+          options:
+            [
+              'It is a reducing agent',
+              'It is a strong oxidising agent',
+              'It is paramagnetic',
+              'It has a low boiling point',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Оттегі атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['6', '8', '2', '4'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of an oxygen atom?',
+          options: ['6', '8', '2', '4'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Палеоклиматологияда өткен дәуірлердің температурасын зерттеу үшін оттегінің қай изотопы қолданылады?',
+          options: ['Оттегі-16', 'Оттегі-18', 'Оттегі-17', 'Оттегі-15'],
+        }
+      en:
+        {
+          text: 'Which isotope of oxygen is used in palaeoclimatology to study past temperatures?',
+          options: ['Oxygen-16', 'Oxygen-18', 'Oxygen-17', 'Oxygen-15'],
+        }
+  fluorine:
+    q1:
+      kk:
+        {
+          text: 'Фтор атомының қай қасиеті оның барлық элементтердің ішіндегі ең жоғары химиялық белсенділігінің себебі?',
+          options:
+            [
+              'Ең жоғары электртерістілік (4.0)',
+              'Ядросында 9 протонның болуы',
+              'Төмен қайнау температурасы (−188.1°C)',
+              'Газдың ақшыл-сары түсі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of the fluorine atom causes its highest chemical activity of all elements?',
+          options:
+            [
+              'The highest electronegativity (4.0)',
+              'Having 9 protons in the nucleus',
+              'A low boiling point (−188.1°C)',
+              'The pale yellow colour of the gas',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы [He] 2s² 2p⁵ бойынша фтор атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['2', '7', '5', '9'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of a fluorine atom, given its electron configuration [He] 2s² 2p⁵?',
+          options: ['2', '7', '5', '9'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Галоген болып табылатын фтор неге тіпті ксенон мен криптон сияқты инертті газдармен де әрекеттесе алады?',
+          options:
+            [
+              'F₂ молекуласының диссоциация энергиясы төмен болғандықтан',
+              'Газдың ақшыл-сары түсіне байланысты',
+              'Ол ең күшті тотықтырғыш және ең жоғары электртерістілікке ие болғандықтан',
+              'Ядросында 10 нейтрон болғандықтан',
+            ],
+        }
+      en:
+        {
+          text: 'Why can fluorine, a halogen, react even with inert gases such as xenon and krypton?',
+          options:
+            [
+              'Because of the low dissociation energy of the F₂ molecule',
+              'Because of the pale yellow colour of the gas',
+              'Because it is the strongest oxidising agent and has the highest electronegativity',
+              'Because there are 10 neutrons in its nucleus',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Химиялық элемент ретінде фтор туралы қай тұжырым дұрыс?',
+          options:
+            [
+              'Фтор аса жоғары белсенділігіне байланысты табиғатта бос күйінде кездеспейді',
+              'Фтор 17-топта болғандықтан металл болып табылады',
+              'Фтордың атомдық массасы 19, бұл протондар санына тең',
+              'Фтор металдармен тек иондық қосылыстар түзеді',
+            ],
+        }
+      en:
+        {
+          text: 'Which statement about fluorine as a chemical element is true?',
+          options:
+            [
+              'Fluorine is never found free in nature because of its extreme reactivity',
+              'Fluorine is a metal because it is in group 17',
+              'The atomic mass of fluorine is 19, which equals the number of protons',
+              'Fluorine forms only ionic compounds with metals',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Медицинада позитрондық-эмиссиялық томография (ПЭТ) үшін фтордың қай изотопы қолданылады және оның тұрақты изотоптан айырмашылығы неде?',
+          options:
+            [
+              'Фтор-19; оның 10 нейтроны бар',
+              'Фтор-18; ол радиоактивті',
+              'Фтор-19; ол радиоактивті',
+              'Фтор-18; оның 9 нейтроны бар',
+            ],
+        }
+      en:
+        {
+          text: 'Which fluorine isotope is used in medicine for positron emission tomography (PET), and how does it differ from the stable isotope?',
+          options:
+            [
+              'Fluorine-19; it has 10 neutrons',
+              'Fluorine-18; it is radioactive',
+              'Fluorine-19; it is radioactive',
+              'Fluorine-18; it has 9 neutrons',
+            ],
+        }
+  neon:
+    q1:
+      kk:
+        {
+          text: 'Неон туралы қай тұжырым дұрыс?',
+          options:
+            [
+              'Неон — химиялық инертті, тұрақты қосылыстар түзбейтін асыл газ.',
+              'Неон — галогендермен оңай әрекеттесетін белсенді металл.',
+              'Неон — сутегімен көптеген қосылыстар түзетін бейметалл.',
+              'Неон — металдар мен бейметалдардың қасиеттері бар жартылай металл.',
+            ],
+        }
+      en:
+        {
+          text: 'Which statement about neon is true?',
+          options:
+            [
+              'Neon is a noble gas that is chemically inert and forms no stable compounds.',
+              'Neon is an active metal that reacts easily with halogens.',
+              'Neon is a nonmetal that forms many compounds with hydrogen.',
+              'Neon is a metalloid with properties of both metals and nonmetals.',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы [He] 2s² 2p⁶ болса, неон атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['2', '8', '6', '10'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of a neon atom if its electron configuration is [He] 2s² 2p⁶?',
+          options: ['2', '8', '6', '10'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Неонның қай қолданылуы оның электр разрядында ашық қызғылт сары түспен жарқырауымен байланысты?',
+          options:
+            [
+              'Криогеникада салқындатқыш ретінде пайдалану.',
+              'Газ лазерлерінде қолдану.',
+              'Неон жарнамалары мен индикатор шамдарын жасау.',
+              'Жоғары вольтты жабдықты қорғау.',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of neon is related to its bright orange glow in an electric discharge?',
+          options:
+            [
+              'Use as a coolant in cryogenics.',
+              'Use in gas lasers.',
+              'Making neon signs and indicator lamps.',
+              'Protecting high-voltage equipment.',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Неонның қай қасиеті оның толық электрондық қабатымен түсіндіріледі?',
+          options:
+            [
+              'Химиялық инерттілігі және тұрақты қосылыстарының болмауы.',
+              'Балқу және қайнау температураларының жоғары болуы.',
+              '+1 зарядты иондар түзу қабілеті.',
+              'Қыздырғанда жарқырап жануы.',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of neon is explained by its full electron shell?',
+          options:
+            [
+              'Chemical inertness and the absence of stable compounds.',
+              'High melting and boiling points.',
+              'The ability to form ions with a +1 charge.',
+              'A bright glow when heated.',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Сұйық неон қайда қолданылады?',
+          options:
+            [
+              'Криогеникада салқындатқыш ретінде',
+              'Зымыран отыны ретінде',
+              'Қағазды ағарту үшін',
+              'Тыңайтқыш ретінде',
+            ],
+        }
+      en:
+        {
+          text: 'Where is liquid neon used?',
+          options: ['In cryogenics as a coolant', 'As rocket fuel', 'For bleaching paper', 'As a fertiliser'],
+        }
+  sodium:
+    q1:
+      kk:
+        {
+          text: 'Негізгі күйдегі натрий атомында қанша валенттік электрон бар?',
+          options: ['1', '2', '3', '11'],
+        }
+      en:
+        {
+          text: 'How many valence electrons does a sodium atom have in its ground state?',
+          options: ['1', '2', '3', '11'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Натрий бейметалдармен, мысалы хлормен, химиялық байланыстың қай түрін түзеді?',
+          options: ['Коваленттік полюссіз', 'Иондық', 'Металдық', 'Коваленттік полюсті'],
+        }
+      en:
+        {
+          text: 'What type of chemical bond does sodium form with nonmetals such as chlorine?',
+          options: ['Nonpolar covalent', 'Ionic', 'Metallic', 'Polar covalent'],
+        }
+    q3:
+      kk: { text: 'Қосылыстардағы натрийге қай тотығу дәрежесі тән?', options: ['0', '-1', '+1', '+2'] }
+      en:
+        { text: 'Which oxidation state is typical of sodium in compounds?', options: ['0', '-1', '+1', '+2'] }
+    q4:
+      kk:
+        {
+          text: 'Натрий табиғатта неге ешқашан бос күйінде кездеспейді?',
+          options:
+            [
+              'Реакциялық қабілеті жоғары болғандықтан',
+              'Тығыздығы төмен болғандықтан',
+              'Жұмсақ болғандықтан',
+              'Балқу температурасы жоғары болғандықтан',
+            ],
+        }
+      en:
+        {
+          text: 'Why is sodium never found free in nature?',
+          options:
+            [
+              'Because of its high reactivity',
+              'Because of its low density',
+              'Because of its softness',
+              'Because of its high melting point',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Натрийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?',
+          options: ['Натрий-22', 'Натрий-23', 'Натрий-24', 'Натрий-25'],
+        }
+      en:
+        {
+          text: 'Which isotope of sodium is the only stable one in nature?',
+          options: ['Sodium-22', 'Sodium-23', 'Sodium-24', 'Sodium-25'],
+        }
+  magnesium:
+    q1:
+      kk: { text: 'Магний атомының ядросында қанша протон бар?', options: ['12', '24', '10', '6'] }
+      en:
+        { text: 'How many protons are in the nucleus of a magnesium atom?', options: ['12', '24', '10', '6'] }
+    q2:
+      kk:
+        {
+          text: 'Екі валенттік электронын жоғалтқанда магний қандай ион түзеді?',
+          options: ['Анион', 'Катион', 'Бейтарап атом', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'What kind of ion does magnesium form when it loses its two valence electrons?',
+          options: ['Anion', 'Cation', 'Neutral atom', 'Isotope'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Магнийдің қай қасиеті оны құбырларды коррозиядан қорғайтын протекторлық анод ретінде пайдалануды түсіндіреді?',
+          options:
+            [
+              'Жоғары электр өткізгіштік',
+              'Төмен тығыздық',
+              'Күшті тотықсыздандырғыш қабілеті',
+              'Қорғаныш оксид қабатын түзуі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of magnesium explains its use as a sacrificial anode protecting pipelines from corrosion?',
+          options:
+            [
+              'High electrical conductivity',
+              'Low density',
+              'Strong reducing ability',
+              'Forming a protective oxide layer',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Магнийдің қай изотопы табиғатта ең көп таралған?',
+          options: ['Магний-24', 'Магний-25', 'Магний-26', 'Магний-23'],
+        }
+      en:
+        {
+          text: 'Which isotope of magnesium is the most common in nature?',
+          options: ['Magnesium-24', 'Magnesium-25', 'Magnesium-26', 'Magnesium-23'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы бойынша магний атомында қанша валенттік электрон бар?',
+          options: ['1', '2', '3', '4'],
+        }
+      en:
+        {
+          text: 'How many valence electrons does a magnesium atom have according to its electron configuration?',
+          options: ['1', '2', '3', '4'],
+        }
+  aluminum:
+    q1:
+      kk:
+        {
+          text: 'Алюминийдің қай қасиеті оның авиация-ғарыш өнеркәсібінде кеңінен қолданылуын түсіндіреді?',
+          options:
+            [
+              'Тығыздығының төмендігі мен беріктігі',
+              'Қайнау температурасының жоғары болуы',
+              'Жарықты шағылыстыру қабілеті',
+              'Магниттелмейтіндігі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of aluminium explains its wide use in the aerospace industry?',
+          options:
+            [
+              'Low density combined with strength',
+              'High boiling point',
+              'Its ability to reflect light',
+              'It is non-magnetic',
+            ],
+        }
+    q2:
+      kk: { text: 'Алюминий атомының ядросында қанша протон бар?', options: ['27', '13', '14', '3'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of an aluminium atom?',
+          options: ['27', '13', '14', '3'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Үш электронын жоғалтқанда алюминий атомы қандай ион түзеді?',
+          options: ['Заряды -3 анион', 'Бейтарап атом', 'Заряды +3 катион', 'Al₂ молекуласы'],
+        }
+      en:
+        {
+          text: 'What kind of ion does an aluminium atom form when it loses three electrons?',
+          options:
+            [
+              'An anion with a charge of -3',
+              'A neutral atom',
+              'A cation with a charge of +3',
+              'An Al₂ molecule',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Реакциялық қабілеті жоғары болса да, алюминий неге коррозияға төзімді?',
+          options:
+            [
+              'Al₂O₃ қорғаныш оксид қабықшасын түзеді',
+              'Оттегімен әрекеттеспейді',
+              'Балқу температурасы төмен',
+              'Инертті газ болып табылады',
+            ],
+        }
+      en:
+        {
+          text: 'Why is aluminium resistant to corrosion despite its high reactivity?',
+          options:
+            [
+              'It forms a protective Al₂O₃ oxide film',
+              'It does not react with oxygen',
+              'It has a low melting point',
+              'It is an inert gas',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Алюминийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?',
+          options: ['27', '14', '13', '26'],
+        }
+      en:
+        {
+          text: 'How many neutrons does the most common stable isotope of aluminium have?',
+          options: ['27', '14', '13', '26'],
+        }
+  silicon:
+    q1:
+      kk: { text: 'Кремний атомының ядросында қанша протон бар?', options: ['14', '28', '7', '32'] }
+      en: { text: 'How many protons are in the nucleus of a silicon atom?', options: ['14', '28', '7', '32'] }
+    q2:
+      kk:
+        {
+          text: 'Қасиеттері бойынша жіктегенде кремний элементтің қай түріне жатады?',
+          options: ['Металл', 'Жартылай металл', 'Бейметалл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'According to its properties, what type of element is silicon?',
+          options: ['Metal', 'Metalloid', 'Nonmetal', 'Inert gas'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Температура жоғарылағанда кремнийдің электр өткізгіштігі қалай өзгереді?',
+          options: ['Азаяды', 'Өзгермейді', 'Артады', 'Жоғалады'],
+        }
+      en:
+        {
+          text: 'How does the electrical conductivity of silicon change as temperature rises?',
+          options: ['It decreases', 'It does not change', 'It increases', 'It disappears'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Кремний атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['4', '2', '3', '6'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of a silicon atom?',
+          options: ['4', '2', '3', '6'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Кремнийдің қай изотопы табиғатта ең көп таралған?',
+          options: ['Кремний-30', 'Кремний-28', 'Кремний-29', 'Кремний-31'],
+        }
+      en:
+        {
+          text: 'Which isotope of silicon is the most common in nature?',
+          options: ['Silicon-30', 'Silicon-28', 'Silicon-29', 'Silicon-31'],
+        }
+  phosphorus:
+    q1:
+      kk:
+        {
+          text: 'Фосфордың қай қасиеті оның табиғатта неге ешқашан бос күйінде кездеспейтінін түсіндіреді?',
+          options:
+            [
+              'Ауада өздігінен тұтануға әкелетін жоғары реакциялық қабілеті',
+              'Суда ерімейтіндігі',
+              'Жылу мен электрді нашар өткізуі',
+              'Бірнеше аллотропиялық түрінің болуы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of phosphorus explains why it is never found free in nature?',
+          options:
+            [
+              'High reactivity that makes it ignite spontaneously in air',
+              'Insolubility in water',
+              'Poor conduction of heat and electricity',
+              'Having several allotropes',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Фосфордың ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?',
+          options: ['15', '16', '31', '32'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of phosphorus?',
+          options: ['15', '16', '31', '32'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Фосфор оксиді сумен әрекеттескенде түзілетін қосылыста фосфорға қай тотығу дәрежесі тән?',
+          options: ['-3', '+3', '+5', '0'],
+        }
+      en:
+        {
+          text: 'Which oxidation state of phosphorus is typical of the compound formed when its oxide reacts with water?',
+          options: ['-3', '+3', '+5', '0'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Фосфордың қай қолданылуы оның биологиялық жүйелердегі рөлімен тікелей байланысты?',
+          options:
+            [
+              'Ауыл шаруашылығына арналған тыңайтқыштар өндірісі',
+              'Қауіпсіз сіріңке жасау',
+              'Металлургияда болатты тотықсыздандыру',
+              'Трассирлеуші оқтар жасау',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of phosphorus is directly related to its role in living systems?',
+          options:
+            [
+              'Producing fertilisers for agriculture',
+              'Making safety matches',
+              'Deoxidising steel in metallurgy',
+              'Making tracer bullets',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Фосфордың қай аллотропиялық түрі тұрақтылығы мен уыттылығының төмендігіне байланысты қауіпсіз сіріңкеде қолданылады?',
+          options: ['Ақ фосфор', 'Қызыл фосфор', 'Қара фосфор', 'Фосфор-31'],
+        }
+      en:
+        {
+          text: 'Which allotrope of phosphorus is used in safety matches because it is stable and non-toxic?',
+          options: ['White phosphorus', 'Red phosphorus', 'Black phosphorus', 'Phosphorus-31'],
+        }
+  sulfur:
+    q1:
+      kk: { text: 'Күкірт атомының ядросында қанша протон бар?', options: ['16', '32', '8', '6'] }
+      en: { text: 'How many protons are in the nucleus of a sulfur atom?', options: ['16', '32', '8', '6'] }
+    q2:
+      kk:
+        {
+          text: 'Күкірт атомының сыртқы энергетикалық деңгейінде қанша электрон бар?',
+          options: ['4', '6', '2', '8'],
+        }
+      en:
+        {
+          text: 'How many electrons are in the outer energy level of a sulfur atom?',
+          options: ['4', '6', '2', '8'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Физикалық қасиеттері бойынша күкірт химиялық элементтің қай түріне жатады?',
+          options: ['Металл', 'Жартылай металл', 'Бейметалл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'According to its physical properties, what type of chemical element is sulfur?',
+          options: ['Metal', 'Metalloid', 'Nonmetal', 'Inert gas'],
+        }
+    q4:
+      kk: { text: 'Бөлме температурасында күкірт қандай жай зат түзеді?', options: ['S₈', 'S₂', 'S₆', 'S₄'] }
+      en:
+        {
+          text: 'Which simple substance does sulfur form at room temperature?',
+          options: ['S₈', 'S₂', 'S₆', 'S₄'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Күкірт қышқылындағы (H₂SO₄) күкірттің тотығу дәрежесі қандай?',
+          options: ['-2', '+6', '+4', '0'],
+        }
+      en:
+        {
+          text: 'What is the oxidation state of sulfur in sulfuric acid (H₂SO₄)?',
+          options: ['-2', '+6', '+4', '0'],
+        }
+  chlorine:
+    q1:
+      kk: { text: 'Хлор атомының ядросында қанша протон бар?', options: ['17', '35', '18', '7'] }
+      en:
+        { text: 'How many protons are in the nucleus of a chlorine atom?', options: ['17', '35', '18', '7'] }
+    q2:
+      kk:
+        {
+          text: 'Хлор металдармен химиялық байланыстың қай түрін түзеді?',
+          options: ['Коваленттік', 'Иондық', 'Металдық', 'Сутектік'],
+        }
+      en:
+        {
+          text: 'What type of chemical bond does chlorine form with metals?',
+          options: ['Covalent', 'Ionic', 'Metallic', 'Hydrogen'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Хлордың тұрақты изотоптарының қайсысы табиғатта ең көп таралған?',
+          options: ['Хлор-37', 'Хлор-36', 'Хлор-35', 'Хлор-34'],
+        }
+      en:
+        {
+          text: 'Which stable isotope of chlorine is the most common in nature?',
+          options: ['Chlorine-37', 'Chlorine-36', 'Chlorine-35', 'Chlorine-34'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Хлордың қай физикалық қасиеті оны бөлмеде ағып кеткенде қауіпті етеді?',
+          options:
+            [
+              'Ол ауадан 2.5 есе ауыр',
+              'Оның ақшыл сары-жасыл түсі бар',
+              'Ол қысыммен оңай сұйылады',
+              'Ол суда ериді',
+            ],
+        }
+      en:
+        {
+          text: 'Which physical property of chlorine makes a leak indoors dangerous?',
+          options:
+            [
+              'It is 2.5 times heavier than air',
+              'It is pale yellow-green',
+              'It liquefies easily under pressure',
+              'It dissolves in water',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Хлор сумен әрекеттескенде түзілетін хлорлылау қышқылында (HClO) хлордың тотығу дәрежесі қандай?',
+          options: ['-1', '+1', '+3', '+5'],
+        }
+      en:
+        {
+          text: 'What is the oxidation state of chlorine in hypochlorous acid (HClO), formed when it reacts with water?',
+          options: ['-1', '+1', '+3', '+5'],
+        }
+  argon:
+    q1:
+      kk:
+        {
+          text: 'Аргонның қай қасиеті оны дәнекерлеу кезінде қорғаныш атмосфера ретінде пайдалануға жарамды етеді?',
+          options:
+            [
+              'Химиялық инерттілігі',
+              'Жылу өткізгіштігінің жоғары болуы',
+              'Жануды қолдау қабілеті',
+              'Суда аз еруі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of argon makes it suitable as a shielding atmosphere for welding?',
+          options:
+            [
+              'Chemical inertness',
+              'High thermal conductivity',
+              'The ability to support combustion',
+              'Low solubility in water',
+            ],
+        }
+    q2:
+      kk: { text: 'Аргон атомының ядросында қанша протон бар?', options: ['40', '18', '22', '36'] }
+      en: { text: 'How many protons are in the nucleus of an argon atom?', options: ['40', '18', '22', '36'] }
+    q3:
+      kk:
+        {
+          text: 'Стандартты жағдайда газ күйіндегі аргон қандай бөлшектерден тұрады?',
+          options: ['Екі атомды молекулалар', 'Үш атомды молекулалар', 'Бір атомды молекулалар', 'Иондар'],
+        }
+      en:
+        {
+          text: 'What particles make up gaseous argon under standard conditions?',
+          options: ['Diatomic molecules', 'Triatomic molecules', 'Monatomic molecules', 'Ions'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Аргон атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ne] 3s² 3p⁶', '[Ne] 3s² 3p⁴', '[Ar] 4s²', '[He] 2s² 2p⁶'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the argon atom?',
+          options: ['[Ne] 3s² 3p⁶', '[Ne] 3s² 3p⁴', '[Ar] 4s²', '[He] 2s² 2p⁶'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Аргонның қай қолданылуы оның жылу өткізгіштігінің төмендігімен байланысты?',
+          options:
+            [
+              'Қыздыру шамдарын толтыру',
+              'Шыны пакеттердегі жылу оқшаулау',
+              'Дәнекерлеу кезіндегі қорғаныш',
+              'Азық-түлікті сақтау',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of argon is related to its low thermal conductivity?',
+          options:
+            [
+              'Filling incandescent lamps',
+              'Insulation in double-glazed windows',
+              'Shielding during welding',
+              'Food storage',
+            ],
+        }
+  potassium:
+    q1:
+      kk: { text: 'Калий атомының ядросында қанша протон бар?', options: ['19', '20', '39', '4'] }
+      en:
+        { text: 'How many protons are in the nucleus of a potassium atom?', options: ['19', '20', '39', '4'] }
+    q2:
+      kk:
+        {
+          text: 'Калийдің бейметалдармен қосылысына, мысалы калий хлоридіне (KCl), химиялық байланыстың қай түрі тән?',
+          options: ['Коваленттік полюссіз', 'Иондық', 'Металдық', 'Коваленттік полюсті'],
+        }
+      en:
+        {
+          text: 'Which type of chemical bond is typical of potassium compounds with nonmetals, for example potassium chloride (KCl)?',
+          options: ['Nonpolar covalent', 'Ionic', 'Metallic', 'Polar covalent'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Калийдің қай изотопы радиоактивті және тау жыныстарының жасын анықтау үшін қолданылады?',
+          options: ['Калий-39', 'Калий-41', 'Калий-40', 'Калий-37'],
+        }
+      en:
+        {
+          text: 'Which isotope of potassium is radioactive and used to date rocks?',
+          options: ['Potassium-39', 'Potassium-41', 'Potassium-40', 'Potassium-37'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Калий өз қосылыстарында әдетте қандай тотығу дәрежесін көрсетеді?',
+          options: ['+1', '+2', '-1', '0'],
+        }
+      en:
+        {
+          text: 'Which oxidation state does potassium usually show in its compounds?',
+          options: ['+1', '+2', '-1', '0'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Калий атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['2', '1', '3', '4'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of a potassium atom?',
+          options: ['2', '1', '3', '4'],
+        }
+  calcium:
+    q1:
+      kk: { text: 'Кальций атомының ядросында қанша протон бар?', options: ['20', '40', '18', '22'] }
+      en:
+        { text: 'How many protons are in the nucleus of a calcium atom?', options: ['20', '40', '18', '22'] }
+    q2:
+      kk:
+        {
+          text: 'Кальций атомының электрондық конфигурациясы қандай?',
+          options: ['[Ar] 3d²', '[Ar] 4s²', '[Ar] 4p²', '[Kr] 4s²'],
+        }
+      en:
+        {
+          text: 'What is the electron configuration of a calcium atom?',
+          options: ['[Ar] 3d²', '[Ar] 4s²', '[Ar] 4p²', '[Kr] 4s²'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Кальций қосылыстарда әдетте қандай тотығу дәрежесін көрсетеді?',
+          options: ['+1', '+3', '+2', '0'],
+        }
+      en:
+        {
+          text: 'Which oxidation state does calcium usually show in compounds?',
+          options: ['+1', '+3', '+2', '0'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Кальций атомы екі электронын жоғалтқанда қандай бөлшек түзіледі?',
+          options: ['Катион', 'Анион', 'Нейтрон', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'Which particle forms when a calcium atom loses two electrons?',
+          options: ['Cation', 'Anion', 'Neutron', 'Isotope'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Кальций бейметалдармен, мысалы хлормен, химиялық байланыстың қай түрін түзеді?',
+          options: ['Коваленттік полюссіз', 'Иондық', 'Металдық', 'Коваленттік полюсті'],
+        }
+      en:
+        {
+          text: 'What type of chemical bond does calcium form with nonmetals such as chlorine?',
+          options: ['Nonpolar covalent', 'Ionic', 'Metallic', 'Polar covalent'],
+        }
+  scandium:
+    q1:
+      kk: { text: 'Скандий атомының ядросында қанша протон бар?', options: ['21', '24', '45', '3'] }
+      en:
+        { text: 'How many protons are in the nucleus of a scandium atom?', options: ['21', '24', '45', '3'] }
+    q2:
+      kk:
+        {
+          text: 'Қосылыстардағы скандийдің әдеттегі тотығу дәрежесі қандай?',
+          options: ['+1', '+3', '+2', '-3'],
+        }
+      en:
+        {
+          text: 'What is the typical oxidation state of scandium in compounds?',
+          options: ['+1', '+3', '+2', '-3'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Скандий атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d² 4s¹', '[Ar] 3d¹ 4s²', '[Ar] 3d³ 4s⁰', '[Ar] 3d⁰ 4s²'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the scandium atom?',
+          options: ['[Ar] 3d² 4s¹', '[Ar] 3d¹ 4s²', '[Ar] 3d³ 4s⁰', '[Ar] 3d⁰ 4s²'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Скандийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?',
+          options: ['24', '21', '45', '46'],
+        }
+      en:
+        {
+          text: 'How many neutrons does the most common stable isotope of scandium have?',
+          options: ['24', '21', '45', '46'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Скандий периодтық кестенің қай тобында орналасқан?',
+          options: ['2-топ', '3-топ', '4-топ', '1-топ'],
+        }
+      en:
+        {
+          text: 'In which group of the periodic table is scandium?',
+          options: ['Group 2', 'Group 3', 'Group 4', 'Group 1'],
+        }
+  titanium:
+    q1:
+      kk:
+        {
+          text: 'Титанның қай қасиеті оны авиация-ғарыш өнеркәсібі үшін аса құнды етеді?',
+          options:
+            [
+              'Салмағына қатысты беріктігінің жоғары болуы',
+              'Жылу және электр өткізгіштігінің төмендігі',
+              'Күміс-сұр металл түсі',
+              'Таза азотта жану қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of titanium makes it especially valuable for the aerospace industry?',
+          options:
+            [
+              'A high strength-to-weight ratio',
+              'Low thermal and electrical conductivity',
+              'Its silvery-grey metallic colour',
+              'The ability to burn in pure nitrogen',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Титанның ең көп таралған тұрақты изотопының (титан-48) ядросында қанша нейтрон бар?',
+          options: ['22', '26', '48', '24'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of titanium (titanium-48)?',
+          options: ['22', '26', '48', '24'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Титан жай затында химиялық байланыстың қай түрі бар?',
+          options: ['Коваленттік полюссіз', 'Иондық', 'Металдық', 'Сутектік'],
+        }
+      en:
+        {
+          text: 'What type of chemical bond is found in titanium as a simple substance?',
+          options: ['Nonpolar covalent', 'Ionic', 'Metallic', 'Hydrogen'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Титанның бетінде оның ерекше коррозияға төзімділігін қамтамасыз ететін қандай зат түзіледі?',
+          options:
+            [
+              'Пассивті оксид қабаты (TiO₂)',
+              'Титан нитриді (TiN)',
+              'Титан хлориді (TiCl₄)',
+              'Ильменит (FeTiO₃)',
+            ],
+        }
+      en:
+        {
+          text: 'Which substance forms on the surface of titanium and gives it exceptional corrosion resistance?',
+          options:
+            [
+              'A passive oxide layer (TiO₂)',
+              'Titanium nitride (TiN)',
+              'Titanium chloride (TiCl₄)',
+              'Ilmenite (FeTiO₃)',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Титан Д.И. Менделеевтің периодтық жүйесінің қай периоды мен тобында орналасқан?',
+          options: ['3-период, 3-топ', '4-период, 4-топ', '4-период, 3-топ', '3-период, 4-топ'],
+        }
+      en:
+        {
+          text: "In which period and group of Mendeleev's periodic table is titanium?",
+          options: ['Period 3, group 3', 'Period 4, group 4', 'Period 4, group 3', 'Period 3, group 4'],
+        }
+  vanadium:
+    q1:
+      kk: { text: 'Ванадий атомының ядросында қанша протон бар?', options: ['23', '51', '28', '50'] }
+      en:
+        { text: 'How many protons are in the nucleus of a vanadium atom?', options: ['23', '51', '28', '50'] }
+    q2:
+      kk:
+        {
+          text: 'Ванадийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?',
+          options: ['Ванадий-50', 'Ванадий-51', 'Ванадий-52', 'Ванадий-49'],
+        }
+      en:
+        {
+          text: 'Which isotope of vanadium is its only stable natural isotope?',
+          options: ['Vanadium-50', 'Vanadium-51', 'Vanadium-52', 'Vanadium-49'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Ванадий атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d³ 4s²', '[Ar] 3d⁵ 4s²', '[Ar] 3d² 4s²', '[Ar] 3d⁴ 4s¹'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the vanadium atom?',
+          options: ['[Ar] 3d³ 4s²', '[Ar] 3d⁵ 4s²', '[Ar] 3d² 4s²', '[Ar] 3d⁴ 4s¹'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Ванадийдің қай қасиеті оны беріктікті арттыру үшін болатқа қоспа ретінде пайдалануды түсіндіреді?',
+          options:
+            [
+              'Құрылымдық беріктігі мен ұзақ қызмет етуі',
+              'Қорғаныш оксид қабатын түзуі',
+              'Парамагнетизмі',
+              'Қышқылдарға жақсы коррозиялық төзімділігі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of vanadium explains its use as an additive to make steel stronger?',
+          options:
+            [
+              'High structural strength and durability',
+              'Forming a protective oxide layer',
+              'Paramagnetism',
+              'Good corrosion resistance to acids',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Катализатор ретінде қолданылатын V₂O₅ қосылысындағы ванадийдің тотығу дәрежесі қандай?',
+          options: ['+4', '+5', '+3', '+2'],
+        }
+      en:
+        {
+          text: 'What is the oxidation state of vanadium in V₂O₅, a compound used as a catalyst?',
+          options: ['+4', '+5', '+3', '+2'],
+        }
+  chromium:
+    q1:
+      kk:
+        {
+          text: 'Хромның қай қасиеті оны басқа металдарға қорғаныш жабын ретінде пайдалануды түсіндіреді?',
+          options:
+            [
+              'Тотығуға кедергі келтіретін жұқа әрі тығыз Cr₂O₃ оксид қабатын түзуі',
+              'Балқу температурасының жоғары болуы, 1907°C',
+              'Бөлме температурасындағы антиферромагнетизмі',
+              'Тұз қышқылында еруі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of chromium explains its use as a protective coating for other metals?',
+          options:
+            [
+              'It forms a thin, dense Cr₂O₃ oxide layer that prevents oxidation',
+              'A high melting point of 1907°C',
+              'Antiferromagnetism at room temperature',
+              'Solubility in hydrochloric acid',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Атомдық нөмірі 24 болса, хромның ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?',
+          options: ['24', '28', '52', '76'],
+        }
+      en:
+        {
+          text: 'If its atomic number is 24, how many neutrons are in the nucleus of the most common stable isotope of chromium?',
+          options: ['24', '28', '52', '76'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Хромның электрондық конфигурациясының ([Ar] 3d⁵ 4s¹) қай ерекшелігі оның тұрақтылығын қамтамасыз етеді?',
+          options:
+            [
+              '24 электронның болуы',
+              '4-периодта орналасуы',
+              'Жартылай толған 3d-қабат',
+              '4s¹ электронның болуы',
+            ],
+        }
+      en:
+        {
+          text: 'Which feature of the electron configuration of chromium ([Ar] 3d⁵ 4s¹) makes it stable?',
+          options:
+            ['Having 24 electrons', 'Being in period 4', 'A half-filled 3d shell', 'Having a 4s¹ electron'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Металл бола тұра хром неге ауада күңгірттенбей, жылтырын сақтайды?',
+          options:
+            [
+              'Металды әрі қарай тотығудан қорғайтын жұқа әрі тығыз оксид (Cr₂O₃) қабаты түзілетіндіктен',
+              'Ол инертті газ болғандықтан',
+              'Балқу температурасы жоғары болғандықтан',
+              'Бейметалдармен әрекеттеспейтіндіктен',
+            ],
+        }
+      en:
+        {
+          text: 'Why does chromium, a metal, not tarnish in air and keep its shine?',
+          options:
+            [
+              'Because a thin, dense oxide layer (Cr₂O₃) forms and protects the metal from further oxidation',
+              'Because it is an inert gas',
+              'Because of its high melting point',
+              'Because it does not react with nonmetals',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Реттік нөмірі 24 болса, хром атомының ядросында қанша протон бар?',
+          options: ['28', '24', '52', '48'],
+        }
+      en:
+        {
+          text: 'If its atomic number is 24, how many protons are in the nucleus of a chromium atom?',
+          options: ['28', '24', '52', '48'],
+        }
+  manganese:
+    q1:
+      kk:
+        {
+          text: 'Марганецтің қай қасиеті оны металлургияда болат өндіру үшін таптырмас етеді?',
+          options:
+            [
+              'Қаттылық пен тозуға төзімділікті арттырады',
+              'Болаттың электр өткізгіштігін арттырады',
+              'Болатқа қызғылт реңк береді',
+              'Болаттың балқу температурасын төмендетеді',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of manganese makes it indispensable in steelmaking?',
+          options:
+            [
+              'It increases hardness and wear resistance',
+              'It increases the electrical conductivity of steel',
+              'It gives steel a pinkish tint',
+              'It lowers the melting point of steel',
+            ],
+        }
+    q2:
+      kk: { text: 'Марганец атомының ядросында қанша протон бар?', options: ['30', '25', '55', '7'] }
+      en:
+        { text: 'How many protons are in the nucleus of a manganese atom?', options: ['30', '25', '55', '7'] }
+    q3:
+      kk:
+        {
+          text: 'Негізгі күйдегі марганец атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d⁶ 4s¹', '[Ar] 3d⁴ 4s²', '[Ar] 3d⁵ 4s²', '[Ar] 3d⁷ 4s⁰'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the manganese atom in its ground state?',
+          options: ['[Ar] 3d⁶ 4s¹', '[Ar] 3d⁴ 4s²', '[Ar] 3d⁵ 4s²', '[Ar] 3d⁷ 4s⁰'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Марганецтің қай қосылысы күшті тотықтырғыш болып табылады?',
+          options:
+            [
+              'Калий перманганаты (KMnO₄)',
+              'Марганец(II) оксиді (MnO)',
+              'Марганец(II) сульфаты (MnSO₄)',
+              'Марганец(II) карбонаты (MnCO₃)',
+            ],
+        }
+      en:
+        {
+          text: 'Which manganese compound is a powerful oxidising agent?',
+          options:
+            [
+              'Potassium permanganate (KMnO₄)',
+              'Manganese(II) oxide (MnO)',
+              'Manganese(II) sulfate (MnSO₄)',
+              'Manganese(II) carbonate (MnCO₃)',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Марганецтің өсімдіктердің фотосинтезі үшін маңызы қандай?',
+          options:
+            [
+              'Жапырақтарға қызыл түс береді',
+              'Суды ыдырату үшін аса маңызды',
+              'Көмірқышқыл газын сіңіруді жеделдетеді',
+              'Хлоропластар үшін энергия көзі болып табылады',
+            ],
+        }
+      en:
+        {
+          text: 'Why is manganese important for photosynthesis in plants?',
+          options:
+            [
+              'It makes leaves red',
+              'It is essential for splitting water',
+              'It speeds up the uptake of carbon dioxide',
+              'It is an energy source for chloroplasts',
+            ],
+        }
+  iron:
+    q1:
+      kk: { text: 'Темір атомының ядросында қанша протон бар?', options: ['26', '30', '56', '8'] }
+      en: { text: 'How many protons are in the nucleus of an iron atom?', options: ['26', '30', '56', '8'] }
+    q2:
+      kk:
+        {
+          text: 'Электрондарын жоғалтқанда темір атомы қандай ион түзеді?',
+          options: ['Анион', 'Катион', 'Нейтрон', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'What kind of ion does an iron atom form when it loses electrons?',
+          options: ['Anion', 'Cation', 'Neutron', 'Isotope'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Негізгі күйдегі темір атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d⁶ 4s²', '[Ar] 3d⁵ 4s¹', '[Ar] 3d⁷ 4s¹', '[Ar] 3d⁸ 4s⁰'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the iron atom in its ground state?',
+          options: ['[Ar] 3d⁶ 4s²', '[Ar] 3d⁵ 4s¹', '[Ar] 3d⁷ 4s¹', '[Ar] 3d⁸ 4s⁰'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Темірдің қай қасиеті оның бөлме температурасында магнитке тартылуын түсіндіреді?',
+          options: ['Ферромагнетизм', 'Жоғары электр өткізгіштік', 'Соғылғыштық', 'Тотығуға бейімділік'],
+        }
+      en:
+        {
+          text: 'Which property of iron explains why it is attracted to a magnet at room temperature?',
+          options:
+            ['Ferromagnetism', 'High electrical conductivity', 'Malleability', 'A tendency to oxidise'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Темірдің қай изотопы табиғатта ең көп таралған?',
+          options: ['Темір-54', 'Темір-56', 'Темір-57', 'Темір-58'],
+        }
+      en:
+        {
+          text: 'Which isotope of iron is the most common in nature?',
+          options: ['Iron-54', 'Iron-56', 'Iron-57', 'Iron-58'],
+        }
+  cobalt:
+    q1:
+      kk: { text: 'Кобальт атомының ядросында қанша протон бар?', options: ['27', '32', '59', '9'] }
+      en: { text: 'How many protons are in the nucleus of a cobalt atom?', options: ['27', '32', '59', '9'] }
+    q2:
+      kk:
+        {
+          text: 'Екі электронын жоғалтса, кобальт атомы қандай ион түзеді?',
+          options: ['Заряды -2 анион', 'Заряды +2 катион', 'Бейтарап атом', 'Заряды +3 катион'],
+        }
+      en:
+        {
+          text: 'What kind of ion does a cobalt atom form if it loses two electrons?',
+          options:
+            [
+              'An anion with a charge of -2',
+              'A cation with a charge of +2',
+              'A neutral atom',
+              'A cation with a charge of +3',
+            ],
+        }
+    q3:
+      kk:
+        {
+          text: 'Кобальт атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d⁶ 4s²', '[Ar] 3d⁸ 4s¹', '[Ar] 3d⁷ 4s²', '[Ar] 3d⁵ 4s²'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the cobalt atom?',
+          options: ['[Ar] 3d⁶ 4s²', '[Ar] 3d⁸ 4s¹', '[Ar] 3d⁷ 4s²', '[Ar] 3d⁵ 4s²'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Кобальттың қай изотопы табиғаттағы жалғыз тұрақты изотоп?',
+          options: ['Кобальт-59', 'Кобальт-60', 'Кобальт-57', 'Кобальт-58'],
+        }
+      en:
+        {
+          text: 'Which isotope of cobalt is its only stable natural isotope?',
+          options: ['Cobalt-59', 'Cobalt-60', 'Cobalt-57', 'Cobalt-58'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Кобальттың қай қасиеті оны реактивті қозғалтқыштарға арналған суперқорытпаларда пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Жоғары электр және жылу өткізгіштік',
+              'Ыстыққа беріктігі мен тозуға төзімділігі',
+              'Көк пигменттер түзу қабілеті',
+              'Жоғары температурадағы ферромагнетизмі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of cobalt allows it to be used in superalloys for jet engines?',
+          options:
+            [
+              'High electrical and thermal conductivity',
+              'High heat resistance and wear resistance',
+              'The ability to form blue pigments',
+              'Ferromagnetism at high temperatures',
+            ],
+        }
+  nickel:
+    q1:
+      kk:
+        {
+          text: 'Никельдің қай қасиеті оның тот баспайтын болат өндірісінде және гальваникалық жабындарда кеңінен қолданылуын түсіндіреді?',
+          options:
+            [
+              'Коррозия мен тотығуға төзімділігі',
+              'Балқу температурасының жоғары болуы',
+              'Бөлме температурасындағы ферромагнетизмі',
+              'Ашық түсті қосылыстар түзу қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of nickel explains its wide use in stainless steel and electroplating?',
+          options:
+            [
+              'Resistance to corrosion and oxidation',
+              'A high melting point',
+              'Ferromagnetism at room temperature',
+              'The ability to form brightly coloured compounds',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Никельдің ең көп таралған тұрақты изотопының (никель-58) ядросында қанша нейтрон бар?',
+          options: ['28', '30', '58', '86'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of nickel (nickel-58)?',
+          options: ['28', '30', '58', '86'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Никель жай затына химиялық байланыстың қай түрі тән?',
+          options:
+            ['Иондық байланыс', 'Коваленттік полюссіз байланыс', 'Металдық байланыс', 'Сутектік байланыс'],
+        }
+      en:
+        {
+          text: 'Which type of chemical bond is typical of nickel as a simple substance?',
+          options: ['Ionic bond', 'Nonpolar covalent bond', 'Metallic bond', 'Hydrogen bond'],
+        }
+    q4:
+      kk: { text: 'Қосылыстарындағы никельге қай тотығу дәрежесі тән?', options: ['+2', '+1', '-2', '+4'] }
+      en:
+        {
+          text: 'Which oxidation state is typical of nickel in its compounds?',
+          options: ['+2', '+1', '-2', '+4'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Никельдің қай қолданылуы оның жоғары температурада құрылымдық беріктігін сақтау қасиетімен байланысты?',
+          options:
+            [
+              'Тиын соғу',
+              'Газ турбиналары мен зымыран қозғалтқыштарына арналған суперқорытпалар өндірісі',
+              'Аккумуляторлар жасау',
+              'Гальваникалық жабын',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of nickel is related to its ability to stay structurally strong at high temperatures?',
+          options:
+            [
+              'Minting coins',
+              'Making superalloys for gas turbines and rocket engines',
+              'Making batteries',
+              'Electroplating',
+            ],
+        }
+  copper:
+    q1:
+      kk:
+        {
+          text: 'Мыстың қай қасиеті оны электр сымдарының негізгі материалы етеді?',
+          options:
+            [
+              'Ерекше электр және жылу өткізгіштігі',
+              'Қызғылт-сары түсі',
+              'Микробқа қарсы қасиеттері',
+              'Патина түзу қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of copper makes it the main material for electrical wiring?',
+          options:
+            [
+              'Exceptional electrical and thermal conductivity',
+              'Its reddish-orange colour',
+              'Antimicrobial properties',
+              'The ability to form a patina',
+            ],
+        }
+    q2:
+      kk: { text: 'Мыс атомының ядросында қанша протон бар?', options: ['34', '29', '63', '65'] }
+      en: { text: 'How many protons are in the nucleus of a copper atom?', options: ['34', '29', '63', '65'] }
+    q3:
+      kk:
+        {
+          text: 'Мыс атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d⁹ 4s²', '[Ar] 3d¹⁰ 4s⁰', '[Ar] 3d¹⁰ 4s¹', '[Ar] 3d⁸ 4s²'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the copper atom?',
+          options: ['[Ar] 3d⁹ 4s²', '[Ar] 3d¹⁰ 4s⁰', '[Ar] 3d¹⁰ 4s¹', '[Ar] 3d⁸ 4s²'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Мыс туралы қай тұжырым дұрыс?',
+          options:
+            [
+              'Мыс — барлық тірі организмдерге қажет микроэлемент',
+              'Мыс — бейметалл',
+              'Мыс табиғатта кесек түрінде кездеспейді',
+              'Мыстың тек бір тотығу дәрежесі бар',
+            ],
+        }
+      en:
+        {
+          text: 'Which statement about copper is true?',
+          options:
+            [
+              'Copper is an essential trace element for all living organisms',
+              'Copper is a nonmetal',
+              'Copper is never found as a native metal',
+              'Copper has only one oxidation state',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Мыстың қай изотопы табиғатта ең көп таралған?',
+          options: ['Мыс-65', 'Мыс-63', 'Мыс-64', 'Мыс-62'],
+        }
+      en:
+        {
+          text: 'Which isotope of copper is the most common in nature?',
+          options: ['Copper-65', 'Copper-63', 'Copper-64', 'Copper-62'],
+        }
+  zinc:
+    q1:
+      kk:
+        {
+          text: 'Мырыштың қай қасиеті оған қышқылдармен де, күшті сілтілермен де қосылыстар түзуге мүмкіндік береді?',
+          options: ['Амфотерлік', 'Диамагнетизм', 'Жоғары электр өткізгіштік', 'Төмен балқу температурасы'],
+        }
+      en:
+        {
+          text: 'Which property of zinc allows it to form compounds with both acids and strong alkalis?',
+          options: ['Amphoterism', 'Diamagnetism', 'High electrical conductivity', 'A low melting point'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Мырыштың ең көп таралған тұрақты изотопының (мырыш-64) ядросында қанша нейтрон бар?',
+          options: ['30', '34', '64', '49'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of zinc (zinc-64)?',
+          options: ['30', '34', '64', '49'],
+        }
+    q3:
+      kk: { text: 'Қосылыстарындағы мырышқа қай тотығу дәрежесі тән?', options: ['+1', '+3', '+2', '0'] }
+      en:
+        {
+          text: 'Which oxidation state is typical of zinc in its compounds?',
+          options: ['+1', '+3', '+2', '0'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Мырыштың қай қолданылуы оның әлемдік тұтынуының шамамен 50%-ын құрайды?',
+          options:
+            [
+              'Болатты мырыштау (гальванизациялау)',
+              'Батарейкалар өндірісі',
+              'Жез жасау',
+              'Күннен қорғайтын кремдер жасау',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of zinc accounts for about 50% of its world consumption?',
+          options: ['Galvanising steel', 'Making batteries', 'Making brass', 'Making sunscreen'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Мырыш атомы екі электронын жоғалтқанда қандай бөлшек түзіледі?',
+          options: ['Анион', 'Катион', 'Нейтрон', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'Which particle forms when a zinc atom loses two electrons?',
+          options: ['Anion', 'Cation', 'Neutron', 'Isotope'],
+        }
+  gallium:
+    q1:
+      kk:
+        {
+          text: 'Галлийдің қай қасиеті оның адамның қолында балқуына мүмкіндік береді?',
+          options:
+            [
+              'Балқу температурасының төмендігі (29.76°C)',
+              'Жоғары электртерістілік',
+              'Валенттік электрондардың көп болуы',
+              'Қайнау температурасының жоғары болуы (2229°C)',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of gallium lets it melt in a person’s hand?',
+          options:
+            [
+              'A low melting point (29.76°C)',
+              'High electronegativity',
+              'A large number of valence electrons',
+              'A high boiling point (2229°C)',
+            ],
+        }
+    q2:
+      kk: { text: 'Галлий атомының ядросында қанша протон бар?', options: ['38', '31', '69', '71'] }
+      en:
+        { text: 'How many protons are in the nucleus of a gallium atom?', options: ['38', '31', '69', '71'] }
+    q3:
+      kk:
+        {
+          text: '+3 тотығу дәрежесін ескергенде галлий қандай ион түзеді?',
+          options: ['Анион', 'Бейтарап атом', 'Катион', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'Given its oxidation state of +3, what kind of ion does gallium form?',
+          options: ['Anion', 'Neutral atom', 'Cation', 'Isotope'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Галлийдің қай қолданылуы оның жоғары жылдамдықты электроникаға арналған қосылыстар түзу қабілетімен байланысты?',
+          options:
+            [
+              'Микросхемаларға арналған галлий арсениді (GaAs)',
+              'Термометрлерге арналған сұйық қорытпалар',
+              'ПЭТ-диагностикаға арналған радиофармацевтика',
+              'Жер серіктеріне арналған фотоэлектрлік элементтер',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of gallium is related to its ability to form compounds for high-speed electronics?',
+          options:
+            [
+              'Gallium arsenide (GaAs) for microchips',
+              'Liquid alloys for thermometers',
+              'Radiopharmaceuticals for PET scans',
+              'Solar cells for satellites',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Галлийдің қай қосылысы көк және ақ жарықдиодтардың жартылай өткізгіші болып табылады?',
+          options:
+            ['Галлий нитриді (GaN)', 'Галлий оксиді (Ga₂O₃)', 'Галлий хлориді (GaCl₃)', 'Галлий сульфаты'],
+        }
+      en:
+        {
+          text: 'Which gallium compound is the semiconductor of blue and white LEDs?',
+          options:
+            ['Gallium nitride (GaN)', 'Gallium oxide (Ga₂O₃)', 'Gallium chloride (GaCl₃)', 'Gallium sulfate'],
+        }
+  germanium:
+    q1:
+      kk:
+        {
+          text: 'Германийдің қай қасиеті оны түнгі көру құралдарында пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Инфрақызыл сәулелерді өткізуі',
+              'Жоғары металдық жылтыры',
+              'Қатқанда ұлғаю қабілеті',
+              'Төмен оптикалық дисперсия',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of germanium allows it to be used in night-vision devices?',
+          options:
+            [
+              'Transparency to infrared radiation',
+              'A strong metallic lustre',
+              'Expanding when it solidifies',
+              'Low optical dispersion',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Германийдің ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?',
+          options: ['32', '42', '74', '36'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of germanium?',
+          options: ['32', '42', '74', '36'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Германий элементтің қай түріне жатады?',
+          options: ['Металл', 'Бейметалл', 'Жартылай металл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'What type of element is germanium?',
+          options: ['Metal', 'Nonmetal', 'Metalloid', 'Inert gas'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Германийдің қай қолданылуы оның электрді тек белгілі бір жағдайларда өткізу қабілетімен байланысты?',
+          options:
+            [
+              'Алғашқы транзисторлардың материалы',
+              'ПЭТ-пластиктер өндірісіне арналған катализатор',
+              'Инфрақызыл оптиканың құрамдас бөлігі',
+              'Электроникаға арналған қорытпаларға қоспа',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of germanium is related to its ability to conduct electricity only under certain conditions?',
+          options:
+            [
+              'The material of the first transistors',
+              'A catalyst for making PET plastics',
+              'A component of infrared optics',
+              'An additive in alloys for electronics',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Германийдің қай изотопы медициналық ПЭТ-сканерлерде қолданылады?',
+          options: ['Германий-74', 'Германий-68', 'Германий-70', 'Германий-76'],
+        }
+      en:
+        {
+          text: 'Which isotope of germanium is used in medical PET scanners?',
+          options: ['Germanium-74', 'Germanium-68', 'Germanium-70', 'Germanium-76'],
+        }
+  arsenic:
+    q1:
+      kk: { text: 'Мышьяк атомының ядросында қанша протон бар?', options: ['33', '42', '75', '15'] }
+      en:
+        { text: 'How many protons are in the nucleus of an arsenic atom?', options: ['33', '42', '75', '15'] }
+    q2:
+      kk:
+        {
+          text: 'Мышьяк элементтің қай түріне жатады?',
+          options: ['Металл', 'Жартылай металл', 'Бейметалл', 'Инертті газ'],
+        }
+      en:
+        { text: 'What type of element is arsenic?', options: ['Metal', 'Metalloid', 'Nonmetal', 'Inert gas'] }
+    q3:
+      kk:
+        {
+          text: 'Мышьяк атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Ar] 3d¹⁰ 4s² 4p²', '[Ar] 3d¹⁰ 4s² 4p⁴', '[Ar] 3d¹⁰ 4s² 4p³', '[Ar] 3d¹⁰ 4s² 4p⁵'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the arsenic atom?',
+          options: ['[Ar] 3d¹⁰ 4s² 4p²', '[Ar] 3d¹⁰ 4s² 4p⁴', '[Ar] 3d¹⁰ 4s² 4p³', '[Ar] 3d¹⁰ 4s² 4p⁵'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Мышьяктың сұр аллотропиялық түріне қандай қасиет тән?',
+          options:
+            [
+              'Металл тәрізді сынғыш қатты зат',
+              'Бөлме температурасында газ күйінде болуы',
+              'Электрді жақсы өткізуі',
+              'Суда еруі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property is typical of the grey allotrope of arsenic?',
+          options:
+            [
+              'A brittle solid with a metallic appearance',
+              'Being a gas at room temperature',
+              'Good electrical conductivity',
+              'Solubility in water',
+            ],
+        }
+    q5:
+      kk: { text: 'Қосылыстардағы мышьякқа қай тотығу дәрежесі тән ЕМЕС?', options: ['+3', '+2', '+5', '-3'] }
+      en:
+        {
+          text: 'Which oxidation state is NOT typical of arsenic in compounds?',
+          options: ['+3', '+2', '+5', '-3'],
+        }
+  selenium:
+    q1:
+      kk:
+        {
+          text: 'Селеннің қай қасиеті оның күн элементтері мен жарық датчиктерінде қолданылуын түсіндіреді?',
+          options:
+            [
+              'Ерекше фотоөткізгіштігі (жарықта токты жақсырақ өткізеді)',
+              'Күкіртпен химиялық ұқсастығы',
+              'Металдармен селенидтер түзу қабілеті',
+              'Бірнеше аллотропиялық түрінің болуы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of selenium explains its use in solar cells and light sensors?',
+          options:
+            [
+              'Exceptional photoconductivity (it conducts better in light)',
+              'Chemical similarity to sulfur',
+              'The ability to form selenides with metals',
+              'Having several allotropes',
+            ],
+        }
+    q2:
+      kk: { text: 'Селен атомының ядросында қанша протон бар?', options: ['46', '34', '80', '16'] }
+      en:
+        { text: 'How many protons are in the nucleus of a selenium atom?', options: ['46', '34', '80', '16'] }
+    q3:
+      kk: { text: 'Қосылыстардағы селенге қай тотығу дәрежесі тән ЕМЕС?', options: ['-2', '+4', '+6', '+2'] }
+      en:
+        {
+          text: 'Which oxidation state is NOT typical of selenium in compounds?',
+          options: ['-2', '+4', '+6', '+2'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Селеннің қай изотопы табиғатта ең көп таралған?',
+          options: ['Селен-80', 'Селен-75', 'Селен-74', 'Селен-82'],
+        }
+      en:
+        {
+          text: 'Which isotope of selenium is the most common in nature?',
+          options: ['Selenium-80', 'Selenium-75', 'Selenium-74', 'Selenium-82'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Селен периодтық жүйенің қай тобы мен периодында орналасқан?',
+          options: ['3-период, 15-топ', '4-период, 16-топ', '4-период, 15-топ', '3-период, 16-топ'],
+        }
+      en:
+        {
+          text: 'In which group and period of the periodic table is selenium?',
+          options: ['Period 3, group 15', 'Period 4, group 16', 'Period 4, group 15', 'Period 3, group 16'],
+        }
+  bromine:
+    q1:
+      kk:
+        {
+          text: 'Жай зат ретіндегі бром туралы қай тұжырым дұрыс?',
+          options:
+            [
+              'Бром — бөлме температурасында сұйық күйде болатын жалғыз бейметалл.',
+              'Бром — бөлме температурасында сұйық күйде болатын жалғыз элемент.',
+              'Бөлме температурасында бром — өткір иісті газ.',
+              'Бөлме температурасында бром — қатты зат.',
+            ],
+        }
+      en:
+        {
+          text: 'Which statement about bromine as a simple substance is true?',
+          options:
+            [
+              'Bromine is the only nonmetal that is liquid at room temperature.',
+              'Bromine is the only element that is liquid at room temperature.',
+              'At room temperature bromine is a gas with a sharp smell.',
+              'At room temperature bromine is a solid.',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Электрондық конфигурациясы [Ar] 3d¹⁰ 4s² 4p⁵ болса, бром атомының сыртқы энергетикалық деңгейінде қанша электрон бар?',
+          options: ['5', '7', '2', '10'],
+        }
+      en:
+        {
+          text: 'How many electrons are in the outer energy level of a bromine atom if its electron configuration is [Ar] 3d¹⁰ 4s² 4p⁵?',
+          options: ['5', '7', '2', '10'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Сілтілік металмен, мысалы натриймен, әрекеттескенде бром химиялық байланыстың қай түрін түзеді?',
+          options: ['Коваленттік полюссіз', 'Металдық', 'Иондық', 'Коваленттік полюсті'],
+        }
+      en:
+        {
+          text: 'Which type of chemical bond will bromine most likely form when it reacts with an alkali metal such as sodium?',
+          options: ['Nonpolar covalent', 'Metallic', 'Ionic', 'Polar covalent'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Бромның қай қасиеті оны күшті тотықтырғыш ретінде сипаттайды?',
+          options:
+            [
+              'Электрондарды қабылдап, көптеген металдармен және бейметалдармен әрекеттесу қабілеті.',
+              'Қайнау температурасының төмендігі (58.8°C).',
+              'Сілтілік металдармен бромидтер түзуі.',
+              'Органикалық еріткіштерде жақсы еруі.',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of bromine characterises it as a strong oxidising agent?',
+          options:
+            [
+              'Its ability to react with most metals and nonmetals by accepting electrons.',
+              'Its low boiling point (58.8°C).',
+              'Forming bromides with alkali metals.',
+              'Good solubility in organic solvents.',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Бромның ең көп таралған тұрақты изотопы бром-79 ядросында қанша нейтрон бар?',
+          options: ['35', '44', '79', '114'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of bromine-79, the most common stable isotope of bromine?',
+          options: ['35', '44', '79', '114'],
+        }
+  krypton:
+    q1:
+      kk:
+        {
+          text: 'Криптонның қай қасиеті оны энергия үнемдейтін терезелерде толтырғыш газ ретінде пайдалануды түсіндіреді?',
+          options:
+            [
+              'Жылу өткізгіштігінің төмендігі және инерттілігі',
+              'Жоғары тығыздығы мен жарқын сәулеленуі',
+              'Клатраттар түзу қабілеті',
+              'Фтормен жоғары реакциялық қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of krypton explains its use as a filler gas in energy-efficient windows?',
+          options:
+            [
+              'Low thermal conductivity and inertness',
+              'High density and a bright glow',
+              'The ability to form clathrates',
+              'High reactivity with fluorine',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Криптонның ең көп таралған тұрақты изотопының ядросында қанша протон мен нейтрон бар?',
+          options:
+            [
+              '36 протон және 36 нейтрон',
+              '36 протон және 48 нейтрон',
+              '48 протон және 36 нейтрон',
+              '84 протон және 36 нейтрон',
+            ],
+        }
+      en:
+        {
+          text: 'How many protons and neutrons are in the nucleus of the most common stable isotope of krypton?',
+          options:
+            [
+              '36 protons and 36 neutrons',
+              '36 protons and 48 neutrons',
+              '48 protons and 36 neutrons',
+              '84 protons and 36 neutrons',
+            ],
+        }
+    q3:
+      kk:
+        {
+          text: 'Неге асыл газ ретіндегі криптон оттегі сияқты екі атомды молекулалар түзбей, бір атомды молекулалар (Kr) күйінде болады?',
+          options:
+            [
+              'Қайнау температурасы жоғары болғандықтан',
+              'Тығыздығы төмен болғандықтан',
+              'Валенттік электрондарының октеті толық болғандықтан',
+              'Клатраттар түзе алатындықтан',
+            ],
+        }
+      en:
+        {
+          text: 'Why does krypton, a noble gas, exist as single atoms (Kr) rather than forming diatomic molecules like oxygen?',
+          options:
+            [
+              'Because of its high boiling point',
+              'Because of its low density',
+              'Because of its complete octet of valence electrons',
+              'Because it can form clathrates',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Криптонның қай қолданылуы оның электр разрядында ашық ақ-жасылдау жарық беру қабілетіне негізделген?',
+          options:
+            [
+              'Әуежайлардың ұшу-қону жолақтарын жоғары қарқынды жарықтандыру',
+              'Антарктиданың ежелгі мұзының жасын анықтау',
+              'Ядролық отынды қайта өңдеуді бақылау',
+              'Метр эталонын анықтау',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of krypton is based on its bright greenish-white glow in an electric discharge?',
+          options:
+            [
+              'High-intensity lighting of airport runways',
+              'Dating ancient Antarctic ice',
+              'Monitoring nuclear fuel reprocessing',
+              'Defining the standard metre',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Жасырын ядролық реакторларды анықтау үшін криптонның қай изотопы қолданылады?',
+          options: ['Криптон-81', 'Криптон-85', 'Криптон-84', 'Криптон-86'],
+        }
+      en:
+        {
+          text: 'Which isotope of krypton is used to detect hidden nuclear reactors?',
+          options: ['Krypton-81', 'Krypton-85', 'Krypton-84', 'Krypton-86'],
+        }
+  rubidium:
+    q1:
+      kk:
+        {
+          text: 'Рубидийдің қай қасиеті оның галогендермен, мысалы хлормен, иондық қосылыстар түзу қабілетін түсіндіреді?',
+          options:
+            [
+              'Рубидий — жалғыз валенттік электронын оңай беретін ең электроң металдардың бірі.',
+              'Рубидийдің электртерістілігі жоғары және галогендердің электрондарын тартады.',
+              'Рубидийдің реакциялық қабілеті төмен және галогендермен әрекеттеспейді.',
+              'Рубидий галогендермен ортақ электрондар арқылы коваленттік байланыс түзеді.',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of rubidium explains its ability to form ionic compounds with halogens such as chlorine?',
+          options:
+            [
+              'Rubidium is one of the most electropositive metals and easily gives up its single valence electron.',
+              'Rubidium has high electronegativity and attracts the electrons of halogens.',
+              'Rubidium has low reactivity and does not react with halogens.',
+              'Rubidium forms covalent bonds with halogens by sharing electrons.',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Рубидий табиғатта неге ешқашан бос күйінде кездеспей, тек қосылыстар құрамында болады?',
+          options:
+            [
+              'Рубидий — тез ыдырайтын радиоактивті элемент.',
+              'Рубидий — ауада өздігінен тұтанатын және сумен қатты әрекеттесетін реакциялық қабілеті жоғары сілтілік металл.',
+              'Рубидий — қосылыс түзбейтін инертті газ.',
+              'Рубидийдің балқу температурасы өте төмен және табиғатта буланып кетеді.',
+            ],
+        }
+      en:
+        {
+          text: 'Why is rubidium never found free in nature, only in compounds?',
+          options:
+            [
+              'Rubidium is a radioactive element that decays quickly.',
+              'Rubidium is a highly reactive alkali metal that ignites spontaneously in air and reacts violently with water.',
+              'Rubidium is an inert gas that forms no compounds.',
+              'Rubidium has a very low melting point and evaporates in nature.',
+            ],
+        }
+    q3:
+      kk:
+        {
+          text: 'Рубидий атомы құрылысының қай ерекшелігі оның сілтілік металдарға жататынын және +1 тотығу дәрежесін анықтайды?',
+          options:
+            [
+              'Ядросында 37 протонның болуы.',
+              '5-периодта орналасуы.',
+              '[Kr] 5s¹ электрондық конфигурациясы, яғни сыртқы энергетикалық деңгейдегі бір валенттік электрон.',
+              'Ең көп таралған изотопында 48 нейтронның болуы.',
+            ],
+        }
+      en:
+        {
+          text: 'Which feature of the rubidium atom makes it an alkali metal with an oxidation state of +1?',
+          options:
+            [
+              'Having 37 protons in the nucleus.',
+              'Being in period 5.',
+              'The electron configuration [Kr] 5s¹, i.e. one valence electron in the outer energy level.',
+              'Having 48 neutrons in its most common isotope.',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Рубидийдің қай қолданылуы оның катион түзу қабілетімен және медициналық диагностикамен тікелей байланысты?',
+          options:
+            [
+              'Рубидий-82 жүрек ауруларын анықтау үшін миокардтың ПЭТ-бейнелеуінде қолданылады.',
+              'Рубидий талшықты-оптикалық жүйелерге арналған шыны өндірісінде қолданылады.',
+              'Рубидий GPS жүйелеріне арналған атомдық сағаттарда қолданылады.',
+              'Рубидий Бозе-Эйнштейн конденсатын зерттеуде қолданылады.',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of rubidium is directly related to its ability to form cations and to medical diagnostics?',
+          options:
+            [
+              'Rubidium-82 is used in PET imaging of the heart muscle to diagnose heart disease.',
+              'Rubidium is used to make glass for fibre-optic systems.',
+              'Rubidium is used in atomic clocks for GPS.',
+              'Rubidium is used in research on Bose–Einstein condensates.',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Рубидийдің қай изотопы тау жыныстарының жасын анықтау үшін қолданылады және мұны қай қасиеті мүмкін етеді?',
+          options:
+            [
+              'Рубидий-85, себебі ол жалғыз тұрақты изотоп.',
+              'Рубидий-87, себебі ол уақыт өте ыдырайтын ұзақ өмір сүретін радиоактивті изотоп.',
+              'Рубидий-82, себебі ол ПЭТ-бейнелеуде қолданылады.',
+              'Рубидий-37, себебі оның атомдық нөмірі протондар санына сәйкес келеді.',
+            ],
+        }
+      en:
+        {
+          text: 'Which isotope of rubidium is used to date rocks, and which property makes this possible?',
+          options:
+            [
+              'Rubidium-85, because it is the only stable isotope.',
+              'Rubidium-87, because it is a long-lived radioactive isotope that decays over time.',
+              'Rubidium-82, because it is used in PET imaging.',
+              'Rubidium-37, because its atomic number equals the number of protons.',
+            ],
+        }
+  strontium:
+    q1:
+      kk:
+        {
+          text: 'Стронцийдің қай қасиеті оны пиротехникада пайдалануға жарамды етеді?',
+          options:
+            [
+              'Жалынды ашық таңқурай (қызыл) түске бояуы',
+              'Жоғары электр және жылу өткізгіштік',
+              'Металл үшін тығыздығының төмендігі',
+              'Ауамен жанасқанда сарғаятын күміс түсі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of strontium makes it suitable for fireworks?',
+          options:
+            [
+              'It colours a flame bright crimson (red)',
+              'High electrical and thermal conductivity',
+              'Low density for a metal',
+              'A silvery look that yellows in air',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Стронцийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?',
+          options: ['38', '50', '88', '82'],
+        }
+      en:
+        {
+          text: 'How many neutrons does the most common stable isotope of strontium have?',
+          options: ['38', '50', '88', '82'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Стронций өз қосылыстарында әдетте қандай тотығу дәрежесін көрсетеді?',
+          options: ['+1', '-2', '+2', '0'],
+        }
+      en:
+        {
+          text: 'Which oxidation state does strontium usually show in its compounds?',
+          options: ['+1', '-2', '+2', '0'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Стронций атомындағы қай бөлшек оның химиялық элемент ретінде қандай екенін анықтайды?',
+          options: ['Протон', 'Нейтрон', 'Электрон', 'Ядро'],
+        }
+      en:
+        {
+          text: 'Which particle in a strontium atom determines which chemical element it is?',
+          options: ['Proton', 'Neutron', 'Electron', 'Nucleus'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Стронций атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?',
+          options: ['1', '2', '5', '8'],
+        }
+      en:
+        {
+          text: 'How many valence electrons are in the outer energy level of a strontium atom?',
+          options: ['1', '2', '5', '8'],
+        }
+  yttrium:
+    q1:
+      kk: { text: 'Иттрий атомының ядросында қанша протон бар?', options: ['39', '50', '89', '31'] }
+      en:
+        { text: 'How many protons are in the nucleus of an yttrium atom?', options: ['39', '50', '89', '31'] }
+    q2:
+      kk:
+        {
+          text: 'Қосылыстардағы иттрийдің әдеттегі тотығу дәрежесі қандай?',
+          options: ['+1', '+3', '+2', '+4'],
+        }
+      en:
+        {
+          text: 'What is the typical oxidation state of yttrium in compounds?',
+          options: ['+1', '+3', '+2', '+4'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Иттрийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?',
+          options: ['⁹⁰Y', '⁹¹Y', '⁸⁹Y', '³⁹Y'],
+        }
+      en:
+        {
+          text: 'Which isotope of yttrium is its only stable natural isotope?',
+          options: ['⁹⁰Y', '⁹¹Y', '⁸⁹Y', '³⁹Y'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Иттрий периодтық жүйенің қай тобы мен периодында орналасқан?',
+          options: ['3-топ, 4-период', '3-топ, 5-период', '5-топ, 3-период', '4-топ, 5-период'],
+        }
+      en:
+        {
+          text: 'In which group and period of the periodic table is yttrium?',
+          options: ['Group 3, period 4', 'Group 3, period 5', 'Group 5, period 3', 'Group 4, period 5'],
+        }
+  zirconium:
+    q1:
+      kk:
+        {
+          text: 'Цирконийдің қай қасиеті оны ядролық реакторлардағы жылу бөлгіш элементтердің қабықшалары үшін аса маңызды материал етеді?',
+          options:
+            [
+              'Жылулық нейтрондарды өткізуі',
+              'Балқу температурасының жоғары болуы',
+              'Оксид қабатын түзу қабілеті',
+              'Жоғары электр өткізгіштік',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of zirconium makes it a critical material for fuel-rod cladding in nuclear reactors?',
+          options:
+            [
+              'Transparency to thermal neutrons',
+              'A high melting point',
+              'The ability to form an oxide layer',
+              'High electrical conductivity',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Цирконий атомында 40 протон бар. Бейтарап цирконий атомында қанша электрон бар?',
+          options: ['50', '40', '90', '80'],
+        }
+      en:
+        {
+          text: 'A zirconium atom has 40 protons. How many electrons are in a neutral zirconium atom?',
+          options: ['50', '40', '90', '80'],
+        }
+    q3:
+      kk: { text: 'Қосылыстарындағы цирконийге қай тотығу дәрежесі тән?', options: ['+2', '+3', '+4', '+1'] }
+      en:
+        {
+          text: 'Which oxidation state is typical of zirconium in its compounds?',
+          options: ['+2', '+3', '+4', '+1'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Цирконийдің қай изотопы табиғатта ең көп таралған?',
+          options: ['Цирконий-90', 'Цирконий-91', 'Цирконий-92', 'Цирконий-96'],
+        }
+      en:
+        {
+          text: 'Which isotope of zirconium is the most common in nature?',
+          options: ['Zirconium-90', 'Zirconium-91', 'Zirconium-92', 'Zirconium-96'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Циркон құмынан цирконийді өнеркәсіптік жолмен алу үшін қай әдіс қолданылады?',
+          options:
+            [
+              'Ван-Аркель — де Бур әдісі',
+              'Кролл процесі',
+              'Балқыманы электролиздеу',
+              'Сутегімен тікелей тотықсыздандыру',
+            ],
+        }
+      en:
+        {
+          text: 'Which method is used to produce zirconium industrially from zircon sand?',
+          options:
+            [
+              'The van Arkel–de Boer process',
+              'The Kroll process',
+              'Electrolysis of a melt',
+              'Direct reduction with hydrogen',
+            ],
+        }
+  niobium:
+    q1:
+      kk: { text: 'Ниобий атомының ядросында қанша протон бар?', options: ['41', '52', '93', '5'] }
+      en: { text: 'How many protons are in the nucleus of a niobium atom?', options: ['41', '52', '93', '5'] }
+    q2:
+      kk:
+        {
+          text: 'Ниобий жай затына химиялық байланыстың қай түрі тән?',
+          options: ['Коваленттік полюссіз', 'Металдық', 'Иондық', 'Коваленттік полюсті'],
+        }
+      en:
+        {
+          text: 'Which type of chemical bond is typical of niobium as a simple substance?',
+          options: ['Nonpolar covalent', 'Metallic', 'Ionic', 'Polar covalent'],
+        }
+    q3:
+      kk: { text: 'Қосылыстардағы ниобийге қай тотығу дәрежесі тән?', options: ['+1', '+2', '+5', '+7'] }
+      en:
+        {
+          text: 'Which oxidation state is typical of niobium in compounds?',
+          options: ['+1', '+2', '+5', '+7'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Ниобийдің қай қасиеті оны асқын өткізгіш магниттер үшін аса маңызды етеді?',
+          options:
+            [
+              '9.2 К температурада асқын өткізгішке айналады',
+              'Балқу температурасының жоғары болуы',
+              'Қорғаныш оксид қабатын түзеді',
+              'Өтпелі металл болып табылады',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of niobium makes it critical for superconducting magnets?',
+          options:
+            [
+              'It becomes a superconductor at 9.2 K',
+              'A high melting point',
+              'It forms a protective oxide layer',
+              'It is a transition metal',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Ниобийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?',
+          options: ['41', '52', '93', '95'],
+        }
+      en:
+        {
+          text: 'How many neutrons does the most common stable isotope of niobium have?',
+          options: ['41', '52', '93', '95'],
+        }
+  molybdenum:
+    q1:
+      kk: { text: 'Молибден атомының ядросында қанша протон бар?', options: ['42', '56', '98', '24'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of a molybdenum atom?',
+          options: ['42', '56', '98', '24'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Негізгі күйдегі молибден атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Kr] 4d⁴ 5s²', '[Kr] 4d⁵ 5s¹', '[Kr] 4d⁶ 5s⁰', '[Kr] 4d³ 5s²'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the molybdenum atom in its ground state?',
+          options: ['[Kr] 4d⁴ 5s²', '[Kr] 4d⁵ 5s¹', '[Kr] 4d⁶ 5s⁰', '[Kr] 4d³ 5s²'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Молибденнің қай изотопы табиғатта ең көп таралған?',
+          options: ['Молибден-92', 'Молибден-96', 'Молибден-98', 'Молибден-100'],
+        }
+      en:
+        {
+          text: 'Which isotope of molybdenum is the most common in nature?',
+          options: ['Molybdenum-92', 'Molybdenum-96', 'Molybdenum-98', 'Molybdenum-100'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Молибденнің қай қасиеті оны реактивті қозғалтқыштардың бөлшектері мен турбина қалақтарында пайдалану үшін аса құнды етеді?',
+          options:
+            [
+              'Өте жоғары температурада ерекше беріктігін сақтауы',
+              'Жоғары электр өткізгіштік',
+              'Жылулық ұлғаю коэффициентінің төмендігі',
+              'Жылтыр күміс-ақ түсі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of molybdenum makes it especially valuable for jet engine parts and turbine blades?',
+          options:
+            [
+              'It keeps exceptional strength at very high temperatures',
+              'High electrical conductivity',
+              'A low coefficient of thermal expansion',
+              'A shiny silvery-white colour',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Молибден табиғатта негізінен қай минералда кездеседі?',
+          options: ['Гематит', 'Молибденит (MoS₂)', 'Кальцит', 'Кварц'],
+        }
+      en:
+        {
+          text: 'In which mineral is molybdenum mainly found in nature?',
+          options: ['Haematite', 'Molybdenite (MoS₂)', 'Calcite', 'Quartz'],
+        }
+  technetium:
+    q1:
+      kk:
+        {
+          text: 'Технецийдің қай қасиеті оны құралдарды калибрлеуге арналған бета-сәуле шығарғыш ретінде пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Радиоактивтілігі: бета- және гамма-сәулелер шығарады',
+              'Жоғары электр және жылу өткізгіштік',
+              'Платинаға ұқсас күміс-сұр түсі',
+              '7.46 К температурада асқын өткізгішке айналу қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of technetium allows it to be used as a beta source for calibrating instruments?',
+          options:
+            [
+              'Radioactivity: it emits beta and gamma radiation',
+              'High electrical and thermal conductivity',
+              'A silvery-grey look similar to platinum',
+              'The ability to become a superconductor at 7.46 K',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Технецийдің қай изотопының ядросында 55 нейтрон бар?',
+          options: ['Технеций-99m', 'Технеций-98', 'Технеций-99', 'Технеций-97'],
+        }
+      en:
+        {
+          text: 'Which isotope of technetium has 55 neutrons in its nucleus?',
+          options: ['Technetium-99m', 'Technetium-98', 'Technetium-99', 'Technetium-97'],
+        }
+    q3:
+      kk:
+        {
+          text: '+7-ден басқа технецийдің ең жиі кездесетін тотығу дәрежесі қандай?',
+          options: ['+1', '-1', '+4', '+6'],
+        }
+      en:
+        {
+          text: 'Apart from +7, which oxidation state of technetium is the most common?',
+          options: ['+1', '-1', '+4', '+6'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Тиімді болса да, технеций неге болат коррозиясының ингибиторы ретінде іс жүзінде қолданылмайды?',
+          options:
+            [
+              'Радиоактивті болғандықтан',
+              'Балқу температурасы жоғары болғандықтан',
+              'Парамагнитті болғандықтан',
+              'Тотықтырғыш қышқылдарда еритіндіктен',
+            ],
+        }
+      en:
+        {
+          text: 'Why is technetium hardly used as a corrosion inhibitor for steel, even though it is effective?',
+          options:
+            [
+              'Because it is radioactive',
+              'Because of its high melting point',
+              'Because it is paramagnetic',
+              'Because it dissolves in oxidising acids',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Технецийдің қай қолданылуы оның гамма-сәуле шығару қабілетімен байланысты?',
+          options:
+            [
+              'Металдардың коррозия процестерін зерттеу',
+              'Медициналық диагностика: сүйектерді, жүректі және мүшелерді бейнелеу',
+              'Химиялық қондырғылардағы ағындарды бақылау',
+              'Бета-сәуле шығарғыштарды калибрлеу',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of technetium is related to its ability to emit gamma rays?',
+          options:
+            [
+              'Studying corrosion of metals',
+              'Medical diagnostics: imaging of bones, the heart and organs',
+              'Monitoring flows in chemical plants',
+              'Calibrating beta sources',
+            ],
+        }
+  ruthenium:
+    q1:
+      kk: { text: 'Рутений атомының ядросында қанша протон бар?', options: ['44', '58', '102', '8'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of a ruthenium atom?',
+          options: ['44', '58', '102', '8'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Қасиеттері мен Менделеев кестесіндегі орнына қарай рутений химиялық элементтің қай түріне жатады?',
+          options: ['Бейметалл', 'Металл', 'Жартылай металл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'Based on its properties and position in the periodic table, what type of element is ruthenium?',
+          options: ['Nonmetal', 'Metal', 'Metalloid', 'Inert gas'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Негізгі күйдегі рутений атомына қай электрондық конфигурация тән?',
+          options: ['[Kr] 4d⁷ 5s²', '[Kr] 4d⁸ 5s¹', '[Kr] 4d⁷ 5s¹', '[Kr] 4d⁶ 5s²'],
+        }
+      en:
+        {
+          text: 'Which electron configuration does the ruthenium atom have in its ground state?',
+          options: ['[Kr] 4d⁷ 5s²', '[Kr] 4d⁸ 5s¹', '[Kr] 4d⁷ 5s¹', '[Kr] 4d⁶ 5s²'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Рутенийдің қай изотопы табиғатта ең көп таралған?',
+          options: ['Рутений-102', 'Рутений-96', 'Рутений-106', 'Рутений-104'],
+        }
+      en:
+        {
+          text: 'Which isotope of ruthenium is the most common in nature?',
+          options: ['Ruthenium-102', 'Ruthenium-96', 'Ruthenium-106', 'Ruthenium-104'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Рутенийдің қай қасиеті оны электроникада, мысалы чип-резисторларда, пайдалану үшін аса құнды етеді?',
+          options:
+            [
+              'Балқу температурасының жоғары болуы',
+              'Химиялық әсер мен тозуға ерекше төзімділігі',
+              'Асқын өткізгішке айналу қабілеті',
+              'Ұшқыш оксид түзуі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of ruthenium makes it especially valuable in electronics, for example in chip resistors?',
+          options:
+            [
+              'A high melting point',
+              'Exceptional resistance to chemical attack and wear',
+              'The ability to become a superconductor',
+              'Forming a volatile oxide',
+            ],
+        }
+  rhodium:
+    q1:
+      kk: { text: 'Родий атомының ядросында қанша протон бар?', options: ['45', '58', '103', '78'] }
+      en:
+        { text: 'How many protons are in the nucleus of a rhodium atom?', options: ['45', '58', '103', '78'] }
+    q2:
+      kk:
+        {
+          text: 'Жіктеу бойынша родий химиялық элементтің қай түріне жатады?',
+          options: ['Бейметалл', 'Өтпелі металл', 'Жартылай металл', 'Сілтілік металл'],
+        }
+      en:
+        {
+          text: 'According to classification, what type of element is rhodium?',
+          options: ['Nonmetal', 'Transition metal', 'Metalloid', 'Alkali metal'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Родий атомына қай электрондық конфигурация тән?',
+          options: ['[Kr] 4d⁷ 5s²', '[Kr] 4d⁹ 5s⁰', '[Kr] 4d⁸ 5s¹', '[Kr] 4d¹⁰ 5s⁰'],
+        }
+      en:
+        {
+          text: 'Which electron configuration does the rhodium atom have?',
+          options: ['[Kr] 4d⁷ 5s²', '[Kr] 4d⁹ 5s⁰', '[Kr] 4d⁸ 5s¹', '[Kr] 4d¹⁰ 5s⁰'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Родийдің қай қасиеті оны каталитикалық түрлендіргіштерде пайдалануға жарамды етеді?',
+          options:
+            [
+              'Тамаша каталитикалық белсенділігі',
+              'Жоғары тығыздығы',
+              'Балқу температурасының төмендігі',
+              'Суда еру қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of rhodium makes it suitable for catalytic converters?',
+          options:
+            ['Excellent catalytic activity', 'High density', 'A low melting point', 'Solubility in water'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Родийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?',
+          options: ['45', '58', '103', '101'],
+        }
+      en:
+        {
+          text: 'How many neutrons does the most common stable isotope of rhodium have?',
+          options: ['45', '58', '103', '101'],
+        }
+  palladium:
+    q1:
+      kk:
+        {
+          text: 'Палладий атомының қай қасиеті оның өз көлемінен 900 есе көп сутегіні сіңіру қабілетін түсіндіреді?',
+          options:
+            [
+              'Толық толған 4d-электрондық қабат пен бос 5s-орбитальдің болуы',
+              'Балқу температурасының жоғары болуы, 1555°C',
+              'Ядросындағы нейтрондардың көп болуы (¹⁰⁶Pd изотопында 60)',
+              'Платинамен салыстырғанда тығыздығының төмендігі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of the palladium atom explains its unique ability to absorb up to 900 times its own volume of hydrogen?',
+          options:
+            [
+              'A completely filled 4d shell and an empty 5s orbital',
+              'A high melting point of 1555°C',
+              'Many neutrons in the nucleus (60 in ¹⁰⁶Pd)',
+              'A low density compared with platinum',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Палладий атомы екі электронын жоғалтып, +2 тотығу дәрежесін көрсеткенде қандай бөлшек түзіледі?',
+          options: ['Анион', 'Катион', 'Нейтрон', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'Which particle forms when a palladium atom loses two electrons and shows an oxidation state of +2?',
+          options: ['Anion', 'Cation', 'Neutron', 'Isotope'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Атомдық нөмірі 46 палладий неге бейметалдарға емес, металдарға жатады?',
+          options:
+            [
+              'Оның күміс-ақ түсі бар және астероидтың атымен аталған',
+              'Оның электрондық конфигурациясы 4d¹⁰-мен аяқталады',
+              'Ол жылу мен электрді жақсы өткізеді, жылтыр әрі созылғыш',
+              'Ол Менделеев кестесінің 5-периодында орналасқан',
+            ],
+        }
+      en:
+        {
+          text: 'Why is palladium, with atomic number 46, classed as a metal rather than a nonmetal?',
+          options:
+            [
+              'It is silvery-white and named after an asteroid',
+              'Its electron configuration ends in 4d¹⁰',
+              'It conducts heat and electricity well and is shiny and malleable',
+              'It is in period 5 of the periodic table',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Палладийдің медицинадағы қай қолданылуы оның ¹⁰³Pd изотопын пайдалануға негізделген?',
+          options:
+            [
+              'Простата обырының брахитерапиясы',
+              'Тіс тәждері мен көпірлерін жасау',
+              'Сутегі отын элементтерін жасау',
+              'Каталитикалық түрлендіргіштер өндірісі',
+            ],
+        }
+      en:
+        {
+          text: 'Which medical use of palladium is based on its isotope ¹⁰³Pd?',
+          options:
+            [
+              'Brachytherapy of prostate cancer',
+              'Making dental crowns and bridges',
+              'Building hydrogen fuel cells',
+              'Producing catalytic converters',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Элементтің атомдық нөмірі 46 болса, палладийдің ең көп таралған тұрақты изотопының (¹⁰⁶Pd) ядросында қанша нейтрон бар?',
+          options: ['46', '60', '106', '152'],
+        }
+      en:
+        {
+          text: 'If the atomic number is 46, how many neutrons are in the nucleus of the most common stable isotope of palladium (¹⁰⁶Pd)?',
+          options: ['46', '60', '106', '152'],
+        }
+  silver:
+    q1:
+      kk:
+        {
+          text: 'Күмістің қай қасиеті оны электр түйіспелерінде пайдалануға ең қолайлы етеді?',
+          options:
+            [
+              'Барлық металдардың ішіндегі ең жоғары электр өткізгіштік',
+              'Барлық металдардың ішіндегі ең жоғары жылу өткізгіштік',
+              'Жоғары шағылыстыру қабілеті',
+              'Микробқа қарсы қасиеттері',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of silver makes it the best choice for electrical contacts?',
+          options:
+            [
+              'The highest electrical conductivity of all metals',
+              'The highest thermal conductivity of all metals',
+              'High reflectivity',
+              'Antimicrobial properties',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Күмістің ең көп таралған тұрақты изотопының (күміс-107) ядросында қанша нейтрон бар?',
+          options: ['47', '60', '107', '109'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of silver (silver-107)?',
+          options: ['47', '60', '107', '109'],
+        }
+    q3:
+      kk: { text: 'Қосылыстарындағы күміске қай тотығу дәрежесі ең тән?', options: ['0', '+2', '+1', '-1'] }
+      en:
+        {
+          text: 'Which oxidation state is most typical of silver in its compounds?',
+          options: ['0', '+2', '+1', '-1'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Өнеркәсіпте күмісті қорғасыннан бөліп алу үшін қай процесс қолданылады?',
+          options: ['Паркс процесі', 'Электролиттік тазарту', 'Флотация', 'Балқыту'],
+        }
+      en:
+        {
+          text: 'Which process is used industrially to extract silver from lead?',
+          options: ['The Parkes process', 'Electrolytic refining', 'Flotation', 'Smelting'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Күмістің қай қасиеті оның дәстүрлі фотографияда қолданылуын түсіндіреді?',
+          options:
+            [
+              'Жоғары шағылыстыру қабілеті',
+              'Жарыққа сезімтал қосылыстар (галогенидтер) түзуі',
+              'Микробқа қарсы қасиеттері',
+              'Жоғары созылғыштығы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of silver explains its use in traditional photography?',
+          options:
+            [
+              'High reflectivity',
+              'Forming light-sensitive compounds (halides)',
+              'Antimicrobial properties',
+              'High ductility',
+            ],
+        }
+  cadmium:
+    q1:
+      kk: { text: 'Кадмий атомының ядросында қанша протон бар?', options: ['48', '66', '114', '96'] }
+      en:
+        { text: 'How many protons are in the nucleus of a cadmium atom?', options: ['48', '66', '114', '96'] }
+    q2:
+      kk:
+        {
+          text: 'Кадмий атомының электрондық конфигурациясы қандай?',
+          options: ['[Kr] 4d¹⁰ 5s¹', '[Kr] 4d¹⁰ 5s²', '[Kr] 4d⁹ 5s²', '[Kr] 4d⁸ 5s²'],
+        }
+      en:
+        {
+          text: 'What is the electron configuration of a cadmium atom?',
+          options: ['[Kr] 4d¹⁰ 5s¹', '[Kr] 4d¹⁰ 5s²', '[Kr] 4d⁹ 5s²', '[Kr] 4d⁸ 5s²'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Әдеттегі тотығу дәрежесіне сәйкес кадмий өз қосылыстарында қандай ион түзеді?',
+          options: ['Заряды -2 анион', 'Заряды +1 катион', 'Заряды +2 катион', 'Заряды -1 анион'],
+        }
+      en:
+        {
+          text: 'Given its typical oxidation state, what kind of ion does cadmium form in its compounds?',
+          options:
+            [
+              'An anion with a charge of -2',
+              'A cation with a charge of +1',
+              'A cation with a charge of +2',
+              'An anion with a charge of -1',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Кадмийдің қай қасиеті оны ядролық реакторлардың басқару өзектерінде пайдалануға жарамды етеді?',
+          options:
+            [
+              'Нейтрондарды сіңіру қабілеті',
+              'Жоғары электр өткізгіштік',
+              'Балқу температурасының төмендігі',
+              'Ашық түсті пигменттер түзуі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of cadmium makes it suitable for control rods in nuclear reactors?',
+          options:
+            [
+              'The ability to absorb neutrons',
+              'High electrical conductivity',
+              'A low melting point',
+              'Forming bright pigments',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Өнеркәсіпте кадмий қай металды өндірудің жанама өнімі ретінде алынады?',
+          options: ['Қорғасын', 'Мырыш', 'Мыс', 'Қалайы'],
+        }
+      en:
+        {
+          text: 'Industrially, cadmium is a by-product of producing which metal?',
+          options: ['Lead', 'Zinc', 'Copper', 'Tin'],
+        }
+  indium:
+    q1:
+      kk:
+        {
+          text: 'Индийдің қай қасиеті оны сенсорлық экрандарға арналған мөлдір өткізгіш жабын ретінде пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Жоғары электр және жылу өткізгіштігі мен мөлдір оксид қабықшаларын түзу қабілеті',
+              'Өте жұмсақтығы және оңай пішінін өзгертуі',
+              'Иілгенде сықырлау дыбысын шығаруы',
+              'Жабынды шашырату арқылы жағуға мүмкіндік беретін төмен балқу температурасы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of indium allows it to be used as a transparent conductive coating for touch screens?',
+          options:
+            [
+              'High electrical and thermal conductivity combined with the ability to form transparent oxide films',
+              'Extreme softness and easy deformation',
+              'Making a crackling sound when bent',
+              'A low melting point that allows coatings to be sprayed on',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Индийдің ең көп таралған изотопының (индий-115) ядросында қанша нейтрон бар?',
+          options: ['49', '66', '115', '95'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common isotope of indium (indium-115)?',
+          options: ['49', '66', '115', '95'],
+        }
+    q3:
+      kk: { text: 'Қосылыстардағы индийге қай тотығу дәрежесі ең тән?', options: ['+1', '+2', '+3', '0'] }
+      en:
+        {
+          text: 'Which oxidation state is most typical of indium in compounds?',
+          options: ['+1', '+2', '+3', '0'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Жұмсақ болса да, индий неге сілтілік металдарға емес, «басқа металдар» санатына жатады?',
+          options:
+            [
+              'Өйткені оның 3 валенттік электроны бар және ол 1-топта емес, 13-топта орналасқан',
+              'Өйткені ол қалыпты жағдайда сумен әрекеттеспейді',
+              'Өйткені оның қайнау температурасы жоғары',
+              'Өйткені ол табиғатта тек қосылыстар түрінде кездеседі',
+            ],
+        }
+      en:
+        {
+          text: 'Why is indium classed among the "other metals" and not the alkali metals, despite its softness?',
+          options:
+            [
+              'Because it has 3 valence electrons and is in group 13, not group 1',
+              'Because it does not react with water under normal conditions',
+              'Because it has a high boiling point',
+              'Because it occurs in nature only as compounds',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Медициналық диагностикада лейкоциттерді бақылау үшін индийдің қай изотопы қолданылады?',
+          options: ['Индий-115', 'Индий-111', 'Индий-113', 'Индий-49'],
+        }
+      en:
+        {
+          text: 'Which isotope of indium is used in medical diagnostics to track white blood cells?',
+          options: ['Indium-115', 'Indium-111', 'Indium-113', 'Indium-49'],
+        }
+  tin:
+    q1:
+      kk: { text: 'Қалайы атомының ядросында қанша протон бар?', options: ['50', '70', '120', '100'] }
+      en: { text: 'How many protons are in the nucleus of a tin atom?', options: ['50', '70', '120', '100'] }
+    q2:
+      kk: { text: 'Қалайыға қай химиялық таңба сәйкес келеді?', options: ['Ol', 'Sn', 'St', 'Ti'] }
+      en: { text: 'Which chemical symbol corresponds to tin?', options: ['Ol', 'Sn', 'St', 'Ti'] }
+    q3:
+      kk:
+        {
+          text: 'Қалайы атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p²', '[Kr] 4d¹⁰ 5s² 5p⁶', '[Xe] 4d¹⁰ 5s² 5p²', '[Kr] 4d⁸ 5s² 5p⁴'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the tin atom?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p²', '[Kr] 4d¹⁰ 5s² 5p⁶', '[Xe] 4d¹⁰ 5s² 5p²', '[Kr] 4d⁸ 5s² 5p⁴'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Қалайының қай аллотропиялық түрі бейметалл ұнтақ болып табылады?',
+          options: ['Сұр (альфа) қалайы', 'Ақ (бета) қалайы', 'Сұйық қалайы', 'Кристалдық қалайы'],
+        }
+      en:
+        {
+          text: 'Which allotrope of tin is a nonmetallic powder?',
+          options: ['Grey (alpha) tin', 'White (beta) tin', 'Liquid tin', 'Crystalline tin'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Қалайының қай изотопы табиғатта ең көп таралған?',
+          options: ['Қалайы-116', 'Қалайы-120', 'Қалайы-118', 'Қалайы-124'],
+        }
+      en:
+        {
+          text: 'Which isotope of tin is the most common in nature?',
+          options: ['Tin-116', 'Tin-120', 'Tin-118', 'Tin-124'],
+        }
+  antimony:
+    q1:
+      kk: { text: 'Сурьма атомының ядросында қанша протон бар?', options: ['51', '70', '121', '123'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of an antimony atom?',
+          options: ['51', '70', '121', '123'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Қасиеттері бойынша жіктегенде сурьма элементтің қай түріне жатады?',
+          options: ['Металл', 'Жартылай металл', 'Бейметалл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'According to its properties, what type of element is antimony?',
+          options: ['Metal', 'Metalloid', 'Nonmetal', 'Inert gas'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Сурьма атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p³', '[Kr] 4d¹⁰ 5s² 5p⁵', '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³', '[Ar] 3d¹⁰ 4s² 4p³'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the antimony atom?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p³', '[Kr] 4d¹⁰ 5s² 5p⁵', '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³', '[Ar] 3d¹⁰ 4s² 4p³'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Сурьманың қай қасиеті оны дәл құю үшін пайдалы етеді?',
+          options:
+            [
+              'Қатқанда сәл ұлғаяды',
+              'Балқу температурасы жоғары',
+              'Электрді жақсы өткізеді',
+              'Қаттылығы жоғары',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of antimony makes it useful for precision casting?',
+          options:
+            [
+              'It expands slightly when it solidifies',
+              'It has a high melting point',
+              'It conducts electricity well',
+              'It is very hard',
+            ],
+        }
+    q5:
+      kk: { text: 'Қосылыстардағы сурьмаға қай тотығу дәрежесі тән ЕМЕС?', options: ['-3', '+2', '+3', '+5'] }
+      en:
+        {
+          text: 'Which oxidation state is NOT typical of antimony in compounds?',
+          options: ['-3', '+2', '+3', '+5'],
+        }
+  tellurium:
+    q1:
+      kk: { text: 'Теллур атомының ядросында қанша протон бар?', options: ['52', '78', '130', '16'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of a tellurium atom?',
+          options: ['52', '78', '130', '16'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Қасиеттері бойынша жіктегенде теллур элементтің қай түріне жатады?',
+          options: ['Металл', 'Жартылай металл', 'Бейметалл', 'Инертті газ'],
+        }
+      en:
+        {
+          text: 'According to its properties, what type of element is tellurium?',
+          options: ['Metal', 'Metalloid', 'Nonmetal', 'Inert gas'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Теллур атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p⁴', '[Ar] 3d¹⁰ 4s² 4p⁴', '[Kr] 4d¹⁰ 5s² 5p⁶', '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the tellurium atom?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p⁴', '[Ar] 3d¹⁰ 4s² 4p⁴', '[Kr] 4d¹⁰ 5s² 5p⁶', '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Теллурдың қай қасиеті оның жартылай металл екенін растайды?',
+          options:
+            [
+              'Электр өткізгіштігі температурамен бірге артады',
+              'Жылуды жақсы өткізеді',
+              'Металдық жылтыры бар',
+              'Суда ериді',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of tellurium confirms that it is a metalloid?',
+          options:
+            [
+              'Its electrical conductivity increases with temperature',
+              'It conducts heat well',
+              'It has a metallic lustre',
+              'It dissolves in water',
+            ],
+        }
+    q5:
+      kk: { text: 'Теллурға қай тотығу дәрежесі тән?', options: ['-3', '+4', '+2', '+1'] }
+      en: { text: 'Which oxidation state is typical of tellurium?', options: ['-3', '+4', '+2', '+1'] }
+  iodine:
+    q1:
+      kk:
+        {
+          text: 'Атомдық құрылысына қарай йод туралы қай тұжырым дұрыс?',
+          options:
+            [
+              'Йодтың ядросында 53 протон бар, бұл оның атомдық нөміріне сәйкес келеді.',
+              'Йодтың ядросында 53 нейтрон бар, бұл оның атомдық нөміріне сәйкес келеді.',
+              'Йодтың сыртқы энергетикалық деңгейінде 53 электрон бар.',
+              'Йодтың ядросында 53 протон және 53 нейтрон бар.',
+            ],
+        }
+      en:
+        {
+          text: 'Based on its atomic structure, which statement about iodine is true?',
+          options:
+            [
+              'Iodine has 53 protons in its nucleus, which matches its atomic number.',
+              'Iodine has 53 neutrons in its nucleus, which matches its atomic number.',
+              'Iodine has 53 electrons in its outer energy level.',
+              'Iodine has 53 protons and 53 neutrons in its nucleus.',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Йодтың қай изотопы табиғаттағы жалғыз тұрақты изотоп?',
+          options: ['Йод-131', 'Йод-127', 'Йод-125', 'Йод-123'],
+        }
+      en:
+        {
+          text: 'Which isotope of iodine is the only stable one in nature?',
+          options: ['Iodine-131', 'Iodine-127', 'Iodine-125', 'Iodine-123'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Йодтың қатты күйден сұйық фазасыз бірден газ күйіне өту қабілетін қай физикалық құбылыс түсіндіреді?',
+          options: ['Балқу', 'Қайнау', 'Сублимация (айдалу)', 'Конденсация'],
+        }
+      en:
+        {
+          text: 'Which physical property of iodine explains how it turns from a solid directly into a gas, skipping the liquid phase?',
+          options: ['Melting', 'Boiling', 'Sublimation', 'Condensation'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Йодтың химиялық қасиеттері туралы қай тұжырым дұрыс?',
+          options:
+            [
+              'Йод крахмалмен қою көк кешен түзеді, бұл классикалық сынама ретінде қолданылады.',
+              'Йод — әдеттегі галогендердің ішіндегі ең белсендісі.',
+              'Йод металдармен әрекеттеспейді.',
+              'Йод хлорды оның қосылыстарынан ығыстырады.',
+            ],
+        }
+      en:
+        {
+          text: 'Which statement about the chemical properties of iodine is true?',
+          options:
+            [
+              'Iodine forms a dark blue complex with starch, which is used as a classic test.',
+              'Iodine is the most reactive of the common halogens.',
+              'Iodine does not react with metals.',
+              'Iodine displaces chlorine from its compounds.',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Йодтың қай қолданылуы оның эндокриндік жүйедегі рөлімен байланысты?',
+          options:
+            [
+              'Сұйық кристалды экрандардың поляризациялық сүзгілерінде пайдалану.',
+              'Жемсауды алдын алу үшін йодталған тұзға қосу.',
+              'Сірке қышқылын өндіруде катализатор ретінде қолдану.',
+              'Күміс йодиді түрінде фотографияда пайдалану.',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of iodine is related to its role in the endocrine system?',
+          options:
+            [
+              'Use in polarising filters of LCD screens.',
+              'Adding it to iodised salt to prevent goitre.',
+              'Use as a catalyst for producing acetic acid.',
+              'Use in photography as silver iodide.',
+            ],
+        }
+  xenon:
+    q1:
+      kk: { text: 'Ксенон атомының ядросында қанша протон бар?', options: ['54', '78', '132', '8'] }
+      en: { text: 'How many protons are in the nucleus of a xenon atom?', options: ['54', '78', '132', '8'] }
+    q2:
+      kk:
+        {
+          text: 'Ксенон атомы электрон бергенде немесе қабылдағанда қандай бөлшек түзіледі?',
+          options: ['Молекула', 'Ион', 'Изотоп', 'Нейтрон'],
+        }
+      en:
+        {
+          text: 'Which particle forms when a xenon atom loses or gains electrons?',
+          options: ['Molecule', 'Ion', 'Isotope', 'Neutron'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Ксенон атомына қай электрондық конфигурация сәйкес келеді?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p⁶', '[Kr] 4d¹⁰ 5s² 5p⁴', '[Xe] 4f¹⁴ 5d¹⁰ 6s²', '[Ar] 3d¹⁰ 4s² 4p⁶'],
+        }
+      en:
+        {
+          text: 'Which electron configuration corresponds to the xenon atom?',
+          options: ['[Kr] 4d¹⁰ 5s² 5p⁶', '[Kr] 4d¹⁰ 5s² 5p⁴', '[Xe] 4f¹⁴ 5d¹⁰ 6s²', '[Ar] 3d¹⁰ 4s² 4p⁶'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Асыл газ бола тұра, ксенон өз тобындағы басқа элементтерден айырмашылығы неге химиялық қосылыстар түзе алады?',
+          options:
+            [
+              'Өзі әрекеттесетін фтор мен оттегінің электртерістілігі жоғары болғандықтан',
+              'Атомдық радиусы үлкен және сыртқы электрондары ядромен әлсіз байланысқандықтан',
+              'Оның 8 тұрақты изотопы болғандықтан',
+              'Газдың жоғары тығыздығы реакцияларға көмектесетіндіктен',
+            ],
+        }
+      en:
+        {
+          text: 'Why can xenon, a noble gas, form chemical compounds, unlike the other elements of its group?',
+          options:
+            [
+              'Because of the high electronegativity of fluorine and oxygen, which it reacts with',
+              'Because of its large atomic radius and weakly held outer electrons',
+              'Because it has 8 stable isotopes',
+              'Because the high density of the gas helps reactions',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Ксенонның қай қасиеті оны иондық қозғалтқыштарда жұмыс денесі ретінде пайдалануға жарамды етеді?',
+          options:
+            [
+              'Липидтерде жақсы еруі',
+              'Жоғары тығыздығы мен инерттілігі',
+              'Көкшіл жарық шығару қабілеті',
+              'Күшті тотықтырғыштар түзуі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of xenon makes it suitable as the propellant in ion engines?',
+          options:
+            [
+              'High solubility in lipids',
+              'High density and inertness',
+              'The ability to give a bluish glow',
+              'Forming powerful oxidising agents',
+            ],
+        }
+  cesium:
+    q1:
+      kk:
+        {
+          text: 'Цезийдің электрондық конфигурациясымен байланысты қай қасиеті оны ең белсенді металға айналдырады?',
+          options:
+            [
+              'Сыртқы деңгейде оңай берілетін бір валенттік электронның болуы',
+              'Сыртқы деңгейде жеті валенттік электронның болуы',
+              'Сыртқы электрондық деңгейінің толық толуы',
+              'Жоғары электртерістілік',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of caesium, related to its electron configuration, makes it the most reactive metal?',
+          options:
+            [
+              'A single valence electron in the outer level that is easily given away',
+              'Seven valence electrons in the outer level',
+              'A completely filled outer electron level',
+              'High electronegativity',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Цезий табиғатта неге ешқашан бос күйінде кездеспей, тек қосылыстар құрамында болады?',
+          options:
+            [
+              'Тығыздығы жоғары болғандықтан',
+              'Ауамен және сумен лезде әрекеттесуге әкелетін аса жоғары реакциялық қабілетіне байланысты',
+              'Балқу температурасы төмен болғандықтан',
+              'Радиоактивті болғандықтан',
+            ],
+        }
+      en:
+        {
+          text: 'Why is caesium never found free in nature, only in compounds?',
+          options:
+            [
+              'Because of its high density',
+              'Because of its extreme reactivity, which makes it react instantly with air and water',
+              'Because of its low melting point',
+              'Because it is radioactive',
+            ],
+        }
+    q3:
+      kk:
+        {
+          text: 'Цезийдің қай қолданылуы оның цезий-133 изотопының тұрақтылығына және электрондық ауысуларына негізделген?',
+          options:
+            [
+              'Бұрғылау ерітінділерінде пайдалану',
+              'Фотокатодтарда пайдалану',
+              'Атомдық сағаттарда секундты анықтау',
+              'Иондық қозғалтқыштарда пайдалану',
+            ],
+        }
+      en:
+        {
+          text: 'Which use of caesium is based on the stability of its isotope caesium-133 and its electron transitions?',
+          options:
+            [
+              'Use in drilling fluids',
+              'Use in photocathodes',
+              'Defining the second in atomic clocks',
+              'Use in ion engines',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Жалғыз валенттік электронын бергенде цезий қандай ион түзеді және оның әдеттегі тотығу дәрежесі қандай?',
+          options:
+            [
+              'Тотығу дәрежесі +1 катион',
+              'Тотығу дәрежесі -1 анион',
+              'Тотығу дәрежесі +2 катион',
+              'Тотығу дәрежесі 0 бейтарап атом',
+            ],
+        }
+      en:
+        {
+          text: 'What kind of ion does caesium form when it gives away its single valence electron, and what is its typical oxidation state?',
+          options:
+            [
+              'A cation with an oxidation state of +1',
+              'An anion with an oxidation state of -1',
+              'A cation with an oxidation state of +2',
+              'A neutral atom with an oxidation state of 0',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Цезийдің қай қасиеті оның Менделеев кестесінің 1-тобы мен 6-периодындағы орнымен тікелей байланысты?',
+          options:
+            [
+              'Ол барлық металдардың ішіндегі ең жеңілі',
+              'Ол тұрақты элементтердің ішіндегі ең электроңы',
+              'Оның балқу температурасы металдардың ішіндегі ең жоғарысы',
+              'Ол ең электртеріс элемент',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of caesium is directly related to its position in group 1 and period 6 of the periodic table?',
+          options:
+            [
+              'It is the lightest of all metals',
+              'It is the most electropositive of the stable elements',
+              'It has the highest melting point of all metals',
+              'It is the most electronegative element',
+            ],
+        }
+  barium:
+    q1:
+      kk: { text: 'Барий атомының ядросында қанша протон бар?', options: ['56', '82', '138', '71'] }
+      en:
+        { text: 'How many protons are in the nucleus of a barium atom?', options: ['56', '82', '138', '71'] }
+    q2:
+      kk:
+        {
+          text: 'Негізгі күйдегі барий атомының электрондық конфигурациясы қандай?',
+          options: ['[Kr] 5s²', '[Xe] 6s²', '[Rn] 7s²', '[Ar] 4s²'],
+        }
+      en:
+        {
+          text: 'What is the electron configuration of a barium atom in its ground state?',
+          options: ['[Kr] 5s²', '[Xe] 6s²', '[Rn] 7s²', '[Ar] 4s²'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Валенттік электрондарын бергенде барий қандай ион түзеді?',
+          options: ['Заряды -2 анион', 'Заряды +1 катион', 'Заряды +2 катион', 'Заряды -1 анион'],
+        }
+      en:
+        {
+          text: 'What kind of ion does barium form when it gives away its valence electrons?',
+          options:
+            [
+              'An anion with a charge of -2',
+              'A cation with a charge of +1',
+              'A cation with a charge of +2',
+              'An anion with a charge of -1',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Барийдің қай қасиеті оның вакуумдық түтіктерде геттер ретінде қолданылуын түсіндіреді?',
+          options:
+            [
+              'Газдарды сіңіруге мүмкіндік беретін жоғары химиялық белсенділігі',
+              'Балқу температурасының төмендігі',
+              'Жоғары тығыздығы',
+              'Парамагнетизмі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of barium explains its use as a getter in vacuum tubes?',
+          options:
+            [
+              'High chemical activity that lets it absorb gases',
+              'A low melting point',
+              'High density',
+              'Paramagnetism',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Барийдің басқа қосылыстары уытты болса да, барий сульфатын (BaSO₄) медициналық диагностикада пайдалану неге қауіпсіз?',
+          options:
+            [
+              'Ол күшті тотықтырғыш',
+              'Ол суда ерімейді және қанға сіңбейді',
+              'Ол ағзада тез ыдырайды',
+              'Ол асқазан сөлімен бейтараптанады',
+            ],
+        }
+      en:
+        {
+          text: 'Why is barium sulfate (BaSO₄) safe to use in medical diagnostics, even though other barium compounds are toxic?',
+          options:
+            [
+              'It is a strong oxidising agent',
+              'It is insoluble in water and is not absorbed into the blood',
+              'It breaks down quickly in the body',
+              'It is neutralised by stomach acid',
+            ],
+        }
+  lanthanum:
+    q1:
+      kk: { text: 'Лантан атомының ядросында қанша протон бар?', options: ['57', '82', '139', '138'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of a lanthanum atom?',
+          options: ['57', '82', '139', '138'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Лантан атомының электрондық конфигурациясы қандай?',
+          options: ['[Xe] 4f¹ 5d¹ 6s²', '[Xe] 5d¹ 6s²', '[Xe] 4f¹ 6s²', '[Xe] 5d² 6s¹'],
+        }
+      en:
+        {
+          text: 'What is the electron configuration of a lanthanum atom?',
+          options: ['[Xe] 4f¹ 5d¹ 6s²', '[Xe] 5d¹ 6s²', '[Xe] 4f¹ 6s²', '[Xe] 5d² 6s¹'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Қосылыстардағы лантанға қай тотығу дәрежесі тән және өте тұрақты?',
+          options: ['+1', '+2', '+3', '+4'],
+        }
+      en:
+        {
+          text: 'Which oxidation state is typical and very stable for lanthanum in compounds?',
+          options: ['+1', '+2', '+3', '+4'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Лантанның қай изотопы ең көп таралған тұрақты изотоп?',
+          options: ['Лантан-139', 'Лантан-138', 'Лантан-140', 'Лантан-137'],
+        }
+      en:
+        {
+          text: 'Which isotope of lanthanum is the most common stable isotope?',
+          options: ['Lanthanum-139', 'Lanthanum-138', 'Lanthanum-140', 'Lanthanum-137'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Лантанның қай қасиеті оны гибридті автомобильдерге арналған никель-металл гидридті (NiMH) батареяларда пайдалануға мүмкіндік береді?',
+          options:
+            [
+              'Балқу температурасының жоғары болуы',
+              'LaNi₅ қорытпасы сутегіні қайтымды сіңіреді',
+              'Парамагнетизмі',
+              'Гидроксид түзу қабілеті',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of lanthanum allows it to be used in nickel–metal hydride (NiMH) batteries for hybrid cars?',
+          options:
+            [
+              'A high melting point',
+              'The alloy LaNi₅ absorbs hydrogen reversibly',
+              'Paramagnetism',
+              'The ability to form a hydroxide',
+            ],
+        }
+  cerium:
+    q1:
+      kk:
+        {
+          text: 'Церийдің қай тотығу дәрежесі оны лантаноидтардың ішінде ерекше етеді және оған күшті тотықтырғыш болуға мүмкіндік береді?',
+          options: ['+4', '+3', '+2', '+1'],
+        }
+      en:
+        {
+          text: 'Which oxidation state of cerium makes it unique among the lanthanides and lets it be a powerful oxidising agent?',
+          options: ['+4', '+3', '+2', '+1'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Церийдің ең көп таралған тұрақты изотопы церий-140-та қанша нейтрон бар?',
+          options: ['58', '82', '140', '88'],
+        }
+      en:
+        {
+          text: 'How many neutrons does cerium-140, the most common stable isotope of cerium, have?',
+          options: ['58', '82', '140', '88'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Церийдің қай қасиеті оның пайдаланылған газдарды тазартатын автокатализаторларда қолданылуын түсіндіреді?',
+          options:
+            [
+              'Жоғары электр өткізгіштік',
+              'Пирофорлық',
+              'Церий диоксидінің оттегіні жинап, қайта бере алуы',
+              'Парамагнетизм',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of cerium explains its use in car catalytic converters that clean exhaust gases?',
+          options:
+            [
+              'High electrical conductivity',
+              'Pyrophoricity',
+              'The ability of cerium dioxide to store and release oxygen',
+              'Paramagnetism',
+            ],
+        }
+    q4:
+      kk:
+        {
+          text: 'Церий атомы электрондарын жоғалтып, оң заряд алғанда қандай бөлшек түзіледі?',
+          options: ['Катион', 'Анион', 'Нейтрон', 'Изотоп'],
+        }
+      en:
+        {
+          text: 'Which particle forms when a cerium atom loses electrons and becomes positively charged?',
+          options: ['Cation', 'Anion', 'Neutron', 'Isotope'],
+        }
+    q5:
+      kk:
+        {
+          text: 'Церийдің қай физикалық қасиеті ұсақ бөлшектер түрінде ауада өздігінен тұтану қабілетімен байланысты?',
+          options: ['Парамагнетизм', 'Пирофорлық', 'Соғылғыштық', 'Балқу температурасының жоғары болуы'],
+        }
+      en:
+        {
+          text: 'Which physical property of cerium is related to fine cerium particles igniting spontaneously in air?',
+          options: ['Paramagnetism', 'Pyrophoricity', 'Malleability', 'A high melting point'],
+        }
+  praseodymium:
+    q1:
+      kk:
+        {
+          text: 'Празеодимнің қай қасиеті оның дәнекерлеушілердің қорғаныш көзілдіріктерінде қолданылуын түсіндіреді?',
+          options:
+            [
+              'Ультракүлгін және инфрақызыл сәулелерді сүзетін дидим шынысын түзу қабілеті',
+              'Балқу температурасының жоғары болуы, 931°C',
+              'Жарық сәулелерін ауытқытатын парамагнетизмі',
+              'Зиянды сәулелерді жұтатын иондарының ашық жасыл түсі',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of praseodymium explains its use in protective goggles for welders?',
+          options:
+            [
+              'Forming didymium glass that filters UV and IR radiation',
+              'A high melting point of 931°C',
+              'Paramagnetism that deflects light rays',
+              'The bright green colour of its ions that absorbs harmful radiation',
+            ],
+        }
+    q2:
+      kk:
+        {
+          text: 'Празеодимнің ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?',
+          options: ['59', '82', '141', '59 және 82'],
+        }
+      en:
+        {
+          text: 'How many neutrons are in the nucleus of the most common stable isotope of praseodymium?',
+          options: ['59', '82', '141', '59 and 82'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Қосылыстардағы празеодим үшін қай тотығу дәрежесі ең тұрақты?',
+          options: ['+2', '+4', '+3', '+1'],
+        }
+      en:
+        {
+          text: 'Which oxidation state is the most stable for praseodymium in compounds?',
+          options: ['+2', '+4', '+3', '+1'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Празеодим атомы үш электронын жоғалтқанда қандай бөлшек түзіледі?',
+          options:
+            [
+              'Заряды +3 катион',
+              'Заряды -3 анион',
+              'Электрондық конфигурациясы өзгерген бейтарап атом',
+              'Протондары азырақ изотоп',
+            ],
+        }
+      en:
+        {
+          text: 'Which particle forms when a praseodymium atom loses three electrons?',
+          options:
+            [
+              'A cation with a charge of +3',
+              'An anion with a charge of -3',
+              'A neutral atom with a changed electron configuration',
+              'An isotope with fewer protons',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Празеодимнің қай қасиеті оны металдарға жатқызуға мүмкіндік береді?',
+          options:
+            [
+              'Жасыл иондар түзу қабілеті',
+              'Электр мен жылуды жақсы өткізуі',
+              'Галогендермен әрекеттесіп, галогенидтер түзуі',
+              'Ядросында 59 протонның болуы',
+            ],
+        }
+      en:
+        {
+          text: 'Which property of praseodymium makes it a metal?',
+          options:
+            [
+              'The ability to form green ions',
+              'Good electrical and thermal conductivity',
+              'Reacting with halogens to form halides',
+              'Having 59 protons in the nucleus',
+            ],
+        }
+  neodymium:
+    q1:
+      kk: { text: 'Неодим атомының ядросында қанша протон бар?', options: ['60', '82', '142', '4'] }
+      en:
+        {
+          text: 'How many protons are in the nucleus of a neodymium atom?',
+          options: ['60', '82', '142', '4'],
+        }
+    q2:
+      kk:
+        {
+          text: 'Қосылыстарындағы неодимнің әдеттегі әрі ең тұрақты тотығу дәрежесі қандай?',
+          options: ['+2', '+3', '+4', '+1'],
+        }
+      en:
+        {
+          text: 'What is the typical and most stable oxidation state of neodymium in its compounds?',
+          options: ['+2', '+3', '+4', '+1'],
+        }
+    q3:
+      kk:
+        {
+          text: 'Неодимнің қай изотопы табиғатта ең көп таралған?',
+          options: ['Неодим-144', 'Неодим-146', 'Неодим-142', 'Неодим-150'],
+        }
+      en:
+        {
+          text: 'Which isotope of neodymium is the most common in nature?',
+          options: ['Neodymium-144', 'Neodymium-146', 'Neodymium-142', 'Neodymium-150'],
+        }
+    q4:
+      kk:
+        {
+          text: 'Неодимнің қай физикалық қасиеті оны қуатты тұрақты магниттер жасау үшін аса маңызды етеді?',
+          options:
+            [
+              'Ерекше магниттік қасиеттері (қорытпаларда ферромагнитті)',
+              'Жоғары электр және жылу өткізгіштік',
+              'Ашық күміс-ақ жылтыры',
+              'Жоғары созылғыштығы мен соғылғыштығы',
+            ],
+        }
+      en:
+        {
+          text: 'Which physical property of neodymium makes it critical for making powerful permanent magnets?',
+          options:
+            [
+              'Exceptional magnetic properties (ferromagnetic in alloys)',
+              'High electrical and thermal conductivity',
+              'A bright silvery-white lustre',
+              'High ductility and malleability',
+            ],
+        }
+    q5:
+      kk:
+        {
+          text: 'Неодим Менделеевтің периодтық кестесінің қай периодында орналасқан?',
+          options: ['5-периодта', '6-периодта', '7-периодта', '4-периодта'],
+        }
+      en:
+        {
+          text: 'In which period of the periodic table is neodymium?',
+          options: ['Period 5', 'Period 6', 'Period 7', 'Period 4'],
+        }
+
+# EN — перевод RU-факта там, где в атласе вместо перевода шаблон «X has the atomic number N…» (CHEM_MAP 3.4).
+facts:
+  hydrogen: { en: 'Hydrogen is the only element whose most common form has no neutrons at all (protium).' }
+  boron: { en: 'Boron is the only metalloid in group 13 and one of the hardest elements.' }
+  nitrogen: { en: 'Nitrogen makes up 78% of the air and is a building block of all amino acids and DNA.' }
+  oxygen:
+    {
+      en: 'Oxygen is the third most abundant element in the Universe and the first by mass in the Earth’s crust (46%).',
+    }
+  fluorine:
+    { en: 'Fluorine is the most reactive element: it reacts even with the noble gases xenon and krypton.' }
+  sodium:
+    {
+      en: 'Sodium regulates the water–salt balance in cells — without it nerve impulses could not be transmitted.',
+    }
+  magnesium:
+    {
+      en: 'Magnesium is the central atom of the chlorophyll molecule, without which plants could not photosynthesise.',
+    }
+  aluminum: { en: 'Until 1886 aluminium was valued more than gold — it was extremely expensive to produce.' }
+  silicon:
+    {
+      en: 'Silicon gave its name to Silicon Valley, the world’s technology centre. It makes up 28% of the Earth’s crust.',
+    }
+  phosphorus:
+    {
+      en: 'Phosphorus was discovered in 1669 by distilling urine — it was called "cold fire" because it glows in the dark.',
+    }
+  sulfur:
+    {
+      en: 'Sulfuric acid is the most produced industrial chemical in the world: more than 200 million tonnes a year.',
+    }
+  chlorine:
+    {
+      en: 'Chlorine was used as a chemical weapon in the First World War — the first mass gas attack took place in 1915.',
+    }
+  argon: { en: 'Argon makes up 0.93% of the Earth’s atmosphere — 23 times more than carbon dioxide.' }
+  potassium: { en: 'Potassium-40 is a naturally radioactive isotope found in bananas and in the human body.' }
+  calcium: { en: 'An adult’s body contains about 1 kg of calcium — almost all of it in bones and teeth.' }
+  scandium:
+    {
+      en: 'Scandium is one of the rarest and most expensive metals: the world produces only a few tonnes a year.',
+    }
+  vanadium:
+    {
+      en: 'Vanadium compounds come in four colours depending on the oxidation state: violet, green, blue and yellow.',
+    }
+  chromium:
+    { en: 'It is chromium that makes rubies red and emeralds green, although the metal itself is silvery.' }
+  manganese:
+    {
+      en: 'Manganese is so important for steelmaking that modern industry would simply stop without it — there is no substitute.',
+    }
+  iron:
+    {
+      en: 'The Earth’s core is 80% iron, which creates the magnetic field that protects us from cosmic radiation.',
+    }
+  copper:
+    { en: 'Copper is naturally antibacterial — bacteria on copper door handles die within a few hours.' }
+  zinc: { en: 'Humans need zinc for immunity, growth and the senses of taste and smell.' }
+  gallium:
+    {
+      en: 'Gallium was predicted by Mendeleev as "eka-aluminium" and discovered only 4 years later by spectroscopy.',
+    }
+  germanium: { en: 'The world’s first transistor (1947) was made of germanium, not silicon.' }
+  arsenic:
+    {
+      en: 'Arsenic is called the "king of poisons": it has no taste or smell, which made it a favourite tool of plotters in the past.',
+    }
+  selenium:
+    {
+      en: 'Selenium is an excellent photoconductor: its electrical resistance falls thousands of times when it is lit.',
+    }
+  krypton: { en: 'From 1960 to 1983 the metre was defined by the wavelength of light emitted by krypton-86.' }
+  rubidium: { en: 'Rubidium is so reactive that it can catch fire in air simply because of humidity.' }
+  strontium: { en: 'Strontium salts give festive fireworks their rich red colour.' }
+  yttrium:
+    { en: 'Yttrium is named after the Swedish village of Ytterby, where four new elements were found.' }
+  zirconium:
+    {
+      en: 'Zirconium hardly absorbs neutrons, which makes it an essential material for building nuclear reactors.',
+    }
+
+# Квиз урока «Учёные-химики» (В-15): 13 вопросов из 27, в формулировку добавлено имя учёного. Варианты
+# ответов — из атласа на каждом языке; верный в атласе — первый, конвертер переставляет варианты.
+chemistsQuiz:
+  - source: ai.mendeleev.q1
+    difficulty: easy
+    text:
+      ru: Что создал Дмитрий Менделеев?
+      kk: Дмитрий Менделеев не жасады?
+      en: What did Dmitri Mendeleev create?
+  - source: ai.mendeleev.q2
+    difficulty: medium
+    text:
+      ru: В каком году Менделеев опубликовал периодическую таблицу?
+      kk: Менделеев периодтық кестені қай жылы жариялады?
+      en: In which year did Mendeleev publish the periodic table?
+  - source: ai.curie.q1
+    difficulty: easy
+    text:
+      ru: Какие элементы открыла Мария Кюри?
+      kk: Мария Кюри қандай элементтерді ашты?
+      en: Which elements did Marie Curie discover?
+  - source: ai.curie.q3
+    difficulty: medium
+    text:
+      ru: Какой термин ввела Мария Кюри?
+      kk: Мария Кюри қандай терминді енгізді?
+      en: Which term did Marie Curie coin?
+  - source: ai.lavoisier.q2
+    difficulty: easy
+    text:
+      ru: Какой закон сформулировал Антуан Лавуазье?
+      kk: Антуан Лавуазье қандай заңды тұжырымдады?
+      en: Which law did Antoine Lavoisier formulate?
+  - source: ai.bohr.q1
+    difficulty: easy
+    text:
+      ru: Какую модель предложил Нильс Бор?
+      kk: Нильс Бор қандай модельді ұсынды?
+      en: Which model did Niels Bohr propose?
+  - source: ai.rutherford.q1
+    difficulty: medium
+    text:
+      ru: Каким экспериментом известен Эрнест Резерфорд?
+      kk: Эрнест Резерфорд қандай тәжірибесімен танымал?
+      en: Which experiment is Ernest Rutherford famous for?
+  - source: ai.rutherford.q2
+    difficulty: easy
+    text:
+      ru: Что Эрнест Резерфорд открыл в атоме?
+      kk: Эрнест Резерфорд атомда нені ашты?
+      en: What did Ernest Rutherford discover in the atom?
+  - source: ai.dalton.q1
+    difficulty: easy
+    text:
+      ru: Какой теорией известен Джон Дальтон?
+      kk: Джон Дальтон қандай теориясымен танымал?
+      en: Which theory is John Dalton known for?
+  - source: ai.dalton.q3
+    difficulty: medium
+    text:
+      ru: Какое нарушение зрения изучал Джон Дальтон?
+      kk: Джон Дальтон көру қабілетінің қандай бұзылысын зерттеді?
+      en: Which vision condition did John Dalton study?
+  - source: ai.pauling.q3
+    difficulty: medium
+    text:
+      ru: Какое понятие ввёл Лайнус Полинг?
+      kk: Лайнус Полинг қандай ұғымды енгізді?
+      en: Which concept did Linus Pauling introduce?
+  - source: ai.nobel.q1
+    difficulty: easy
+    text:
+      ru: Что изобрёл Альфред Нобель?
+      kk: Альфред Нобель нені ойлап тапты?
+      en: What did Alfred Nobel invent?
+  - source: ai.hodgkin.q2
+    difficulty: medium
+    text:
+      ru: Структуру какого витамина определила Дороти Ходжкин?
+      kk: Дороти Ходжкин қай дәрумен құрылымын анықтады?
+      en: Which vitamin's structure did Dorothy Hodgkin determine?

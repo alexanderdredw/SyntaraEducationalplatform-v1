@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство цинка позволяет ему образовывать соединения как с кислотами, так и с сильными щелочами?
+      kk: Мырыштың қай қасиеті оған қышқылдармен де, күшті сілтілермен де қосылыстар түзуге мүмкіндік береді?
+      en: Which property of zinc allows it to form compounds with both acids and strong alkalis?
+    options:
+      - text:
+          ru: Низкая температура плавления
+          kk: Төмен балқу температурасы
+          en: A low melting point
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+      - text:
+          ru: Амфотерность
+          kk: Амфотерлік
+          en: Amphoterism
+        correct: true
+      - text:
+          ru: Диамагнетизм
+          kk: Диамагнетизм
+          en: Diamagnetism
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа цинка (Цинк-64)?
+      kk: Мырыштың ең көп таралған тұрақты изотопының (мырыш-64) ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common stable isotope of zinc (zinc-64)?
+    options:
+      - text:
+          ru: '30'
+          kk: '30'
+          en: '30'
+      - text:
+          ru: '64'
+          kk: '64'
+          en: '64'
+      - text:
+          ru: '34'
+          kk: '34'
+          en: '34'
+        correct: true
+      - text:
+          ru: '49'
+          kk: '49'
+          en: '49'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является типичной для цинка в его соединениях?
+      kk: Қосылыстарындағы мырышқа қай тотығу дәрежесі тән?
+      en: Which oxidation state is typical of zinc in its compounds?
+    options:
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение цинка составляет около 50% его мирового потребления?
+      kk: Мырыштың қай қолданылуы оның әлемдік тұтынуының шамамен 50%-ын құрайды?
+      en: Which use of zinc accounts for about 50% of its world consumption?
+    options:
+      - text:
+          ru: Гальванизация стали
+          kk: Болатты мырыштау (гальванизациялау)
+          en: Galvanising steel
+        correct: true
+      - text:
+          ru: Изготовление латуни
+          kk: Жез жасау
+          en: Making brass
+      - text:
+          ru: Создание солнцезащитных кремов
+          kk: Күннен қорғайтын кремдер жасау
+          en: Making sunscreen
+      - text:
+          ru: Производство батареек
+          kk: Батарейкалар өндірісі
+          en: Making batteries
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип частиц образуется, когда атом цинка теряет два электрона?
+      kk: Мырыш атомы екі электронын жоғалтқанда қандай бөлшек түзіледі?
+      en: Which particle forms when a zinc atom loses two electrons?
+    options:
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope

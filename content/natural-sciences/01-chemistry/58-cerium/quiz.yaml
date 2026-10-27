@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления церия делает его уникальным среди лантаноидов и позволяет ему быть мощным окислителем?
+      kk: Церийдің қай тотығу дәрежесі оны лантаноидтардың ішінде ерекше етеді және оған күшті тотықтырғыш болуға мүмкіндік береді?
+      en: Which oxidation state of cerium makes it unique among the lanthanides and lets it be a powerful oxidising agent?
+    options:
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+        correct: true
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит самый распространенный стабильный изотоп церия-140?
+      kk: Церийдің ең көп таралған тұрақты изотопы церий-140-та қанша нейтрон бар?
+      en: How many neutrons does cerium-140, the most common stable isotope of cerium, have?
+    options:
+      - text:
+          ru: '58'
+          kk: '58'
+          en: '58'
+      - text:
+          ru: '82'
+          kk: '82'
+          en: '82'
+        correct: true
+      - text:
+          ru: '140'
+          kk: '140'
+          en: '140'
+      - text:
+          ru: '88'
+          kk: '88'
+          en: '88'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство церия объясняет его использование в автокатализаторах для очистки выхлопных газов?
+      kk: Церийдің қай қасиеті оның пайдаланылған газдарды тазартатын автокатализаторларда қолданылуын түсіндіреді?
+      en: Which property of cerium explains its use in car catalytic converters that clean exhaust gases?
+    options:
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+      - text:
+          ru: Способность диоксида церия запасать и отдавать кислород
+          kk: Церий диоксидінің оттегіні жинап, қайта бере алуы
+          en: The ability of cerium dioxide to store and release oxygen
+        correct: true
+      - text:
+          ru: Парамагнетизм
+          kk: Парамагнетизм
+          en: Paramagnetism
+      - text:
+          ru: Пирофорность
+          kk: Пирофорлық
+          en: Pyrophoricity
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип частицы образуется, когда атом церия теряет электроны и приобретает положительный заряд?
+      kk: Церий атомы электрондарын жоғалтып, оң заряд алғанда қандай бөлшек түзіледі?
+      en: Which particle forms when a cerium atom loses electrons and becomes positively charged?
+    options:
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных физических свойств церия связано с его способностью самовоспламеняться на воздухе в виде мелких частиц?
+      kk: Церийдің қай физикалық қасиеті ұсақ бөлшектер түрінде ауада өздігінен тұтану қабілетімен байланысты?
+      en: Which physical property of cerium is related to fine cerium particles igniting spontaneously in air?
+    options:
+      - text:
+          ru: Парамагнетизм
+          kk: Парамагнетизм
+          en: Paramagnetism
+      - text:
+          ru: Ковкость
+          kk: Соғылғыштық
+          en: Malleability
+      - text:
+          ru: Пирофорность
+          kk: Пирофорлық
+          en: Pyrophoricity
+        correct: true
+      - text:
+          ru: Высокая температура плавления
+          kk: Балқу температурасының жоғары болуы
+          en: A high melting point

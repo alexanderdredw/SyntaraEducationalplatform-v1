@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома магния?
+      kk: Магний атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a magnesium atom?
+    options:
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+      - text:
+          ru: '10'
+          kk: '10'
+          en: '10'
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+      - text:
+          ru: '12'
+          kk: '12'
+          en: '12'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует магний, теряя два валентных электрона?
+      kk: Екі валенттік электронын жоғалтқанда магний қандай ион түзеді?
+      en: What kind of ion does magnesium form when it loses its two valence electrons?
+    options:
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+      - text:
+          ru: Нейтральный атом
+          kk: Бейтарап атом
+          en: Neutral atom
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство магния объясняет его использование в качестве жертвенного анода для защиты трубопроводов от коррозии?
+      kk: Магнийдің қай қасиеті оны құбырларды коррозиядан қорғайтын протекторлық анод ретінде пайдалануды түсіндіреді?
+      en: Which property of magnesium explains its use as a sacrificial anode protecting pipelines from corrosion?
+    options:
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+      - text:
+          ru: Сильная восстановительная способность
+          kk: Күшті тотықсыздандырғыш қабілеті
+          en: Strong reducing ability
+        correct: true
+      - text:
+          ru: Образование защитного оксидного слоя
+          kk: Қорғаныш оксид қабатын түзуі
+          en: Forming a protective oxide layer
+      - text:
+          ru: Низкая плотность
+          kk: Төмен тығыздық
+          en: Low density
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп магния является самым распространённым в природе?
+      kk: Магнийдің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of magnesium is the most common in nature?
+    options:
+      - text:
+          ru: Магний-25
+          kk: Магний-25
+          en: Magnesium-25
+      - text:
+          ru: Магний-26
+          kk: Магний-26
+          en: Magnesium-26
+      - text:
+          ru: Магний-24
+          kk: Магний-24
+          en: Magnesium-24
+        correct: true
+      - text:
+          ru: Магний-23
+          kk: Магний-23
+          en: Magnesium-23
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов у атома магния согласно его электронной конфигурации?
+      kk: Электрондық конфигурациясы бойынша магний атомында қанша валенттік электрон бар?
+      en: How many valence electrons does a magnesium atom have according to its electron configuration?
+    options:
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+        correct: true

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство германия позволяет использовать его в приборах ночного видения?
+      kk: Германийдің қай қасиеті оны түнгі көру құралдарында пайдалануға мүмкіндік береді?
+      en: Which property of germanium allows it to be used in night-vision devices?
+    options:
+      - text:
+          ru: Способность расширяться при затвердевании
+          kk: Қатқанда ұлғаю қабілеті
+          en: Expanding when it solidifies
+      - text:
+          ru: Прозрачность для инфракрасного излучения
+          kk: Инфрақызыл сәулелерді өткізуі
+          en: Transparency to infrared radiation
+        correct: true
+      - text:
+          ru: Высокий металлический блеск
+          kk: Жоғары металдық жылтыры
+          en: A strong metallic lustre
+      - text:
+          ru: Низкая оптическая дисперсия
+          kk: Төмен оптикалық дисперсия
+          en: Low optical dispersion
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа германия?
+      kk: Германийдің ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common stable isotope of germanium?
+    options:
+      - text:
+          ru: '42'
+          kk: '42'
+          en: '42'
+        correct: true
+      - text:
+          ru: '32'
+          kk: '32'
+          en: '32'
+      - text:
+          ru: '36'
+          kk: '36'
+          en: '36'
+      - text:
+          ru: '74'
+          kk: '74'
+          en: '74'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип элемента представляет собой германий?
+      kk: Германий элементтің қай түріне жатады?
+      en: What type of element is germanium?
+    options:
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение германия связано с его способностью проводить электричество только при определенных условиях?
+      kk: Германийдің қай қолданылуы оның электрді тек белгілі бір жағдайларда өткізу қабілетімен байланысты?
+      en: Which use of germanium is related to its ability to conduct electricity only under certain conditions?
+    options:
+      - text:
+          ru: Компонент инфракрасной оптики
+          kk: Инфрақызыл оптиканың құрамдас бөлігі
+          en: A component of infrared optics
+      - text:
+          ru: Материал для первых транзисторов
+          kk: Алғашқы транзисторлардың материалы
+          en: The material of the first transistors
+        correct: true
+      - text:
+          ru: Добавка в сплавы для электроники
+          kk: Электроникаға арналған қорытпаларға қоспа
+          en: An additive in alloys for electronics
+      - text:
+          ru: Катализатор для производства ПЭТ-пластиков
+          kk: ПЭТ-пластиктер өндірісіне арналған катализатор
+          en: A catalyst for making PET plastics
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из изотопов германия используется в медицинских ПЭТ-сканерах?
+      kk: Германийдің қай изотопы медициналық ПЭТ-сканерлерде қолданылады?
+      en: Which isotope of germanium is used in medical PET scanners?
+    options:
+      - text:
+          ru: Германий-76
+          kk: Германий-76
+          en: Germanium-76
+      - text:
+          ru: Германий-68
+          kk: Германий-68
+          en: Germanium-68
+        correct: true
+      - text:
+          ru: Германий-70
+          kk: Германий-70
+          en: Germanium-70
+      - text:
+          ru: Германий-74
+          kk: Германий-74
+          en: Germanium-74

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома бора?
+      kk: Бор атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a boron atom?
+    options:
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+        correct: true
+      - text:
+          ru: '10'
+          kk: '10'
+          en: '10'
+      - text:
+          ru: '11'
+          kk: '11'
+          en: '11'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химического элемента представляет собой бор согласно классификации?
+      kk: Жіктеу бойынша бор химиялық элементтің қай түріне жатады?
+      en: According to classification, what type of chemical element is boron?
+    options:
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какова электронная конфигурация атома бора?
+      kk: Бор атомының электрондық конфигурациясы қандай?
+      en: What is the electron configuration of a boron atom?
+    options:
+      - text:
+          ru: '[He] 2s² 2p¹'
+          kk: '[He] 2s² 2p¹'
+          en: '[He] 2s² 2p¹'
+        correct: true
+      - text:
+          ru: '[He] 2s² 2p³'
+          kk: '[He] 2s² 2p³'
+          en: '[He] 2s² 2p³'
+      - text:
+          ru: '[He] 2s¹ 2p²'
+          kk: '[He] 2s¹ 2p²'
+          en: '[He] 2s¹ 2p²'
+      - text:
+          ru: '[He] 2s² 2p²'
+          kk: '[He] 2s² 2p²'
+          en: '[He] 2s² 2p²'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство бора делает его важным для использования в ядерных реакторах?
+      kk: Бордың қай қасиеті оны ядролық реакторларда маңызды етеді?
+      en: Which property of boron makes it important in nuclear reactors?
+    options:
+      - text:
+          ru: Низкая температура плавления
+          kk: Балқу температурасы төмен
+          en: Low melting point
+      - text:
+          ru: Образование борной кислоты
+          kk: Бор қышқылын түзуі
+          en: Formation of boric acid
+      - text:
+          ru: Высокая электропроводность при комнатной температуре
+          kk: Бөлме температурасында электр өткізгіштігі жоғары
+          en: High electrical conductivity at room temperature
+      - text:
+          ru: Способность изотопа бор-10 поглощать нейтроны
+          kk: Бор-10 изотопының нейтрондарды сіңіруі
+          en: The ability of the isotope boron-10 to absorb neutrons
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных соединений бора является сверхтвердым и используется в бронежилетах?
+      kk: Бор қосылыстарының қайсысы аса қатты және оқ өтпейтін кеудешелерде қолданылады?
+      en: Which boron compound is superhard and used in body armour?
+    options:
+      - text:
+          ru: Бура
+          kk: Бура
+          en: Borax
+      - text:
+          ru: Оксид бора
+          kk: Бор оксиді
+          en: Boron oxide
+      - text:
+          ru: Борная кислота
+          kk: Бор қышқылы
+          en: Boric acid
+      - text:
+          ru: Карбид бора
+          kk: Бор карбиді
+          en: Boron carbide
+        correct: true

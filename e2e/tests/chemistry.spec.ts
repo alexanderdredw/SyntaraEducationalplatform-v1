@@ -1,0 +1,146 @@
+import { randomUUID } from 'node:crypto';
+import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
+import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
+
+const ru = bundles.ru;
+
+/** ID «Химии» и её тем — через гостевой API (API-PUB-10..12). */
+async function chemistryIds(api: APIRequestContext) {
+  const catalog = await (await api.get('/api/public/catalog')).json();
+  const natural = catalog.sections.find((s: { title: string }) => s.title === 'Естественные науки');
+  const section = await (await api.get(`/api/public/sections/${natural.id}`)).json();
+  const chemistry = section.subjects.find((s: { title: string }) => s.title === 'Химия');
+  const subject = await (await api.get(`/api/public/subjects/${chemistry.id}`)).json();
+  const topic = (title: string) =>
+    subject.topics.find((t: { title: string }) => t.title === title).id as string;
+  return {
+    sectionId: natural.id as string,
+    subjectId: chemistry.id as string,
+    oxygen: topic('Кислород'),
+    chemists: topic('Учёные-химики'),
+  };
+}
+
+async function signInStudent(page: Page, baseURL: string) {
+  const api = await request.newContext({ baseURL });
+  const res = await api.post('/api/auth/register-student', {
+    data: {
+      displayName: 'Айдана Химик',
+      login: `chem.${randomUUID().slice(0, 8)}`,
+      password: 'student-pass-1',
+    },
+  });
+  expect(res.status(), await res.text()).toBeLessThan(300);
+  const { cookies } = await api.storageState();
+  await page.context().addCookies(cookies.map(({ name, value }) => ({ name, value, url: baseURL })));
+  return api;
+}
+
+/** Перенос атласа химии (docs/CHEM_TZ.md): главы, уроки элементов, «Учёные-химики». */
+test.describe('Химия из «Молекулярного атласа»', () => {
+  test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
+
+  test('AC-CHEM-02, BR-CHAP-03 a guest: «Химия» is open; topics by 2 chapters, the first one open, «Тема N» through the subject', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await page.goto(`/ru/learn/sections/${ids.sectionId}`);
+    await page.getByTestId('catalog-subject').filter({ hasText: 'Химия' }).click();
+    await expect(page).toHaveURL(new RegExp(`/ru/learn/subjects/${ids.subjectId}$`));
+    const chapters = page.getByTestId('subject-chapter');
+    await expect(chapters).toHaveText([/Химические элементы/, /Учёные-химики/]);
+    // У гостя статусов нет — нет и «Освоено m из n»; раскрыта первая глава.
+    await expect(page.getByTestId('chapter-progress')).toHaveCount(0);
+    const topics = page.getByTestId('student-topic');
+    await expect(topics).toHaveCount(60);
+    await expect(topics.first()).toContainText('Тема 1');
+    await expect(topics.first()).toContainText('Водород');
+    await expect(topics.nth(59)).toContainText('Неодим');
+    await page.getByRole('button', { name: /Учёные-химики/ }).click();
+    await expect(page.getByRole('link', { name: /Тема 61\s*Учёные-химики/ })).toBeVisible();
+  });
+
+  test('BR-CHAP-03 a student: «Освоено m из n» in every chapter; the first unmastered chapter is open', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await signInStudent(page, baseURL!);
+    await page.goto(`/ru/learn/subjects/${ids.subjectId}`);
+    await expect(page.getByTestId('chapter-progress')).toHaveText([
+      ru.student.subject.chapterProgress.replace('{mastered}', '0').replace('{total}', '60'),
+      ru.student.subject.chapterProgress.replace('{mastered}', '0').replace('{total}', '1'),
+    ]);
+    await expect(page.getByRole('button', { name: /Химические элементы/ })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    await expect(page.getByRole('button', { name: /Учёные-химики/ })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    await expect(page.getByTestId('student-topic').first()).toHaveAttribute('data-status', 'not_started');
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test('AC-CHEM-03, AC-CHEM-06 an element lesson: overview, fun fact, own atom scheme with alt, sections, «Источники», quiz of 5', async ({
+    page,
+    baseURL,
+  }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    await signInStudent(page, baseURL!);
+    await page.goto(`/ru/learn/topics/${ids.oxygen}`);
+    await expect(page.getByRole('heading', { level: 1, name: 'Кислород' })).toBeVisible();
+    await expect(page.getByTestId('lesson-fun-fact')).toContainText('46%');
+    const overview = page.getByTestId('lesson-overview');
+    await expect(overview.getByRole('img', { name: /Модель атома по Бору: кислород, O/ })).toBeVisible();
+    const sections = overview.getByRole('button');
+    await expect(sections.first()).toContainText('Основные факты');
+    await expect(sections.last()).toContainText('Источники');
+    await sections.last().click();
+    await expect(overview.getByRole('link', { name: /PubChem/ })).toHaveAttribute(
+      'href',
+      /pubchem\.ncbi\.nlm\.nih\.gov/,
+    );
+    await page.goto(`/ru/learn/topics/${ids.oxygen}?tab=quiz`);
+    await expect(
+      page.getByTestId('student-quiz').getByRole('list').first().getByRole('listitem'),
+    ).toHaveCount(5);
+  });
+
+  test('AC-CHEM-04 KK and EN lessons are marked «На проверке»', async ({ page, baseURL }) => {
+    const ids = await chemistryIds(await request.newContext({ baseURL }));
+    for (const locale of ['kk', 'en'] as const) {
+      await page.goto(`/${locale}/learn/topics/${ids.oxygen}`);
+      await expect(page.getByTestId('lesson-needs-review')).toBeVisible();
+    }
+  });
+
+  test('AC-CHEM-07 «Анатомия человека» (no chapters) is unchanged: a plain list of topics', async ({
+    page,
+    baseURL,
+  }) => {
+    const catalog = await (await (await request.newContext({ baseURL })).get('/api/public/catalog')).json();
+    const biology = catalog.sections.find((s: { title: string }) => s.title === 'Биология');
+    await page.goto(`/ru/learn/sections/${biology.id}`);
+    await page.getByTestId('catalog-subject').filter({ hasText: 'Анатомия человека' }).click();
+    await expect(page.getByTestId('student-topic')).toHaveCount(3);
+    await expect(page.getByTestId('subject-chapters')).toHaveCount(0);
+  });
+
+  for (const width of [320, 390]) {
+    test(`AC-CHEM-11 phone ${width} px: the subject page and a lesson have no horizontal scroll`, async ({
+      page,
+      baseURL,
+    }) => {
+      const ids = await chemistryIds(await request.newContext({ baseURL }));
+      await page.setViewportSize({ width, height: 800 });
+      for (const path of [`/ru/learn/subjects/${ids.subjectId}`, `/ru/learn/topics/${ids.chemists}`]) {
+        await page.goto(path);
+        await expect(page.locator('#main')).not.toBeEmpty();
+        expect(await hasHorizontalScroll(page), path).toBe(false);
+      }
+    });
+  }
+});

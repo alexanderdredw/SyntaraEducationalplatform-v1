@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство криптона объясняет его использование в качестве газа-заполнителя в энергоэффективных окнах?
+      kk: Криптонның қай қасиеті оны энергия үнемдейтін терезелерде толтырғыш газ ретінде пайдалануды түсіндіреді?
+      en: Which property of krypton explains its use as a filler gas in energy-efficient windows?
+    options:
+      - text:
+          ru: Высокая реакционная способность с фтором
+          kk: Фтормен жоғары реакциялық қабілеті
+          en: High reactivity with fluorine
+      - text:
+          ru: Низкая теплопроводность и инертность
+          kk: Жылу өткізгіштігінің төмендігі және инерттілігі
+          en: Low thermal conductivity and inertness
+        correct: true
+      - text:
+          ru: Высокая плотность и яркое свечение
+          kk: Жоғары тығыздығы мен жарқын сәулеленуі
+          en: High density and a bright glow
+      - text:
+          ru: Способность образовывать клатраты
+          kk: Клатраттар түзу қабілеті
+          en: The ability to form clathrates
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов и нейтронов содержит ядро самого распространённого стабильного изотопа криптона?
+      kk: Криптонның ең көп таралған тұрақты изотопының ядросында қанша протон мен нейтрон бар?
+      en: How many protons and neutrons are in the nucleus of the most common stable isotope of krypton?
+    options:
+      - text:
+          ru: 36 протонов и 48 нейтронов
+          kk: 36 протон және 48 нейтрон
+          en: 36 protons and 48 neutrons
+        correct: true
+      - text:
+          ru: 84 протона и 36 нейтронов
+          kk: 84 протон және 36 нейтрон
+          en: 84 protons and 36 neutrons
+      - text:
+          ru: 36 протонов и 36 нейтронов
+          kk: 36 протон және 36 нейтрон
+          en: 36 protons and 36 neutrons
+      - text:
+          ru: 48 протонов и 36 нейтронов
+          kk: 48 протон және 36 нейтрон
+          en: 48 protons and 36 neutrons
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему криптон, как благородный газ, существует в виде одноатомных молекул (Kr), а не образует двухатомные молекулы, как кислород?
+      kk: Неге асыл газ ретіндегі криптон оттегі сияқты екі атомды молекулалар түзбей, бір атомды молекулалар (Kr) күйінде болады?
+      en: Why does krypton, a noble gas, exist as single atoms (Kr) rather than forming diatomic molecules like oxygen?
+    options:
+      - text:
+          ru: Из-за полного октета валентных электронов
+          kk: Валенттік электрондарының октеті толық болғандықтан
+          en: Because of its complete octet of valence electrons
+        correct: true
+      - text:
+          ru: Из-за низкой плотности
+          kk: Тығыздығы төмен болғандықтан
+          en: Because of its low density
+      - text:
+          ru: Из-за высокой температуры кипения
+          kk: Қайнау температурасы жоғары болғандықтан
+          en: Because of its high boiling point
+      - text:
+          ru: Из-за способности образовывать клатраты
+          kk: Клатраттар түзе алатындықтан
+          en: Because it can form clathrates
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение криптона основано на его способности давать яркое бело-зеленоватое свечение при электрическом разряде?
+      kk: Криптонның қай қолданылуы оның электр разрядында ашық ақ-жасылдау жарық беру қабілетіне негізделген?
+      en: Which use of krypton is based on its bright greenish-white glow in an electric discharge?
+    options:
+      - text:
+          ru: Мониторинг переработки ядерного топлива
+          kk: Ядролық отынды қайта өңдеуді бақылау
+          en: Monitoring nuclear fuel reprocessing
+      - text:
+          ru: Высокоинтенсивное освещение взлётно-посадочных полос аэропортов
+          kk: Әуежайлардың ұшу-қону жолақтарын жоғары қарқынды жарықтандыру
+          en: High-intensity lighting of airport runways
+        correct: true
+      - text:
+          ru: Датирование древнего льда Антарктиды
+          kk: Антарктиданың ежелгі мұзының жасын анықтау
+          en: Dating ancient Antarctic ice
+      - text:
+          ru: Определение эталона метра
+          kk: Метр эталонын анықтау
+          en: Defining the standard metre
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп криптона используется для обнаружения скрытых ядерных реакторов?
+      kk: Жасырын ядролық реакторларды анықтау үшін криптонның қай изотопы қолданылады?
+      en: Which isotope of krypton is used to detect hidden nuclear reactors?
+    options:
+      - text:
+          ru: Криптон-81
+          kk: Криптон-81
+          en: Krypton-81
+      - text:
+          ru: Криптон-84
+          kk: Криптон-84
+          en: Krypton-84
+      - text:
+          ru: Криптон-85
+          kk: Криптон-85
+          en: Krypton-85
+        correct: true
+      - text:
+          ru: Криптон-86
+          kk: Криптон-86
+          en: Krypton-86

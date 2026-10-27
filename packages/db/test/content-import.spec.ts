@@ -2,7 +2,7 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:f
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { type Database } from '../src';
 import { changesCount, defaultContentDir, IMPORT_USER, importContent, type MediaStore } from '../src/content';
 import { migrateUp } from '../src/migrator';
@@ -88,12 +88,13 @@ describe('content import (integration)', () => {
     const [cardio] = await db.select().from(topics).where(eq(topics.id, B.topicCardio));
     expect(cardio).toMatchObject({ status: 'published', code: BASE_CODES.topicCardio, position: 1 });
     expect(cardio!.coverMediaId).toBeTruthy();
+    // 6 схем «Анатомии» + 60 схем атомов и 8 портретов «Химии» (AC-CHEM-06).
     const media = await db.select().from(mediaFiles);
-    expect(media).toHaveLength(6);
+    expect(media).toHaveLength(74);
     expect(
       media.every((m) => m.kind === 'illustration' && m.ownerId === null && m.scanStatus === 'clean'),
     ).toBe(true);
-    expect(store.keys.size).toBe(6);
+    expect(store.keys.size).toBe(74);
     const [version] = await db
       .select()
       .from(topicVersions)
@@ -158,7 +159,15 @@ describe('content import (integration)', () => {
     const kk = await db
       .select()
       .from(subjectChapterTranslations)
-      .where(eq(subjectChapterTranslations.locale, 'kk'));
+      .where(
+        and(
+          eq(subjectChapterTranslations.locale, 'kk'),
+          inArray(
+            subjectChapterTranslations.chapterId,
+            chapters.map((c) => c.id),
+          ),
+        ),
+      );
     expect(kk).toEqual([expect.objectContaining({ title: 'Тамақтану', needsReview: true })]);
     const chapterOf = new Map(chapters.map((c) => [c.id, c.code]));
     const rows = await db
@@ -184,7 +193,9 @@ describe('content import (integration)', () => {
     const without = await importContent(db, { dir, media: store });
     expect(without.errors).toEqual([]);
     expect(without.summary!.chapters.removed).toBe(2);
-    expect(await db.select().from(subjectChapters)).toEqual([]);
+    expect(
+      await db.select().from(subjectChapters).where(eq(subjectChapters.subjectId, B.subjectAnatomy)),
+    ).toEqual([]);
     const [cardio] = await db.select().from(topics).where(eq(topics.id, B.topicCardio));
     expect(cardio).toMatchObject({ position: 1, chapterId: null });
   });

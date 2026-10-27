@@ -51,7 +51,10 @@ describe('public API (integration)', () => {
     const byCode = Object.fromEntries(res.body.map((s: { code: string }) => [s.code, s]));
     expect(byCode.biology.status).toBe('open');
     expect(byCode.biology.href).toMatch(/^\/learn\/sections\/[0-9a-f-]{36}$/);
-    expect(byCode.chemistry).toMatchObject({ status: 'soon', href: null });
+    // AC-CHEM-02: «Химия» наполнена из атласа — открыта, ведёт на страницу предмета.
+    expect(byCode.chemistry.status).toBe('open');
+    expect(byCode.chemistry.href).toMatch(/^\/learn\/subjects\/[0-9a-f-]{36}$/);
+    expect(byCode.physics).toMatchObject({ status: 'soon', href: null });
     expect(res.body.filter((s: { status: string }) => s.status === 'login_required')).toEqual([]);
     const statuses = res.body.map((s: { status: string }) => s.status);
     expect(statuses.lastIndexOf('open')).toBeLessThan(statuses.indexOf('soon'));

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство марганца делает его незаменимым в металлургии для производства стали?
+      kk: Марганецтің қай қасиеті оны металлургияда болат өндіру үшін таптырмас етеді?
+      en: Which property of manganese makes it indispensable in steelmaking?
+    options:
+      - text:
+          ru: Увеличивает электропроводность стали
+          kk: Болаттың электр өткізгіштігін арттырады
+          en: It increases the electrical conductivity of steel
+      - text:
+          ru: Придаёт стали розоватый оттенок
+          kk: Болатқа қызғылт реңк береді
+          en: It gives steel a pinkish tint
+      - text:
+          ru: Повышает твёрдость и устойчивость к износу
+          kk: Қаттылық пен тозуға төзімділікті арттырады
+          en: It increases hardness and wear resistance
+        correct: true
+      - text:
+          ru: Снижает температуру плавления стали
+          kk: Болаттың балқу температурасын төмендетеді
+          en: It lowers the melting point of steel
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома марганца?
+      kk: Марганец атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a manganese atom?
+    options:
+      - text:
+          ru: '55'
+          kk: '55'
+          en: '55'
+      - text:
+          ru: '30'
+          kk: '30'
+          en: '30'
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+      - text:
+          ru: '25'
+          kk: '25'
+          en: '25'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому марганца в основном состоянии?
+      kk: Негізгі күйдегі марганец атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the manganese atom in its ground state?
+    options:
+      - text:
+          ru: '[Ar] 3d⁶ 4s¹'
+          kk: '[Ar] 3d⁶ 4s¹'
+          en: '[Ar] 3d⁶ 4s¹'
+      - text:
+          ru: '[Ar] 3d⁷ 4s⁰'
+          kk: '[Ar] 3d⁷ 4s⁰'
+          en: '[Ar] 3d⁷ 4s⁰'
+      - text:
+          ru: '[Ar] 3d⁵ 4s²'
+          kk: '[Ar] 3d⁵ 4s²'
+          en: '[Ar] 3d⁵ 4s²'
+        correct: true
+      - text:
+          ru: '[Ar] 3d⁴ 4s²'
+          kk: '[Ar] 3d⁴ 4s²'
+          en: '[Ar] 3d⁴ 4s²'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое соединение марганца является мощным окислителем?
+      kk: Марганецтің қай қосылысы күшті тотықтырғыш болып табылады?
+      en: Which manganese compound is a powerful oxidising agent?
+    options:
+      - text:
+          ru: Оксид марганца(II) (MnO)
+          kk: Марганец(II) оксиді (MnO)
+          en: Manganese(II) oxide (MnO)
+      - text:
+          ru: Карбонат марганца(II) (MnCO₃)
+          kk: Марганец(II) карбонаты (MnCO₃)
+          en: Manganese(II) carbonate (MnCO₃)
+      - text:
+          ru: Перманганат калия (KMnO₄)
+          kk: Калий перманганаты (KMnO₄)
+          en: Potassium permanganate (KMnO₄)
+        correct: true
+      - text:
+          ru: Сульфат марганца(II) (MnSO₄)
+          kk: Марганец(II) сульфаты (MnSO₄)
+          en: Manganese(II) sulfate (MnSO₄)
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое значение имеет марганец для фотосинтеза растений?
+      kk: Марганецтің өсімдіктердің фотосинтезі үшін маңызы қандай?
+      en: Why is manganese important for photosynthesis in plants?
+    options:
+      - text:
+          ru: Фундаментален для расщепления воды
+          kk: Суды ыдырату үшін аса маңызды
+          en: It is essential for splitting water
+        correct: true
+      - text:
+          ru: Является источником энергии для хлоропластов
+          kk: Хлоропластар үшін энергия көзі болып табылады
+          en: It is an energy source for chloroplasts
+      - text:
+          ru: Обеспечивает красный цвет листьев
+          kk: Жапырақтарға қызыл түс береді
+          en: It makes leaves red
+      - text:
+          ru: Ускоряет поглощение углекислого газа
+          kk: Көмірқышқыл газын сіңіруді жеделдетеді
+          en: It speeds up the uptake of carbon dioxide

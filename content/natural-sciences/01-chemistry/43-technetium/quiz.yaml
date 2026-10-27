@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство технеция позволяет использовать его в качестве бета-излучателя для калибровки приборов?
+      kk: Технецийдің қай қасиеті оны құралдарды калибрлеуге арналған бета-сәуле шығарғыш ретінде пайдалануға мүмкіндік береді?
+      en: Which property of technetium allows it to be used as a beta source for calibrating instruments?
+    options:
+      - text:
+          ru: Серебристо-серый вид, похожий на платину
+          kk: Платинаға ұқсас күміс-сұр түсі
+          en: A silvery-grey look similar to platinum
+      - text:
+          ru: Способность становиться сверхпроводником при 7.46 К
+          kk: 7.46 К температурада асқын өткізгішке айналу қабілеті
+          en: The ability to become a superconductor at 7.46 K
+      - text:
+          ru: Высокая электро- и теплопроводность
+          kk: Жоғары электр және жылу өткізгіштік
+          en: High electrical and thermal conductivity
+      - text:
+          ru: 'Радиоактивность: испускает бета- и гамма-излучение'
+          kk: 'Радиоактивтілігі: бета- және гамма-сәулелер шығарады'
+          en: 'Radioactivity: it emits beta and gamma radiation'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп технеция имеет 55 нейтронов в ядре?
+      kk: Технецийдің қай изотопының ядросында 55 нейтрон бар?
+      en: Which isotope of technetium has 55 neutrons in its nucleus?
+    options:
+      - text:
+          ru: Технеций-98
+          kk: Технеций-98
+          en: Technetium-98
+        correct: true
+      - text:
+          ru: Технеций-97
+          kk: Технеций-97
+          en: Technetium-97
+      - text:
+          ru: Технеций-99m
+          kk: Технеций-99m
+          en: Technetium-99m
+      - text:
+          ru: Технеций-99
+          kk: Технеций-99
+          en: Technetium-99
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления технеция является наиболее частой, помимо +7?
+      kk: +7-ден басқа технецийдің ең жиі кездесетін тотығу дәрежесі қандай?
+      en: Apart from +7, which oxidation state of technetium is the most common?
+    options:
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '-1'
+          kk: '-1'
+          en: '-1'
+      - text:
+          ru: '+6'
+          kk: '+6'
+          en: '+6'
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему технеций почти не применяют как ингибитор коррозии стали, хотя он эффективен?
+      kk: Тиімді болса да, технеций неге болат коррозиясының ингибиторы ретінде іс жүзінде қолданылмайды?
+      en: Why is technetium hardly used as a corrosion inhibitor for steel, even though it is effective?
+    options:
+      - text:
+          ru: Из-за высокой температуры плавления
+          kk: Балқу температурасы жоғары болғандықтан
+          en: Because of its high melting point
+      - text:
+          ru: Из-за парамагнетизма
+          kk: Парамагнитті болғандықтан
+          en: Because it is paramagnetic
+      - text:
+          ru: Из-за растворимости в окисляющих кислотах
+          kk: Тотықтырғыш қышқылдарда еритіндіктен
+          en: Because it dissolves in oxidising acids
+      - text:
+          ru: Из-за радиоактивности
+          kk: Радиоактивті болғандықтан
+          en: Because it is radioactive
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение технеция связано с его способностью испускать гамма-излучение?
+      kk: Технецийдің қай қолданылуы оның гамма-сәуле шығару қабілетімен байланысты?
+      en: Which use of technetium is related to its ability to emit gamma rays?
+    options:
+      - text:
+          ru: Изучение процессов коррозии металлов
+          kk: Металдардың коррозия процестерін зерттеу
+          en: Studying corrosion of metals
+      - text:
+          ru: Контроль потоков в химических установках
+          kk: Химиялық қондырғылардағы ағындарды бақылау
+          en: Monitoring flows in chemical plants
+      - text:
+          ru: Калибровка бета-излучателей
+          kk: Бета-сәуле шығарғыштарды калибрлеу
+          en: Calibrating beta sources
+      - text:
+          ru: 'Медицинская диагностика: визуализация костей, сердца и органов'
+          kk: 'Медициналық диагностика: сүйектерді, жүректі және мүшелерді бейнелеу'
+          en: 'Medical diagnostics: imaging of bones, the heart and organs'
+        correct: true

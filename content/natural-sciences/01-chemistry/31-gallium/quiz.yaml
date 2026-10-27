@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство галлия позволяет ему плавиться в руке человека?
+      kk: Галлийдің қай қасиеті оның адамның қолында балқуына мүмкіндік береді?
+      en: Which property of gallium lets it melt in a person’s hand?
+    options:
+      - text:
+          ru: Высокая температура кипения (2229°C)
+          kk: Қайнау температурасының жоғары болуы (2229°C)
+          en: A high boiling point (2229°C)
+      - text:
+          ru: Низкая температура плавления (29.76°C)
+          kk: Балқу температурасының төмендігі (29.76°C)
+          en: A low melting point (29.76°C)
+        correct: true
+      - text:
+          ru: Большое количество валентных электронов
+          kk: Валенттік электрондардың көп болуы
+          en: A large number of valence electrons
+      - text:
+          ru: Высокая электроотрицательность
+          kk: Жоғары электртерістілік
+          en: High electronegativity
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома галлия?
+      kk: Галлий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a gallium atom?
+    options:
+      - text:
+          ru: '31'
+          kk: '31'
+          en: '31'
+        correct: true
+      - text:
+          ru: '69'
+          kk: '69'
+          en: '69'
+      - text:
+          ru: '71'
+          kk: '71'
+          en: '71'
+      - text:
+          ru: '38'
+          kk: '38'
+          en: '38'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип ионов образует галлий, исходя из его степени окисления +3?
+      kk: +3 тотығу дәрежесін ескергенде галлий қандай ион түзеді?
+      en: Given its oxidation state of +3, what kind of ion does gallium form?
+    options:
+      - text:
+          ru: Нейтральный атом
+          kk: Бейтарап атом
+          en: Neutral atom
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение галлия связано с его способностью образовывать соединения для высокоскоростной электроники?
+      kk: Галлийдің қай қолданылуы оның жоғары жылдамдықты электроникаға арналған қосылыстар түзу қабілетімен байланысты?
+      en: Which use of gallium is related to its ability to form compounds for high-speed electronics?
+    options:
+      - text:
+          ru: Арсенид галлия (GaAs) для микросхем
+          kk: Микросхемаларға арналған галлий арсениді (GaAs)
+          en: Gallium arsenide (GaAs) for microchips
+        correct: true
+      - text:
+          ru: Радиофармацевтика для ПЭТ-диагностики
+          kk: ПЭТ-диагностикаға арналған радиофармацевтика
+          en: Radiopharmaceuticals for PET scans
+      - text:
+          ru: Фотоэлектрические элементы для спутников
+          kk: Жер серіктеріне арналған фотоэлектрлік элементтер
+          en: Solar cells for satellites
+      - text:
+          ru: Жидкие сплавы для термометров
+          kk: Термометрлерге арналған сұйық қорытпалар
+          en: Liquid alloys for thermometers
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое соединение галлия — полупроводник синих и белых светодиодов?
+      kk: Галлийдің қай қосылысы көк және ақ жарықдиодтардың жартылай өткізгіші болып табылады?
+      en: Which gallium compound is the semiconductor of blue and white LEDs?
+    options:
+      - text:
+          ru: Хлорид галлия (GaCl₃)
+          kk: Галлий хлориді (GaCl₃)
+          en: Gallium chloride (GaCl₃)
+      - text:
+          ru: Сульфат галлия
+          kk: Галлий сульфаты
+          en: Gallium sulfate
+      - text:
+          ru: Оксид галлия (Ga₂O₃)
+          kk: Галлий оксиді (Ga₂O₃)
+          en: Gallium oxide (Ga₂O₃)
+      - text:
+          ru: Нитрид галлия (GaN)
+          kk: Галлий нитриді (GaN)
+          en: Gallium nitride (GaN)
+        correct: true

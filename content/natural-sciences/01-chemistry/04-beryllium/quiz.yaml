@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома бериллия?
+      kk: Бериллий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a beryllium atom?
+    options:
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+        correct: true
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+      - text:
+          ru: '9'
+          kk: '9'
+          en: '9'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи наиболее характерен для соединений бериллия, учитывая его положение в группе щелочноземельных металлов и амфотерные свойства?
+      kk: Сілтілік жер металдары тобындағы орны мен амфотерлік қасиеттерін ескергенде, бериллий қосылыстарына химиялық байланыстың қай түрі тән?
+      en: Given its position among the alkaline earth metals and its amphoteric properties, which type of chemical bond is most typical of beryllium compounds?
+    options:
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+        correct: true
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов бериллия является единственным стабильным природным изотопом?
+      kk: Бериллийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп болып табылады?
+      en: Which isotope of beryllium is its only stable natural isotope?
+    options:
+      - text:
+          ru: Бериллий-8
+          kk: Бериллий-8
+          en: Beryllium-8
+      - text:
+          ru: Бериллий-9
+          kk: Бериллий-9
+          en: Beryllium-9
+        correct: true
+      - text:
+          ru: Бериллий-11
+          kk: Бериллий-11
+          en: Beryllium-11
+      - text:
+          ru: Бериллий-10
+          kk: Бериллий-10
+          en: Beryllium-10
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство бериллия делает его особенно ценным для использования в окнах рентгеновских трубок?
+      kk: Бериллийдің қай қасиеті оны рентген түтіктерінің терезелері үшін аса құнды етеді?
+      en: Which property of beryllium makes it especially valuable for X-ray tube windows?
+    options:
+      - text:
+          ru: Высокая теплопроводность
+          kk: Жылу өткізгіштігі жоғары
+          en: High thermal conductivity
+      - text:
+          ru: Низкая плотность
+          kk: Тығыздығы төмен
+          en: Low density
+      - text:
+          ru: Устойчивость к коррозии
+          kk: Коррозияға төзімді
+          en: Corrosion resistance
+      - text:
+          ru: Прозрачность для рентгеновских лучей
+          kk: Рентген сәулелерін өткізуі
+          en: Transparency to X-rays
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома бериллия, исходя из его электронной конфигурации [He] 2s²?
+      kk: Электрондық конфигурациясы [He] 2s² бойынша бериллий атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of a beryllium atom, given its electron configuration [He] 2s²?
+    options:
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+        correct: true
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'

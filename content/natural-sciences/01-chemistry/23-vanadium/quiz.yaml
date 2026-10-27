@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома ванадия?
+      kk: Ванадий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a vanadium atom?
+    options:
+      - text:
+          ru: '50'
+          kk: '50'
+          en: '50'
+      - text:
+          ru: '23'
+          kk: '23'
+          en: '23'
+        correct: true
+      - text:
+          ru: '51'
+          kk: '51'
+          en: '51'
+      - text:
+          ru: '28'
+          kk: '28'
+          en: '28'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов ванадия является единственным стабильным природным изотопом?
+      kk: Ванадийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?
+      en: Which isotope of vanadium is its only stable natural isotope?
+    options:
+      - text:
+          ru: Ванадий-49
+          kk: Ванадий-49
+          en: Vanadium-49
+      - text:
+          ru: Ванадий-50
+          kk: Ванадий-50
+          en: Vanadium-50
+      - text:
+          ru: Ванадий-51
+          kk: Ванадий-51
+          en: Vanadium-51
+        correct: true
+      - text:
+          ru: Ванадий-52
+          kk: Ванадий-52
+          en: Vanadium-52
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому ванадия?
+      kk: Ванадий атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the vanadium atom?
+    options:
+      - text:
+          ru: '[Ar] 3d⁵ 4s²'
+          kk: '[Ar] 3d⁵ 4s²'
+          en: '[Ar] 3d⁵ 4s²'
+      - text:
+          ru: '[Ar] 3d³ 4s²'
+          kk: '[Ar] 3d³ 4s²'
+          en: '[Ar] 3d³ 4s²'
+        correct: true
+      - text:
+          ru: '[Ar] 3d⁴ 4s¹'
+          kk: '[Ar] 3d⁴ 4s¹'
+          en: '[Ar] 3d⁴ 4s¹'
+      - text:
+          ru: '[Ar] 3d² 4s²'
+          kk: '[Ar] 3d² 4s²'
+          en: '[Ar] 3d² 4s²'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство ванадия объясняет его использование в качестве добавки к стали для повышения прочности?
+      kk: Ванадийдің қай қасиеті оны беріктікті арттыру үшін болатқа қоспа ретінде пайдалануды түсіндіреді?
+      en: Which property of vanadium explains its use as an additive to make steel stronger?
+    options:
+      - text:
+          ru: Высокая структурная прочность и долговечность
+          kk: Құрылымдық беріктігі мен ұзақ қызмет етуі
+          en: High structural strength and durability
+        correct: true
+      - text:
+          ru: Парамагнетизм
+          kk: Парамагнетизмі
+          en: Paramagnetism
+      - text:
+          ru: Образование защитного оксидного слоя
+          kk: Қорғаныш оксид қабатын түзуі
+          en: Forming a protective oxide layer
+      - text:
+          ru: Хорошая коррозийная стойкость к кислотам
+          kk: Қышқылдарға жақсы коррозиялық төзімділігі
+          en: Good corrosion resistance to acids
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления ванадия характерна для его соединения V₂O₅, используемого в качестве катализатора?
+      kk: Катализатор ретінде қолданылатын V₂O₅ қосылысындағы ванадийдің тотығу дәрежесі қандай?
+      en: What is the oxidation state of vanadium in V₂O₅, a compound used as a catalyst?
+    options:
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '+5'
+          kk: '+5'
+          en: '+5'
+        correct: true
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'

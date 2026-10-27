@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство хрома объясняет его использование в качестве защитного покрытия для других металлов?
+      kk: Хромның қай қасиеті оны басқа металдарға қорғаныш жабын ретінде пайдалануды түсіндіреді?
+      en: Which property of chromium explains its use as a protective coating for other metals?
+    options:
+      - text:
+          ru: Растворимость в соляной кислоте
+          kk: Тұз қышқылында еруі
+          en: Solubility in hydrochloric acid
+      - text:
+          ru: Высокая температура плавления 1907°C
+          kk: Балқу температурасының жоғары болуы, 1907°C
+          en: A high melting point of 1907°C
+      - text:
+          ru: Антиферромагнетизм при комнатной температуре
+          kk: Бөлме температурасындағы антиферромагнетизмі
+          en: Antiferromagnetism at room temperature
+      - text:
+          ru: Образование тонкого плотного слоя оксида Cr₂O₃, препятствующего окислению
+          kk: Тотығуға кедергі келтіретін жұқа әрі тығыз Cr₂O₃ оксид қабатын түзуі
+          en: It forms a thin, dense Cr₂O₃ oxide layer that prevents oxidation
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа хрома, если его атомный номер равен 24?
+      kk: Атомдық нөмірі 24 болса, хромның ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?
+      en: If its atomic number is 24, how many neutrons are in the nucleus of the most common stable isotope of chromium?
+    options:
+      - text:
+          ru: '52'
+          kk: '52'
+          en: '52'
+      - text:
+          ru: '76'
+          kk: '76'
+          en: '76'
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+      - text:
+          ru: '28'
+          kk: '28'
+          en: '28'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая особенность электронной конфигурации хрома ([Ar] 3d⁵ 4s¹) обеспечивает его стабильность?
+      kk: Хромның электрондық конфигурациясының ([Ar] 3d⁵ 4s¹) қай ерекшелігі оның тұрақтылығын қамтамасыз етеді?
+      en: Which feature of the electron configuration of chromium ([Ar] 3d⁵ 4s¹) makes it stable?
+    options:
+      - text:
+          ru: Полузаполненная 3d-оболочка
+          kk: Жартылай толған 3d-қабат
+          en: A half-filled 3d shell
+        correct: true
+      - text:
+          ru: Наличие 24 электронов
+          kk: 24 электронның болуы
+          en: Having 24 electrons
+      - text:
+          ru: Расположение в 4-м периоде
+          kk: 4-периодта орналасуы
+          en: Being in period 4
+      - text:
+          ru: Наличие 4s¹ электрона
+          kk: 4s¹ электронның болуы
+          en: Having a 4s¹ electron
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему хром, будучи металлом, не тускнеет на воздухе, сохраняя свой блеск?
+      kk: Металл бола тұра хром неге ауада күңгірттенбей, жылтырын сақтайды?
+      en: Why does chromium, a metal, not tarnish in air and keep its shine?
+    options:
+      - text:
+          ru: Вследствие его высокой температуры плавления
+          kk: Балқу температурасы жоғары болғандықтан
+          en: Because of its high melting point
+      - text:
+          ru: Потому что он является инертным газом
+          kk: Ол инертті газ болғандықтан
+          en: Because it is an inert gas
+      - text:
+          ru: Из-за того, что он не реагирует с неметаллами
+          kk: Бейметалдармен әрекеттеспейтіндіктен
+          en: Because it does not react with nonmetals
+      - text:
+          ru: Из-за образования тонкого плотного слоя оксида (Cr₂O₃), который защищает металл от дальнейшего окисления
+          kk: Металды әрі қарай тотығудан қорғайтын жұқа әрі тығыз оксид (Cr₂O₃) қабаты түзілетіндіктен
+          en: Because a thin, dense oxide layer (Cr₂O₃) forms and protects the metal from further oxidation
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома хрома, если его порядковый номер равен 24?
+      kk: Реттік нөмірі 24 болса, хром атомының ядросында қанша протон бар?
+      en: If its atomic number is 24, how many protons are in the nucleus of a chromium atom?
+    options:
+      - text:
+          ru: '48'
+          kk: '48'
+          en: '48'
+      - text:
+          ru: '28'
+          kk: '28'
+          en: '28'
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+        correct: true
+      - text:
+          ru: '52'
+          kk: '52'
+          en: '52'

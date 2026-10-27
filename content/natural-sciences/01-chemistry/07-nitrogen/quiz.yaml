@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома азота?
+      kk: Азот атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a nitrogen atom?
+    options:
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+        correct: true
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '14'
+          kk: '14'
+          en: '14'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи удерживает атомы в молекуле N₂, делая её очень прочной?
+      kk: N₂ молекуласындағы атомдарды қандай химиялық байланыс ұстап, оны өте берік етеді?
+      en: Which chemical bond holds the atoms together in the N₂ molecule, making it very strong?
+    options:
+      - text:
+          ru: Одинарная связь
+          kk: Жай байланыс
+          en: Single bond
+      - text:
+          ru: Тройная связь
+          kk: Үш еселі байланыс
+          en: Triple bond
+        correct: true
+      - text:
+          ru: Двойная связь
+          kk: Қос байланыс
+          en: Double bond
+      - text:
+          ru: Ионная связь
+          kk: Иондық байланыс
+          en: Ionic bond
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп азота является самым распространённым в природе?
+      kk: Азоттың қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of nitrogen is the most common in nature?
+    options:
+      - text:
+          ru: Азот-13
+          kk: Азот-13
+          en: Nitrogen-13
+      - text:
+          ru: Азот-14
+          kk: Азот-14
+          en: Nitrogen-14
+        correct: true
+      - text:
+          ru: Азот-12
+          kk: Азот-12
+          en: Nitrogen-12
+      - text:
+          ru: Азот-15
+          kk: Азот-15
+          en: Nitrogen-15
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько электронов находится на внешнем энергетическом уровне атома азота?
+      kk: Азот атомының сыртқы энергетикалық деңгейінде қанша электрон бар?
+      en: How many electrons are in the outer energy level of a nitrogen atom?
+    options:
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+        correct: true
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство азота позволяет использовать его для создания инертной среды в металлургии?
+      kk: Азоттың қай қасиеті оны металлургияда инертті орта жасауға пайдалануға мүмкіндік береді?
+      en: Which property of nitrogen allows it to be used to create an inert atmosphere in metallurgy?
+    options:
+      - text:
+          ru: Способность образовывать оксиды
+          kk: Оксидтер түзу қабілеті
+          en: The ability to form oxides
+      - text:
+          ru: Высокая реакционная способность
+          kk: Жоғары реакциялық қабілеті
+          en: High reactivity
+      - text:
+          ru: Хорошая растворимость в воде
+          kk: Суда жақсы еруі
+          en: Good solubility in water
+      - text:
+          ru: Химическая инертность при комнатной температуре
+          kk: Бөлме температурасындағы химиялық инерттілігі
+          en: Chemical inertness at room temperature
+        correct: true

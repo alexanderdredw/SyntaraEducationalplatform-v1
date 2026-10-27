@@ -1,0 +1,101 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома иттрия?
+      kk: Иттрий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an yttrium atom?
+    options:
+      - text:
+          ru: '89'
+          kk: '89'
+          en: '89'
+      - text:
+          ru: '50'
+          kk: '50'
+          en: '50'
+      - text:
+          ru: '39'
+          kk: '39'
+          en: '39'
+        correct: true
+      - text:
+          ru: '31'
+          kk: '31'
+          en: '31'
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какова типичная степень окисления иттрия в соединениях?
+      kk: Қосылыстардағы иттрийдің әдеттегі тотығу дәрежесі қандай?
+      en: What is the typical oxidation state of yttrium in compounds?
+    options:
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+        correct: true
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов иттрия является единственным стабильным природным изотопом?
+      kk: Иттрийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?
+      en: Which isotope of yttrium is its only stable natural isotope?
+    options:
+      - text:
+          ru: ⁹⁰Y
+          kk: ⁹⁰Y
+          en: ⁹⁰Y
+      - text:
+          ru: ³⁹Y
+          kk: ³⁹Y
+          en: ³⁹Y
+      - text:
+          ru: ⁸⁹Y
+          kk: ⁸⁹Y
+          en: ⁸⁹Y
+        correct: true
+      - text:
+          ru: ⁹¹Y
+          kk: ⁹¹Y
+          en: ⁹¹Y
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: В какой группе и периоде периодической системы находится иттрий?
+      kk: Иттрий периодтық жүйенің қай тобы мен периодында орналасқан?
+      en: In which group and period of the periodic table is yttrium?
+    options:
+      - text:
+          ru: 5-я группа, 3-й период
+          kk: 5-топ, 3-период
+          en: Group 5, period 3
+      - text:
+          ru: 3-я группа, 4-й период
+          kk: 3-топ, 4-период
+          en: Group 3, period 4
+      - text:
+          ru: 3-я группа, 5-й период
+          kk: 3-топ, 5-период
+          en: Group 3, period 5
+        correct: true
+      - text:
+          ru: 4-я группа, 5-й период
+          kk: 4-топ, 5-период
+          en: Group 4, period 5

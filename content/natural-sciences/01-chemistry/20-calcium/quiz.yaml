@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома кальция?
+      kk: Кальций атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a calcium atom?
+    options:
+      - text:
+          ru: '22'
+          kk: '22'
+          en: '22'
+      - text:
+          ru: '18'
+          kk: '18'
+          en: '18'
+      - text:
+          ru: '40'
+          kk: '40'
+          en: '40'
+      - text:
+          ru: '20'
+          kk: '20'
+          en: '20'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какова электронная конфигурация атома кальция?
+      kk: Кальций атомының электрондық конфигурациясы қандай?
+      en: What is the electron configuration of a calcium atom?
+    options:
+      - text:
+          ru: '[Ar] 3d²'
+          kk: '[Ar] 3d²'
+          en: '[Ar] 3d²'
+      - text:
+          ru: '[Ar] 4p²'
+          kk: '[Ar] 4p²'
+          en: '[Ar] 4p²'
+      - text:
+          ru: '[Kr] 4s²'
+          kk: '[Kr] 4s²'
+          en: '[Kr] 4s²'
+      - text:
+          ru: '[Ar] 4s²'
+          kk: '[Ar] 4s²'
+          en: '[Ar] 4s²'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какую степень окисления обычно проявляет кальций в соединениях?
+      kk: Кальций қосылыстарда әдетте қандай тотығу дәрежесін көрсетеді?
+      en: Which oxidation state does calcium usually show in compounds?
+    options:
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая частица образуется, когда атом кальция теряет два электрона?
+      kk: Кальций атомы екі электронын жоғалтқанда қандай бөлшек түзіледі?
+      en: Which particle forms when a calcium atom loses two electrons?
+    options:
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи образует кальций с неметаллами, например, с хлором?
+      kk: Кальций бейметалдармен, мысалы хлормен, химиялық байланыстың қай түрін түзеді?
+      en: What type of chemical bond does calcium form with nonmetals such as chlorine?
+    options:
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+        correct: true
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic

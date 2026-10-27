@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство селена объясняет его использование в солнечных элементах и датчиках света?
+      kk: Селеннің қай қасиеті оның күн элементтері мен жарық датчиктерінде қолданылуын түсіндіреді?
+      en: Which property of selenium explains its use in solar cells and light sensors?
+    options:
+      - text:
+          ru: Наличие нескольких аллотропных форм
+          kk: Бірнеше аллотропиялық түрінің болуы
+          en: Having several allotropes
+      - text:
+          ru: Исключительная фотопроводимость (лучше проводит ток на свету)
+          kk: Ерекше фотоөткізгіштігі (жарықта токты жақсырақ өткізеді)
+          en: Exceptional photoconductivity (it conducts better in light)
+        correct: true
+      - text:
+          ru: Химическое сходство с серой
+          kk: Күкіртпен химиялық ұқсастығы
+          en: Chemical similarity to sulfur
+      - text:
+          ru: Способность образовывать селениды с металлами
+          kk: Металдармен селенидтер түзу қабілеті
+          en: The ability to form selenides with metals
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома селена?
+      kk: Селен атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a selenium atom?
+    options:
+      - text:
+          ru: '80'
+          kk: '80'
+          en: '80'
+      - text:
+          ru: '46'
+          kk: '46'
+          en: '46'
+      - text:
+          ru: '34'
+          kk: '34'
+          en: '34'
+        correct: true
+      - text:
+          ru: '16'
+          kk: '16'
+          en: '16'
+  - code: q3
+    type: single_choice
+    difficulty: hard
+    text:
+      ru: Какая степень окисления НЕ является типичной для селена в соединениях?
+      kk: Қосылыстардағы селенге қай тотығу дәрежесі тән ЕМЕС?
+      en: Which oxidation state is NOT typical of selenium in compounds?
+    options:
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '+6'
+          kk: '+6'
+          en: '+6'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true
+      - text:
+          ru: '-2'
+          kk: '-2'
+          en: '-2'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп селена является самым распространённым в природе?
+      kk: Селеннің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of selenium is the most common in nature?
+    options:
+      - text:
+          ru: Селен-75
+          kk: Селен-75
+          en: Selenium-75
+      - text:
+          ru: Селен-82
+          kk: Селен-82
+          en: Selenium-82
+      - text:
+          ru: Селен-74
+          kk: Селен-74
+          en: Selenium-74
+      - text:
+          ru: Селен-80
+          kk: Селен-80
+          en: Selenium-80
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: В какой группе и периоде Периодической системы находится селен?
+      kk: Селен периодтық жүйенің қай тобы мен периодында орналасқан?
+      en: In which group and period of the periodic table is selenium?
+    options:
+      - text:
+          ru: 4-й период, 15-я группа
+          kk: 4-период, 15-топ
+          en: Period 4, group 15
+      - text:
+          ru: 4-й период, 16-я группа
+          kk: 4-период, 16-топ
+          en: Period 4, group 16
+        correct: true
+      - text:
+          ru: 3-й период, 16-я группа
+          kk: 3-период, 16-топ
+          en: Period 3, group 16
+      - text:
+          ru: 3-й период, 15-я группа
+          kk: 3-период, 15-топ
+          en: Period 3, group 15

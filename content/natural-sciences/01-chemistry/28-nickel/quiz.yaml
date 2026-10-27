@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство никеля объясняет его широкое использование в производстве нержавеющей стали и гальванических покрытиях?
+      kk: Никельдің қай қасиеті оның тот баспайтын болат өндірісінде және гальваникалық жабындарда кеңінен қолданылуын түсіндіреді?
+      en: Which property of nickel explains its wide use in stainless steel and electroplating?
+    options:
+      - text:
+          ru: Устойчивость к коррозии и окислению
+          kk: Коррозия мен тотығуға төзімділігі
+          en: Resistance to corrosion and oxidation
+        correct: true
+      - text:
+          ru: Способность образовывать ярко окрашенные соединения
+          kk: Ашық түсті қосылыстар түзу қабілеті
+          en: The ability to form brightly coloured compounds
+      - text:
+          ru: Ферромагнетизм при комнатной температуре
+          kk: Бөлме температурасындағы ферромагнетизмі
+          en: Ferromagnetism at room temperature
+      - text:
+          ru: Высокая температура плавления
+          kk: Балқу температурасының жоғары болуы
+          en: A high melting point
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержится в ядре самого распространенного стабильного изотопа никеля (Никель-58)?
+      kk: Никельдің ең көп таралған тұрақты изотопының (никель-58) ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common stable isotope of nickel (nickel-58)?
+    options:
+      - text:
+          ru: '86'
+          kk: '86'
+          en: '86'
+      - text:
+          ru: '30'
+          kk: '30'
+          en: '30'
+        correct: true
+      - text:
+          ru: '58'
+          kk: '58'
+          en: '58'
+      - text:
+          ru: '28'
+          kk: '28'
+          en: '28'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи характерен для простого вещества никеля?
+      kk: Никель жай затына химиялық байланыстың қай түрі тән?
+      en: Which type of chemical bond is typical of nickel as a simple substance?
+    options:
+      - text:
+          ru: Ионная связь
+          kk: Иондық байланыс
+          en: Ionic bond
+      - text:
+          ru: Ковалентная неполярная связь
+          kk: Коваленттік полюссіз байланыс
+          en: Nonpolar covalent bond
+      - text:
+          ru: Водородная связь
+          kk: Сутектік байланыс
+          en: Hydrogen bond
+      - text:
+          ru: Металлическая связь
+          kk: Металдық байланыс
+          en: Metallic bond
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является типичной для никеля в его соединениях?
+      kk: Қосылыстарындағы никельге қай тотығу дәрежесі тән?
+      en: Which oxidation state is typical of nickel in its compounds?
+    options:
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '-2'
+          kk: '-2'
+          en: '-2'
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение никеля связано с его свойством сохранять структурную прочность при высоких температурах?
+      kk: Никельдің қай қолданылуы оның жоғары температурада құрылымдық беріктігін сақтау қасиетімен байланысты?
+      en: Which use of nickel is related to its ability to stay structurally strong at high temperatures?
+    options:
+      - text:
+          ru: Гальваническое покрытие
+          kk: Гальваникалық жабын
+          en: Electroplating
+      - text:
+          ru: Производство суперсплавов для газовых турбин и ракетных двигателей
+          kk: Газ турбиналары мен зымыран қозғалтқыштарына арналған суперқорытпалар өндірісі
+          en: Making superalloys for gas turbines and rocket engines
+        correct: true
+      - text:
+          ru: Чеканка монет
+          kk: Тиын соғу
+          en: Minting coins
+      - text:
+          ru: Изготовление аккумуляторов
+          kk: Аккумуляторлар жасау
+          en: Making batteries

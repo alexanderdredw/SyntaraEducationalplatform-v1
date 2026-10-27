@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома кислорода?
+      kk: Оттегі атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an oxygen atom?
+    options:
+      - text:
+          ru: '16'
+          kk: '16'
+          en: '16'
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+        correct: true
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи характерен для молекулы кислорода (O₂)?
+      kk: Оттегі молекуласына (O₂) химиялық байланыстың қай түрі тән?
+      en: Which type of chemical bond is typical of the oxygen molecule (O₂)?
+    options:
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство кислорода позволяет ему поддерживать горение, но не гореть самому?
+      kk: Оттегінің қай қасиеті оған жануды қолдауға, бірақ өзі жанбауға мүмкіндік береді?
+      en: Which property of oxygen lets it support combustion without burning itself?
+    options:
+      - text:
+          ru: Он является восстановителем
+          kk: Ол тотықсыздандырғыш
+          en: It is a reducing agent
+      - text:
+          ru: Он имеет низкую температуру кипения
+          kk: Оның қайнау температурасы төмен
+          en: It has a low boiling point
+      - text:
+          ru: Он является сильным окислителем
+          kk: Ол күшті тотықтырғыш
+          en: It is a strong oxidising agent
+        correct: true
+      - text:
+          ru: Он обладает парамагнетизмом
+          kk: Оның парамагниттік қасиеті бар
+          en: It is paramagnetic
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома кислорода?
+      kk: Оттегі атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of an oxygen atom?
+    options:
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп кислорода используется в палеоклиматологии для изучения температур прошлого?
+      kk: Палеоклиматологияда өткен дәуірлердің температурасын зерттеу үшін оттегінің қай изотопы қолданылады?
+      en: Which isotope of oxygen is used in palaeoclimatology to study past temperatures?
+    options:
+      - text:
+          ru: Кислород-16
+          kk: Оттегі-16
+          en: Oxygen-16
+      - text:
+          ru: Кислород-18
+          kk: Оттегі-18
+          en: Oxygen-18
+        correct: true
+      - text:
+          ru: Кислород-15
+          kk: Оттегі-15
+          en: Oxygen-15
+      - text:
+          ru: Кислород-17
+          kk: Оттегі-17
+          en: Oxygen-17

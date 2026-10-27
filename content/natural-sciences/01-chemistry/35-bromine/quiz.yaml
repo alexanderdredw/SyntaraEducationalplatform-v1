@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из утверждений о броме как простом веществе верно?
+      kk: Жай зат ретіндегі бром туралы қай тұжырым дұрыс?
+      en: Which statement about bromine as a simple substance is true?
+    options:
+      - text:
+          ru: Бром при комнатной температуре является твердым веществом.
+          kk: Бөлме температурасында бром — қатты зат.
+          en: At room temperature bromine is a solid.
+      - text:
+          ru: Бром при комнатной температуре является газом с резким запахом.
+          kk: Бөлме температурасында бром — өткір иісті газ.
+          en: At room temperature bromine is a gas with a sharp smell.
+      - text:
+          ru: Бром является единственным элементом, который при комнатной температуре находится в жидком состоянии.
+          kk: Бром — бөлме температурасында сұйық күйде болатын жалғыз элемент.
+          en: Bromine is the only element that is liquid at room temperature.
+      - text:
+          ru: Бром является единственным неметаллом, который при комнатной температуре находится в жидком состоянии.
+          kk: Бром — бөлме температурасында сұйық күйде болатын жалғыз бейметалл.
+          en: Bromine is the only nonmetal that is liquid at room temperature.
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько электронов находится на внешнем энергетическом уровне атома брома, если его электронная конфигурация [Ar] 3d¹⁰ 4s² 4p⁵?
+      kk: Электрондық конфигурациясы [Ar] 3d¹⁰ 4s² 4p⁵ болса, бром атомының сыртқы энергетикалық деңгейінде қанша электрон бар?
+      en: How many electrons are in the outer energy level of a bromine atom if its electron configuration is [Ar] 3d¹⁰ 4s² 4p⁵?
+    options:
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+        correct: true
+      - text:
+          ru: '10'
+          kk: '10'
+          en: '10'
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи, скорее всего, образует бром при реакции с щелочным металлом, например, натрием?
+      kk: Сілтілік металмен, мысалы натриймен, әрекеттескенде бром химиялық байланыстың қай түрін түзеді?
+      en: Which type of chemical bond will bromine most likely form when it reacts with an alkali metal such as sodium?
+    options:
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных свойств брома характеризует его как сильный окислитель?
+      kk: Бромның қай қасиеті оны күшті тотықтырғыш ретінде сипаттайды?
+      en: Which property of bromine characterises it as a strong oxidising agent?
+    options:
+      - text:
+          ru: Низкая температура кипения (58.8°C).
+          kk: Қайнау температурасының төмендігі (58.8°C).
+          en: Its low boiling point (58.8°C).
+      - text:
+          ru: Способность реагировать с большинством металлов и неметаллов, принимая электроны.
+          kk: Электрондарды қабылдап, көптеген металдармен және бейметалдармен әрекеттесу қабілеті.
+          en: Its ability to react with most metals and nonmetals by accepting electrons.
+        correct: true
+      - text:
+          ru: Образование бромидов с щелочными металлами.
+          kk: Сілтілік металдармен бромидтер түзуі.
+          en: Forming bromides with alkali metals.
+      - text:
+          ru: Хорошая растворимость в органических растворителях.
+          kk: Органикалық еріткіштерде жақсы еруі.
+          en: Good solubility in organic solvents.
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержится в ядре наиболее распространенного стабильного изотопа брома-79?
+      kk: Бромның ең көп таралған тұрақты изотопы бром-79 ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of bromine-79, the most common stable isotope of bromine?
+    options:
+      - text:
+          ru: '44'
+          kk: '44'
+          en: '44'
+        correct: true
+      - text:
+          ru: '114'
+          kk: '114'
+          en: '114'
+      - text:
+          ru: '79'
+          kk: '79'
+          en: '79'
+      - text:
+          ru: '35'
+          kk: '35'
+          en: '35'

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из следующих утверждений о неоне является верным?
+      kk: Неон туралы қай тұжырым дұрыс?
+      en: Which statement about neon is true?
+    options:
+      - text:
+          ru: Неон — это благородный газ, который химически инертен и не образует стабильных соединений.
+          kk: Неон — химиялық инертті, тұрақты қосылыстар түзбейтін асыл газ.
+          en: Neon is a noble gas that is chemically inert and forms no stable compounds.
+        correct: true
+      - text:
+          ru: Неон — это полуметалл, обладающий свойствами как металлов, так и неметаллов.
+          kk: Неон — металдар мен бейметалдардың қасиеттері бар жартылай металл.
+          en: Neon is a metalloid with properties of both metals and nonmetals.
+      - text:
+          ru: Неон — это активный металл, который легко вступает в реакции с галогенами.
+          kk: Неон — галогендермен оңай әрекеттесетін белсенді металл.
+          en: Neon is an active metal that reacts easily with halogens.
+      - text:
+          ru: Неон — это неметалл, который образует многочисленные соединения с водородом.
+          kk: Неон — сутегімен көптеген қосылыстар түзетін бейметалл.
+          en: Neon is a nonmetal that forms many compounds with hydrogen.
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома неона, если его электронная конфигурация [He] 2s² 2p⁶?
+      kk: Электрондық конфигурациясы [He] 2s² 2p⁶ болса, неон атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of a neon atom if its electron configuration is [He] 2s² 2p⁶?
+    options:
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+        correct: true
+      - text:
+          ru: '10'
+          kk: '10'
+          en: '10'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение неона связано с его способностью светиться ярко-оранжевым цветом при электрическом разряде?
+      kk: Неонның қай қолданылуы оның электр разрядында ашық қызғылт сары түспен жарқырауымен байланысты?
+      en: Which use of neon is related to its bright orange glow in an electric discharge?
+    options:
+      - text:
+          ru: Защита высоковольтного оборудования.
+          kk: Жоғары вольтты жабдықты қорғау.
+          en: Protecting high-voltage equipment.
+      - text:
+          ru: Использование в качестве хладагента в криогенике.
+          kk: Криогеникада салқындатқыш ретінде пайдалану.
+          en: Use as a coolant in cryogenics.
+      - text:
+          ru: Применение в газовых лазерах.
+          kk: Газ лазерлерінде қолдану.
+          en: Use in gas lasers.
+      - text:
+          ru: Создание неоновых вывесок и индикаторных ламп.
+          kk: Неон жарнамалары мен индикатор шамдарын жасау.
+          en: Making neon signs and indicator lamps.
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из следующих свойств неона объясняется его полной электронной оболочкой?
+      kk: Неонның қай қасиеті оның толық электрондық қабатымен түсіндіріледі?
+      en: Which property of neon is explained by its full electron shell?
+    options:
+      - text:
+          ru: Яркое свечение при нагревании.
+          kk: Қыздырғанда жарқырап жануы.
+          en: A bright glow when heated.
+      - text:
+          ru: Способность образовывать ионы с зарядом +1.
+          kk: +1 зарядты иондар түзу қабілеті.
+          en: The ability to form ions with a +1 charge.
+      - text:
+          ru: Высокая температура плавления и кипения.
+          kk: Балқу және қайнау температураларының жоғары болуы.
+          en: High melting and boiling points.
+      - text:
+          ru: Химическая инертность и отсутствие стабильных соединений.
+          kk: Химиялық инерттілігі және тұрақты қосылыстарының болмауы.
+          en: Chemical inertness and the absence of stable compounds.
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Где используют жидкий неон?
+      kk: Сұйық неон қайда қолданылады?
+      en: Where is liquid neon used?
+    options:
+      - text:
+          ru: Как ракетное топливо
+          kk: Зымыран отыны ретінде
+          en: As rocket fuel
+      - text:
+          ru: Для отбеливания бумаги
+          kk: Қағазды ағарту үшін
+          en: For bleaching paper
+      - text:
+          ru: В криогенике как хладагент
+          kk: Криогеникада салқындатқыш ретінде
+          en: In cryogenics as a coolant
+        correct: true
+      - text:
+          ru: Как удобрение
+          kk: Тыңайтқыш ретінде
+          en: As a fertiliser

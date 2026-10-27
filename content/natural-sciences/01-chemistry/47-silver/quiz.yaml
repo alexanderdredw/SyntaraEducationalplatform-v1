@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство серебра делает его наиболее подходящим для использования в электрических контактах?
+      kk: Күмістің қай қасиеті оны электр түйіспелерінде пайдалануға ең қолайлы етеді?
+      en: Which property of silver makes it the best choice for electrical contacts?
+    options:
+      - text:
+          ru: Самая высокая теплопроводность среди всех металлов
+          kk: Барлық металдардың ішіндегі ең жоғары жылу өткізгіштік
+          en: The highest thermal conductivity of all metals
+      - text:
+          ru: Высокая отражательная способность
+          kk: Жоғары шағылыстыру қабілеті
+          en: High reflectivity
+      - text:
+          ru: Самая высокая электропроводность среди всех металлов
+          kk: Барлық металдардың ішіндегі ең жоғары электр өткізгіштік
+          en: The highest electrical conductivity of all metals
+        correct: true
+      - text:
+          ru: Антимикробные свойства
+          kk: Микробқа қарсы қасиеттері
+          en: Antimicrobial properties
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержится в ядре самого распространенного стабильного изотопа серебра (Серебро-107)?
+      kk: Күмістің ең көп таралған тұрақты изотопының (күміс-107) ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common stable isotope of silver (silver-107)?
+    options:
+      - text:
+          ru: '60'
+          kk: '60'
+          en: '60'
+        correct: true
+      - text:
+          ru: '109'
+          kk: '109'
+          en: '109'
+      - text:
+          ru: '47'
+          kk: '47'
+          en: '47'
+      - text:
+          ru: '107'
+          kk: '107'
+          en: '107'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является наиболее типичной для серебра в его соединениях?
+      kk: Қосылыстарындағы күміске қай тотығу дәрежесі ең тән?
+      en: Which oxidation state is most typical of silver in its compounds?
+    options:
+      - text:
+          ru: '-1'
+          kk: '-1'
+          en: '-1'
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+        correct: true
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой процесс используется для извлечения серебра из свинца в промышленном производстве?
+      kk: Өнеркәсіпте күмісті қорғасыннан бөліп алу үшін қай процесс қолданылады?
+      en: Which process is used industrially to extract silver from lead?
+    options:
+      - text:
+          ru: Электролитическое рафинирование
+          kk: Электролиттік тазарту
+          en: Electrolytic refining
+      - text:
+          ru: Процесс Паркеса
+          kk: Паркс процесі
+          en: The Parkes process
+        correct: true
+      - text:
+          ru: Плавление
+          kk: Балқыту
+          en: Smelting
+      - text:
+          ru: Флотация
+          kk: Флотация
+          en: Flotation
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство серебра объясняет его использование в традиционной фотографии?
+      kk: Күмістің қай қасиеті оның дәстүрлі фотографияда қолданылуын түсіндіреді?
+      en: Which property of silver explains its use in traditional photography?
+    options:
+      - text:
+          ru: Высокая отражательная способность
+          kk: Жоғары шағылыстыру қабілеті
+          en: High reflectivity
+      - text:
+          ru: Антимикробные свойства
+          kk: Микробқа қарсы қасиеттері
+          en: Antimicrobial properties
+      - text:
+          ru: Высокая пластичность
+          kk: Жоғары созылғыштығы
+          en: High ductility
+      - text:
+          ru: Образование светочувствительных соединений (галогенидов)
+          kk: Жарыққа сезімтал қосылыстар (галогенидтер) түзуі
+          en: Forming light-sensitive compounds (halides)
+        correct: true

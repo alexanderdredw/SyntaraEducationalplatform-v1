@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство циркония делает его критически важным материалом для оболочек ТВЭЛов в ядерных реакторах?
+      kk: Цирконийдің қай қасиеті оны ядролық реакторлардағы жылу бөлгіш элементтердің қабықшалары үшін аса маңызды материал етеді?
+      en: Which property of zirconium makes it a critical material for fuel-rod cladding in nuclear reactors?
+    options:
+      - text:
+          ru: Высокая температура плавления
+          kk: Балқу температурасының жоғары болуы
+          en: A high melting point
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+      - text:
+          ru: Способность образовывать оксидный слой
+          kk: Оксид қабатын түзу қабілеті
+          en: The ability to form an oxide layer
+      - text:
+          ru: Прозрачность для тепловых нейтронов
+          kk: Жылулық нейтрондарды өткізуі
+          en: Transparency to thermal neutrons
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Атом циркония содержит 40 протонов. Сколько электронов находится в нейтральном атоме циркония?
+      kk: Цирконий атомында 40 протон бар. Бейтарап цирконий атомында қанша электрон бар?
+      en: A zirconium atom has 40 protons. How many electrons are in a neutral zirconium atom?
+    options:
+      - text:
+          ru: '90'
+          kk: '90'
+          en: '90'
+      - text:
+          ru: '80'
+          kk: '80'
+          en: '80'
+      - text:
+          ru: '40'
+          kk: '40'
+          en: '40'
+        correct: true
+      - text:
+          ru: '50'
+          kk: '50'
+          en: '50'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является типичной для циркония в его соединениях?
+      kk: Қосылыстарындағы цирконийге қай тотығу дәрежесі тән?
+      en: Which oxidation state is typical of zirconium in its compounds?
+    options:
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+        correct: true
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп циркония является самым распространённым в природе?
+      kk: Цирконийдің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of zirconium is the most common in nature?
+    options:
+      - text:
+          ru: Цирконий-96
+          kk: Цирконий-96
+          en: Zirconium-96
+      - text:
+          ru: Цирконий-90
+          kk: Цирконий-90
+          en: Zirconium-90
+        correct: true
+      - text:
+          ru: Цирконий-91
+          kk: Цирконий-91
+          en: Zirconium-91
+      - text:
+          ru: Цирконий-92
+          kk: Цирконий-92
+          en: Zirconium-92
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой метод используется для промышленного получения циркония из цирконового песка?
+      kk: Циркон құмынан цирконийді өнеркәсіптік жолмен алу үшін қай әдіс қолданылады?
+      en: Which method is used to produce zirconium industrially from zircon sand?
+    options:
+      - text:
+          ru: Прямое восстановление водородом
+          kk: Сутегімен тікелей тотықсыздандыру
+          en: Direct reduction with hydrogen
+      - text:
+          ru: Электролиз расплава
+          kk: Балқыманы электролиздеу
+          en: Electrolysis of a melt
+      - text:
+          ru: Процесс Кролла
+          kk: Кролл процесі
+          en: The Kroll process
+        correct: true
+      - text:
+          ru: Метод Ван-Аркеля — де Бура
+          kk: Ван-Аркель — де Бур әдісі
+          en: The van Arkel–de Boer process

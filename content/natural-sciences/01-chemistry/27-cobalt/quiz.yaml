@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома кобальта?
+      kk: Кобальт атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a cobalt atom?
+    options:
+      - text:
+          ru: '59'
+          kk: '59'
+          en: '59'
+      - text:
+          ru: '32'
+          kk: '32'
+          en: '32'
+      - text:
+          ru: '27'
+          kk: '27'
+          en: '27'
+        correct: true
+      - text:
+          ru: '9'
+          kk: '9'
+          en: '9'
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует атом кобальта, если он теряет два электрона?
+      kk: Екі электронын жоғалтса, кобальт атомы қандай ион түзеді?
+      en: What kind of ion does a cobalt atom form if it loses two electrons?
+    options:
+      - text:
+          ru: Нейтральный атом
+          kk: Бейтарап атом
+          en: A neutral atom
+      - text:
+          ru: Анион с зарядом -2
+          kk: Заряды -2 анион
+          en: An anion with a charge of -2
+      - text:
+          ru: Катион с зарядом +2
+          kk: Заряды +2 катион
+          en: A cation with a charge of +2
+        correct: true
+      - text:
+          ru: Катион с зарядом +3
+          kk: Заряды +3 катион
+          en: A cation with a charge of +3
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому кобальта?
+      kk: Кобальт атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the cobalt atom?
+    options:
+      - text:
+          ru: '[Ar] 3d⁸ 4s¹'
+          kk: '[Ar] 3d⁸ 4s¹'
+          en: '[Ar] 3d⁸ 4s¹'
+      - text:
+          ru: '[Ar] 3d⁵ 4s²'
+          kk: '[Ar] 3d⁵ 4s²'
+          en: '[Ar] 3d⁵ 4s²'
+      - text:
+          ru: '[Ar] 3d⁶ 4s²'
+          kk: '[Ar] 3d⁶ 4s²'
+          en: '[Ar] 3d⁶ 4s²'
+      - text:
+          ru: '[Ar] 3d⁷ 4s²'
+          kk: '[Ar] 3d⁷ 4s²'
+          en: '[Ar] 3d⁷ 4s²'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп кобальта является единственным стабильным природным изотопом?
+      kk: Кобальттың қай изотопы табиғаттағы жалғыз тұрақты изотоп?
+      en: Which isotope of cobalt is its only stable natural isotope?
+    options:
+      - text:
+          ru: Кобальт-59
+          kk: Кобальт-59
+          en: Cobalt-59
+        correct: true
+      - text:
+          ru: Кобальт-60
+          kk: Кобальт-60
+          en: Cobalt-60
+      - text:
+          ru: Кобальт-58
+          kk: Кобальт-58
+          en: Cobalt-58
+      - text:
+          ru: Кобальт-57
+          kk: Кобальт-57
+          en: Cobalt-57
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство кобальта позволяет использовать его в суперсплавах для реактивных двигателей?
+      kk: Кобальттың қай қасиеті оны реактивті қозғалтқыштарға арналған суперқорытпаларда пайдалануға мүмкіндік береді?
+      en: Which property of cobalt allows it to be used in superalloys for jet engines?
+    options:
+      - text:
+          ru: Способность образовывать синие пигменты
+          kk: Көк пигменттер түзу қабілеті
+          en: The ability to form blue pigments
+      - text:
+          ru: Ферромагнетизм при высоких температурах
+          kk: Жоғары температурадағы ферромагнетизмі
+          en: Ferromagnetism at high temperatures
+      - text:
+          ru: Высокая жаропрочность и износостойкость
+          kk: Ыстыққа беріктігі мен тозуға төзімділігі
+          en: High heat resistance and wear resistance
+        correct: true
+      - text:
+          ru: Высокая электро- и теплопроводность
+          kk: Жоғары электр және жылу өткізгіштік
+          en: High electrical and thermal conductivity

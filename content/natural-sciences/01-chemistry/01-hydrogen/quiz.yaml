@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома водорода?
+      kk: Сутегі атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a hydrogen atom?
+    options:
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+        correct: true
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи образует водород при соединении с неметаллами?
+      kk: Сутегі бейметалдармен қосылғанда химиялық байланыстың қандай түрін түзеді?
+      en: What type of chemical bond does hydrogen form with nonmetals?
+    options:
+      - text:
+          ru: Водородная связь
+          kk: Сутектік байланыс
+          en: Hydrogen bond
+      - text:
+          ru: Металлическая связь
+          kk: Металдық байланыс
+          en: Metallic bond
+      - text:
+          ru: Ионная связь
+          kk: Иондық байланыс
+          en: Ionic bond
+      - text:
+          ru: Ковалентная связь
+          kk: Коваленттік байланыс
+          en: Covalent bond
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из изотопов водорода является радиоактивным и используется в научных исследованиях?
+      kk: Сутегінің қай изотопы радиоактивті және ғылыми зерттеулерде қолданылады?
+      en: Which isotope of hydrogen is radioactive and used in scientific research?
+    options:
+      - text:
+          ru: Водород-4
+          kk: Сутегі-4
+          en: Hydrogen-4
+      - text:
+          ru: Тритий
+          kk: Тритий
+          en: Tritium
+        correct: true
+      - text:
+          ru: Дейтерий
+          kk: Дейтерий
+          en: Deuterium
+      - text:
+          ru: Протий
+          kk: Протий
+          en: Protium
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления водорода в соединениях с металлами?
+      kk: Металдармен қосылыстарда сутегінің тотығу дәрежесі қандай?
+      en: What is the oxidation state of hydrogen in compounds with metals?
+    options:
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: −1
+          kk: −1
+          en: −1
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой метод производства водорода использует возобновляемые источники энергии и считается экологически чистым?
+      kk: Сутегін өндірудің қай әдісі жаңартылатын энергия көздерін пайдаланады және экологиялық таза болып саналады?
+      en: Which method of producing hydrogen uses renewable energy sources and is considered environmentally clean?
+    options:
+      - text:
+          ru: Газификация угля
+          kk: Көмірді газдандыру
+          en: Coal gasification
+      - text:
+          ru: Паровая конверсия метана
+          kk: Метанды бумен конверсиялау
+          en: Steam methane reforming
+      - text:
+          ru: Крекинг нефти
+          kk: Мұнай крекингі
+          en: Oil cracking
+      - text:
+          ru: Производство «зеленого» водорода
+          kk: «Жасыл» сутегі өндірісі
+          en: '"Green" hydrogen production'
+        correct: true

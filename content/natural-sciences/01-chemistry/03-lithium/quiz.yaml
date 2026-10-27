@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство лития позволяет отнести его к щелочным металлам?
+      kk: Литийдің қай қасиеті оны сілтілік металдарға жатқызуға мүмкіндік береді?
+      en: Which property of lithium makes it an alkali metal?
+    options:
+      - text:
+          ru: Способность окрашивать пламя в красный цвет
+          kk: Жалынды қызыл түске бояуы
+          en: It colours a flame red
+      - text:
+          ru: Серебристо-белый цвет и мягкость
+          kk: Күміс-ақ түсі мен жұмсақтығы
+          en: Silvery-white colour and softness
+      - text:
+          ru: Высокая химическая активность и расположение в первой группе
+          kk: Жоғары химиялық белсенділігі және бірінші топта орналасуы
+          en: High chemical activity and its position in the first group
+        correct: true
+      - text:
+          ru: Наименьшая плотность среди всех твердых тел
+          kk: Барлық қатты заттардың ішіндегі ең аз тығыздығы
+          en: The lowest density of all solids
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов содержит атом лития согласно его электронной конфигурации [He] 2s¹?
+      kk: Электрондық конфигурациясы [He] 2s¹ бойынша литий атомында қанша валенттік электрон бар?
+      en: How many valence electrons does a lithium atom have according to its electron configuration [He] 2s¹?
+    options:
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему литий не встречается в природе в свободном виде?
+      kk: Литий табиғатта неге бос күйінде кездеспейді?
+      en: Why is lithium never found free in nature?
+    options:
+      - text:
+          ru: Из-за высокой химической активности
+          kk: Химиялық белсенділігі жоғары болғандықтан
+          en: Because of its high chemical activity
+        correct: true
+      - text:
+          ru: Из-за наличия только одного стабильного изотопа
+          kk: Тек бір тұрақты изотопы болғандықтан
+          en: Because it has only one stable isotope
+      - text:
+          ru: Из-за малой атомной массы
+          kk: Атомдық массасы аз болғандықтан
+          en: Because of its small atomic mass
+      - text:
+          ru: Из-за низкой температуры плавления
+          kk: Балқу температурасы төмен болғандықтан
+          en: Because of its low melting point
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая частица в атоме лития определяет его принадлежность к химическому элементу?
+      kk: Литий атомындағы қай бөлшек оның химиялық элемент ретінде қандай екенін анықтайды?
+      en: Which particle in a lithium atom determines which chemical element it is?
+    options:
+      - text:
+          ru: Электрон
+          kk: Электрон
+          en: Electron
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Ион
+          kk: Ион
+          en: Ion
+      - text:
+          ru: Протон
+          kk: Протон
+          en: Proton
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение лития связано с его способностью образовывать легкие сплавы?
+      kk: Литийдің қай қолданылуы оның жеңіл қорытпалар түзу қабілетімен байланысты?
+      en: Which use of lithium is related to its ability to form light alloys?
+    options:
+      - text:
+          ru: Литий-ионные аккумуляторы
+          kk: Литий-иондық аккумуляторлар
+          en: Lithium-ion batteries
+      - text:
+          ru: Производство термостойкого стекла
+          kk: Ыстыққа төзімді шыны өндірісі
+          en: Making heat-resistant glass
+      - text:
+          ru: Авиационные и космические сплавы с алюминием и магнием
+          kk: Алюминий мен магнийдің авиациялық және ғарыштық қорытпалары
+          en: Aerospace alloys with aluminium and magnesium
+        correct: true
+      - text:
+          ru: Лечение биполярных расстройств
+          kk: Биполярлық бұзылыстарды емдеу
+          en: Treating bipolar disorder

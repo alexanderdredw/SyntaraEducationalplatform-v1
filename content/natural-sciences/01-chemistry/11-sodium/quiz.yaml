@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов содержит атом натрия в основном состоянии?
+      kk: Негізгі күйдегі натрий атомында қанша валенттік электрон бар?
+      en: How many valence electrons does a sodium atom have in its ground state?
+    options:
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '11'
+          kk: '11'
+          en: '11'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи образует натрий с неметаллами, например, с хлором?
+      kk: Натрий бейметалдармен, мысалы хлормен, химиялық байланыстың қай түрін түзеді?
+      en: What type of chemical bond does sodium form with nonmetals such as chlorine?
+    options:
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+        correct: true
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является типичной для натрия в соединениях?
+      kk: Қосылыстардағы натрийге қай тотығу дәрежесі тән?
+      en: Which oxidation state is typical of sodium in compounds?
+    options:
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+        correct: true
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '-1'
+          kk: '-1'
+          en: '-1'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему натрий никогда не встречается в природе в свободном виде?
+      kk: Натрий табиғатта неге ешқашан бос күйінде кездеспейді?
+      en: Why is sodium never found free in nature?
+    options:
+      - text:
+          ru: Из-за его высокой реакционной способности
+          kk: Реакциялық қабілеті жоғары болғандықтан
+          en: Because of its high reactivity
+        correct: true
+      - text:
+          ru: Из-за его высокой температуры плавления
+          kk: Балқу температурасы жоғары болғандықтан
+          en: Because of its high melting point
+      - text:
+          ru: Из-за его низкой плотности
+          kk: Тығыздығы төмен болғандықтан
+          en: Because of its low density
+      - text:
+          ru: Из-за его мягкости
+          kk: Жұмсақ болғандықтан
+          en: Because of its softness
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп натрия является единственным стабильным в природе?
+      kk: Натрийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?
+      en: Which isotope of sodium is the only stable one in nature?
+    options:
+      - text:
+          ru: Натрий-23
+          kk: Натрий-23
+          en: Sodium-23
+        correct: true
+      - text:
+          ru: Натрий-24
+          kk: Натрий-24
+          en: Sodium-24
+      - text:
+          ru: Натрий-22
+          kk: Натрий-22
+          en: Sodium-22
+      - text:
+          ru: Натрий-25
+          kk: Натрий-25
+          en: Sodium-25

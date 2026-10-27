@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома рутения?
+      kk: Рутений атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a ruthenium atom?
+    options:
+      - text:
+          ru: '102'
+          kk: '102'
+          en: '102'
+      - text:
+          ru: '44'
+          kk: '44'
+          en: '44'
+        correct: true
+      - text:
+          ru: '58'
+          kk: '58'
+          en: '58'
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химического элемента представляет собой рутений согласно его свойствам и положению в таблице Менделеева?
+      kk: Қасиеттері мен Менделеев кестесіндегі орнына қарай рутений химиялық элементтің қай түріне жатады?
+      en: Based on its properties and position in the periodic table, what type of element is ruthenium?
+    options:
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+        correct: true
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация характерна для атома рутения в основном состоянии?
+      kk: Негізгі күйдегі рутений атомына қай электрондық конфигурация тән?
+      en: Which electron configuration does the ruthenium atom have in its ground state?
+    options:
+      - text:
+          ru: '[Kr] 4d⁷ 5s¹'
+          kk: '[Kr] 4d⁷ 5s¹'
+          en: '[Kr] 4d⁷ 5s¹'
+        correct: true
+      - text:
+          ru: '[Kr] 4d⁷ 5s²'
+          kk: '[Kr] 4d⁷ 5s²'
+          en: '[Kr] 4d⁷ 5s²'
+      - text:
+          ru: '[Kr] 4d⁶ 5s²'
+          kk: '[Kr] 4d⁶ 5s²'
+          en: '[Kr] 4d⁶ 5s²'
+      - text:
+          ru: '[Kr] 4d⁸ 5s¹'
+          kk: '[Kr] 4d⁸ 5s¹'
+          en: '[Kr] 4d⁸ 5s¹'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп рутения является самым распространённым в природе?
+      kk: Рутенийдің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of ruthenium is the most common in nature?
+    options:
+      - text:
+          ru: Рутений-96
+          kk: Рутений-96
+          en: Ruthenium-96
+      - text:
+          ru: Рутений-104
+          kk: Рутений-104
+          en: Ruthenium-104
+      - text:
+          ru: Рутений-102
+          kk: Рутений-102
+          en: Ruthenium-102
+        correct: true
+      - text:
+          ru: Рутений-106
+          kk: Рутений-106
+          en: Ruthenium-106
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство рутения делает его особенно ценным для использования в электронике, например, в чип-резисторах?
+      kk: Рутенийдің қай қасиеті оны электроникада, мысалы чип-резисторларда, пайдалану үшін аса құнды етеді?
+      en: Which property of ruthenium makes it especially valuable in electronics, for example in chip resistors?
+    options:
+      - text:
+          ru: Способность становиться сверхпроводником
+          kk: Асқын өткізгішке айналу қабілеті
+          en: The ability to become a superconductor
+      - text:
+          ru: Образование летучего оксида
+          kk: Ұшқыш оксид түзуі
+          en: Forming a volatile oxide
+      - text:
+          ru: Исключительная устойчивость к химическому воздействию и износу
+          kk: Химиялық әсер мен тозуға ерекше төзімділігі
+          en: Exceptional resistance to chemical attack and wear
+        correct: true
+      - text:
+          ru: Высокая температура плавления
+          kk: Балқу температурасының жоғары болуы
+          en: A high melting point

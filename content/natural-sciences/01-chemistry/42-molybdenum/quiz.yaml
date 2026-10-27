@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома молибдена?
+      kk: Молибден атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a molybdenum atom?
+    options:
+      - text:
+          ru: '98'
+          kk: '98'
+          en: '98'
+      - text:
+          ru: '42'
+          kk: '42'
+          en: '42'
+        correct: true
+      - text:
+          ru: '56'
+          kk: '56'
+          en: '56'
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому молибдена в основном состоянии?
+      kk: Негізгі күйдегі молибден атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the molybdenum atom in its ground state?
+    options:
+      - text:
+          ru: '[Kr] 4d⁴ 5s²'
+          kk: '[Kr] 4d⁴ 5s²'
+          en: '[Kr] 4d⁴ 5s²'
+      - text:
+          ru: '[Kr] 4d⁵ 5s¹'
+          kk: '[Kr] 4d⁵ 5s¹'
+          en: '[Kr] 4d⁵ 5s¹'
+        correct: true
+      - text:
+          ru: '[Kr] 4d³ 5s²'
+          kk: '[Kr] 4d³ 5s²'
+          en: '[Kr] 4d³ 5s²'
+      - text:
+          ru: '[Kr] 4d⁶ 5s⁰'
+          kk: '[Kr] 4d⁶ 5s⁰'
+          en: '[Kr] 4d⁶ 5s⁰'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов молибдена является самым распространённым в природе?
+      kk: Молибденнің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of molybdenum is the most common in nature?
+    options:
+      - text:
+          ru: Молибден-98
+          kk: Молибден-98
+          en: Molybdenum-98
+        correct: true
+      - text:
+          ru: Молибден-96
+          kk: Молибден-96
+          en: Molybdenum-96
+      - text:
+          ru: Молибден-92
+          kk: Молибден-92
+          en: Molybdenum-92
+      - text:
+          ru: Молибден-100
+          kk: Молибден-100
+          en: Molybdenum-100
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство молибдена делает его особенно ценным для использования в компонентах реактивных двигателей и лопатках турбин?
+      kk: Молибденнің қай қасиеті оны реактивті қозғалтқыштардың бөлшектері мен турбина қалақтарында пайдалану үшін аса құнды етеді?
+      en: Which property of molybdenum makes it especially valuable for jet engine parts and turbine blades?
+    options:
+      - text:
+          ru: Низкий коэффициент термического расширения
+          kk: Жылулық ұлғаю коэффициентінің төмендігі
+          en: A low coefficient of thermal expansion
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+      - text:
+          ru: Сохранение исключительной прочности при очень высоких температурах
+          kk: Өте жоғары температурада ерекше беріктігін сақтауы
+          en: It keeps exceptional strength at very high temperatures
+        correct: true
+      - text:
+          ru: Серебристо-белый цвет с высоким блеском
+          kk: Жылтыр күміс-ақ түсі
+          en: A shiny silvery-white colour
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: В каком минерале молибден преимущественно встречается в природе?
+      kk: Молибден табиғатта негізінен қай минералда кездеседі?
+      en: In which mineral is molybdenum mainly found in nature?
+    options:
+      - text:
+          ru: Кварц
+          kk: Кварц
+          en: Quartz
+      - text:
+          ru: Гематит
+          kk: Гематит
+          en: Haematite
+      - text:
+          ru: Молибденит (MoS₂)
+          kk: Молибденит (MoS₂)
+          en: Molybdenite (MoS₂)
+        correct: true
+      - text:
+          ru: Кальцит
+          kk: Кальцит
+          en: Calcite

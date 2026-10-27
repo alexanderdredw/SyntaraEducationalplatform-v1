@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома ксенона?
+      kk: Ксенон атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a xenon atom?
+    options:
+      - text:
+          ru: '132'
+          kk: '132'
+          en: '132'
+      - text:
+          ru: '78'
+          kk: '78'
+          en: '78'
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '54'
+          kk: '54'
+          en: '54'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип частиц образуется, когда атом ксенона теряет или принимает электроны?
+      kk: Ксенон атомы электрон бергенде немесе қабылдағанда қандай бөлшек түзіледі?
+      en: Which particle forms when a xenon atom loses or gains electrons?
+    options:
+      - text:
+          ru: Молекула
+          kk: Молекула
+          en: Molecule
+      - text:
+          ru: Ион
+          kk: Ион
+          en: Ion
+        correct: true
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому ксенона?
+      kk: Ксенон атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the xenon atom?
+    options:
+      - text:
+          ru: '[Xe] 4f¹⁴ 5d¹⁰ 6s²'
+          kk: '[Xe] 4f¹⁴ 5d¹⁰ 6s²'
+          en: '[Xe] 4f¹⁴ 5d¹⁰ 6s²'
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p⁶'
+          kk: '[Ar] 3d¹⁰ 4s² 4p⁶'
+          en: '[Ar] 3d¹⁰ 4s² 4p⁶'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p⁴'
+          kk: '[Kr] 4d¹⁰ 5s² 5p⁴'
+          en: '[Kr] 4d¹⁰ 5s² 5p⁴'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p⁶'
+          kk: '[Kr] 4d¹⁰ 5s² 5p⁶'
+          en: '[Kr] 4d¹⁰ 5s² 5p⁶'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему ксенон, будучи благородным газом, способен образовывать химические соединения, в отличие от других элементов своей группы?
+      kk: Асыл газ бола тұра, ксенон өз тобындағы басқа элементтерден айырмашылығы неге химиялық қосылыстар түзе алады?
+      en: Why can xenon, a noble gas, form chemical compounds, unlike the other elements of its group?
+    options:
+      - text:
+          ru: Из-за высокой плотности газа, которая способствует реакциям
+          kk: Газдың жоғары тығыздығы реакцияларға көмектесетіндіктен
+          en: Because the high density of the gas helps reactions
+      - text:
+          ru: Из-за большого атомного радиуса и слабой связи внешних электронов с ядром
+          kk: Атомдық радиусы үлкен және сыртқы электрондары ядромен әлсіз байланысқандықтан
+          en: Because of its large atomic radius and weakly held outer electrons
+      - text:
+          ru: Из-за наличия у него 8 стабильных изотопов
+          kk: Оның 8 тұрақты изотопы болғандықтан
+          en: Because it has 8 stable isotopes
+      - text:
+          ru: Из-за высокой электроотрицательности фтора и кислорода, с которыми он реагирует
+          kk: Өзі әрекеттесетін фтор мен оттегінің электртерістілігі жоғары болғандықтан
+          en: Because of the high electronegativity of fluorine and oxygen, which it reacts with
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных свойств ксенона делает его пригодным для использования в качестве рабочего тела в ионных двигателях?
+      kk: Ксенонның қай қасиеті оны иондық қозғалтқыштарда жұмыс денесі ретінде пайдалануға жарамды етеді?
+      en: Which property of xenon makes it suitable as the propellant in ion engines?
+    options:
+      - text:
+          ru: Высокая растворимость в липидах
+          kk: Липидтерде жақсы еруі
+          en: High solubility in lipids
+      - text:
+          ru: Высокая плотность и инертность
+          kk: Жоғары тығыздығы мен инерттілігі
+          en: High density and inertness
+        correct: true
+      - text:
+          ru: Способность излучать голубое свечение
+          kk: Көкшіл жарық шығару қабілеті
+          en: The ability to give a bluish glow
+      - text:
+          ru: Образование мощных окислителей
+          kk: Күшті тотықтырғыштар түзуі
+          en: Forming powerful oxidising agents

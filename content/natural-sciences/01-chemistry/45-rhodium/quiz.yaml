@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома родия?
+      kk: Родий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a rhodium atom?
+    options:
+      - text:
+          ru: '78'
+          kk: '78'
+          en: '78'
+      - text:
+          ru: '45'
+          kk: '45'
+          en: '45'
+        correct: true
+      - text:
+          ru: '58'
+          kk: '58'
+          en: '58'
+      - text:
+          ru: '103'
+          kk: '103'
+          en: '103'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химического элемента представляет родий согласно классификации?
+      kk: Жіктеу бойынша родий химиялық элементтің қай түріне жатады?
+      en: According to classification, what type of element is rhodium?
+    options:
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+      - text:
+          ru: Щелочной металл
+          kk: Сілтілік металл
+          en: Alkali metal
+      - text:
+          ru: Переходный металл
+          kk: Өтпелі металл
+          en: Transition metal
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация характерна для атома родия?
+      kk: Родий атомына қай электрондық конфигурация тән?
+      en: Which electron configuration does the rhodium atom have?
+    options:
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s⁰'
+          kk: '[Kr] 4d¹⁰ 5s⁰'
+          en: '[Kr] 4d¹⁰ 5s⁰'
+      - text:
+          ru: '[Kr] 4d⁷ 5s²'
+          kk: '[Kr] 4d⁷ 5s²'
+          en: '[Kr] 4d⁷ 5s²'
+      - text:
+          ru: '[Kr] 4d⁸ 5s¹'
+          kk: '[Kr] 4d⁸ 5s¹'
+          en: '[Kr] 4d⁸ 5s¹'
+        correct: true
+      - text:
+          ru: '[Kr] 4d⁹ 5s⁰'
+          kk: '[Kr] 4d⁹ 5s⁰'
+          en: '[Kr] 4d⁹ 5s⁰'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство родия делает его пригодным для использования в каталитических конвертерах?
+      kk: Родийдің қай қасиеті оны каталитикалық түрлендіргіштерде пайдалануға жарамды етеді?
+      en: Which property of rhodium makes it suitable for catalytic converters?
+    options:
+      - text:
+          ru: Способность растворяться в воде
+          kk: Суда еру қабілеті
+          en: Solubility in water
+      - text:
+          ru: Превосходная каталитическая активность
+          kk: Тамаша каталитикалық белсенділігі
+          en: Excellent catalytic activity
+        correct: true
+      - text:
+          ru: Высокая плотность
+          kk: Жоғары тығыздығы
+          en: High density
+      - text:
+          ru: Низкая температура плавления
+          kk: Балқу температурасының төмендігі
+          en: A low melting point
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит самый распространенный стабильный изотоп родия?
+      kk: Родийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
+      en: How many neutrons does the most common stable isotope of rhodium have?
+    options:
+      - text:
+          ru: '45'
+          kk: '45'
+          en: '45'
+      - text:
+          ru: '103'
+          kk: '103'
+          en: '103'
+      - text:
+          ru: '58'
+          kk: '58'
+          en: '58'
+        correct: true
+      - text:
+          ru: '101'
+          kk: '101'
+          en: '101'

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство титана делает его особенно ценным для авиакосмической промышленности?
+      kk: Титанның қай қасиеті оны авиация-ғарыш өнеркәсібі үшін аса құнды етеді?
+      en: Which property of titanium makes it especially valuable for the aerospace industry?
+    options:
+      - text:
+          ru: Способность гореть в чистом азоте
+          kk: Таза азотта жану қабілеті
+          en: The ability to burn in pure nitrogen
+      - text:
+          ru: Высокое соотношение прочности к весу
+          kk: Салмағына қатысты беріктігінің жоғары болуы
+          en: A high strength-to-weight ratio
+        correct: true
+      - text:
+          ru: Низкая тепло- и электропроводность
+          kk: Жылу және электр өткізгіштігінің төмендігі
+          en: Low thermal and electrical conductivity
+      - text:
+          ru: Серебристо-серый металлический цвет
+          kk: Күміс-сұр металл түсі
+          en: Its silvery-grey metallic colour
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа титана (Титан-48)?
+      kk: Титанның ең көп таралған тұрақты изотопының (титан-48) ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common stable isotope of titanium (titanium-48)?
+    options:
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+      - text:
+          ru: '22'
+          kk: '22'
+          en: '22'
+      - text:
+          ru: '26'
+          kk: '26'
+          en: '26'
+        correct: true
+      - text:
+          ru: '48'
+          kk: '48'
+          en: '48'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи в простом веществе титан?
+      kk: Титан жай затында химиялық байланыстың қай түрі бар?
+      en: What type of chemical bond is found in titanium as a simple substance?
+    options:
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+        correct: true
+      - text:
+          ru: Водородная
+          kk: Сутектік
+          en: Hydrogen
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных веществ образуется на поверхности титана, обеспечивая его исключительную коррозийную стойкость?
+      kk: Титанның бетінде оның ерекше коррозияға төзімділігін қамтамасыз ететін қандай зат түзіледі?
+      en: Which substance forms on the surface of titanium and gives it exceptional corrosion resistance?
+    options:
+      - text:
+          ru: Пассивный оксидный слой (TiO₂)
+          kk: Пассивті оксид қабаты (TiO₂)
+          en: A passive oxide layer (TiO₂)
+        correct: true
+      - text:
+          ru: Нитрид титана (TiN)
+          kk: Титан нитриді (TiN)
+          en: Titanium nitride (TiN)
+      - text:
+          ru: Ильменит (FeTiO₃)
+          kk: Ильменит (FeTiO₃)
+          en: Ilmenite (FeTiO₃)
+      - text:
+          ru: Хлорид титана (TiCl₄)
+          kk: Титан хлориді (TiCl₄)
+          en: Titanium chloride (TiCl₄)
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: В каком периоде и группе Периодической системы Д.И. Менделеева находится титан?
+      kk: Титан Д.И. Менделеевтің периодтық жүйесінің қай периоды мен тобында орналасқан?
+      en: In which period and group of Mendeleev's periodic table is titanium?
+    options:
+      - text:
+          ru: 4-й период, 3-я группа
+          kk: 4-период, 3-топ
+          en: Period 4, group 3
+      - text:
+          ru: 3-й период, 4-я группа
+          kk: 3-период, 4-топ
+          en: Period 3, group 4
+      - text:
+          ru: 4-й период, 4-я группа
+          kk: 4-период, 4-топ
+          en: Period 4, group 4
+        correct: true
+      - text:
+          ru: 3-й период, 3-я группа
+          kk: 3-период, 3-топ
+          en: Period 3, group 3

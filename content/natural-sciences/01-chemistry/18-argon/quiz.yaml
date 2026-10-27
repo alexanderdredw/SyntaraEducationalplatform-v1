@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство аргона делает его пригодным для использования в качестве защитной атмосферы при сварке?
+      kk: Аргонның қай қасиеті оны дәнекерлеу кезінде қорғаныш атмосфера ретінде пайдалануға жарамды етеді?
+      en: Which property of argon makes it suitable as a shielding atmosphere for welding?
+    options:
+      - text:
+          ru: Способность поддерживать горение
+          kk: Жануды қолдау қабілеті
+          en: The ability to support combustion
+      - text:
+          ru: Химическая инертность
+          kk: Химиялық инерттілігі
+          en: Chemical inertness
+        correct: true
+      - text:
+          ru: Высокая теплопроводность
+          kk: Жылу өткізгіштігінің жоғары болуы
+          en: High thermal conductivity
+      - text:
+          ru: Низкая растворимость в воде
+          kk: Суда аз еруі
+          en: Low solubility in water
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома аргона?
+      kk: Аргон атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an argon atom?
+    options:
+      - text:
+          ru: '40'
+          kk: '40'
+          en: '40'
+      - text:
+          ru: '18'
+          kk: '18'
+          en: '18'
+        correct: true
+      - text:
+          ru: '22'
+          kk: '22'
+          en: '22'
+      - text:
+          ru: '36'
+          kk: '36'
+          en: '36'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип частиц образует аргон в газообразном состоянии при стандартных условиях?
+      kk: Стандартты жағдайда газ күйіндегі аргон қандай бөлшектерден тұрады?
+      en: What particles make up gaseous argon under standard conditions?
+    options:
+      - text:
+          ru: Трехатомные молекулы
+          kk: Үш атомды молекулалар
+          en: Triatomic molecules
+      - text:
+          ru: Двухатомные молекулы
+          kk: Екі атомды молекулалар
+          en: Diatomic molecules
+      - text:
+          ru: Ионы
+          kk: Иондар
+          en: Ions
+      - text:
+          ru: Одноатомные молекулы
+          kk: Бір атомды молекулалар
+          en: Monatomic molecules
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому аргона?
+      kk: Аргон атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the argon atom?
+    options:
+      - text:
+          ru: '[Ne] 3s² 3p⁴'
+          kk: '[Ne] 3s² 3p⁴'
+          en: '[Ne] 3s² 3p⁴'
+      - text:
+          ru: '[He] 2s² 2p⁶'
+          kk: '[He] 2s² 2p⁶'
+          en: '[He] 2s² 2p⁶'
+      - text:
+          ru: '[Ar] 4s²'
+          kk: '[Ar] 4s²'
+          en: '[Ar] 4s²'
+      - text:
+          ru: '[Ne] 3s² 3p⁶'
+          kk: '[Ne] 3s² 3p⁶'
+          en: '[Ne] 3s² 3p⁶'
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных применений аргона связано с его низкой теплопроводностью?
+      kk: Аргонның қай қолданылуы оның жылу өткізгіштігінің төмендігімен байланысты?
+      en: Which use of argon is related to its low thermal conductivity?
+    options:
+      - text:
+          ru: Хранение продуктов питания
+          kk: Азық-түлікті сақтау
+          en: Food storage
+      - text:
+          ru: Защита при сварке
+          kk: Дәнекерлеу кезіндегі қорғаныш
+          en: Shielding during welding
+      - text:
+          ru: Наполнение ламп накаливания
+          kk: Қыздыру шамдарын толтыру
+          en: Filling incandescent lamps
+      - text:
+          ru: Изоляция в стеклопакетах
+          kk: Шыны пакеттердегі жылу оқшаулау
+          en: Insulation in double-glazed windows
+        correct: true

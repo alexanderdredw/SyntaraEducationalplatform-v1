@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома хлора?
+      kk: Хлор атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a chlorine atom?
+    options:
+      - text:
+          ru: '18'
+          kk: '18'
+          en: '18'
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+      - text:
+          ru: '17'
+          kk: '17'
+          en: '17'
+        correct: true
+      - text:
+          ru: '35'
+          kk: '35'
+          en: '35'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи образует хлор с металлами?
+      kk: Хлор металдармен химиялық байланыстың қай түрін түзеді?
+      en: What type of chemical bond does chlorine form with metals?
+    options:
+      - text:
+          ru: Водородная
+          kk: Сутектік
+          en: Hydrogen
+      - text:
+          ru: Ковалентная
+          kk: Коваленттік
+          en: Covalent
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из стабильных изотопов хлора является наиболее распространённым в природе?
+      kk: Хлордың тұрақты изотоптарының қайсысы табиғатта ең көп таралған?
+      en: Which stable isotope of chlorine is the most common in nature?
+    options:
+      - text:
+          ru: Хлор-34
+          kk: Хлор-34
+          en: Chlorine-34
+      - text:
+          ru: Хлор-36
+          kk: Хлор-36
+          en: Chlorine-36
+      - text:
+          ru: Хлор-35
+          kk: Хлор-35
+          en: Chlorine-35
+        correct: true
+      - text:
+          ru: Хлор-37
+          kk: Хлор-37
+          en: Chlorine-37
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое физическое свойство хлора делает его опасным при утечке в помещении?
+      kk: Хлордың қай физикалық қасиеті оны бөлмеде ағып кеткенде қауіпті етеді?
+      en: Which physical property of chlorine makes a leak indoors dangerous?
+    options:
+      - text:
+          ru: Он легко сжижается под давлением
+          kk: Ол қысыммен оңай сұйылады
+          en: It liquefies easily under pressure
+      - text:
+          ru: Он имеет бледно-желто-зеленый цвет
+          kk: Оның ақшыл сары-жасыл түсі бар
+          en: It is pale yellow-green
+      - text:
+          ru: Он в 2.5 раза тяжелее воздуха
+          kk: Ол ауадан 2.5 есе ауыр
+          en: It is 2.5 times heavier than air
+        correct: true
+      - text:
+          ru: Он растворим в воде
+          kk: Ол суда ериді
+          en: It dissolves in water
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления хлора характерна для хлорноватистой кислоты (HClO), образующейся при реакции с водой?
+      kk: Хлор сумен әрекеттескенде түзілетін хлорлылау қышқылында (HClO) хлордың тотығу дәрежесі қандай?
+      en: What is the oxidation state of chlorine in hypochlorous acid (HClO), formed when it reacts with water?
+    options:
+      - text:
+          ru: '-1'
+          kk: '-1'
+          en: '-1'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '+5'
+          kk: '+5'
+          en: '+5'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+        correct: true

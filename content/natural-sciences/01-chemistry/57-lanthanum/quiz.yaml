@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома лантана?
+      kk: Лантан атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a lanthanum atom?
+    options:
+      - text:
+          ru: '82'
+          kk: '82'
+          en: '82'
+      - text:
+          ru: '139'
+          kk: '139'
+          en: '139'
+      - text:
+          ru: '138'
+          kk: '138'
+          en: '138'
+      - text:
+          ru: '57'
+          kk: '57'
+          en: '57'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какова электронная конфигурация атома лантана?
+      kk: Лантан атомының электрондық конфигурациясы қандай?
+      en: What is the electron configuration of a lanthanum atom?
+    options:
+      - text:
+          ru: '[Xe] 5d¹ 6s²'
+          kk: '[Xe] 5d¹ 6s²'
+          en: '[Xe] 5d¹ 6s²'
+        correct: true
+      - text:
+          ru: '[Xe] 5d² 6s¹'
+          kk: '[Xe] 5d² 6s¹'
+          en: '[Xe] 5d² 6s¹'
+      - text:
+          ru: '[Xe] 4f¹ 5d¹ 6s²'
+          kk: '[Xe] 4f¹ 5d¹ 6s²'
+          en: '[Xe] 4f¹ 5d¹ 6s²'
+      - text:
+          ru: '[Xe] 4f¹ 6s²'
+          kk: '[Xe] 4f¹ 6s²'
+          en: '[Xe] 4f¹ 6s²'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является типичной и очень стабильной для лантана в соединениях?
+      kk: Қосылыстардағы лантанға қай тотығу дәрежесі тән және өте тұрақты?
+      en: Which oxidation state is typical and very stable for lanthanum in compounds?
+    options:
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп лантана является самым распространённым стабильным изотопом?
+      kk: Лантанның қай изотопы ең көп таралған тұрақты изотоп?
+      en: Which isotope of lanthanum is the most common stable isotope?
+    options:
+      - text:
+          ru: Лантан-138
+          kk: Лантан-138
+          en: Lanthanum-138
+      - text:
+          ru: Лантан-139
+          kk: Лантан-139
+          en: Lanthanum-139
+        correct: true
+      - text:
+          ru: Лантан-140
+          kk: Лантан-140
+          en: Lanthanum-140
+      - text:
+          ru: Лантан-137
+          kk: Лантан-137
+          en: Lanthanum-137
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство лантана позволяет использовать его в никель-металлгидридных (NiMH) батареях для гибридных автомобилей?
+      kk: Лантанның қай қасиеті оны гибридті автомобильдерге арналған никель-металл гидридті (NiMH) батареяларда пайдалануға мүмкіндік береді?
+      en: Which property of lanthanum allows it to be used in nickel–metal hydride (NiMH) batteries for hybrid cars?
+    options:
+      - text:
+          ru: Высокая температура плавления
+          kk: Балқу температурасының жоғары болуы
+          en: A high melting point
+      - text:
+          ru: Парамагнетизм
+          kk: Парамагнетизмі
+          en: Paramagnetism
+      - text:
+          ru: Способность образовывать гидроксид
+          kk: Гидроксид түзу қабілеті
+          en: The ability to form a hydroxide
+      - text:
+          ru: Сплав LaNi₅ обратимо поглощает водород
+          kk: LaNi₅ қорытпасы сутегіні қайтымды сіңіреді
+          en: The alloy LaNi₅ absorbs hydrogen reversibly
+        correct: true

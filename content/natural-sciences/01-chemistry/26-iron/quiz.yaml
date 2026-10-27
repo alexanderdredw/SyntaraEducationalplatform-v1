@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома железа?
+      kk: Темір атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an iron atom?
+    options:
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '56'
+          kk: '56'
+          en: '56'
+      - text:
+          ru: '30'
+          kk: '30'
+          en: '30'
+      - text:
+          ru: '26'
+          kk: '26'
+          en: '26'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует атом железа, теряя электроны?
+      kk: Электрондарын жоғалтқанда темір атомы қандай ион түзеді?
+      en: What kind of ion does an iron atom form when it loses electrons?
+    options:
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Анион
+          kk: Анион
+          en: Anion
+      - text:
+          ru: Изотоп
+          kk: Изотоп
+          en: Isotope
+      - text:
+          ru: Катион
+          kk: Катион
+          en: Cation
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому железа в основном состоянии?
+      kk: Негізгі күйдегі темір атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the iron atom in its ground state?
+    options:
+      - text:
+          ru: '[Ar] 3d⁶ 4s²'
+          kk: '[Ar] 3d⁶ 4s²'
+          en: '[Ar] 3d⁶ 4s²'
+        correct: true
+      - text:
+          ru: '[Ar] 3d⁷ 4s¹'
+          kk: '[Ar] 3d⁷ 4s¹'
+          en: '[Ar] 3d⁷ 4s¹'
+      - text:
+          ru: '[Ar] 3d⁵ 4s¹'
+          kk: '[Ar] 3d⁵ 4s¹'
+          en: '[Ar] 3d⁵ 4s¹'
+      - text:
+          ru: '[Ar] 3d⁸ 4s⁰'
+          kk: '[Ar] 3d⁸ 4s⁰'
+          en: '[Ar] 3d⁸ 4s⁰'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство железа объясняет его способность притягиваться к магниту при комнатной температуре?
+      kk: Темірдің қай қасиеті оның бөлме температурасында магнитке тартылуын түсіндіреді?
+      en: Which property of iron explains why it is attracted to a magnet at room temperature?
+    options:
+      - text:
+          ru: Ковкость
+          kk: Соғылғыштық
+          en: Malleability
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+      - text:
+          ru: Склонность к окислению
+          kk: Тотығуға бейімділік
+          en: A tendency to oxidise
+      - text:
+          ru: Ферромагнетизм
+          kk: Ферромагнетизм
+          en: Ferromagnetism
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп железа является самым распространённым в природе?
+      kk: Темірдің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of iron is the most common in nature?
+    options:
+      - text:
+          ru: Железо-54
+          kk: Темір-54
+          en: Iron-54
+      - text:
+          ru: Железо-58
+          kk: Темір-58
+          en: Iron-58
+      - text:
+          ru: Железо-57
+          kk: Темір-57
+          en: Iron-57
+      - text:
+          ru: Железо-56
+          kk: Темір-56
+          en: Iron-56
+        correct: true

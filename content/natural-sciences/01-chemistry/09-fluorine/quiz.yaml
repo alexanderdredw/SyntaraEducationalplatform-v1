@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство атома фтора является причиной его самой высокой химической активности среди всех элементов?
+      kk: Фтор атомының қай қасиеті оның барлық элементтердің ішіндегі ең жоғары химиялық белсенділігінің себебі?
+      en: Which property of the fluorine atom causes its highest chemical activity of all elements?
+    options:
+      - text:
+          ru: Самая высокая электроотрицательность (4.0)
+          kk: Ең жоғары электртерістілік (4.0)
+          en: The highest electronegativity (4.0)
+        correct: true
+      - text:
+          ru: Наличие 9 протонов в ядре
+          kk: Ядросында 9 протонның болуы
+          en: Having 9 protons in the nucleus
+      - text:
+          ru: Бледно-желтый цвет газа
+          kk: Газдың ақшыл-сары түсі
+          en: The pale yellow colour of the gas
+      - text:
+          ru: Низкая температура кипения (−188.1°C)
+          kk: Төмен қайнау температурасы (−188.1°C)
+          en: A low boiling point (−188.1°C)
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома фтора, исходя из его электронной конфигурации [He] 2s² 2p⁵?
+      kk: Электрондық конфигурациясы [He] 2s² 2p⁵ бойынша фтор атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of a fluorine atom, given its electron configuration [He] 2s² 2p⁵?
+    options:
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+        correct: true
+      - text:
+          ru: '9'
+          kk: '9'
+          en: '9'
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему фтор, являясь галогеном, способен реагировать даже с инертными газами, такими как ксенон и криптон?
+      kk: Галоген болып табылатын фтор неге тіпті ксенон мен криптон сияқты инертті газдармен де әрекеттесе алады?
+      en: Why can fluorine, a halogen, react even with inert gases such as xenon and krypton?
+    options:
+      - text:
+          ru: Потому что он является самым сильным окислителем и обладает максимальной электроотрицательностью
+          kk: Ол ең күшті тотықтырғыш және ең жоғары электртерістілікке ие болғандықтан
+          en: Because it is the strongest oxidising agent and has the highest electronegativity
+        correct: true
+      - text:
+          ru: Из-за бледно-желтого цвета газа
+          kk: Газдың ақшыл-сары түсіне байланысты
+          en: Because of the pale yellow colour of the gas
+      - text:
+          ru: Из-за низкой энергии диссоциации молекулы F₂
+          kk: F₂ молекуласының диссоциация энергиясы төмен болғандықтан
+          en: Because of the low dissociation energy of the F₂ molecule
+      - text:
+          ru: Из-за наличия 10 нейтронов в ядре
+          kk: Ядросында 10 нейтрон болғандықтан
+          en: Because there are 10 neutrons in its nucleus
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое утверждение о фторе как о химическом элементе является верным?
+      kk: Химиялық элемент ретінде фтор туралы қай тұжырым дұрыс?
+      en: Which statement about fluorine as a chemical element is true?
+    options:
+      - text:
+          ru: Фтор является металлом, так как находится в 17 группе
+          kk: Фтор 17-топта болғандықтан металл болып табылады
+          en: Fluorine is a metal because it is in group 17
+      - text:
+          ru: Фтор имеет атомную массу 19, что равно числу протонов
+          kk: Фтордың атомдық массасы 19, бұл протондар санына тең
+          en: The atomic mass of fluorine is 19, which equals the number of protons
+      - text:
+          ru: Фтор образует только ионные соединения с металлами
+          kk: Фтор металдармен тек иондық қосылыстар түзеді
+          en: Fluorine forms only ionic compounds with metals
+      - text:
+          ru: Фтор не встречается в свободном виде в природе из-за своей сверхвысокой активности
+          kk: Фтор аса жоғары белсенділігіне байланысты табиғатта бос күйінде кездеспейді
+          en: Fluorine is never found free in nature because of its extreme reactivity
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп фтора используется в медицине для позитронно-эмиссионной томографии (ПЭТ-сканирования), и чем он отличается от стабильного изотопа?
+      kk: Медицинада позитрондық-эмиссиялық томография (ПЭТ) үшін фтордың қай изотопы қолданылады және оның тұрақты изотоптан айырмашылығы неде?
+      en: Which fluorine isotope is used in medicine for positron emission tomography (PET), and how does it differ from the stable isotope?
+    options:
+      - text:
+          ru: Фтор-19; он имеет 10 нейтронов
+          kk: Фтор-19; оның 10 нейтроны бар
+          en: Fluorine-19; it has 10 neutrons
+      - text:
+          ru: Фтор-19; он является радиоактивным
+          kk: Фтор-19; ол радиоактивті
+          en: Fluorine-19; it is radioactive
+      - text:
+          ru: Фтор-18; он имеет 9 нейтронов
+          kk: Фтор-18; оның 9 нейтроны бар
+          en: Fluorine-18; it has 9 neutrons
+      - text:
+          ru: Фтор-18; он является радиоактивным
+          kk: Фтор-18; ол радиоактивті
+          en: Fluorine-18; it is radioactive
+        correct: true

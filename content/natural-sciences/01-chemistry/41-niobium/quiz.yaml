@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома ниобия?
+      kk: Ниобий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a niobium atom?
+    options:
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+      - text:
+          ru: '52'
+          kk: '52'
+          en: '52'
+      - text:
+          ru: '41'
+          kk: '41'
+          en: '41'
+        correct: true
+      - text:
+          ru: '93'
+          kk: '93'
+          en: '93'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи характерен для простого вещества ниобия?
+      kk: Ниобий жай затына химиялық байланыстың қай түрі тән?
+      en: Which type of chemical bond is typical of niobium as a simple substance?
+    options:
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления является типичной для ниобия в соединениях?
+      kk: Қосылыстардағы ниобийге қай тотығу дәрежесі тән?
+      en: Which oxidation state is typical of niobium in compounds?
+    options:
+      - text:
+          ru: '+5'
+          kk: '+5'
+          en: '+5'
+        correct: true
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '+7'
+          kk: '+7'
+          en: '+7'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство ниобия делает его критически важным для сверхпроводящих магнитов?
+      kk: Ниобийдің қай қасиеті оны асқын өткізгіш магниттер үшін аса маңызды етеді?
+      en: Which property of niobium makes it critical for superconducting magnets?
+    options:
+      - text:
+          ru: Становится сверхпроводником при 9.2 К
+          kk: 9.2 К температурада асқын өткізгішке айналады
+          en: It becomes a superconductor at 9.2 K
+        correct: true
+      - text:
+          ru: Высокая температура плавления
+          kk: Балқу температурасының жоғары болуы
+          en: A high melting point
+      - text:
+          ru: Является переходным металлом
+          kk: Өтпелі металл болып табылады
+          en: It is a transition metal
+      - text:
+          ru: Образует защитный оксидный слой
+          kk: Қорғаныш оксид қабатын түзеді
+          en: It forms a protective oxide layer
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит самый распространенный стабильный изотоп ниобия?
+      kk: Ниобийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
+      en: How many neutrons does the most common stable isotope of niobium have?
+    options:
+      - text:
+          ru: '41'
+          kk: '41'
+          en: '41'
+      - text:
+          ru: '95'
+          kk: '95'
+          en: '95'
+      - text:
+          ru: '93'
+          kk: '93'
+          en: '93'
+      - text:
+          ru: '52'
+          kk: '52'
+          en: '52'
+        correct: true

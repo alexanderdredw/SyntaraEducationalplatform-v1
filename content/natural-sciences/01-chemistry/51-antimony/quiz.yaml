@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома сурьмы?
+      kk: Сурьма атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an antimony atom?
+    options:
+      - text:
+          ru: '51'
+          kk: '51'
+          en: '51'
+        correct: true
+      - text:
+          ru: '121'
+          kk: '121'
+          en: '121'
+      - text:
+          ru: '70'
+          kk: '70'
+          en: '70'
+      - text:
+          ru: '123'
+          kk: '123'
+          en: '123'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип элемента представляет собой сурьма согласно классификации по свойствам?
+      kk: Қасиеттері бойынша жіктегенде сурьма элементтің қай түріне жатады?
+      en: According to its properties, what type of element is antimony?
+    options:
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+        correct: true
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому сурьмы?
+      kk: Сурьма атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the antimony atom?
+    options:
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p⁵'
+          kk: '[Kr] 4d¹⁰ 5s² 5p⁵'
+          en: '[Kr] 4d¹⁰ 5s² 5p⁵'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p³'
+          kk: '[Kr] 4d¹⁰ 5s² 5p³'
+          en: '[Kr] 4d¹⁰ 5s² 5p³'
+        correct: true
+      - text:
+          ru: '[Ar] 3d¹⁰ 4s² 4p³'
+          kk: '[Ar] 3d¹⁰ 4s² 4p³'
+          en: '[Ar] 3d¹⁰ 4s² 4p³'
+      - text:
+          ru: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³'
+          kk: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³'
+          en: '[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство сурьмы делает её полезной для точного литья?
+      kk: Сурьманың қай қасиеті оны дәл құю үшін пайдалы етеді?
+      en: Which property of antimony makes it useful for precision casting?
+    options:
+      - text:
+          ru: Является хорошим проводником электричества
+          kk: Электрді жақсы өткізеді
+          en: It conducts electricity well
+      - text:
+          ru: Имеет высокую температуру плавления
+          kk: Балқу температурасы жоғары
+          en: It has a high melting point
+      - text:
+          ru: Слегка расширяется при затвердевании
+          kk: Қатқанда сәл ұлғаяды
+          en: It expands slightly when it solidifies
+        correct: true
+      - text:
+          ru: Обладает высокой твердостью
+          kk: Қаттылығы жоғары
+          en: It is very hard
+  - code: q5
+    type: single_choice
+    difficulty: hard
+    text:
+      ru: Какая степень окисления НЕ является типичной для сурьмы в соединениях?
+      kk: Қосылыстардағы сурьмаға қай тотығу дәрежесі тән ЕМЕС?
+      en: Which oxidation state is NOT typical of antimony in compounds?
+    options:
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '+5'
+          kk: '+5'
+          en: '+5'
+      - text:
+          ru: '-3'
+          kk: '-3'
+          en: '-3'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true

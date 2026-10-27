@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство стронция делает его пригодным для использования в пиротехнике?
+      kk: Стронцийдің қай қасиеті оны пиротехникада пайдалануға жарамды етеді?
+      en: Which property of strontium makes it suitable for fireworks?
+    options:
+      - text:
+          ru: Низкая плотность для металлического элемента
+          kk: Металл үшін тығыздығының төмендігі
+          en: Low density for a metal
+      - text:
+          ru: Высокая электро- и теплопроводность
+          kk: Жоғары электр және жылу өткізгіштік
+          en: High electrical and thermal conductivity
+      - text:
+          ru: Серебристый вид, желтеющий при контакте с воздухом
+          kk: Ауамен жанасқанда сарғаятын күміс түсі
+          en: A silvery look that yellows in air
+      - text:
+          ru: Окрашивание пламени в ярко-малиновый (красный) цвет
+          kk: Жалынды ашық таңқурай (қызыл) түске бояуы
+          en: It colours a flame bright crimson (red)
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит самый распространенный стабильный изотоп стронция?
+      kk: Стронцийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
+      en: How many neutrons does the most common stable isotope of strontium have?
+    options:
+      - text:
+          ru: '50'
+          kk: '50'
+          en: '50'
+        correct: true
+      - text:
+          ru: '82'
+          kk: '82'
+          en: '82'
+      - text:
+          ru: '88'
+          kk: '88'
+          en: '88'
+      - text:
+          ru: '38'
+          kk: '38'
+          en: '38'
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какую степень окисления обычно проявляет стронций в своих соединениях?
+      kk: Стронций өз қосылыстарында әдетте қандай тотығу дәрежесін көрсетеді?
+      en: Which oxidation state does strontium usually show in its compounds?
+    options:
+      - text:
+          ru: '-2'
+          kk: '-2'
+          en: '-2'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая частица в атоме стронция определяет его принадлежность к химическому элементу?
+      kk: Стронций атомындағы қай бөлшек оның химиялық элемент ретінде қандай екенін анықтайды?
+      en: Which particle in a strontium atom determines which chemical element it is?
+    options:
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+      - text:
+          ru: Электрон
+          kk: Электрон
+          en: Electron
+      - text:
+          ru: Ядро
+          kk: Ядро
+          en: Nucleus
+      - text:
+          ru: Протон
+          kk: Протон
+          en: Proton
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома стронция?
+      kk: Стронций атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of a strontium atom?
+    options:
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+        correct: true
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '5'
+          kk: '5'
+          en: '5'
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'

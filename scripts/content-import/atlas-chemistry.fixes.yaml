@@ -1,0 +1,263 @@
+# Утверждённые правки к «Молекулярному атласу» (docs/CHEM_MAP.md, разделы 3.1–3.8; решения владельца
+# 2026-10-27, docs/CHEM_TZ.md). Конвертер scripts/content-import/atlas-chemistry.mjs применяет их при каждом
+# запуске (REQ-CHEM-01): результат в content/ руками не правится.
+#
+# Индексы вариантов (correct, options) — с нуля, в порядке атласа (до перестановки вариантов конвертером).
+
+# В-8: коды тем — по IUPAC; остальные коды — id атласа.
+codes:
+  aluminum: aluminium
+  cesium: caesium
+
+# Названия тем (в текстах атласа везде «Йод»).
+titles:
+  iodine: { ru: Йод }
+
+# Интересные факты.
+facts:
+  # В-3: в атласе вместо факта шаблон «X имеет атомный номер N…». До утверждения владельцем — без факта.
+  omit:
+    [
+      carbon,
+      niobium,
+      molybdenum,
+      technetium,
+      ruthenium,
+      rhodium,
+      palladium,
+      silver,
+      cadmium,
+      indium,
+      tin,
+      antimony,
+      tellurium,
+      iodine,
+      xenon,
+      cesium,
+      barium,
+      lanthanum,
+      cerium,
+      praseodymium,
+      neodymium,
+    ]
+  # CHEM_MAP 3.4, 3.6: исправленные факты (KK, EN — needs_review).
+  set:
+    titanium:
+      ru: Титан горит даже в атмосфере чистого азота.
+      kk: Титан тіпті таза азот атмосферасында да жанады.
+      en: Titanium burns even in an atmosphere of pure nitrogen.
+    neon:
+      ru: Неон даёт самое яркое свечение среди благородных газов в разрядных трубках.
+      kk: Газразрядты түтіктерде неон асыл газдардың ішіндегі ең жарқын жарық береді.
+      en: Neon gives the brightest glow of all noble gases in discharge tubes.
+    cobalt:
+      ru: Кобальт входит в витамин B12 — одно из немногих природных металлоорганических соединений, жизненно необходимое человеку.
+      kk: Кобальт В12 дәруменінің құрамына кіреді — бұл адамға өте қажет, табиғатта сирек кездесетін металлорганикалық қосылыстардың бірі.
+      en: Cobalt is part of vitamin B12, one of the few natural organometallic compounds and essential for humans.
+    nickel:
+      ru: Многие метеориты состоят из сплава железа и никеля — именно так люди впервые познакомились с металлическим железом.
+      kk: Көптеген метеориттер темір мен никельдің қорытпасынан тұрады, сондықтан адамдар металл темірмен алғаш рет осылай танысқан.
+      en: Many meteorites are made of an iron–nickel alloy — this is how people first came across metallic iron.
+    rutherford:
+      ru: Резерфорд открыл атомное ядро (1911) уже после того, как получил Нобелевскую премию (1908).
+      kk: Резерфорд атом ядросын (1911) Нобель сыйлығын (1908) алғаннан кейін ашты.
+      en: Rutherford discovered the atomic nucleus (1911) after he had already received the Nobel Prize (1908).
+    nobel:
+      ru: По распространённой версии, Нобель учредил Нобелевские премии после того, как прочитал преждевременный некролог о себе под названием «Торговец смертью мёртв».
+      kk: Кең тараған нұсқа бойынша, Нобель «Өлім саудагері өлді» деген өзінің мезгілсіз қазанамасын оқығаннан кейін Нобель сыйлықтарын тағайындады.
+      en: According to a popular story, Nobel created the Nobel Prizes after reading a premature obituary of himself titled "The merchant of death is dead".
+
+# Описания тем (CHEM_MAP 3.6).
+descriptions:
+  curie:
+    ru: Первая женщина — лауреат Нобелевской премии, исследовательница радиоактивности и первооткрывательница двух новых элементов.
+    kk: Нобель сыйлығын алған алғашқы әйел, радиоактивтілікті зерттеуші және екі жаңа элементті ашушы.
+    en: First woman to win a Nobel Prize, a researcher of radioactivity and discoverer of two new elements.
+  hodgkin:
+    ru: Британский химик, получившая Нобелевскую премию по химии 1964 года за определение структур важных биомолекул (пенициллин, витамин B12).
+    kk: Британдық химик, маңызды биомолекулалардың (пенициллин, В12 дәрумені) құрылымын анықтағаны үшін 1964 жылы химия бойынша Нобель сыйлығын алды.
+    en: British chemist who won the 1964 Nobel Prize in Chemistry for determining the structures of important biomolecules (penicillin, vitamin B12).
+
+# Замены подстрок в текстах атласа: ключ, язык, было → стало (CHEM_MAP 3.5, 3.6). Не найдено — ошибка конвертера.
+replace:
+  - { key: system.hydrogen.details, lang: ru, from: возоновляемых, to: возобновляемых }
+  - { key: system.nickel.details, lang: [ru, kk, en], from: 2730°C, to: 2913°C }
+  - { key: system.praseodymium.details, lang: [ru, kk, en], from: 3130°C, to: 3520°C }
+  - { key: system.aluminum.details, lang: [ru, kk, en], from: 2470°C, to: 2519°C }
+  - {
+      key: system.curie.details,
+      lang: ru,
+      from: Первооткрывательница радиоактивности,
+      to: Исследовательница радиоактивности,
+    }
+  - { key: system.curie.details, lang: kk, from: Радиоактивтілік пионері, to: Радиоактивтілікті зерттеуші }
+  - { key: system.curie.details, lang: en, from: Pioneer of Radioactivity, to: Researcher of Radioactivity }
+
+# Заголовок «Значение в науке и биологии» там, где о биологии ничего нет (CHEM_MAP 3.5).
+significanceTitle:
+  elements: [ruthenium, palladium, silver, cadmium, tin, antimony, tellurium, xenon, zirconium]
+  title:
+    ru: Значение в науке и технике
+    kk: Ғылым мен техникадағы маңызы
+    en: Significance in Science and Technology
+
+# Цитаты учёных (В-12): Менделеев — удалить (источник не найден); Дальтон — близко к тексту книги 1808 года;
+# остальные — с пометкой «приписывается».
+quotes:
+  remove: [mendeleev]
+  exact: [dalton]
+  attributed: { ru: приписывается, kk: телінеді, en: attributed }
+
+# Разделы статей, которых нет в переводе (CHEM_MAP 3.6): добавляются в конец статьи.
+articleAdd:
+  mendeleev:
+    en:
+      title: Legacy
+      body: Without Mendeleev's system, modern medicine, pharmaceuticals and space research would be impossible. He showed that a pattern can be found in any chaos.
+
+# Квиз элементов (CHEM_MAP 3.1, 3.2).
+quiz:
+  hydrogen:
+    q2: { text: Какой тип химической связи образует водород при соединении с неметаллами? }
+    q4: { text: Какая степень окисления водорода в соединениях с металлами? }
+    q5: { options: { 3: Крекинг нефти } }
+  helium:
+    q2: { text: Какой тип частиц не имеет заряда и входит в состав ядра гелия-4? }
+  boron:
+    q3: { correct: 0 }
+  oxygen:
+    q3: { correct: 1 }
+  fluorine:
+    q4: { text: Какое утверждение о фторе как о химическом элементе является верным? }
+  neon:
+    q5:
+      text: Где используют жидкий неон?
+      options: [В криогенике как хладагент, Как ракетное топливо, Для отбеливания бумаги, Как удобрение]
+      correct: 0
+  chlorine:
+    q2: { text: Какой тип химической связи образует хлор с металлами? }
+  scandium:
+    q3: { correct: 1 }
+  titanium:
+    q3: { text: Какой тип химической связи в простом веществе титан? }
+  vanadium:
+    q3: { correct: 0 }
+  iron:
+    q3: { correct: 0 }
+  nickel:
+    q3: { text: Какой тип химической связи характерен для простого вещества никеля? }
+  gallium:
+    q5:
+      # q4 уже о GaAs для микросхем — здесь полупроводник светодиодов.
+      text: Какое соединение галлия — полупроводник синих и белых светодиодов?
+      options: [Нитрид галлия (GaN), Оксид галлия (Ga₂O₃), Хлорид галлия (GaCl₃), Сульфат галлия]
+      correct: 0
+  germanium:
+    q3: { text: Какой тип элемента представляет собой германий? }
+  arsenic:
+    q2: { text: Какой тип элемента представляет собой мышьяк? }
+  selenium:
+    q3: { correct: 3 }
+  rubidium:
+    q5:
+      {
+        text: Какой из изотопов рубидия используется для определения возраста горных пород и какое свойство делает это возможным?,
+      }
+  yttrium:
+    q4: remove # В-14: верного варианта нет
+  technetium:
+    q2: { text: Какой изотоп технеция имеет 55 нейтронов в ядре? }
+    q4:
+      text: Почему технеций почти не применяют как ингибитор коррозии стали, хотя он эффективен?
+      options:
+        [
+          Из-за радиоактивности,
+          Из-за высокой температуры плавления,
+          Из-за парамагнетизма,
+          Из-за растворимости в окисляющих кислотах,
+        ]
+      correct: 0
+  palladium:
+    q2:
+      {
+        text: 'Какой тип частиц образуется, когда атом палладия теряет два электрона, проявляя степень окисления +2?',
+      }
+  indium:
+    q3: { text: Какая степень окисления наиболее типична для индия в соединениях? }
+  tin:
+    q3: { correct: 0 }
+  antimony:
+    q3: { correct: 0 }
+  tellurium:
+    q3: { correct: 0 }
+    q5: { text: Какая степень окисления теллура является типичной? }
+  xenon:
+    q2: { text: 'Какой тип частиц образуется, когда атом ксенона теряет или принимает электроны?' }
+    q3: { correct: 0 }
+  cesium:
+    q5:
+      {
+        text: Какое свойство цезия напрямую связано с его положением в 1-й группе и 6-м периоде таблицы Менделеева?,
+      }
+  lanthanum:
+    q5: { options: { 1: Сплав LaNi₅ обратимо поглощает водород } }
+
+# Портреты (В-6): оригиналы с Wikimedia Commons, только public domain (проверено через API Commons 2026-10-27).
+# Полинг — замена файла атласа (CC BY-SA 2.0); Ходжкин — без портрета (PD/CC0-фото нет).
+portraits:
+  lavoisier:
+    file: David - Portrait of Monsieur Lavoisier and His Wife.jpg
+    author: Жак-Луи Давид, 1788
+    alt:
+      ru: Жак-Луи Давид. Портрет Антуана Лавуазье и его жены Мари-Анн, 1788 год
+      kk: Жак-Луи Давид. Антуан Лавуазье мен оның әйелі Мари-Аннның портреті, 1788 жыл
+      en: Jacques-Louis David. Portrait of Antoine Lavoisier and his wife Marie-Anne, 1788
+  dalton:
+    file: John Dalton by Thomas Phillips, 1835.jpg
+    author: Томас Филлипс, 1835
+    alt:
+      ru: Томас Филлипс. Портрет Джона Дальтона, 1835 год
+      kk: Томас Филлипс. Джон Дальтонның портреті, 1835 жыл
+      en: Thomas Phillips. Portrait of John Dalton, 1835
+  nobel:
+    file: AlfredNobel2.jpg
+    author: автор неизвестен, около 1883
+    alt:
+      ru: Альфред Нобель, фотография около 1883 года
+      kk: Альфред Нобель, шамамен 1883 жылғы фотосурет
+      en: Alfred Nobel, photograph, about 1883
+  mendeleev:
+    file: DIMendeleevCab.jpg
+    author: автор неизвестен, 1897
+    alt:
+      ru: Дмитрий Менделеев, фотография 1897 года
+      kk: Дмитрий Менделеев, 1897 жылғы фотосурет
+      en: Dmitri Mendeleev, photograph, 1897
+  curie:
+    file: Marie Curie c1920.jpg
+    author: Henri Manuel, около 1920
+    alt:
+      ru: Мария Кюри, фотография около 1920 года
+      kk: Мария Кюри, шамамен 1920 жылғы фотосурет
+      en: Marie Curie, photograph, about 1920
+  rutherford:
+    file: Ernest Rutherford LOC.jpg
+    author: George Grantham Bain Collection, Library of Congress
+    alt:
+      ru: Эрнест Резерфорд, фотография из собрания Библиотеки Конгресса США
+      kk: Эрнест Резерфорд, АҚШ Конгресс кітапханасы қорындағы фотосурет
+      en: Ernest Rutherford, photograph from the Library of Congress collection
+  bohr:
+    file: Niels Bohr.jpg
+    author: AB Lagrelius & Westphal, около 1922
+    alt:
+      ru: Нильс Бор, фотография около 1922 года
+      kk: Нильс Бор, шамамен 1922 жылғы фотосурет
+      en: Niels Bohr, photograph, about 1922
+  pauling:
+    file: Pauling.jpg
+    author: Library of Congress, около 1954
+    alt:
+      ru: Лайнус Полинг, фотография около 1954 года
+      kk: Лайнус Полинг, шамамен 1954 жылғы фотосурет
+      en: Linus Pauling, photograph, about 1954

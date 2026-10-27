@@ -1,11 +1,25 @@
-# Базовый предмет (BR-CNT-02). Без папок тем — статус «Скоро» (BR-CNT-08).
+# Базовый предмет (BR-CNT-02). Создан конвертером scripts/content-import/atlas-chemistry.mjs — правки в нём
+# и в atlas-chemistry.fixes.yaml, а не здесь (REQ-CHEM-01).
 code: chemistry
 position: 1
 title:
-  ru: 'Химия'
-  kk: 'Химия'
-  en: 'Chemistry'
+  ru: Химия
+  kk: Химия
+  en: Chemistry
 description:
-  ru: 'Элементы, реакции, молекулярные структуры'
-  kk: 'Элементтер, реакциялар, молекулалық құрылымдар'
-  en: 'Elements, reactions, molecular structures'
+  ru: Элементы, реакции, молекулярные структуры
+  kk: Элементтер, реакциялар, молекулалық құрылымдар
+  en: Elements, reactions, molecular structures
+chapters:
+  - code: elements
+    position: 1
+    title:
+      ru: Химические элементы
+      kk: Химиялық элементтер
+      en: Chemical elements
+  - code: scientists
+    position: 2
+    title:
+      ru: Учёные-химики
+      kk: Химик ғалымдар
+      en: Chemists

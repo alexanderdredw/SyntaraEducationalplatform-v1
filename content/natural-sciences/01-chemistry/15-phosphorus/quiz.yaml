@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство фосфора объясняет, почему он никогда не встречается в свободном виде в природе?
+      kk: Фосфордың қай қасиеті оның табиғатта неге ешқашан бос күйінде кездеспейтінін түсіндіреді?
+      en: Which property of phosphorus explains why it is never found free in nature?
+    options:
+      - text:
+          ru: Нерастворимость в воде
+          kk: Суда ерімейтіндігі
+          en: Insolubility in water
+      - text:
+          ru: Наличие нескольких аллотропных форм
+          kk: Бірнеше аллотропиялық түрінің болуы
+          en: Having several allotropes
+      - text:
+          ru: Высокая реакционная способность, приводящая к самовоспламенению на воздухе
+          kk: Ауада өздігінен тұтануға әкелетін жоғары реакциялық қабілеті
+          en: High reactivity that makes it ignite spontaneously in air
+        correct: true
+      - text:
+          ru: Плохая проводимость тепла и электричества
+          kk: Жылу мен электрді нашар өткізуі
+          en: Poor conduction of heat and electricity
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержится в ядре самого распространенного стабильного изотопа фосфора?
+      kk: Фосфордың ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?
+      en: How many neutrons are in the nucleus of the most common stable isotope of phosphorus?
+    options:
+      - text:
+          ru: '15'
+          kk: '15'
+          en: '15'
+      - text:
+          ru: '31'
+          kk: '31'
+          en: '31'
+      - text:
+          ru: '32'
+          kk: '32'
+          en: '32'
+      - text:
+          ru: '16'
+          kk: '16'
+          en: '16'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления фосфора характерна для соединения, образующегося при реакции его оксида с водой?
+      kk: Фосфор оксиді сумен әрекеттескенде түзілетін қосылыста фосфорға қай тотығу дәрежесі тән?
+      en: Which oxidation state of phosphorus is typical of the compound formed when its oxide reacts with water?
+    options:
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '-3'
+          kk: '-3'
+          en: '-3'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+      - text:
+          ru: '+5'
+          kk: '+5'
+          en: '+5'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение фосфора напрямую связано с его ролью в биологических системах?
+      kk: Фосфордың қай қолданылуы оның биологиялық жүйелердегі рөлімен тікелей байланысты?
+      en: Which use of phosphorus is directly related to its role in living systems?
+    options:
+      - text:
+          ru: Создание трассирующих пуль
+          kk: Трассирлеуші оқтар жасау
+          en: Making tracer bullets
+      - text:
+          ru: Раскисление стали в металлургии
+          kk: Металлургияда болатты тотықсыздандыру
+          en: Deoxidising steel in metallurgy
+      - text:
+          ru: Изготовление безопасных спичек
+          kk: Қауіпсіз сіріңке жасау
+          en: Making safety matches
+      - text:
+          ru: Производство удобрений для сельского хозяйства
+          kk: Ауыл шаруашылығына арналған тыңайтқыштар өндірісі
+          en: Producing fertilisers for agriculture
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая аллотропная форма фосфора используется в безопасных спичках благодаря своей стабильности и нетоксичности?
+      kk: Фосфордың қай аллотропиялық түрі тұрақтылығы мен уыттылығының төмендігіне байланысты қауіпсіз сіріңкеде қолданылады?
+      en: Which allotrope of phosphorus is used in safety matches because it is stable and non-toxic?
+    options:
+      - text:
+          ru: Белый фосфор
+          kk: Ақ фосфор
+          en: White phosphorus
+      - text:
+          ru: Красный фосфор
+          kk: Қызыл фосфор
+          en: Red phosphorus
+        correct: true
+      - text:
+          ru: Черный фосфор
+          kk: Қара фосфор
+          en: Black phosphorus
+      - text:
+          ru: Фосфор-31
+          kk: Фосфор-31
+          en: Phosphorus-31

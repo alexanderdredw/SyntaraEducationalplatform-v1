@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома олова?
+      kk: Қалайы атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a tin atom?
+    options:
+      - text:
+          ru: '70'
+          kk: '70'
+          en: '70'
+      - text:
+          ru: '120'
+          kk: '120'
+          en: '120'
+      - text:
+          ru: '100'
+          kk: '100'
+          en: '100'
+      - text:
+          ru: '50'
+          kk: '50'
+          en: '50'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой химический символ соответствует олову?
+      kk: Қалайыға қай химиялық таңба сәйкес келеді?
+      en: Which chemical symbol corresponds to tin?
+    options:
+      - text:
+          ru: Ti
+          kk: Ti
+          en: Ti
+      - text:
+          ru: Sn
+          kk: Sn
+          en: Sn
+        correct: true
+      - text:
+          ru: St
+          kk: St
+          en: St
+      - text:
+          ru: Ol
+          kk: Ol
+          en: Ol
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому олова?
+      kk: Қалайы атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the tin atom?
+    options:
+      - text:
+          ru: '[Xe] 4d¹⁰ 5s² 5p²'
+          kk: '[Xe] 4d¹⁰ 5s² 5p²'
+          en: '[Xe] 4d¹⁰ 5s² 5p²'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p⁶'
+          kk: '[Kr] 4d¹⁰ 5s² 5p⁶'
+          en: '[Kr] 4d¹⁰ 5s² 5p⁶'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s² 5p²'
+          kk: '[Kr] 4d¹⁰ 5s² 5p²'
+          en: '[Kr] 4d¹⁰ 5s² 5p²'
+        correct: true
+      - text:
+          ru: '[Kr] 4d⁸ 5s² 5p⁴'
+          kk: '[Kr] 4d⁸ 5s² 5p⁴'
+          en: '[Kr] 4d⁸ 5s² 5p⁴'
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая из перечисленных аллотропных форм олова является неметаллическим порошком?
+      kk: Қалайының қай аллотропиялық түрі бейметалл ұнтақ болып табылады?
+      en: Which allotrope of tin is a nonmetallic powder?
+    options:
+      - text:
+          ru: Кристаллическое олово
+          kk: Кристалдық қалайы
+          en: Crystalline tin
+      - text:
+          ru: Белое (бета) олово
+          kk: Ақ (бета) қалайы
+          en: White (beta) tin
+      - text:
+          ru: Серое (альфа) олово
+          kk: Сұр (альфа) қалайы
+          en: Grey (alpha) tin
+        correct: true
+      - text:
+          ru: Жидкое олово
+          kk: Сұйық қалайы
+          en: Liquid tin
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп олова является самым распространённым в природе?
+      kk: Қалайының қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of tin is the most common in nature?
+    options:
+      - text:
+          ru: Олово-120
+          kk: Қалайы-120
+          en: Tin-120
+        correct: true
+      - text:
+          ru: Олово-124
+          kk: Қалайы-124
+          en: Tin-124
+      - text:
+          ru: Олово-116
+          kk: Қалайы-116
+          en: Tin-116
+      - text:
+          ru: Олово-118
+          kk: Қалайы-118
+          en: Tin-118

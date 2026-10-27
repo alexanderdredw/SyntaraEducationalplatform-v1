@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома калия?
+      kk: Калий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a potassium atom?
+    options:
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '39'
+          kk: '39'
+          en: '39'
+      - text:
+          ru: '19'
+          kk: '19'
+          en: '19'
+        correct: true
+      - text:
+          ru: '20'
+          kk: '20'
+          en: '20'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химической связи характерен для соединения калия с неметаллами, например, хлорида калия (KCl)?
+      kk: Калийдің бейметалдармен қосылысына, мысалы калий хлоридіне (KCl), химиялық байланыстың қай түрі тән?
+      en: Which type of chemical bond is typical of potassium compounds with nonmetals, for example potassium chloride (KCl)?
+    options:
+      - text:
+          ru: Металлическая
+          kk: Металдық
+          en: Metallic
+      - text:
+          ru: Ковалентная неполярная
+          kk: Коваленттік полюссіз
+          en: Nonpolar covalent
+      - text:
+          ru: Ионная
+          kk: Иондық
+          en: Ionic
+        correct: true
+      - text:
+          ru: Ковалентная полярная
+          kk: Коваленттік полюсті
+          en: Polar covalent
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов калия является радиоактивным и используется для датирования горных пород?
+      kk: Калийдің қай изотопы радиоактивті және тау жыныстарының жасын анықтау үшін қолданылады?
+      en: Which isotope of potassium is radioactive and used to date rocks?
+    options:
+      - text:
+          ru: Калий-40
+          kk: Калий-40
+          en: Potassium-40
+        correct: true
+      - text:
+          ru: Калий-41
+          kk: Калий-41
+          en: Potassium-41
+      - text:
+          ru: Калий-39
+          kk: Калий-39
+          en: Potassium-39
+      - text:
+          ru: Калий-37
+          kk: Калий-37
+          en: Potassium-37
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какую степень окисления обычно проявляет калий в своих соединениях?
+      kk: Калий өз қосылыстарында әдетте қандай тотығу дәрежесін көрсетеді?
+      en: Which oxidation state does potassium usually show in its compounds?
+    options:
+      - text:
+          ru: '-1'
+          kk: '-1'
+          en: '-1'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома калия?
+      kk: Калий атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of a potassium atom?
+    options:
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+        correct: true
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'

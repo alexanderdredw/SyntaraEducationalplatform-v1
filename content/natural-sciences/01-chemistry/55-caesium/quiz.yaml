@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство цезия, связанное с его электронной конфигурацией, делает его самым реакционноспособным металлом?
+      kk: Цезийдің электрондық конфигурациясымен байланысты қай қасиеті оны ең белсенді металға айналдырады?
+      en: Which property of caesium, related to its electron configuration, makes it the most reactive metal?
+    options:
+      - text:
+          ru: Высокая электроотрицательность
+          kk: Жоғары электртерістілік
+          en: High electronegativity
+      - text:
+          ru: Наличие одного валентного электрона на внешнем уровне, который легко отдается
+          kk: Сыртқы деңгейде оңай берілетін бір валенттік электронның болуы
+          en: A single valence electron in the outer level that is easily given away
+        correct: true
+      - text:
+          ru: Полностью заполненный внешний электронный уровень
+          kk: Сыртқы электрондық деңгейінің толық толуы
+          en: A completely filled outer electron level
+      - text:
+          ru: Наличие семи валентных электронов на внешнем уровне
+          kk: Сыртқы деңгейде жеті валенттік электронның болуы
+          en: Seven valence electrons in the outer level
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему цезий никогда не встречается в природе в свободном виде, а только в соединениях?
+      kk: Цезий табиғатта неге ешқашан бос күйінде кездеспей, тек қосылыстар құрамында болады?
+      en: Why is caesium never found free in nature, only in compounds?
+    options:
+      - text:
+          ru: Из-за его радиоактивности
+          kk: Радиоактивті болғандықтан
+          en: Because it is radioactive
+      - text:
+          ru: Из-за его высокой плотности
+          kk: Тығыздығы жоғары болғандықтан
+          en: Because of its high density
+      - text:
+          ru: Из-за его низкой температуры плавления
+          kk: Балқу температурасы төмен болғандықтан
+          en: Because of its low melting point
+      - text:
+          ru: Из-за его экстремальной реакционной способности, приводящей к мгновенным реакциям с воздухом и водой
+          kk: Ауамен және сумен лезде әрекеттесуге әкелетін аса жоғары реакциялық қабілетіне байланысты
+          en: Because of its extreme reactivity, which makes it react instantly with air and water
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое применение цезия основано на стабильности его изотопа цезий-133 и его электронных переходов?
+      kk: Цезийдің қай қолданылуы оның цезий-133 изотопының тұрақтылығына және электрондық ауысуларына негізделген?
+      en: Which use of caesium is based on the stability of its isotope caesium-133 and its electron transitions?
+    options:
+      - text:
+          ru: Использование в буровых растворах
+          kk: Бұрғылау ерітінділерінде пайдалану
+          en: Use in drilling fluids
+      - text:
+          ru: Использование в ионных двигателях
+          kk: Иондық қозғалтқыштарда пайдалану
+          en: Use in ion engines
+      - text:
+          ru: Определение секунды в атомных часах
+          kk: Атомдық сағаттарда секундты анықтау
+          en: Defining the second in atomic clocks
+        correct: true
+      - text:
+          ru: Использование в фотокатодах
+          kk: Фотокатодтарда пайдалану
+          en: Use in photocathodes
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует цезий, отдавая свой единственный валентный электрон, и какова его типичная степень окисления?
+      kk: Жалғыз валенттік электронын бергенде цезий қандай ион түзеді және оның әдеттегі тотығу дәрежесі қандай?
+      en: What kind of ion does caesium form when it gives away its single valence electron, and what is its typical oxidation state?
+    options:
+      - text:
+          ru: Катион со степенью окисления +2
+          kk: Тотығу дәрежесі +2 катион
+          en: A cation with an oxidation state of +2
+      - text:
+          ru: Катион со степенью окисления +1
+          kk: Тотығу дәрежесі +1 катион
+          en: A cation with an oxidation state of +1
+        correct: true
+      - text:
+          ru: Нейтральный атом со степенью окисления 0
+          kk: Тотығу дәрежесі 0 бейтарап атом
+          en: A neutral atom with an oxidation state of 0
+      - text:
+          ru: Анион со степенью окисления -1
+          kk: Тотығу дәрежесі -1 анион
+          en: An anion with an oxidation state of -1
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство цезия напрямую связано с его положением в 1-й группе и 6-м периоде таблицы Менделеева?
+      kk: Цезийдің қай қасиеті оның Менделеев кестесінің 1-тобы мен 6-периодындағы орнымен тікелей байланысты?
+      en: Which property of caesium is directly related to its position in group 1 and period 6 of the periodic table?
+    options:
+      - text:
+          ru: Он является самым легким из всех металлов
+          kk: Ол барлық металдардың ішіндегі ең жеңілі
+          en: It is the lightest of all metals
+      - text:
+          ru: Он имеет самую высокую температуру плавления среди металлов
+          kk: Оның балқу температурасы металдардың ішіндегі ең жоғарысы
+          en: It has the highest melting point of all metals
+      - text:
+          ru: Он является самым электроположительным из стабильных элементов
+          kk: Ол тұрақты элементтердің ішіндегі ең электроңы
+          en: It is the most electropositive of the stable elements
+        correct: true
+      - text:
+          ru: Он является самым электроотрицательным элементом
+          kk: Ол ең электртеріс элемент
+          en: It is the most electronegative element

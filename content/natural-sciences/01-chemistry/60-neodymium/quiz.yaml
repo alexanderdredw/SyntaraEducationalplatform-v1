@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома неодима?
+      kk: Неодим атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a neodymium atom?
+    options:
+      - text:
+          ru: '60'
+          kk: '60'
+          en: '60'
+        correct: true
+      - text:
+          ru: '82'
+          kk: '82'
+          en: '82'
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '142'
+          kk: '142'
+          en: '142'
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какова типичная и наиболее стабильная степень окисления неодима в его соединениях?
+      kk: Қосылыстарындағы неодимнің әдеттегі әрі ең тұрақты тотығу дәрежесі қандай?
+      en: What is the typical and most stable oxidation state of neodymium in its compounds?
+    options:
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+        correct: true
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из перечисленных изотопов неодима является самым распространенным в природе?
+      kk: Неодимнің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of neodymium is the most common in nature?
+    options:
+      - text:
+          ru: Неодим-146
+          kk: Неодим-146
+          en: Neodymium-146
+      - text:
+          ru: Неодим-144
+          kk: Неодим-144
+          en: Neodymium-144
+      - text:
+          ru: Неодим-142
+          kk: Неодим-142
+          en: Neodymium-142
+        correct: true
+      - text:
+          ru: Неодим-150
+          kk: Неодим-150
+          en: Neodymium-150
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое физическое свойство неодима делает его критически важным для создания мощных постоянных магнитов?
+      kk: Неодимнің қай физикалық қасиеті оны қуатты тұрақты магниттер жасау үшін аса маңызды етеді?
+      en: Which physical property of neodymium makes it critical for making powerful permanent magnets?
+    options:
+      - text:
+          ru: Исключительные магнитные свойства (ферромагнитен в сплавах)
+          kk: Ерекше магниттік қасиеттері (қорытпаларда ферромагнитті)
+          en: Exceptional magnetic properties (ferromagnetic in alloys)
+        correct: true
+      - text:
+          ru: Высокая электро- и теплопроводность
+          kk: Жоғары электр және жылу өткізгіштік
+          en: High electrical and thermal conductivity
+      - text:
+          ru: Яркий серебристо-белый блеск
+          kk: Ашық күміс-ақ жылтыры
+          en: A bright silvery-white lustre
+      - text:
+          ru: Высокопластичность и ковкость
+          kk: Жоғары созылғыштығы мен соғылғыштығы
+          en: High ductility and malleability
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: В каком периоде периодической таблицы Менделеева расположен неодим?
+      kk: Неодим Менделеевтің периодтық кестесінің қай периодында орналасқан?
+      en: In which period of the periodic table is neodymium?
+    options:
+      - text:
+          ru: В 7-м
+          kk: 7-периодта
+          en: Period 7
+      - text:
+          ru: В 5-м
+          kk: 5-периодта
+          en: Period 5
+      - text:
+          ru: В 6-м
+          kk: 6-периодта
+          en: Period 6
+        correct: true
+      - text:
+          ru: В 4-м
+          kk: 4-периодта
+          en: Period 4

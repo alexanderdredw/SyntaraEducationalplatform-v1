@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство алюминия объясняет его широкое использование в авиакосмической промышленности?
+      kk: Алюминийдің қай қасиеті оның авиация-ғарыш өнеркәсібінде кеңінен қолданылуын түсіндіреді?
+      en: Which property of aluminium explains its wide use in the aerospace industry?
+    options:
+      - text:
+          ru: Немагнитность
+          kk: Магниттелмейтіндігі
+          en: It is non-magnetic
+      - text:
+          ru: Низкая плотность и прочность
+          kk: Тығыздығының төмендігі мен беріктігі
+          en: Low density combined with strength
+        correct: true
+      - text:
+          ru: Способность отражать свет
+          kk: Жарықты шағылыстыру қабілеті
+          en: Its ability to reflect light
+      - text:
+          ru: Высокая температура кипения
+          kk: Қайнау температурасының жоғары болуы
+          en: High boiling point
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько протонов содержится в ядре атома алюминия?
+      kk: Алюминий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of an aluminium atom?
+    options:
+      - text:
+          ru: '27'
+          kk: '27'
+          en: '27'
+      - text:
+          ru: '14'
+          kk: '14'
+          en: '14'
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '13'
+          kk: '13'
+          en: '13'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует атом алюминия, теряя три электрона?
+      kk: Үш электронын жоғалтқанда алюминий атомы қандай ион түзеді?
+      en: What kind of ion does an aluminium atom form when it loses three electrons?
+    options:
+      - text:
+          ru: Катион с зарядом +3
+          kk: Заряды +3 катион
+          en: A cation with a charge of +3
+        correct: true
+      - text:
+          ru: Анион с зарядом -3
+          kk: Заряды -3 анион
+          en: An anion with a charge of -3
+      - text:
+          ru: Нейтральный атом
+          kk: Бейтарап атом
+          en: A neutral atom
+      - text:
+          ru: Молекула Al₂
+          kk: Al₂ молекуласы
+          en: An Al₂ molecule
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему алюминий устойчив к коррозии, несмотря на его высокую реакционную способность?
+      kk: Реакциялық қабілеті жоғары болса да, алюминий неге коррозияға төзімді?
+      en: Why is aluminium resistant to corrosion despite its high reactivity?
+    options:
+      - text:
+          ru: Не реагирует с кислородом
+          kk: Оттегімен әрекеттеспейді
+          en: It does not react with oxygen
+      - text:
+          ru: Имеет низкую температуру плавления
+          kk: Балқу температурасы төмен
+          en: It has a low melting point
+      - text:
+          ru: Образует защитную оксидную пленку Al₂O₃
+          kk: Al₂O₃ қорғаныш оксид қабықшасын түзеді
+          en: It forms a protective Al₂O₃ oxide film
+        correct: true
+      - text:
+          ru: Является инертным газом
+          kk: Инертті газ болып табылады
+          en: It is an inert gas
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое количество нейтронов содержит самый распространенный стабильный изотоп алюминия?
+      kk: Алюминийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
+      en: How many neutrons does the most common stable isotope of aluminium have?
+    options:
+      - text:
+          ru: '14'
+          kk: '14'
+          en: '14'
+        correct: true
+      - text:
+          ru: '27'
+          kk: '27'
+          en: '27'
+      - text:
+          ru: '26'
+          kk: '26'
+          en: '26'
+      - text:
+          ru: '13'
+          kk: '13'
+          en: '13'

@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома углерода?
+      kk: Көміртек атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a carbon atom?
+    options:
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '12'
+          kk: '12'
+          en: '12'
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+        correct: true
+      - text:
+          ru: '14'
+          kk: '14'
+          en: '14'
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип химической связи преимущественно образует углерод, имея 4 валентных электрона?
+      kk: 4 валенттік электроны бар көміртек көбіне химиялық байланыстың қай түрін түзеді?
+      en: With 4 valence electrons, which type of chemical bond does carbon mostly form?
+    options:
+      - text:
+          ru: Ковалентная связь
+          kk: Коваленттік байланыс
+          en: Covalent bond
+        correct: true
+      - text:
+          ru: Ионная связь
+          kk: Иондық байланыс
+          en: Ionic bond
+      - text:
+          ru: Водородная связь
+          kk: Сутектік байланыс
+          en: Hydrogen bond
+      - text:
+          ru: Металлическая связь
+          kk: Металдық байланыс
+          en: Metallic bond
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая аллотропная модификация углерода является самым твердым природным веществом и диэлектриком?
+      kk: Көміртектің қай аллотропиялық түрі ең қатты табиғи зат және диэлектрик болып табылады?
+      en: Which allotrope of carbon is the hardest natural substance and an electrical insulator?
+    options:
+      - text:
+          ru: Графит
+          kk: Графит
+          en: Graphite
+      - text:
+          ru: Фуллерен
+          kk: Фуллерен
+          en: Fullerene
+      - text:
+          ru: Алмаз
+          kk: Алмаз
+          en: Diamond
+        correct: true
+      - text:
+          ru: Графен
+          kk: Графен
+          en: Graphene
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой изотоп углерода используется для датировки археологических находок?
+      kk: Археологиялық олжалардың жасын анықтау үшін көміртектің қай изотопы қолданылады?
+      en: Which isotope of carbon is used to date archaeological finds?
+    options:
+      - text:
+          ru: Углерод-14
+          kk: Көміртек-14
+          en: Carbon-14
+        correct: true
+      - text:
+          ru: Углерод-13
+          kk: Көміртек-13
+          en: Carbon-13
+      - text:
+          ru: Углерод-11
+          kk: Көміртек-11
+          en: Carbon-11
+      - text:
+          ru: Углерод-12
+          kk: Көміртек-12
+          en: Carbon-12
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит самый распространенный изотоп углерода (углерод-12)?
+      kk: Көміртектің ең көп таралған изотопында (көміртек-12) қанша нейтрон бар?
+      en: How many neutrons does the most common isotope of carbon (carbon-12) have?
+    options:
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+        correct: true
+      - text:
+          ru: '12'
+          kk: '12'
+          en: '12'
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '14'
+          kk: '14'
+          en: '14'

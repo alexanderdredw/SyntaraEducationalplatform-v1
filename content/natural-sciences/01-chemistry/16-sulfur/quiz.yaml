@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома серы?
+      kk: Күкірт атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a sulfur atom?
+    options:
+      - text:
+          ru: '32'
+          kk: '32'
+          en: '32'
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+      - text:
+          ru: '16'
+          kk: '16'
+          en: '16'
+        correct: true
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько электронов находится на внешнем энергетическом уровне атома серы?
+      kk: Күкірт атомының сыртқы энергетикалық деңгейінде қанша электрон бар?
+      en: How many electrons are in the outer energy level of a sulfur atom?
+    options:
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+        correct: true
+      - text:
+          ru: '8'
+          kk: '8'
+          en: '8'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип химического элемента представляет сера согласно её физическим свойствам?
+      kk: Физикалық қасиеттері бойынша күкірт химиялық элементтің қай түріне жатады?
+      en: According to its physical properties, what type of chemical element is sulfur?
+    options:
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+        correct: true
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое простое вещество образует сера при комнатной температуре?
+      kk: Бөлме температурасында күкірт қандай жай зат түзеді?
+      en: Which simple substance does sulfur form at room temperature?
+    options:
+      - text:
+          ru: S₆
+          kk: S₆
+          en: S₆
+      - text:
+          ru: S₂
+          kk: S₂
+          en: S₂
+      - text:
+          ru: S₈
+          kk: S₈
+          en: S₈
+        correct: true
+      - text:
+          ru: S₄
+          kk: S₄
+          en: S₄
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какая степень окисления серы характерна для серной кислоты (H₂SO₄)?
+      kk: Күкірт қышқылындағы (H₂SO₄) күкірттің тотығу дәрежесі қандай?
+      en: What is the oxidation state of sulfur in sulfuric acid (H₂SO₄)?
+    options:
+      - text:
+          ru: '+4'
+          kk: '+4'
+          en: '+4'
+      - text:
+          ru: '+6'
+          kk: '+6'
+          en: '+6'
+        correct: true
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '-2'
+          kk: '-2'
+          en: '-2'

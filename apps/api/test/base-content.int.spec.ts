@@ -65,7 +65,7 @@ describe('base content (integration)', () => {
     expect(catalog.body.subjects).toEqual([]);
     const natural = await guest(`/api/public/sections/${catalog.body.sections[1].id}`).expect(200);
     expect(natural.body.subjects.map((s: { title: string; status: string }) => [s.title, s.status])).toEqual([
-      ['Химия', 'soon'],
+      ['Химия', 'available'],
       ['Физика', 'soon'],
       ['География', 'soon'],
     ]);
@@ -155,6 +155,48 @@ describe('base content (integration)', () => {
         .delete(subjectChapterTranslations)
         .where(inArray(subjectChapterTranslations.chapterId, [food!.id, circulation!.id, empty!.id]));
       await stack.db.delete(subjectChapters).where(eq(subjectChapters.subjectId, B.subjectAnatomy));
+    }
+  });
+
+  it('AC-CHEM-02, AC-CHEM-03, AC-CHEM-04 «Химия»: 2 chapters, 60 elements by atomic number + «Учёные-химики»; an element lesson; KK and EN «на проверке»', async () => {
+    const [chemistry] = await stack.db
+      .select({ id: schema.subjects.id })
+      .from(schema.subjects)
+      .where(eq(schema.subjects.code, 'chemistry'));
+    const page = await guest(`/api/public/subjects/${chemistry!.id}`).expect(200);
+    expect(page.body.chapters.map((c: { title: string }) => c.title)).toEqual([
+      'Химические элементы',
+      'Учёные-химики',
+    ]);
+    expect(page.body.chapters.map((c: { topicIds: string[] }) => c.topicIds.length)).toEqual([60, 1]);
+    expect(page.body.topics).toHaveLength(61);
+    expect(
+      page.body.topics.slice(0, 3).map((t: { number: number; title: string }) => [t.number, t.title]),
+    ).toEqual([
+      [1, 'Водород'],
+      [2, 'Гелий'],
+      [3, 'Литий'],
+    ]);
+    expect(page.body.topics.at(-1)).toMatchObject({ number: 61, title: 'Учёные-химики' });
+
+    const oxygenId = page.body.topics[7].id;
+    const lesson = await as(student).get(`/api/student/topics/${oxygenId}`).expect(200);
+    expect(lesson.body).toMatchObject({
+      title: 'Кислород',
+      number: 8,
+      questionsCount: 5,
+      needsReview: false,
+    });
+    expect(lesson.body.funFact).toContain('46%');
+    expect(lesson.body.illustrationAlt).toContain('кислород, O');
+    expect(lesson.body.sections.map((s: { title: string }) => s.title).at(-1)).toBe('Источники');
+    expect(lesson.body.sections[0].body).toContain('- ');
+    expect(lesson.body.quizId).toBeTruthy();
+
+    for (const lang of ['kk', 'en']) {
+      const tr = await guest(`/api/public/topics/${oxygenId}`, lang).expect(200);
+      expect(tr.body).toMatchObject({ locale: lang, needsReview: true });
+      expect(tr.body.sections).toHaveLength(lesson.body.sections.length);
     }
   });
 

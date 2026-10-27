@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома кадмия?
+      kk: Кадмий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a cadmium atom?
+    options:
+      - text:
+          ru: '48'
+          kk: '48'
+          en: '48'
+        correct: true
+      - text:
+          ru: '96'
+          kk: '96'
+          en: '96'
+      - text:
+          ru: '114'
+          kk: '114'
+          en: '114'
+      - text:
+          ru: '66'
+          kk: '66'
+          en: '66'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какова электронная конфигурация атома кадмия?
+      kk: Кадмий атомының электрондық конфигурациясы қандай?
+      en: What is the electron configuration of a cadmium atom?
+    options:
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s¹'
+          kk: '[Kr] 4d¹⁰ 5s¹'
+          en: '[Kr] 4d¹⁰ 5s¹'
+      - text:
+          ru: '[Kr] 4d⁸ 5s²'
+          kk: '[Kr] 4d⁸ 5s²'
+          en: '[Kr] 4d⁸ 5s²'
+      - text:
+          ru: '[Kr] 4d⁹ 5s²'
+          kk: '[Kr] 4d⁹ 5s²'
+          en: '[Kr] 4d⁹ 5s²'
+      - text:
+          ru: '[Kr] 4d¹⁰ 5s²'
+          kk: '[Kr] 4d¹⁰ 5s²'
+          en: '[Kr] 4d¹⁰ 5s²'
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип иона образует кадмий в своих соединениях, согласно его типичной степени окисления?
+      kk: Әдеттегі тотығу дәрежесіне сәйкес кадмий өз қосылыстарында қандай ион түзеді?
+      en: Given its typical oxidation state, what kind of ion does cadmium form in its compounds?
+    options:
+      - text:
+          ru: Катион с зарядом +1
+          kk: Заряды +1 катион
+          en: A cation with a charge of +1
+      - text:
+          ru: Анион с зарядом -1
+          kk: Заряды -1 анион
+          en: An anion with a charge of -1
+      - text:
+          ru: Катион с зарядом +2
+          kk: Заряды +2 катион
+          en: A cation with a charge of +2
+        correct: true
+      - text:
+          ru: Анион с зарядом -2
+          kk: Заряды -2 анион
+          en: An anion with a charge of -2
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое свойство кадмия делает его пригодным для использования в управляющих стержнях ядерных реакторов?
+      kk: Кадмийдің қай қасиеті оны ядролық реакторлардың басқару өзектерінде пайдалануға жарамды етеді?
+      en: Which property of cadmium makes it suitable for control rods in nuclear reactors?
+    options:
+      - text:
+          ru: Способность поглощать нейтроны
+          kk: Нейтрондарды сіңіру қабілеті
+          en: The ability to absorb neutrons
+        correct: true
+      - text:
+          ru: Образование ярких пигментов
+          kk: Ашық түсті пигменттер түзуі
+          en: Forming bright pigments
+      - text:
+          ru: Низкая температура плавления
+          kk: Балқу температурасының төмендігі
+          en: A low melting point
+      - text:
+          ru: Высокая электропроводность
+          kk: Жоғары электр өткізгіштік
+          en: High electrical conductivity
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Кадмий получают в промышленности как побочный продукт производства какого металла?
+      kk: Өнеркәсіпте кадмий қай металды өндірудің жанама өнімі ретінде алынады?
+      en: Industrially, cadmium is a by-product of producing which metal?
+    options:
+      - text:
+          ru: Меди
+          kk: Мыс
+          en: Copper
+      - text:
+          ru: Цинка
+          kk: Мырыш
+          en: Zinc
+        correct: true
+      - text:
+          ru: Олова
+          kk: Қалайы
+          en: Tin
+      - text:
+          ru: Свинца
+          kk: Қорғасын
+          en: Lead

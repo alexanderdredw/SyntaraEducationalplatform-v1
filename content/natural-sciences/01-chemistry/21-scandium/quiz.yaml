@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома скандия?
+      kk: Скандий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a scandium atom?
+    options:
+      - text:
+          ru: '45'
+          kk: '45'
+          en: '45'
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+      - text:
+          ru: '21'
+          kk: '21'
+          en: '21'
+        correct: true
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какова типичная степень окисления скандия в соединениях?
+      kk: Қосылыстардағы скандийдің әдеттегі тотығу дәрежесі қандай?
+      en: What is the typical oxidation state of scandium in compounds?
+    options:
+      - text:
+          ru: '+3'
+          kk: '+3'
+          en: '+3'
+        correct: true
+      - text:
+          ru: '+1'
+          kk: '+1'
+          en: '+1'
+      - text:
+          ru: '-3'
+          kk: '-3'
+          en: '-3'
+      - text:
+          ru: '+2'
+          kk: '+2'
+          en: '+2'
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какая электронная конфигурация соответствует атому скандия?
+      kk: Скандий атомына қай электрондық конфигурация сәйкес келеді?
+      en: Which electron configuration corresponds to the scandium atom?
+    options:
+      - text:
+          ru: '[Ar] 3d² 4s¹'
+          kk: '[Ar] 3d² 4s¹'
+          en: '[Ar] 3d² 4s¹'
+      - text:
+          ru: '[Ar] 3d³ 4s⁰'
+          kk: '[Ar] 3d³ 4s⁰'
+          en: '[Ar] 3d³ 4s⁰'
+      - text:
+          ru: '[Ar] 3d⁰ 4s²'
+          kk: '[Ar] 3d⁰ 4s²'
+          en: '[Ar] 3d⁰ 4s²'
+      - text:
+          ru: '[Ar] 3d¹ 4s²'
+          kk: '[Ar] 3d¹ 4s²'
+          en: '[Ar] 3d¹ 4s²'
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Сколько нейтронов содержит самый распространённый стабильный изотоп скандия?
+      kk: Скандийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
+      en: How many neutrons does the most common stable isotope of scandium have?
+    options:
+      - text:
+          ru: '46'
+          kk: '46'
+          en: '46'
+      - text:
+          ru: '21'
+          kk: '21'
+          en: '21'
+      - text:
+          ru: '45'
+          kk: '45'
+          en: '45'
+      - text:
+          ru: '24'
+          kk: '24'
+          en: '24'
+        correct: true
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: В какой группе периодической таблицы находится скандий?
+      kk: Скандий периодтық кестенің қай тобында орналасқан?
+      en: In which group of the periodic table is scandium?
+    options:
+      - text:
+          ru: 2-й
+          kk: 2-топ
+          en: Group 2
+      - text:
+          ru: 1-й
+          kk: 1-топ
+          en: Group 1
+      - text:
+          ru: 3-й
+          kk: 3-топ
+          en: Group 3
+        correct: true
+      - text:
+          ru: 4-й
+          kk: 4-топ
+          en: Group 4

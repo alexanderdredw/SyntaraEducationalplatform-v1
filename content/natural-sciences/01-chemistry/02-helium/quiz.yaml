@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома гелия?
+      kk: Гелий атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a helium atom?
+    options:
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+        correct: true
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+  - code: q2
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой тип частиц не имеет заряда и входит в состав ядра гелия-4?
+      kk: Зарядсыз және гелий-4 ядросының құрамына кіретін бөлшек қандай?
+      en: Which particle has no charge and is part of the helium-4 nucleus?
+    options:
+      - text:
+          ru: Протон
+          kk: Протон
+          en: Proton
+      - text:
+          ru: Электрон
+          kk: Электрон
+          en: Electron
+      - text:
+          ru: Ион
+          kk: Ион
+          en: Ion
+      - text:
+          ru: Нейтрон
+          kk: Нейтрон
+          en: Neutron
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Почему гелий относят к инертным газам, исходя из его химических свойств?
+      kk: Химиялық қасиеттеріне қарай гелий неге инертті газдарға жатады?
+      en: Based on its chemical properties, why is helium classed as an inert gas?
+    options:
+      - text:
+          ru: Он имеет высокую теплопроводность
+          kk: Жылу өткізгіштігі жоғары
+          en: It has high thermal conductivity
+      - text:
+          ru: Он обладает сверхтекучестью
+          kk: Асқын аққыштық қасиеті бар
+          en: It is superfluid
+      - text:
+          ru: Он является самым легким газом
+          kk: Ең жеңіл газ
+          en: It is the lightest gas
+      - text:
+          ru: Он химически абсолютно инертен и не образует стабильных соединений
+          kk: Химиялық тұрғыдан мүлдем инертті және тұрақты қосылыстар түзбейді
+          en: It is completely chemically inert and forms no stable compounds
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какое из перечисленных свойств гелия позволяет использовать его в качестве хладагента для сверхпроводящих магнитов?
+      kk: Гелийдің қай қасиеті оны асқын өткізгіш магниттерді салқындатуға пайдалануға мүмкіндік береді?
+      en: Which property of helium allows it to be used as a coolant for superconducting magnets?
+    options:
+      - text:
+          ru: Самая низкая температура кипения (−268.9°C)
+          kk: Ең төмен қайнау температурасы (−268.9°C)
+          en: The lowest boiling point (−268.9°C)
+        correct: true
+      - text:
+          ru: Высокая реакционная способность
+          kk: Жоғары реакциялық қабілеті
+          en: High reactivity
+      - text:
+          ru: Наличие изотопа гелий-3
+          kk: Гелий-3 изотопының болуы
+          en: The existence of the isotope helium-3
+      - text:
+          ru: Способность не затвердевать при нормальном давлении
+          kk: Қалыпты қысымда қатпауы
+          en: It does not solidify at normal pressure
+  - code: q5
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов имеет атом гелия, если его электронная конфигурация 1s²?
+      kk: Электрондық конфигурациясы 1s² болса, гелий атомында қанша валенттік электрон бар?
+      en: How many valence electrons does a helium atom have if its electron configuration is 1s²?
+    options:
+      - text:
+          ru: '1'
+          kk: '1'
+          en: '1'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+        correct: true
+      - text:
+          ru: '0'
+          kk: '0'
+          en: '0'
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'

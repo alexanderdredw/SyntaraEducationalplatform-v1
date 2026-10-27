@@ -1,0 +1,126 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какое количество протонов содержится в ядре атома кремния?
+      kk: Кремний атомының ядросында қанша протон бар?
+      en: How many protons are in the nucleus of a silicon atom?
+    options:
+      - text:
+          ru: '7'
+          kk: '7'
+          en: '7'
+      - text:
+          ru: '32'
+          kk: '32'
+          en: '32'
+      - text:
+          ru: '14'
+          kk: '14'
+          en: '14'
+        correct: true
+      - text:
+          ru: '28'
+          kk: '28'
+          en: '28'
+  - code: q2
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой тип элемента представляет собой кремний согласно классификации по свойствам?
+      kk: Қасиеттері бойынша жіктегенде кремний элементтің қай түріне жатады?
+      en: According to its properties, what type of element is silicon?
+    options:
+      - text:
+          ru: Инертный газ
+          kk: Инертті газ
+          en: Inert gas
+      - text:
+          ru: Неметалл
+          kk: Бейметалл
+          en: Nonmetal
+      - text:
+          ru: Металл
+          kk: Металл
+          en: Metal
+      - text:
+          ru: Полуметалл
+          kk: Жартылай металл
+          en: Metalloid
+        correct: true
+  - code: q3
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Как изменяется электрическая проводимость кремния при повышении температуры?
+      kk: Температура жоғарылағанда кремнийдің электр өткізгіштігі қалай өзгереді?
+      en: How does the electrical conductivity of silicon change as temperature rises?
+    options:
+      - text:
+          ru: Уменьшается
+          kk: Азаяды
+          en: It decreases
+      - text:
+          ru: Исчезает
+          kk: Жоғалады
+          en: It disappears
+      - text:
+          ru: Не изменяется
+          kk: Өзгермейді
+          en: It does not change
+      - text:
+          ru: Увеличивается
+          kk: Артады
+          en: It increases
+        correct: true
+  - code: q4
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома кремния?
+      kk: Кремний атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
+      en: How many valence electrons are in the outer energy level of a silicon atom?
+    options:
+      - text:
+          ru: '4'
+          kk: '4'
+          en: '4'
+        correct: true
+      - text:
+          ru: '3'
+          kk: '3'
+          en: '3'
+      - text:
+          ru: '6'
+          kk: '6'
+          en: '6'
+      - text:
+          ru: '2'
+          kk: '2'
+          en: '2'
+  - code: q5
+    type: single_choice
+    difficulty: medium
+    text:
+      ru: Какой из изотопов кремния является самым распространённым в природе?
+      kk: Кремнийдің қай изотопы табиғатта ең көп таралған?
+      en: Which isotope of silicon is the most common in nature?
+    options:
+      - text:
+          ru: Кремний-29
+          kk: Кремний-29
+          en: Silicon-29
+      - text:
+          ru: Кремний-30
+          kk: Кремний-30
+          en: Silicon-30
+      - text:
+          ru: Кремний-28
+          kk: Кремний-28
+          en: Silicon-28
+        correct: true
+      - text:
+          ru: Кремний-31
+          kk: Кремний-31
+          en: Silicon-31
