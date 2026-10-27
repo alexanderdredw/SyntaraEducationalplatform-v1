@@ -50,14 +50,19 @@ async function scan(page: Page): Promise<{ violations: string[]; shown: number }
   });
 }
 
-/** Конец содержимого (отступ под кнопками) у нижнего края окна — кнопки видны. */
+/**
+ * Конец содержимого (отступ под кнопками) у нижнего края окна — кнопки видны. Прокрутка повторяется вместе с проверкой:
+ * пока догружаются картинки и данные, высота содержимого растёт и прежняя позиция уже не конец.
+ */
 async function expectShownAtContentEnd(page: Page) {
-  await page.evaluate(() => {
-    const main = document.getElementById('main')!;
-    const end = main.getBoundingClientRect().bottom + scrollY;
-    window.scrollTo({ top: end - innerHeight, behavior: 'instant' });
-  });
-  await expect(page.getByTestId('floating-help')).toHaveAttribute('data-hidden', 'false');
+  await expect(async () => {
+    await page.evaluate(() => {
+      const main = document.getElementById('main')!;
+      const end = main.getBoundingClientRect().bottom + scrollY;
+      window.scrollTo({ top: end - innerHeight, behavior: 'instant' });
+    });
+    await expect(page.getByTestId('floating-help')).toHaveAttribute('data-hidden', 'false', { timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
   await expect(page.getByRole('link', { name: ru.help.assistant })).toBeInViewport();
 }
 
