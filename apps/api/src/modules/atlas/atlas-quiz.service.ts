@@ -11,6 +11,7 @@ import {
   maskElementText,
   nextElementLevel,
   nextScientistLevel,
+  nonUniqueDescriptions,
   periodicElement,
   SCIENTIST_QUIZ,
   scientistDescription,
@@ -303,7 +304,16 @@ export class AtlasQuizService {
   /** Пул вопросов на языке запроса: элементы предмета или учёные урока «Учёные-химики». */
   private pool(kind: AtlasQuizKind, rows: AtlasTopicRow[], locale: Locale): PoolItem[] {
     if (kind === 'elements') {
-      return AtlasService.elements(rows).flatMap((e) => {
+      const elements = AtlasService.elements(rows);
+      // Решение владельца 2026-10-28: элементы с неуникальным (шаблонным) описанием в квиз не попадают.
+      const skip = nonUniqueDescriptions(
+        elements.map((e) => ({
+          id: e.id,
+          description: pick(e.snapshot.translations, 'ru')?.[1]?.description ?? '',
+        })),
+      );
+      return elements.flatMap((e) => {
+        if (skip.has(e.id)) return [];
         const tr = pick(e.snapshot.translations, locale)?.[1];
         if (!tr?.title) return [];
         const symbol = periodicElement(e.elementNumber)?.symbol ?? '';

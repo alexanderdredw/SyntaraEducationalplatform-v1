@@ -78,9 +78,9 @@ questions:
     type: single_choice
     difficulty: medium
     text:
-      ru: Почему индий относят к категории «других металлов», а не к щелочным металлам, несмотря на его мягкость?
-      kk: Жұмсақ болса да, индий неге сілтілік металдарға емес, «басқа металдар» санатына жатады?
-      en: Why is indium classed among the "other metals" and not the alkali metals, despite its softness?
+      ru: Почему индий относят к категории «постпереходных металлов», а не к щелочным металлам, несмотря на его мягкость?
+      kk: Жұмсақ болса да, индий неге сілтілік металдарға емес, «постөтпелі металдар» санатына жатады?
+      en: Why is indium classed among the "post-transition metals" and not the alkali metals, despite its softness?
     options:
       - text:
           ru: Потому что он имеет высокую температуру кипения

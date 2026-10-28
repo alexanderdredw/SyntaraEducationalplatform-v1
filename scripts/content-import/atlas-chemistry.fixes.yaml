@@ -92,6 +92,51 @@ replace:
     }
   - { key: system.curie.details, lang: kk, from: Радиоактивтілік пионері, to: Радиоактивтілікті зерттеуші }
   - { key: system.curie.details, lang: en, from: Pioneer of Radioactivity, to: Researcher of Radioactivity }
+  # Решение владельца 2026-10-28: «другой металл» (группа post_transition) → «постпереходный металл» (CHEM_MAP 3.8).
+  - { key: system.aluminum.details, lang: ru, from: Другой металл из, to: Постпереходный металл из }
+  - { key: system.aluminum.details, lang: en, from: A other metal from, to: A post-transition metal from }
+  - {
+      key: system.gallium.details,
+      lang: ru,
+      from: серебристо-белый другой металл,
+      to: серебристо-белый постпереходный металл,
+    }
+  - {
+      key: system.gallium.details,
+      lang: en,
+      from: silvery-white other metal,
+      to: silvery-white post-transition metal,
+    }
+  - { key: system.gallium.desc, lang: en, from: versatile other metal, to: versatile post-transition metal }
+  - {
+      key: system.indium.desc,
+      lang: [ru],
+      from: Универсальный другой металл,
+      to: Универсальный постпереходный металл,
+    }
+  - { key: system.indium.desc, lang: en, from: versatile other metal, to: versatile post-transition metal }
+  - {
+      key: system.indium.details,
+      lang: ru,
+      from: серебристо-белый другой металл,
+      to: серебристо-белый постпереходный металл,
+    }
+  - {
+      key: system.indium.details,
+      lang: en,
+      from: silvery-white other metal,
+      to: silvery-white post-transition metal,
+    }
+  - {
+      key: system.tin.desc,
+      lang: ru,
+      from: Универсальный другой металл,
+      to: Универсальный постпереходный металл,
+    }
+  - { key: system.tin.desc, lang: en, from: versatile other metal, to: versatile post-transition metal }
+  - { key: system.tin.details, lang: ru, from: ковкий другой металл, to: ковкий постпереходный металл }
+  - { key: system.tin.details, lang: en, from: malleable other metal, to: malleable post-transition metal }
+  - { key: ai.indium.q4.text, lang: ru, from: «других металлов», to: «постпереходных металлов» }
 
 # Заголовок «Значение в науке и биологии» там, где о биологии ничего нет (CHEM_MAP 3.5).
 significanceTitle:

@@ -123,3 +123,25 @@ export function atlasQuizXp(
 ): number {
   return Math.max(0, Math.min(correct * perCorrect, dailyCap - usedToday));
 }
+
+/**
+ * Элементы с неуникальным описанием (решение владельца 2026-10-28): квиз «Проверь знания» их не использует, пока
+ * шаблонные описания («Универсальный …, необходимый для различных …») не заменены. Неуникально описание, которое
+ * совпадает с описанием другого элемента целиком или частью после первой запятой (общий «хвост» шаблона).
+ * Сравнение — по исходному RU-тексту (переводы повторяют его шаблон).
+ */
+export function nonUniqueDescriptions(items: Array<{ id: string; description: string }>): Set<string> {
+  const norm = (s: string) => s.trim().replace(/\s+/g, ' ').toLocaleLowerCase('ru');
+  const keys = (d: string) => {
+    const full = norm(d);
+    const comma = full.indexOf(',');
+    return comma > 0 ? [full, `tail:${full.slice(comma + 1).trim()}`] : [full];
+  };
+  const seen = new Map<string, number>();
+  for (const i of items) for (const k of keys(i.description)) seen.set(k, (seen.get(k) ?? 0) + 1);
+  return new Set(
+    items
+      .filter((i) => !norm(i.description) || keys(i.description).some((k) => seen.get(k)! > 1))
+      .map((i) => i.id),
+  );
+}

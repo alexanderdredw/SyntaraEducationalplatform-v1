@@ -248,6 +248,19 @@ describe('atlas (integration)', () => {
     expect(session?.answers).toBe(0);
   });
 
+  it('REQ-ATL-03 the element quiz skips elements with non-unique descriptions (owner decision 2026-10-28)', async () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < 6; i++) {
+      const preview = await as(teacher)
+        .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
+        .expect(200);
+      for (const q of preview.body.questions) for (const o of q.options) seen.add(o.text ?? o);
+    }
+    expect(seen.size).toBeGreaterThan(10);
+    for (const name of ['Ниобий', 'Серебро', 'Олово', 'Углерод', 'Ксенон', 'Неодим'])
+      expect(seen).not.toContain(name);
+  });
+
   it('decision А-9, API-T-32, API-T-33 a teacher previews questions without answers; a student cannot', async () => {
     const preview = await as(teacher)
       .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)

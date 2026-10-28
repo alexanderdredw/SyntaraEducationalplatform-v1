@@ -3353,7 +3353,7 @@ quiz:
     q4:
       kk:
         {
-          text: 'Жұмсақ болса да, индий неге сілтілік металдарға емес, «басқа металдар» санатына жатады?',
+          text: 'Жұмсақ болса да, индий неге сілтілік металдарға емес, «постөтпелі металдар» санатына жатады?',
           options:
             [
               'Өйткені оның 3 валенттік электроны бар және ол 1-топта емес, 13-топта орналасқан',
@@ -3364,7 +3364,7 @@ quiz:
         }
       en:
         {
-          text: 'Why is indium classed among the "other metals" and not the alkali metals, despite its softness?',
+          text: 'Why is indium classed among the "post-transition metals" and not the alkali metals, despite its softness?',
           options:
             [
               'Because it has 3 valence electrons and is in group 13, not group 1',

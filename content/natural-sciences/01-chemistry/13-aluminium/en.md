@@ -10,7 +10,7 @@ review: needs_review
 
 - Chemical Symbol — Al
 - Atomic Number — 13
-- A other metal from the 13th group
+- A post-transition metal from the 13th group
 - Most abundant metal in the Earth's crust
 - Lightweight, silvery-white, and durable metal
 - Non-magnetic and non-sparking

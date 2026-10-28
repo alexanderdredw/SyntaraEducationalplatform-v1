@@ -7,6 +7,7 @@ import {
   maskElementText,
   nextElementLevel,
   nextScientistLevel,
+  nonUniqueDescriptions,
   scientistDescription,
   scientistDifficulty,
 } from './atlas';
@@ -65,5 +66,23 @@ describe('atlas quiz rules (REQ-ATL-03, Quiz.js / ScientistsQuiz.js of the atlas
   it('API-S-24 the quiz kind is validated', () => {
     expect(AtlasQuizStartDto.safeParse({ kind: 'elements' }).success).toBe(true);
     expect(AtlasQuizStartDto.safeParse({ kind: 'x' }).success).toBe(false);
+  });
+
+  it('REQ-ATL-03 the element quiz skips non-unique descriptions: duplicates and a shared template tail', () => {
+    const tpl = (family: string) =>
+      `Универсальный ${family}, необходимый для различных научных и промышленных применений.`;
+    const ids = nonUniqueDescriptions([
+      { id: 'nb', description: tpl('переходный металл') },
+      { id: 'mo', description: tpl('переходный металл') },
+      { id: 'c', description: tpl('неметалл') },
+      {
+        id: 'f',
+        description:
+          'Универсальный галоген, необходимый для различных промышленных и биологических процессов.',
+      },
+      { id: 'o', description: 'Жизненно важный газ, необходимый для аэробного дыхания и горения.' },
+      { id: 'x', description: '' },
+    ]);
+    expect([...ids].sort()).toEqual(['c', 'mo', 'nb', 'x']);
   });
 });

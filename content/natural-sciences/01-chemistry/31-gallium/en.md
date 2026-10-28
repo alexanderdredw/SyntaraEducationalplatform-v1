@@ -1,6 +1,6 @@
 ---
 title: Gallium
-description: A versatile other metal essential for various scientific and industrial applications.
+description: A versatile post-transition metal essential for various scientific and industrial applications.
 funFact: Gallium was predicted by Mendeleev as "eka-aluminium" and discovered only 4 years later by spectroscopy.
 illustrationAlt: 'Atom model: Gallium (Ga) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
@@ -10,7 +10,7 @@ review: needs_review
 
 - Chemical Symbol — Ga
 - Atomic Number — 31
-- A soft, silvery-white other metal
+- A soft, silvery-white post-transition metal
 - Famous for melting in a human hand (low melting point)
 - Essential material for modern electronics and semiconductors
 - Does not occur as a free element in nature

@@ -1,6 +1,6 @@
 ---
 title: Tin
-description: A versatile other metal essential for various scientific and industrial applications.
+description: A versatile post-transition metal essential for various scientific and industrial applications.
 illustrationAlt: 'Atom model: Tin (Sn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
@@ -9,7 +9,7 @@ review: needs_review
 
 - Chemical Symbol — Sn
 - Atomic Number — 50
-- A silvery-white, soft, and malleable other metal
+- A silvery-white, soft, and malleable post-transition metal
 - One of the earliest metals known to humanity (used for bronze since 3000 BC)
 - Critical component of solder and protective coatings for food containers
 - Named after the Latin word 'stannum'

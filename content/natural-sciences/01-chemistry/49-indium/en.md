@@ -1,6 +1,6 @@
 ---
 title: Indium
-description: A versatile other metal essential for various scientific and industrial applications.
+description: A versatile post-transition metal essential for various scientific and industrial applications.
 illustrationAlt: 'Atom model: Indium (In) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---
@@ -9,7 +9,7 @@ review: needs_review
 
 - Chemical Symbol — In
 - Atomic Number — 49
-- A very soft, silvery-white other metal
+- A very soft, silvery-white post-transition metal
 - Critical component for touchscreens and liquid crystal displays (LCDs)
 - Named after the indigo line in its atomic spectrum
 - Does not occur as a free element in nature
