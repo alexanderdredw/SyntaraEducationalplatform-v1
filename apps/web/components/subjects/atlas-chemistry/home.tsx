@@ -53,7 +53,12 @@ export default function AtlasHome() {
         </div>
       </div>
       {facts.length ? (
-        <div id="fun-fact-container" className="fun-fact-card fade-in-up delay-3" data-testid="atlas-fact">
+        <div
+          id="fun-fact-container"
+          className="fun-fact-card fade-in-up delay-3"
+          data-testid="atlas-fact"
+          data-floating-solid=""
+        >
           <div className="fact-icon" aria-hidden="true">
             💡
           </div>

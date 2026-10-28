@@ -7,7 +7,7 @@ review: needs_review
 
 ## Antoine Lavoisier {#lavoisier}
 
-![Jacques-Louis David. Portrait of Antoine Lavoisier and his wife Marie-Anne, 1788](media/lavoisier.webp)
+![Jacques-Louis David. Portrait of Antoine Lavoisier and his wife Marie-Anne, 1788 (detail)](media/lavoisier.webp)
 
 **"Father of modern chemistry," who turned it from a collection of experiments into an exact science.**
 

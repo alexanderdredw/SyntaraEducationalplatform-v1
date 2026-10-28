@@ -252,12 +252,15 @@ async function atomImage(file) {
   return buf;
 }
 
-/** Портрет с Wikimedia Commons (В-6): скачивается, если файла ещё нет (кеш в content/); WebP ≤ 1200 px, ≤ 290 КБ. */
-async function portrait(rel, file) {
+/**
+ * Портрет с Wikimedia Commons (В-6): скачивается, если файла ещё нет (кеш в content/); WebP ≤ 1200 px, ≤ 290 КБ.
+ * `crop` — фрагмент картины в долях скачанного файла, как в атласе (Лавуазье — без жены).
+ */
+async function portrait(rel, file, crop) {
   const path = join(OUT, rel);
   written.add(rel);
   if (existsSync(path)) return;
-  const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=1200`;
+  const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${crop ? 3000 : 1200}`;
   let res;
   // Commons ограничивает частоту запросов (429): повтор с паузой, не больше 5 попыток.
   for (let attempt = 1; ; attempt++) {
@@ -267,7 +270,18 @@ async function portrait(rel, file) {
     await new Promise((r) => setTimeout(r, wait * 1000));
   }
   if (!res.ok) throw new Error(`${file}: HTTP ${res.status}`);
-  const original = Buffer.from(await res.arrayBuffer());
+  let original = Buffer.from(await res.arrayBuffer());
+  if (crop) {
+    const { width: w, height: h } = await sharp(original).metadata();
+    original = await sharp(original)
+      .extract({
+        left: Math.round(crop.left * w),
+        top: Math.round(crop.top * h),
+        width: Math.round(crop.width * w),
+        height: Math.round(crop.height * h),
+      })
+      .toBuffer();
+  }
   // BR-CNT-06: ≤ 300 КБ (с запасом — 290 КБ): от оригинала уменьшаются качество, затем ширина.
   let buf;
   for (const [width, quality] of [
@@ -400,7 +414,7 @@ async function chemistsTopic() {
     const p = FIX.portraits?.[s.id];
     if (!p) continue;
     const file = `media/${s.id}.webp`;
-    await portrait(`${dir}/${file}`, p.file);
+    await portrait(`${dir}/${file}`, p.file, p.crop);
     media.push({
       file,
       source: `Wikimedia Commons: ${commonsPage(p.file)}`,

@@ -208,10 +208,12 @@ portraits:
   lavoisier:
     file: David - Portrait of Monsieur Lavoisier and His Wife.jpg
     author: Жак-Луи Давид, 1788
+    # Решение владельца 2026-10-28: фрагмент с Лавуазье, как в атласе (доли кадра).
+    crop: { left: 0.53, top: 0.35, width: 0.26, height: 0.25 }
     alt:
-      ru: Жак-Луи Давид. Портрет Антуана Лавуазье и его жены Мари-Анн, 1788 год
-      kk: Жак-Луи Давид. Антуан Лавуазье мен оның әйелі Мари-Аннның портреті, 1788 жыл
-      en: Jacques-Louis David. Portrait of Antoine Lavoisier and his wife Marie-Anne, 1788
+      ru: Жак-Луи Давид. Портрет Антуана Лавуазье и его жены Мари-Анн, 1788 год (фрагмент)
+      kk: Жак-Луи Давид. Антуан Лавуазье мен оның әйелі Мари-Аннның портреті, 1788 жыл (үзінді)
+      en: Jacques-Louis David. Portrait of Antoine Lavoisier and his wife Marie-Anne, 1788 (detail)
   dalton:
     file: John Dalton by Thomas Phillips, 1835.jpg
     author: Томас Филлипс, 1835

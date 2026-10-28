@@ -9,8 +9,9 @@ const PHONE = '(max-width: 768px)';
 const TEXT_ENTRY =
   'input:not([type="checkbox"], [type="radio"], [type="button"], [type="submit"], [type="reset"], [type="range"], [type="file"], [type="color"]), textarea, select, [contenteditable="true"]';
 
-/** Элементы управления — по их прямоугольнику. */
-const CONTROLS = 'input, textarea, select, button, img, svg, video, canvas, [role="tab"], [role="img"]';
+/** Элементы управления и карточки с пометкой `data-floating-solid` — по их прямоугольнику. */
+const CONTROLS =
+  'input, textarea, select, button, img, svg, video, canvas, [role="tab"], [role="img"], [data-floating-solid]';
 /** Текст — по прямоугольнику самого текста (у абзаца на всю ширину правый край часто пуст). */
 const TEXT = 'p, h1, h2, h3, h4, h5, h6, label, li, a, dt, dd, td, th, summary, blockquote, figcaption, span';
 
