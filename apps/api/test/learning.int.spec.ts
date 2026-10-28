@@ -65,6 +65,16 @@ describe('student learning (integration)', () => {
     return { id, quizId: lesson.body.quizId as string };
   }
 
+  async function newTeacher(): Promise<Session> {
+    const email = `learn.t.${Date.now()}.${Math.random().toString(36).slice(2, 8)}@example.kz`;
+    await http()
+      .post('/api/auth/register')
+      .set('X-Forwarded-For', freshIp())
+      .send({ role: 'teacher', email, displayName: 'Учитель', password: 'strong-pass-1' })
+      .expect(201);
+    return login(http, email, 'strong-pass-1');
+  }
+
   async function newStudent(loginName: string, code?: string): Promise<Session> {
     await http()
       .post('/api/auth/register-student')
@@ -292,6 +302,45 @@ describe('student learning (integration)', () => {
       })
       .expect(204);
     expect((await statuses())[topicId]).toBe('started');
+  });
+
+  it('API-T-34 the teacher test: own topic (even a draft) and a base topic with answers; nothing is recorded; others → 404, student → 403', async () => {
+    const { id } = await topicWithQuiz('Стебель', 2);
+    const draft = (await as(teacher).post(`/api/teacher/subjects/${subjectId}/topics`).expect(201)).body.id;
+    await as(teacher).post(`/api/teacher/topics/${draft}/quiz/questions`, choice(1)).expect(201);
+    const own = (await as(teacher).get(`/api/teacher/topics/${id}/test`).expect(200)).body;
+    expect(own.questions).toHaveLength(2);
+    expect(own.questions[0]).toMatchObject({
+      text: 'Вопрос 1',
+      explanation: 'Объяснение 1',
+      correctAnswer: null,
+    });
+    expect(
+      own.questions[0].options.find((o: { id: string }) => o.id === own.questions[0].correctOptionId).text,
+    ).toBe('Вариант 1.0');
+    expect(
+      (await as(teacher).get(`/api/teacher/topics/${draft}/test`).expect(200)).body.questions,
+    ).toHaveLength(1);
+    // Базовая тема, видимая гостю (BR-VIS-04).
+    const base = (await as(teacher).get(`/api/teacher/topics/${B.topicCardio}/test`).expect(200)).body;
+    expect(base.questions.length).toBeGreaterThan(0);
+    expect(
+      base.questions.every(
+        (q: { correctOptionId: string | null; correctAnswer: string | null }) =>
+          q.correctOptionId || q.correctAnswer,
+      ),
+    ).toBe(true);
+    // Ничего не записывается: ни попыток, ни событий, ни XP у учителя.
+    for (const table of [schema.quizAttempts, schema.learningEvents, schema.xpLedger]) {
+      const rows = await stack.db.select().from(table).where(eq(table.studentId, teacher.userId));
+      expect(rows).toEqual([]);
+    }
+    // Чужая тема (черновик другого учителя) → 404; ученик → 403; гость → 401.
+    const other = await newTeacher();
+    await as(other).get(`/api/teacher/topics/${draft}/test`).expect(404);
+    await as(other).get(`/api/teacher/topics/${id}/test`).expect(404);
+    await as(student).get(`/api/teacher/topics/${id}/test`).expect(403);
+    await http().get(`/api/teacher/topics/${id}/test`).expect(401);
   });
 
   it('BR-XP-01 0 correct answers → 0 XP and no ledger row; the attempt and the streak day still count', async () => {

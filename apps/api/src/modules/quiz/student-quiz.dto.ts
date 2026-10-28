@@ -64,4 +64,17 @@ export class FinishResultDto {
   @ApiProperty({ type: AwardedBadgeDto, isArray: true }) badgesAwarded: AwardedBadgeDto[];
 }
 
+/** Вопрос теста учителя (API-T-34): вместе с правильным ответом — проверка в браузере учителя, без записи. */
+class TeacherTestQuestionDto extends AttemptQuestionDto {
+  @ApiProperty({ type: String, format: 'uuid', nullable: true }) correctOptionId: string | null;
+  @ApiProperty({ type: String, nullable: true, description: 'Правильный ответ для «Вписать ответ»' })
+  correctAnswer: string | null;
+  @ApiProperty({ type: String, nullable: true }) explanation: string | null;
+}
+
+/** API-T-34 */
+export class TeacherTestDto {
+  @ApiProperty({ type: TeacherTestQuestionDto, isArray: true }) questions: TeacherTestQuestionDto[];
+}
+
 export { AnsweredDto };

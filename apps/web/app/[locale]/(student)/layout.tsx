@@ -32,7 +32,7 @@ export default async function Layout({
       const cabinetHref = me ? HOME_BY_ROLE[me.activeRole as UserRole] : undefined;
       return me && role ? (
         <CabinetShell me={me} cabinetRole={role}>
-          <LearnViewerProvider guest cabinetHref={cabinetHref}>
+          <LearnViewerProvider guest cabinetHref={cabinetHref} teacher={me.activeRole === 'teacher'}>
             {children}
           </LearnViewerProvider>
         </CabinetShell>

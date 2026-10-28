@@ -130,6 +130,57 @@ test.describe('Базовая программа платформы (этап 8.
     await expect(page.getByTestId('cabinet-stats')).not.toContainText(' 0 XP');
   });
 
+  test('decision 2026-10-28, API-T-34 a teacher takes the same test of a base lesson: one question at a time, the correct answer, a result; nothing is recorded', async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    const teacher = await request.newContext({ baseURL });
+    const reg = await teacher.post('/api/auth/register', {
+      data: {
+        role: 'teacher',
+        email: `bq.${randomUUID().slice(0, 8)}@example.kz`,
+        displayName: 'Учитель',
+        password: 'teacher-pass-1',
+      },
+    });
+    expect(reg.status()).toBe(201);
+    const { cookies } = await teacher.storageState();
+    await context.addCookies(cookies.map(({ name, value }) => ({ name, value, url: baseURL! })));
+    const ids = await baseIds(teacher);
+
+    await page.goto(`/ru/learn/topics/${ids.cardio}?tab=quiz`);
+    await expect(page.getByTestId('teacher-preview-note')).toHaveText(st.quiz.teacherPreview);
+    // Вопросы по одному — списка всех вопросов нет.
+    await expect(page.getByTestId('quiz-progress')).toHaveText(
+      st.quiz.progress.replace('{index}', '1').replace('{count}', '5'),
+    );
+    await expect(page.getByTestId('student-quiz').getByRole('heading', { level: 2 })).toHaveCount(1);
+    // Неверный ответ: «Неверно» и правильный вариант.
+    await page.getByTestId('quiz-option').filter({ hasText: 'Аорта' }).click();
+    await expect(page.getByTestId('quiz-feedback')).toContainText(st.quiz.correct);
+    await page.getByTestId('quiz-next').click();
+    await page.getByLabel(st.quiz.answerLabel).fill('5');
+    await page.getByRole('button', { name: st.quiz.answer }).click();
+    await expect(page.getByTestId('quiz-feedback')).toContainText(st.quiz.incorrect);
+    await expect(page.getByTestId('quiz-feedback')).toContainText(
+      st.quiz.correctAnswer.replace('{answer}', '4'),
+    );
+    await page.getByTestId('quiz-next').click();
+    for (const option of ['Левый желудочек', ru.teacher.quiz.optionFalse, 'В малом (лёгочном)']) {
+      await page.getByTestId('quiz-option').filter({ hasText: option }).click();
+      await page.getByTestId('quiz-next').click();
+    }
+    await expect(page.getByTestId('quiz-result')).toContainText(st.quiz.result.replace('{score}', '80'));
+    await expect(page.getByTestId('quiz-correct-count')).toHaveText(
+      st.quiz.correctCount.replace('{correct}', '4').replace('{total}', '5'),
+    );
+    // Учителю ничего не записывается: без XP и освоения.
+    await expect(page.getByTestId('quiz-xp')).toHaveCount(0);
+    await expect(page.getByTestId('quiz-mastery')).toHaveCount(0);
+    await expectNoSeriousA11yViolations(page);
+  });
+
   test('AC-CNT-03, BR-ACL-05 a teacher cannot change a base lesson: no editor, API answers 404', async ({
     page,
     context,

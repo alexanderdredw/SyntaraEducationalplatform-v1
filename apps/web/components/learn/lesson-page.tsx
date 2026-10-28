@@ -13,7 +13,7 @@ import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../les
 import type { LessonMarkdown } from '../markdown/lesson-markdown';
 import { lessonQueryKey } from './query-keys';
 import { LinkButton } from '../public/blocks';
-import { StudentQuiz } from './quiz';
+import { StudentQuiz, TeacherQuiz } from './quiz';
 import { TutorChatLoader } from './tutor-chat-loader';
 import { MY_CLASS_HREF } from '../cabinet/nav';
 import { useIsClassSubject, useReportSubject } from '../cabinet/nav-state';
@@ -46,7 +46,7 @@ export function LessonPage({
   // Вкладка — из адреса: replaceState обновляет useSearchParams без запроса к серверу; «назад» тоже работает.
   const tab = tabOf(params.get('tab'));
   const opened = useRef(false);
-  const { guest, cabinetHref, api } = useLearnViewer();
+  const { guest, cabinetHref, teacher, api } = useLearnViewer();
   const tc = useTranslations('cabinet');
   const tm = useTranslations('student.myClass');
 
@@ -101,7 +101,7 @@ export function LessonPage({
   const data = lesson.data;
   // REQ-ST-LES-06: на «Квиз» и «Syntara AI» гостю — приглашение войти с возвратом на эту вкладку урока.
   // REQ-NAV-05: вошедшему без роли ученика (учитель) «Войти» не показывается — «Перейти в кабинет →».
-  // TODO(OWNER): поясняющий текст на «Квиз» и «Syntara AI» базового урока для учителя (SPEC молчит).
+  // TODO(OWNER): поясняющий текст на «Syntara AI» базового урока для учителя (SPEC молчит); «Квиз» учитель проходит сам.
   const invite = (tabValue: LessonTab) =>
     cabinetHref ? (
       <div className="flex flex-col items-start gap-4 py-4" data-testid="signed-in-invite">
@@ -160,7 +160,10 @@ export function LessonPage({
             value: 'quiz',
             label: t('quiz'),
             icon: <PencilLine />,
-            content: guest ? (
+            // Учитель проходит тот же тест в режиме предпросмотра (решение владельца 2026-10-28).
+            content: teacher ? (
+              <TeacherQuiz topicId={topicId} />
+            ) : guest ? (
               invite('quiz')
             ) : data.quizId ? (
               <StudentQuiz quizId={data.quizId} assignmentId={params.get('assignment') ?? undefined} />

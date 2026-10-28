@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import {
   AtlasQuizAnswerDto,
   ATLAS_QUIZ_LENGTH,
@@ -19,16 +19,13 @@ import {
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
-import { pickTranslation } from '../../common/locale';
 import { type Tx } from '../../common/idempotency';
 import { DB } from '../../infra/tokens';
-import { VisibilityService } from '../content/visibility.service';
 import { atlasQuizEventKey, GamificationService } from '../gamification/gamification.service';
 import { type AtlasPreviewDto, type AtlasQuizAnswerResultDto, type AtlasQuizSessionDto } from './atlas.dto';
 import { AtlasService, type AtlasTopicRow, notFound, pick } from './atlas.service';
 
-const { atlasQuizSessions: sessions, learningEvents, quizzes, questions, topics } = schema;
-const { questionTranslations: qt, answerOptions, answerOptionTranslations: aot } = schema;
+const { atlasQuizSessions: sessions, learningEvents } = schema;
 
 interface Current {
   item: string;
@@ -84,7 +81,6 @@ export class AtlasQuizService {
   constructor(
     @Inject(DB) private readonly db: Database,
     private readonly atlas: AtlasService,
-    private readonly visibility: VisibilityService,
     private readonly gamification: GamificationService,
   ) {}
 
@@ -237,65 +233,15 @@ export class AtlasQuizService {
     return {
       questions: items.map((item) => {
         const current = this.makeCurrent(kind, item, level, pool);
+        const p = byId.get(item)!;
         return {
-          text: byId.get(item)!.text(level),
+          text: p.text(level),
           options: current.options.map((id) => byId.get(id)?.title ?? ''),
           difficulty: kind === 'elements' ? elementDifficulty(level) : scientistDifficulty(level),
+          correct: current.options.indexOf(item),
+          answer: { code: p.code, title: p.title, description: p.description },
         };
       }),
-    };
-  }
-
-  /**
-   * API-T-33 (решение А-9): вопросы теста темы атласа для учителя — тексты и варианты без правильных; ничего не
-   * сохраняется. Тема — базового предмета с модулем атласа.
-   */
-  async topicPreview(subjectId: string, topicId: string, locale: Locale): Promise<AtlasPreviewDto> {
-    await this.atlas.assertAtlas(null, subjectId);
-    const [topic] = await this.db
-      .select({ id: topics.id })
-      .from(topics)
-      .where(and(eq(topics.id, topicId), eq(topics.subjectId, subjectId), eq(topics.status, 'published')));
-    if (!topic || !(await this.visibility.canGuestSeeTopic(topicId))) throw notFound();
-    const list = await this.db
-      .select({ id: questions.id, difficulty: questions.difficulty })
-      .from(questions)
-      .innerJoin(quizzes, eq(quizzes.id, questions.quizId))
-      .where(and(eq(quizzes.topicId, topicId), isNull(questions.archivedAt)))
-      .orderBy(asc(questions.position), asc(questions.id));
-    if (list.length === 0) return { questions: [] };
-    const ids = list.map((q) => q.id);
-    const [texts, options, optionTr] = await Promise.all([
-      this.db.select().from(qt).where(inArray(qt.questionId, ids)),
-      this.db
-        .select()
-        .from(answerOptions)
-        .where(inArray(answerOptions.questionId, ids))
-        .orderBy(asc(answerOptions.position)),
-      this.db
-        .select({ optionId: aot.optionId, locale: aot.locale, text: aot.text })
-        .from(aot)
-        .innerJoin(answerOptions, eq(answerOptions.id, aot.optionId))
-        .where(inArray(answerOptions.questionId, ids)),
-    ]);
-    return {
-      questions: list.map((q) => ({
-        text:
-          pickTranslation(
-            texts.filter((t) => t.questionId === q.id),
-            locale,
-          )?.text ?? '',
-        options: options
-          .filter((o) => o.questionId === q.id)
-          .map(
-            (o) =>
-              pickTranslation(
-                optionTr.filter((t) => t.optionId === o.id),
-                locale,
-              )?.text ?? '',
-          ),
-        difficulty: q.difficulty as 'easy' | 'medium' | 'hard',
-      })),
     };
   }
 

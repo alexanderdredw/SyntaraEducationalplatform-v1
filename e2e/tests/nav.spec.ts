@@ -267,9 +267,9 @@ test.describe('Единая рабочая среда (docs/NAV_TZ.md)', () => {
       await expect(tp.getByTestId('signed-in-cta')).toHaveText(ru.cabinet.toCabinet);
       await expect(tp.getByTestId('signed-in-cta')).toHaveAttribute('href', '/ru/teacher/courses');
     }
-    // Базовый урок у учителя: на «Квиз» вместо «Войти» — «Перейти в кабинет →».
+    // Базовый урок у учителя: на «Syntara AI» вместо «Войти» — «Перейти в кабинет →» («Квиз» учитель проходит сам).
     const { topicId } = await baseContent(baseURL!);
-    await tp.goto(`/ru/learn/topics/${topicId}?tab=quiz`);
+    await tp.goto(`/ru/learn/topics/${topicId}?tab=ai`);
     await expect(tp.getByTestId('guest-login')).toHaveCount(0);
     await expect(tp.getByTestId('to-cabinet')).toHaveAttribute('href', '/ru/teacher/courses');
     await t.close();

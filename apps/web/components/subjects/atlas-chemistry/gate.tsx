@@ -9,10 +9,13 @@ import { useLearnViewer } from '../../learn/viewer';
 
 export type Viewer = 'student' | 'guest' | 'teacher';
 
-/** Кто смотрит атлас: ученик, гость или вошедший без роли ученика (учитель — предпросмотр, BR-VIS-04). */
+/**
+ * Кто смотрит атлас: ученик, учитель (предпросмотр, BR-VIS-04: тесты проходит без записи — API-T-32, API-T-34) или
+ * гость.
+ */
 export function useAtlasViewer(): Viewer {
-  const { guest, cabinetHref } = useLearnViewer();
-  return !guest ? 'student' : cabinetHref ? 'teacher' : 'guest';
+  const { guest, teacher } = useLearnViewer();
+  return !guest ? 'student' : teacher ? 'teacher' : 'guest';
 }
 
 /**
@@ -34,7 +37,7 @@ export function GuestInvite({ ai = false }: { ai?: boolean }) {
   );
 }
 
-/** Решение А-9: пояснение предпросмотра учителя (вопросы без ответов, ничего не записывается; ИИ недоступен). */
+/** Пояснение предпросмотра учителя: «результаты не записываются» (решение 2026-10-28); ИИ недоступен (А-9). */
 export function PreviewNote({ children }: { children: ReactNode }) {
   return (
     <p

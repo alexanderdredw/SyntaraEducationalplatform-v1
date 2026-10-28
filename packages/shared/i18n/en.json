@@ -1127,7 +1127,8 @@
       "correctCount": "{correct} of {total} correct",
       "masteredYes": "Topic mastered!",
       "masteredNo": "The topic is mastered at {threshold}% — try again",
-      "keyboardHint": "Arrow keys choose an option, Enter or Space answers"
+      "keyboardHint": "Arrow keys choose an option, Enter or Space answers",
+      "teacherPreview": "Teacher preview: results are not saved"
     },
     "ai": {
       "greeting": "Hi! I'm Syntara. Ask me about «{topic}» — I'll help you figure it out.",
@@ -2237,7 +2238,7 @@
       "statAcc": "Accuracy"
     },
     "preview": {
-      "note": "Teacher preview: questions without correct answers; results are not saved.",
+      "note": "Teacher preview: results are not saved",
       "ai": "Syntara AI is available to students after signing in."
     }
   }

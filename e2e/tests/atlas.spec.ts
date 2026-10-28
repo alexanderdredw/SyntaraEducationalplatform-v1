@@ -160,7 +160,7 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await expect(page.getByTestId('atlas-guest-invite')).toBeVisible();
   });
 
-  test('AC-ATL-05 a student: opening the window counts as opening the lesson; «Пройти тест» — 5 questions, XP and progress', async ({
+  test('AC-ATL-05, BR-XP-01 a student: opening the window counts as opening the lesson; «Пройти тест» — 5 questions, XP = 4 × correct, the header updates', async ({
     page,
     baseURL,
   }) => {
@@ -183,9 +183,14 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     }
     const result = page.getByTestId('atlas-test-result');
     await expect(result).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('atlas-test-xp')).toContainText('XP');
+    // BR-XP-01: round(20 × правильные / 5) = 4 × правильные; +5 XP — первое открытие темы.
+    const correct = Number((await result.locator('.score-circle').textContent())!.split('/')[0]);
+    const xp = Number((await page.getByTestId('atlas-test-xp').textContent())!.replace(/\D/g, ''));
+    expect(xp).toBe(4 * correct);
     const stats = await (await api.get('/api/me/stats')).json();
-    expect(stats.xpTotal).toBeGreaterThanOrEqual(15);
+    expect(stats.xpTotal).toBe(5 + xp);
+    // XP в шапке — без перезагрузки страницы.
+    await expect(page.getByTestId('cabinet-stats')).toContainText(`${5 + xp} XP`);
   });
 
   test('AC-ATL-06 the quiz «Проверь знания»: 10 questions, a result with «+N XP»; a guest is asked to sign in', async ({
@@ -282,17 +287,37 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     expect([...hosts].filter((h) => !allowed.includes(h))).toEqual([]);
   });
 
-  test('AC-ATL-11, decision А-9 a teacher sees the preview: questions without answers, the AI is unavailable', async ({
+  test('AC-ATL-11, decision 2026-10-28 a teacher takes the same tests: one question at a time, check, result without XP; the AI is unavailable', async ({
     page,
     baseURL,
   }) => {
+    test.setTimeout(90_000);
     const chem = await chemistry(await request.newContext({ baseURL }));
     await signInTeacher(page, baseURL!);
     await page.goto(`${chem.base}/quiz`);
     await page.getByTestId('atlas-quiz-start').click();
     await expect(page.getByTestId('atlas-quiz-preview')).toContainText(ru.atlas.preview.note);
+    for (let i = 1; i <= 10; i++) {
+      await expect(page.getByTestId('atlas-quiz-progress')).toHaveText(
+        ru.atlas.quiz.progress.replace('{current}', String(i)).replace('{total}', '10'),
+      );
+      await expect(page.getByTestId('atlas-quiz-question')).toHaveCount(1);
+      await page.getByTestId('atlas-quiz-option').first().click();
+    }
+    await expect(page.getByTestId('atlas-quiz-result')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('atlas-quiz-xp')).toHaveCount(0);
+
     await page.goto(`${chem.base}/explore/oxygen/test`);
-    await expect(page.getByTestId('atlas-test-preview')).toBeVisible();
+    await expect(page.getByTestId('atlas-test-preview')).toContainText(ru.atlas.preview.note);
+    for (let i = 1; i <= 5; i++) {
+      await expect(page.getByTestId('atlas-test-progress')).toContainText(`${i} / 5`);
+      await page.getByTestId('atlas-test-option').first().click();
+      await expect(page.locator('.ai-quiz-feedback')).not.toBeEmpty();
+      await expect(page.locator('.ai-quiz-opt.correct')).toHaveCount(1);
+    }
+    await expect(page.getByTestId('atlas-test-result')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('atlas-test-xp')).toHaveCount(0);
+    await expect(page.getByTestId('atlas-test-mastery')).toHaveCount(0);
     await page.goto(`${chem.base}/ai`);
     await expect(page.getByTestId('atlas-preview-note')).toHaveText(ru.atlas.preview.ai);
   });

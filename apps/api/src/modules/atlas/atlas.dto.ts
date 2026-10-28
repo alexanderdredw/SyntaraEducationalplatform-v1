@@ -151,9 +151,16 @@ class PreviewQuestionDto {
   @ApiProperty() text: string;
   @ApiProperty({ type: String, isArray: true }) options: string[];
   @ApiProperty({ enum: ['easy', 'medium', 'hard'] }) difficulty: AtlasDifficulty;
+  @ApiProperty({ description: 'Номер правильного варианта в options — проверка в браузере учителя' })
+  correct: number;
+  @ApiProperty({ type: AtlasQuizMistakeDto, description: 'Правильный ответ — для «Рекомендуется повторить»' })
+  answer: AtlasQuizMistakeDto;
 }
 
-/** API-T-32: предпросмотр вопросов для учителя — без правильных ответов (решение А-9). */
+/**
+ * API-T-32 (решение владельца 2026-10-28): вопросы квиза или игры для учителя вместе с правильным ответом — учитель
+ * проходит тест так же, как ученик, но ничего не записывается.
+ */
 export class AtlasPreviewDto {
   @ApiProperty({ type: PreviewQuestionDto, isArray: true }) questions: PreviewQuestionDto[];
 }

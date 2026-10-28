@@ -8,6 +8,13 @@ import { Button, Card, cn, fieldClass, Pill, Skeleton } from '@syntara/ui';
 import { MASTERY_THRESHOLD } from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
+import {
+  studentEngine,
+  type TeacherTest,
+  teacherAttempt,
+  teacherEngine,
+  type TestEngine,
+} from './test-engine';
 
 type Attempt = components['schemas']['AttemptDto'];
 type Result = components['schemas']['AnswerResultDto'];
@@ -20,7 +27,8 @@ const LETTERS = 'ABCDEFGH';
  * Квиз ученика (8.4.4, U05, SM-ATTEMPT): маркеры прогресса, сложность, «Вопрос {i} из {n}», варианты A–D
  * (radio-группа). После выбора — сразу «Верно»/«Неверно», правильный вариант и объяснение (BR-QZ-04);
  * правильный ответ приходит только после ответа (BR-QZ-01). Незавершённая попытка продолжается с первого
- * вопроса без ответа (AC-ST-03). В конце — «Результат: {score}%», XP и бейджи, «Пройти ещё раз».
+ * вопроса без ответа (AC-ST-03). В конце — «Результат: {score}%», XP и бейджи, «Пройти ещё раз». Учитель проходит
+ * тот же тест (TeacherQuiz, решение владельца 2026-10-28).
  */
 export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignmentId?: string }) {
   const t = useTranslations('student.quiz');
@@ -76,16 +84,68 @@ export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignme
     <QuizRun
       key={attempt.data.attempt.attemptId}
       attempt={attempt.data.attempt}
+      engine={studentEngine(attempt.data.attempt.attemptId, locale)}
       onRetry={() => setRound((r) => r + 1)}
     />
   );
 }
 
-/** Прохождение одной попытки: состояние инициализируется из ответа API-S-07 (AC-ST-03). */
-function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
+/**
+ * Тест темы для учителя (решение владельца 2026-10-28): тот же экран, что у ученика, с пометкой «Предпросмотр
+ * учителя: результаты не записываются»; вопросы с ответами — API-T-34, проверка в браузере, без XP и записи.
+ */
+export function TeacherQuiz({ topicId }: { topicId: string }) {
   const t = useTranslations('student.quiz');
   const tf = useTranslations('forms');
   const locale = useLocale();
+  const [round, setRound] = useState(0);
+  const test = useQuery({
+    queryKey: ['teacher', 'test', topicId, locale],
+    queryFn: async () => {
+      const res = await apiRequest<TeacherTest>(`/api/teacher/topics/${topicId}/test`, { locale });
+      if (res.kind !== 'ok') throw new Error('test');
+      return res.data;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  return (
+    <div className="flex flex-col gap-3" data-testid="teacher-quiz">
+      <p className="text-sm text-[var(--text-muted)]" data-testid="teacher-preview-note">
+        {t('teacherPreview')}
+      </p>
+      {test.isPending ? (
+        <Skeleton className="h-40" />
+      ) : !test.data ? (
+        <p role="alert" className="text-[var(--danger-text)]">
+          {tf('serverError')}
+        </p>
+      ) : test.data.questions.length === 0 ? (
+        <p className="text-[var(--text-muted)]">{t('empty')}</p>
+      ) : (
+        <QuizRun
+          key={round}
+          attempt={teacherAttempt(test.data)}
+          engine={teacherEngine(test.data)}
+          onRetry={() => setRound((r) => r + 1)}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Прохождение одной попытки: состояние инициализируется из ответа API-S-07 (AC-ST-03). */
+function QuizRun({
+  attempt,
+  engine,
+  onRetry,
+}: {
+  attempt: Attempt;
+  engine: TestEngine;
+  onRetry: () => void;
+}) {
+  const t = useTranslations('student.quiz');
+  const tf = useTranslations('forms');
   const queryClient = useQueryClient();
   const [answered, setAnswered] = useState(attempt.answered as Record<string, Answered>);
   // Продолжаем с первого вопроса без ответа (если ответы даны на все — с последнего).
@@ -122,24 +182,28 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
             total: attempt.questions.length,
           })}
         </p>
-        <p
-          data-testid="quiz-mastery"
-          className={cn(
-            'font-semibold',
-            finish.scorePercent >= MASTERY_THRESHOLD
-              ? 'text-[var(--success-text)]'
-              : 'text-[var(--text-muted)]',
-          )}
-        >
-          {finish.scorePercent >= MASTERY_THRESHOLD
-            ? t('masteredYes')
-            : t('masteredNo', { threshold: MASTERY_THRESHOLD })}
-        </p>
-        {finish.xpAwarded > 0 ? (
-          <p className="text-lg font-semibold text-[var(--accent)]" data-testid="quiz-xp">
-            {t('xp', { xp: finish.xpAwarded })}
-          </p>
-        ) : null}
+        {/* Учителю — без освоения и XP: ничего не записывается. */}
+        {engine.preview ? null : (
+          <>
+            <p
+              data-testid="quiz-mastery"
+              className={cn(
+                'font-semibold',
+                finish.scorePercent >= MASTERY_THRESHOLD
+                  ? 'text-[var(--success-text)]'
+                  : 'text-[var(--text-muted)]',
+              )}
+            >
+              {finish.scorePercent >= MASTERY_THRESHOLD
+                ? t('masteredYes')
+                : t('masteredNo', { threshold: MASTERY_THRESHOLD })}
+            </p>
+            {/* BR-XP-01: «+N XP» — фактически начисленное (повтор без улучшения — +0 XP). */}
+            <p className="text-lg font-semibold text-[var(--accent)]" data-testid="quiz-xp">
+              {t('xp', { xp: finish.xpAwarded })}
+            </p>
+          </>
+        )}
         {finish.badgesAwarded.length ? (
           <section className="flex flex-col gap-2" data-testid="quiz-badges">
             <h3 className="font-semibold">{t('badges')}</h3>
@@ -169,16 +233,12 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
 
   async function submit(body: { optionId?: string; textAnswer?: string }) {
     setBusy(true);
-    const res = await apiRequest<Result>(`/api/student/attempts/${attempt!.attemptId}/answers`, {
-      method: 'POST',
-      body: { questionId: question.id, ...body },
-      locale,
-    });
+    const res = await engine.answer(question.id, body);
     setBusy(false);
-    if (res.kind === 'ok') {
+    if (res) {
       setAnswered((prev) => ({
         ...prev,
-        [question.id]: { ...res.data, optionId: body.optionId ?? null, textAnswer: body.textAnswer ?? null },
+        [question.id]: { ...res, optionId: body.optionId ?? null, textAnswer: body.textAnswer ?? null },
       }));
     } else setState('failed');
   }
@@ -191,16 +251,13 @@ function QuizRun({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }
       return;
     }
     setBusy(true);
-    const res = await apiRequest<Finish>(`/api/student/attempts/${attempt!.attemptId}/finish`, {
-      method: 'POST',
-      locale,
-    });
+    const res = await engine.finish(questions.filter((q) => answered[q.id]?.correct).length);
     setBusy(false);
-    if (res.kind === 'ok') {
-      setFinish(res.data);
+    if (res) {
+      setFinish(res);
       setState('finished');
       // Хедер: XP и серия (API-S-16).
-      await queryClient.invalidateQueries({ queryKey: ['me', 'stats'] });
+      if (!engine.preview) await queryClient.invalidateQueries({ queryKey: ['me', 'stats'] });
     } else setState('failed');
   }
 

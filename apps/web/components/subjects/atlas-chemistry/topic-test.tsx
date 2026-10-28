@@ -6,13 +6,18 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MASTERY_THRESHOLD } from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
-import { useAtlasSubject } from './atlas-data';
+import {
+  studentEngine,
+  type TeacherTest as TeacherTestDto,
+  teacherAttempt,
+  teacherEngine,
+  type TestEngine,
+} from '../../learn/test-engine';
 import { GuestInvite, PreviewNote, useAtlasViewer } from './gate';
 
 type Attempt = components['schemas']['AttemptDto'];
 type Result = components['schemas']['AnswerResultDto'];
 type Finish = components['schemas']['FinishResultDto'];
-type Preview = components['schemas']['AtlasPreviewDto'];
 
 /** Автопереход к следующему вопросу — как в помощнике атласа (LearningAssistant.js). */
 const NEXT_MS = 1500;
@@ -21,7 +26,8 @@ const NEXT_MS = 1500;
  * Тест темы в стиле режима «Тест» помощника атласа (решения 4, А-3, А-5): «Вопрос 1 / 5», «Счёт», варианты-кнопки,
  * «Верно! / Неверно.», автопереход, итог «Тест завершен!». Движок — квиз платформы: попытки, XP (BR-XP-01),
  * прогресс и освоение (BR-QZ-06/07), задание учителя (assignmentId, Q-18); правильный ответ приходит только после
- * ответа (BR-QZ-01). Гостю — вход; учителю — вопросы без ответов (А-9).
+ * ответа (BR-QZ-01). Гостю — вход; учитель проходит тот же тест в режиме предпросмотра (API-T-34, решение владельца
+ * 2026-10-28): проверка в браузере, ничего не записывается.
  */
 export function TopicTest({
   topicId,
@@ -34,7 +40,7 @@ export function TopicTest({
 }) {
   const viewer = useAtlasViewer();
   if (viewer === 'guest') return <GuestInvite />;
-  if (viewer === 'teacher') return <TeacherPreview topicId={topicId} />;
+  if (viewer === 'teacher') return <TeacherTest topicId={topicId} />;
   return quizId ? <StudentTest quizId={quizId} assignmentId={assignmentId} /> : null;
 }
 
@@ -79,16 +85,60 @@ function StudentTest({ quizId, assignmentId }: { quizId: string; assignmentId?: 
     <Run
       key={attempt.data.attempt.attemptId}
       attempt={attempt.data.attempt}
+      engine={studentEngine(attempt.data.attempt.attemptId, locale)}
       onRetry={() => setRound((r) => r + 1)}
     />
   );
 }
 
-function Run({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
+/** Учитель: тот же тест с пометкой предпросмотра; вопросы с ответами — API-T-34. */
+function TeacherTest({ topicId }: { topicId: string }) {
+  const t = useTranslations('atlas');
+  const tf = useTranslations('forms');
+  const tq = useTranslations('student.quiz');
+  const locale = useLocale();
+  const [round, setRound] = useState(0);
+  const test = useQuery({
+    queryKey: ['teacher', 'test', topicId, locale],
+    queryFn: async () => {
+      const res = await apiRequest<TeacherTestDto>(`/api/teacher/topics/${topicId}/test`, { locale });
+      if (res.kind !== 'ok') throw new Error('test');
+      return res.data;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  return (
+    <div data-testid="atlas-test-preview">
+      <PreviewNote>{t('preview.note')}</PreviewNote>
+      {test.isPending ? (
+        <div className="typing-indicator" role="status" aria-label={tq('loading')}>
+          <span />
+          <span />
+          <span />
+        </div>
+      ) : !test.data ? (
+        <p role="alert" className="ai-placeholder">
+          {tf('serverError')}
+        </p>
+      ) : test.data.questions.length === 0 ? (
+        <p className="ai-placeholder">{tq('empty')}</p>
+      ) : (
+        <Run
+          key={round}
+          attempt={teacherAttempt(test.data)}
+          engine={teacherEngine(test.data)}
+          onRetry={() => setRound((r) => r + 1)}
+        />
+      )}
+    </div>
+  );
+}
+
+function Run({ attempt, engine, onRetry }: { attempt: Attempt; engine: TestEngine; onRetry: () => void }) {
   const t = useTranslations('atlas.assistant');
   const tq = useTranslations('student.quiz');
   const tf = useTranslations('forms');
-  const locale = useLocale();
   const queryClient = useQueryClient();
   const questions = attempt.questions;
   const [answered, setAnswered] = useState(
@@ -110,13 +160,11 @@ function Run({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
 
   async function complete() {
     setBusy(true);
-    const res = await apiRequest<Finish>(`/api/student/attempts/${attempt.attemptId}/finish`, {
-      method: 'POST',
-      locale,
-    });
+    const res = await engine.finish(questions.filter((q) => answered[q.id]?.correct).length);
     setBusy(false);
-    if (res.kind !== 'ok') return setFailed(true);
-    setFinish(res.data);
+    if (!res) return setFailed(true);
+    setFinish(res);
+    if (engine.preview) return;
     // Хедер: XP и серия (API-S-16); статусы тем атласа.
     await queryClient.invalidateQueries({ queryKey: ['me', 'stats'] });
     await queryClient.invalidateQueries({ queryKey: ['atlas'] });
@@ -125,14 +173,10 @@ function Run({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
   async function choose(optionId: string) {
     if (busy || result) return;
     setBusy(true);
-    const res = await apiRequest<Result>(`/api/student/attempts/${attempt.attemptId}/answers`, {
-      method: 'POST',
-      body: { questionId: question.id, optionId },
-      locale,
-    });
+    const res = await engine.answer(question.id, { optionId });
     setBusy(false);
-    if (res.kind !== 'ok') return setFailed(true);
-    setAnswered((prev) => ({ ...prev, [question.id]: { ...res.data, optionId } }));
+    if (!res) return setFailed(true);
+    setAnswered((prev) => ({ ...prev, [question.id]: { ...res, optionId } }));
     timer.current = window.setTimeout(() => {
       if (index < questions.length - 1) setIndex(index + 1);
       else void complete();
@@ -160,16 +204,23 @@ function Run({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
         <p style={{ color: 'var(--text-secondary)' }}>
           {Math.round(finish.scorePercent)}% {t('correctPct')}
         </p>
-        <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }} data-testid="atlas-test-mastery">
-          {finish.scorePercent >= MASTERY_THRESHOLD
-            ? tq('masteredYes')
-            : tq('masteredNo', { threshold: MASTERY_THRESHOLD })}
-        </p>
-        {finish.xpAwarded > 0 ? (
-          <p className="atlas-xp" data-testid="atlas-test-xp">
-            {tq('xp', { xp: finish.xpAwarded })}
-          </p>
-        ) : null}
+        {/* Учителю — без освоения и XP: ничего не записывается. */}
+        {engine.preview ? null : (
+          <>
+            <p
+              style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}
+              data-testid="atlas-test-mastery"
+            >
+              {finish.scorePercent >= MASTERY_THRESHOLD
+                ? tq('masteredYes')
+                : tq('masteredNo', { threshold: MASTERY_THRESHOLD })}
+            </p>
+            {/* BR-XP-01: «+N XP» — фактически начисленное (повтор без улучшения — +0 XP). */}
+            <p className="atlas-xp" data-testid="atlas-test-xp">
+              {tq('xp', { xp: finish.xpAwarded })}
+            </p>
+          </>
+        )}
         {finish.badgesAwarded.length ? (
           <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
             {tq('badges')}: {finish.badgesAwarded.map((b) => b.title).join(', ')}
@@ -234,42 +285,6 @@ function Run({ attempt, onRetry }: { attempt: Attempt; onRetry: () => void }) {
       >
         {result ? (result.correct ? t('correct') : t('incorrect')) : ''}
       </div>
-    </div>
-  );
-}
-
-/** Предпросмотр учителя (API-T-33): вопросы теста без правильных ответов, ничего не записывается. */
-function TeacherPreview({ topicId }: { topicId: string }) {
-  const t = useTranslations('atlas');
-  const locale = useLocale();
-  const subjectId = useAtlasSubject();
-  const preview = useQuery({
-    queryKey: ['teacher', 'atlas', 'topic', topicId, locale],
-    queryFn: async () => {
-      const res = await apiRequest<Preview>(`/api/teacher/atlas/${subjectId}/topics/${topicId}/questions`, {
-        locale,
-      });
-      if (res.kind !== 'ok') throw new Error('preview');
-      return res.data;
-    },
-  });
-  return (
-    <div className="ai-quiz fade-in" data-testid="atlas-test-preview">
-      <PreviewNote>{t('preview.note')}</PreviewNote>
-      {preview.data?.questions.map((q, i) => (
-        <div key={i} style={{ marginBottom: '1.5rem' }}>
-          <p className="ai-quiz-question">
-            {i + 1}. {q.text}
-          </p>
-          <div className="ai-quiz-options">
-            {q.options.map((o, j) => (
-              <button key={j} type="button" className="ai-quiz-opt" disabled>
-                {o}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

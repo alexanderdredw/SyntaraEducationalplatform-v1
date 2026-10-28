@@ -261,29 +261,39 @@ describe('atlas (integration)', () => {
       expect(seen).not.toContain(name);
   });
 
-  it('decision А-9, API-T-32, API-T-33 a teacher previews questions without answers; a student cannot', async () => {
+  it('API-T-32, API-T-34 a teacher gets questions with correct answers; nothing is recorded; a student cannot', async () => {
     const preview = await as(teacher)
       .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
       .expect(200);
     expect(preview.body.questions).toHaveLength(10);
-    expect(preview.body.questions[0].options).toHaveLength(4);
-    expect(JSON.stringify(preview.body)).not.toMatch(/correct|isCorrect/);
+    for (const q of preview.body.questions) {
+      expect(q.options).toHaveLength(4);
+      expect(q.options[q.correct]).toBe(q.answer.title);
+      expect(q.answer.code).toBeTruthy();
+    }
     const scientists = await as(teacher)
       .get(`/api/teacher/atlas/${chemistry}/preview?kind=scientists`)
       .expect(200);
     expect(scientists.body.questions).toHaveLength(9);
+    expect(scientists.body.questions[0].options[scientists.body.questions[0].correct]).toBe(
+      scientists.body.questions[0].answer.title,
+    );
     await as(teacher).get(`/api/teacher/atlas/${chemistry}/preview?kind=x`).expect(400);
     await as(teacher).get(`/api/teacher/atlas/${B.subjectAnatomy}/preview?kind=elements`).expect(404);
     await as(student).get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`).expect(403);
+    const sessions = await stack.db
+      .select()
+      .from(schema.atlasQuizSessions)
+      .where(eq(schema.atlasQuizSessions.studentId, teacher.userId));
+    expect(sessions).toEqual([]);
 
+    // Тест элемента — общий тест темы учителя (API-T-34).
     const atlas = await guest(`/api/public/subjects/${chemistry}/atlas`).expect(200);
     const oxygen = atlas.body.elements[7].topicId;
-    const topic = await as(teacher)
-      .get(`/api/teacher/atlas/${chemistry}/topics/${oxygen}/questions`)
-      .expect(200);
+    const topic = await as(teacher).get(`/api/teacher/topics/${oxygen}/test`).expect(200);
     expect(topic.body.questions).toHaveLength(5);
-    expect(JSON.stringify(topic.body)).not.toMatch(/correct/i);
-    await as(teacher).get(`/api/teacher/atlas/${chemistry}/topics/${B.topicCardio}/questions`).expect(404);
-    await as(student).get(`/api/teacher/atlas/${chemistry}/topics/${oxygen}/questions`).expect(403);
+    for (const q of topic.body.questions)
+      expect(q.options.map((o: { id: string }) => o.id)).toContain(q.correctOptionId);
+    await as(student).get(`/api/teacher/topics/${oxygen}/test`).expect(403);
   });
 });

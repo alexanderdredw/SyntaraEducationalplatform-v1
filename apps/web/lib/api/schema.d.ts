@@ -948,6 +948,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/teacher/topics/{id}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TeacherQuizController_test"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/teacher/topics/{id}/quiz": {
         parameters: {
             query?: never;
@@ -2148,22 +2164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/teacher/atlas/{subjectId}/topics/{topicId}/questions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["TeacherAtlasController_topic"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2933,6 +2933,30 @@ export interface components {
             /** @description Код класса (необязательно, BR-CLS-01) */
             code?: string;
         };
+        AttemptOptionDto: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+        };
+        TeacherTestQuestionDto: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            type: "single_choice" | "true_false" | "text_input";
+            /** @enum {string} */
+            difficulty: "easy" | "medium" | "hard";
+            text: string;
+            /** @description Без признака правильности (BR-QZ-01) */
+            options: components["schemas"]["AttemptOptionDto"][];
+            /** Format: uuid */
+            correctOptionId: string | null;
+            /** @description Правильный ответ для «Вписать ответ» */
+            correctAnswer: string | null;
+            explanation: string | null;
+        };
+        TeacherTestDto: {
+            questions: components["schemas"]["TeacherTestQuestionDto"][];
+        };
         OptionItemDto: {
             /** Format: uuid */
             id: string;
@@ -3018,11 +3042,6 @@ export interface components {
         AttemptStartBody: {
             /** Format: uuid */
             assignmentId?: string;
-        };
-        AttemptOptionDto: {
-            /** Format: uuid */
-            id: string;
-            text: string;
         };
         AttemptQuestionDto: {
             /** Format: uuid */
@@ -4127,6 +4146,10 @@ export interface components {
             options: string[];
             /** @enum {string} */
             difficulty: "easy" | "medium" | "hard";
+            /** @description Номер правильного варианта в options — проверка в браузере учителя */
+            correct: number;
+            /** @description Правильный ответ — для «Рекомендуется повторить» */
+            answer: components["schemas"]["AtlasQuizMistakeDto"];
         };
         AtlasPreviewDto: {
             questions: components["schemas"]["PreviewQuestionDto"][];
@@ -6762,6 +6785,47 @@ export interface operations {
             };
             /** @description Превышен лимит; retryAfterSeconds в теле */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TeacherQuizController_test: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeacherTestDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -10152,48 +10216,6 @@ export interface operations {
             header?: never;
             path: {
                 subjectId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AtlasPreviewDto"];
-                };
-            };
-            /** @description Нет сессии */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Нет роли или неверный X-CSRF-Token */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TeacherAtlasController_topic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                subjectId: string;
-                topicId: string;
             };
             cookie?: never;
         };

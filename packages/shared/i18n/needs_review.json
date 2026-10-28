@@ -883,6 +883,7 @@
     "student.quiz.masteredYes": "needs_review",
     "student.quiz.masteredNo": "needs_review",
     "student.quiz.keyboardHint": "needs_review",
+    "student.quiz.teacherPreview": "needs_review",
     "student.ai.greeting": "needs_review",
     "student.ai.placeholderTopic": "needs_review",
     "student.ai.placeholderGeneral": "needs_review",

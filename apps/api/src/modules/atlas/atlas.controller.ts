@@ -118,7 +118,7 @@ export class PublicAtlasController {
   }
 }
 
-/** Учитель: предпросмотр вопросов атласа без правильных ответов и без записи (решение А-9). */
+/** Учитель: вопросы квиза и игры атласа с правильными ответами — проходит как ученик, без записи (решение 2026-10-28). */
 @ApiTags('teacher')
 @Controller('teacher/atlas')
 @Roles('teacher')
@@ -136,17 +136,5 @@ export class TeacherAtlasController {
     @Req() req: AuthRequest,
   ): Promise<AtlasPreviewDto> {
     return this.quiz.preview(subjectId, query.kind, locale(req));
-  }
-
-  /** API-T-33: вопросы теста темы атласа (элемент или «Учёные-химики»). */
-  @Get(':subjectId/topics/:topicId/questions')
-  @ApiOkResponse({ type: AtlasPreviewDto })
-  @ApiNotFoundResponse()
-  topic(
-    @Param('subjectId', new UuidParamPipe()) subjectId: string,
-    @Param('topicId', new UuidParamPipe()) topicId: string,
-    @Req() req: AuthRequest,
-  ): Promise<AtlasPreviewDto> {
-    return this.quiz.topicPreview(subjectId, topicId, locale(req));
   }
 }

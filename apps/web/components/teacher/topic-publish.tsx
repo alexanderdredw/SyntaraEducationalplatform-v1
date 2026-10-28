@@ -10,6 +10,7 @@ import type { components } from '@/lib/api/schema';
 import { formatDateTime } from '@/lib/datetime';
 import { AppLink } from '../app-link';
 import { useErrorText } from '../forms/form-parts';
+import { TeacherQuiz } from '../learn/quiz';
 import { type Lesson, LessonView } from '../lesson/lesson-view';
 import { firstFieldError, StatusPill } from './parts';
 
@@ -37,6 +38,7 @@ export function PublishPanel({
 }) {
   const t = useTranslations('teacher.topic');
   const tc = useTranslations('common');
+  const tl = useTranslations('student.lesson');
   const tf = useTranslations('forms');
   const errorText = useErrorText();
   const locale = useLocale();
@@ -161,8 +163,24 @@ export function PublishPanel({
         wide
         closeLabel={tc('close')}
       >
-        <div className="max-h-[70vh] overflow-y-auto pr-1">
+        <div
+          role="region"
+          aria-label={t('previewTitle', { title: preview?.title || title })}
+          // Прокрутка окна — с клавиатуры (axe scrollable-region-focusable): урок и тест длиннее экрана телефона.
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          className="max-h-[70vh] overflow-y-auto pr-1"
+        >
           {preview ? <LessonView lesson={preview} /> : null}
+          {/* Тест темы — как у ученика, в режиме предпросмотра (решение владельца 2026-10-28). */}
+          {preview ? (
+            <section className="mt-6 border-t border-[var(--border)] pt-6" aria-labelledby="preview-quiz">
+              <h3 id="preview-quiz" className="mb-3 text-lg font-bold">
+                {tl('quiz')}
+              </h3>
+              <TeacherQuiz topicId={topic.id} />
+            </section>
+          ) : null}
         </div>
       </Modal>
       <Modal

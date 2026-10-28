@@ -2631,6 +2631,50 @@
         ]
       }
     },
+    "/api/teacher/topics/{id}/test": {
+      "get": {
+        "operationId": "TeacherQuizController_test",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeacherTestDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "teacher"
+        ]
+      }
+    },
     "/api/teacher/topics/{id}/quiz": {
       "get": {
         "operationId": "TeacherQuizController_get",
@@ -6424,58 +6468,6 @@
           "teacher"
         ]
       }
-    },
-    "/api/teacher/atlas/{subjectId}/topics/{topicId}/questions": {
-      "get": {
-        "operationId": "TeacherAtlasController_topic",
-        "parameters": [
-          {
-            "name": "subjectId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "topicId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AtlasPreviewDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Нет сессии"
-          },
-          "403": {
-            "description": "Нет роли или неверный X-CSRF-Token"
-          },
-          "404": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "sid": []
-          }
-        ],
-        "tags": [
-          "teacher"
-        ]
-      }
     }
   },
   "info": {
@@ -9118,6 +9110,95 @@
           "password"
         ]
       },
+      "AttemptOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ]
+      },
+      "TeacherTestQuestionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "single_choice",
+              "true_false",
+              "text_input"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "medium",
+              "hard"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "options": {
+            "description": "Без признака правильности (BR-QZ-01)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptOptionDto"
+            }
+          },
+          "correctOptionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "correctAnswer": {
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный ответ для «Вписать ответ»"
+          },
+          "explanation": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "difficulty",
+          "text",
+          "options",
+          "correctOptionId",
+          "correctAnswer",
+          "explanation"
+        ]
+      },
+      "TeacherTestDto": {
+        "type": "object",
+        "properties": {
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeacherTestQuestionDto"
+            }
+          }
+        },
+        "required": [
+          "questions"
+        ]
+      },
       "OptionItemDto": {
         "type": "object",
         "properties": {
@@ -9414,22 +9495,6 @@
             "format": "uuid"
           }
         }
-      },
-      "AttemptOptionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "text": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "text"
-        ]
       },
       "AttemptQuestionDto": {
         "type": "object",
@@ -13329,12 +13394,26 @@
               "medium",
               "hard"
             ]
+          },
+          "correct": {
+            "type": "number",
+            "description": "Номер правильного варианта в options — проверка в браузере учителя"
+          },
+          "answer": {
+            "description": "Правильный ответ — для «Рекомендуется повторить»",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasQuizMistakeDto"
+              }
+            ]
           }
         },
         "required": [
           "text",
           "options",
-          "difficulty"
+          "difficulty",
+          "correct",
+          "answer"
         ]
       },
       "AtlasPreviewDto": {
