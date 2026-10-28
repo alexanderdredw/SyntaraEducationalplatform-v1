@@ -249,7 +249,12 @@ export const DEMO_SCHOOLS: Array<{ key: string; name: string; region: string; ci
 ];
 export const demoSchoolId = (key: string) => seedId(`school:demo:${key}`);
 
-export async function seedDemo(db: Database, media: MediaStore | null = null): Promise<void> {
+/** `extraDirs` — папки, импортируемые вместе с content/ (тестовый предмет seed `e2e`). */
+export async function seedDemo(
+  db: Database,
+  media: MediaStore | null = null,
+  extraDirs: string[] = [],
+): Promise<void> {
   assertNotProduction('demo');
   await db.transaction(async (tx) => {
     // Уровни и ранги (BR-XP-03).
@@ -355,6 +360,6 @@ export async function seedDemo(db: Database, media: MediaStore | null = null): P
   });
 
   // Базовая программа платформы — импорт content/ (BR-CNT-01); без хранилища картинки пропускаются.
-  const { errors } = await importContent(db, { media });
+  const { errors } = await importContent(db, { media, extraDirs });
   if (errors.length) throw new Error(`content/: ${errors.map(formatError).join('; ')}`);
 }

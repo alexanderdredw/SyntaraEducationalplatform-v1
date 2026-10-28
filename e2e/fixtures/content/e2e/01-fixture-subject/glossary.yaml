@@ -1,0 +1,96 @@
+review:
+  kk: needs_review
+  en: needs_review
+sections:
+  - code: general
+    position: 1
+    title:
+      ru: Строение атома
+      kk: Атом құрылысы
+      en: Atomic structure
+    terms:
+      - code: atom
+        term: { ru: Атом, kk: Атом, en: Atom }
+        definition:
+          ru: наименьшая частица химического элемента, носитель его свойств.
+          kk: химиялық элементтің ең кішкентай бөлшегі.
+          en: the smallest particle of a chemical element.
+      - code: noble-gas
+        term: { ru: Благородный газ, kk: Асыл газ, en: Noble gas }
+        definition:
+          ru: элемент с завершённой внешней электронной оболочкой.
+          kk: сыртқы электрондық қабаты толық элемент.
+          en: an element with a complete outer electron shell.
+  - code: reactions
+    position: 2
+    title:
+      ru: Реакции
+      kk: Реакциялар
+      en: Reactions
+    terms:
+      - code: oxidation
+        term: { ru: Окисление, kk: Тотығу, en: Oxidation }
+        definition:
+          ru: отдача электронов атомом или ионом.
+          kk: атомның немесе ионның электрон беруі.
+          en: loss of electrons by an atom or ion.
+      - code: reduction
+        term: { ru: Восстановление, kk: Тотықсыздану, en: Reduction }
+        definition:
+          ru: присоединение электронов атомом или ионом.
+          kk: атомның немесе ионның электрон қосып алуы.
+          en: gain of electrons by an atom or ion.
+      - code: catalyst
+        term: { ru: Катализатор, kk: Катализатор, en: Catalyst }
+        definition:
+          ru: вещество, ускоряющее реакцию и не расходующееся в ней.
+          kk: реакцияны жылдамдататын, бірақ жұмсалмайтын зат.
+          en: a substance that speeds up a reaction without being used up.
+      - code: reagent
+        term: { ru: Реагент, kk: Реагент, en: Reagent }
+        definition:
+          ru: вещество, вступающее в химическую реакцию.
+          kk: химиялық реакцияға түсетін зат.
+          en: a substance that takes part in a chemical reaction.
+      - code: product
+        term: { ru: Продукт реакции, kk: Реакция өнімі, en: Reaction product }
+        definition:
+          ru: вещество, образующееся в результате реакции.
+          kk: реакция нәтижесінде түзілетін зат.
+          en: a substance formed as a result of a reaction.
+      - code: exothermic
+        term: { ru: Экзотермическая реакция, kk: Экзотермиялық реакция, en: Exothermic reaction }
+        definition:
+          ru: реакция, идущая с выделением теплоты.
+          kk: жылу бөле жүретін реакция.
+          en: a reaction that releases heat.
+      - code: endothermic
+        term: { ru: Эндотермическая реакция, kk: Эндотермиялық реакция, en: Endothermic reaction }
+        definition:
+          ru: реакция, идущая с поглощением теплоты.
+          kk: жылу сіңіре жүретін реакция.
+          en: a reaction that absorbs heat.
+      - code: electrolysis
+        term: { ru: Электролиз, kk: Электролиз, en: Electrolysis }
+        definition:
+          ru: разложение вещества электрическим током.
+          kk: затты электр тогымен ыдырату.
+          en: decomposition of a substance by electric current.
+      - code: neutralization
+        term: { ru: Нейтрализация, kk: Бейтараптану, en: Neutralization }
+        definition:
+          ru: реакция кислоты с основанием с образованием соли и воды.
+          kk: қышқылдың негізбен әрекеттесіп, тұз бен су түзуі.
+          en: a reaction of an acid with a base forming salt and water.
+      - code: precipitate
+        term: { ru: Осадок, kk: Тұнба, en: Precipitate }
+        definition:
+          ru: нерастворимое вещество, выпадающее из раствора.
+          kk: ерітіндіден бөлінетін ерімейтін зат.
+          en: an insoluble substance that separates from a solution.
+      - code: solvent
+        term: { ru: Растворитель, kk: Еріткіш, en: Solvent }
+        definition:
+          ru: вещество, в котором растворяют другие вещества.
+          kk: басқа заттарды еритетін зат.
+          en: a substance in which other substances are dissolved.

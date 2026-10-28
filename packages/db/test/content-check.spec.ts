@@ -1,7 +1,7 @@
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkContent, defaultContentDir, formatError } from '../src/content';
+import { checkContent, defaultContentDir, e2eFixturesDir, formatError } from '../src/content';
 
 const CARDIO = 'biology/01-human-anatomy/01-cardiovascular-system';
 
@@ -304,6 +304,33 @@ describe('content check', () => {
         spreadsheet('grades.csv'),
         spreadsheet('media/table.ods'),
         spreadsheet('media/scheme.png'),
+      ]),
+    );
+  });
+
+  it('BR-CNT-03 the e2e test subject is valid together with content/: chapters, glossary, periodic table, timeline', () => {
+    const { catalog, errors } = checkContent(defaultContentDir(), [e2eFixturesDir()]);
+    expect(errors.map(formatError)).toEqual([]);
+    const subject = catalog.subjects.find((s) => s.code === 'e2e-fixture')!;
+    expect(subject.chapters.map((c) => c.code)).toEqual(['elements', 'scientists']);
+    expect(subject.blocks).toEqual(['periodic-table']);
+    expect(subject.glossary?.sections).toHaveLength(2);
+    const topics = catalog.topics.filter((t) => t.subjectCode === 'e2e-fixture');
+    expect(topics.map((t) => t.elementNumber ?? null)).toEqual([1, 3, 8, null]);
+    expect(topics[3]!.timeline).toHaveLength(3);
+    // Основная папка не меняется: базовые предметы на месте (импорт не отправит их в архив).
+    expect(catalog.subjects.filter((s) => s.code !== 'e2e-fixture')).toHaveLength(
+      checkContent().catalog.subjects.length,
+    );
+  });
+
+  it('BR-CNT-03 an extra folder may not repeat codes or section positions of content/', () => {
+    const codes = checkContent(defaultContentDir(), [dir]).errors.map((e) => e.message);
+    expect(codes).toEqual(
+      expect.arrayContaining([
+        'код или порядковый номер раздела уже есть в content/',
+        'код предмета уже есть в content/',
+        'код темы уже есть в content/',
       ]),
     );
   });

@@ -186,9 +186,14 @@ test.describe('Базовая программа платформы (этап 8.
     const funFact = async () =>
       (await (await guest.get(`/api/public/topics/${ids.digestive}`)).json()).funFact;
     const dir = mkdtempSync(join(tmpdir(), 'syntara-e2e-content-'));
+    // Seed `e2e` загрузил тестовый предмет — импорт идёт вместе с ним, иначе предмет уйдёт в архив.
+    const catalog = await (await guest.get('/api/public/catalog')).json();
+    const extra = catalog.sections.some((s: { title: string }) => s.title === 'Тестовый раздел')
+      ? ` --extra-dir="${join(ROOT, 'e2e', 'fixtures', 'content')}"`
+      : '';
     // Сводка и ошибки CLI пишет в stderr — читаем оба потока.
     const run = (from: string) => {
-      const r = spawnSync(`pnpm --filter @syntara/db content:import --dir="${from}"`, {
+      const r = spawnSync(`pnpm --filter @syntara/db content:import --dir="${from}"${extra}`, {
         cwd: ROOT,
         encoding: 'utf8',
         shell: true,

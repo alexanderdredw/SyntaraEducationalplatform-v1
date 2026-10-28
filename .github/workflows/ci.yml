@@ -118,10 +118,11 @@ jobs:
           docker exec minio mc alias set local http://localhost:9000 "$S3_ACCESS_KEY" "$S3_SECRET_KEY"
           docker exec minio mc mb --ignore-existing "local/$S3_BUCKET"
 
-      - name: Database for e2e (migrations + seed demo)
+      # seed e2e = demo + тестовый предмет e2e/fixtures/content (общие блоки предмета без «Химии»).
+      - name: Database for e2e (migrations + seed e2e)
         run: |
           pnpm db:migrate
-          pnpm db:seed --set=demo
+          pnpm db:seed --set=e2e
 
       # Worker только с проверкой файлов (outbox → file-scan): таймеры Battle и письма сценарии ведут сами.
       - name: Worker with file checks for e2e

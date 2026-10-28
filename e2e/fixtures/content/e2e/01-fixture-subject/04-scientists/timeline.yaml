@@ -1,0 +1,13 @@
+events:
+  - section: lavoisier
+    year: 1774
+    lived: { from: 1743, to: 1794 }
+    title: { ru: Закон сохранения массы, kk: Масса сақталу заңы, en: Conservation of mass }
+  - section: dalton
+    year: 1803
+    lived: { from: 1766, to: 1844 }
+    title: { ru: Атомная теория, kk: Атомдық теория, en: Atomic theory }
+  - section: mendeleev
+    year: 1869
+    lived: { from: 1834, to: 1907 }
+    title: { ru: Периодический закон, kk: Периодтық заң, en: Periodic law }

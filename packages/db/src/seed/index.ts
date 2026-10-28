@@ -1,11 +1,14 @@
 import { type Database } from '../index';
 import { seedConfig, seedFeatureFlags } from './config';
-import { type MediaStore } from '../content';
+import { e2eFixturesDir, type MediaStore } from '../content';
 import { seedDemo } from './demo';
 import { seedVisual } from './visual';
 
-/** Наборы seed: каждый следующий включает предыдущие (visual ⊃ demo ⊃ config). Все наборы идемпотентны. */
-export const SEED_SETS = ['config', 'demo', 'visual'] as const;
+/**
+ * Наборы seed: visual ⊃ demo ⊃ config; e2e — demo и тестовый предмет e2e/fixtures/content (импорт вместе с
+ * content/, решение владельца 2026-10-28). Все наборы идемпотентны.
+ */
+export const SEED_SETS = ['config', 'demo', 'visual', 'e2e'] as const;
 export type SeedSet = (typeof SEED_SETS)[number];
 
 /**
@@ -20,8 +23,8 @@ export async function runSeed(
   await seedConfig(db);
   await seedFeatureFlags(db);
   if (set === 'config') return;
-  await seedDemo(db, opts.media ?? null);
-  if (set === 'demo') return;
+  await seedDemo(db, opts.media ?? null, set === 'e2e' ? [e2eFixturesDir()] : []);
+  if (set === 'demo' || set === 'e2e') return;
   await seedVisual(db);
 }
 

@@ -10,6 +10,8 @@ pnpm content:import             # записать в базу (нужны DATAB
 
 `pnpm db:seed --set=demo` тоже импортирует `content/` — на чистой базе для разработки ничего больше не нужно.
 
+Тестовый предмет e2e (главы, глоссарий, таблица Менделеева, лента) лежит в `e2e/fixtures/content/`, не в `content/`: его загружает `pnpm db:seed --set=e2e` (CI) вместе с `content/`. Импорт с ним вручную — `pnpm content:import --extra-dir=e2e/fixtures/content`; обычный `pnpm content:import` отправляет тестовый предмет в архив.
+
 ## 1. Структура
 
 ```text

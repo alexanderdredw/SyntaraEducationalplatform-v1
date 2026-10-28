@@ -1,0 +1,7 @@
+# Раздел тестового предмета e2e (e2e/fixtures/content/README.md).
+code: e2e-fixtures
+position: 99
+title:
+  ru: 'Тестовый раздел'
+  kk: 'Тестовый раздел'
+  en: 'Test section'

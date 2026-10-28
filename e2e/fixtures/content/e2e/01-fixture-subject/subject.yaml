@@ -1,0 +1,22 @@
+# Тестовый предмет e2e: главы, глоссарий, таблица Менделеева, лента времени (e2e/fixtures/content/README.md).
+code: e2e-fixture
+position: 1
+title:
+  ru: Тестовый предмет
+  kk: Тестовый предмет
+  en: Test subject
+blocks:
+  - periodic-table
+chapters:
+  - code: elements
+    position: 1
+    title:
+      ru: Элементы
+      kk: Элементтер
+      en: Elements
+  - code: scientists
+    position: 2
+    title:
+      ru: Учёные
+      kk: Ғалымдар
+      en: Scientists

@@ -23,8 +23,10 @@ export function repoRoot(from = __dirname): string {
 
 export const defaultContentDir = () => join(repoRoot(), 'content');
 
-/** `pnpm content:check`: проверка всех файлов без БД (BR-CNT-03, BR-CNT-06). */
-export function checkContent(dir = defaultContentDir()): { catalog: ContentCatalog; errors: ContentError[] } {
+/** Тестовый предмет e2e (решение владельца 2026-10-28): импортируется только вместе с content/ (seed `e2e`). */
+export const e2eFixturesDir = () => join(repoRoot(), 'e2e', 'fixtures', 'content');
+
+function readDir(dir: string): { catalog: ContentCatalog; errors: ContentError[] } {
   // Пути в ошибках — от корня репозитория; для папки вне репозитория — от её родителя.
   let root: string;
   try {
@@ -33,6 +35,42 @@ export function checkContent(dir = defaultContentDir()): { catalog: ContentCatal
     root = dirname(dir);
   }
   return readContent(dir, root);
+}
+
+/**
+ * `pnpm content:check`: проверка всех файлов без БД (BR-CNT-03, BR-CNT-06). `extraDirs` дополняют основную папку
+ * (тестовый предмет e2e): коды разделов, предметов и тем и порядковые номера разделов не должны совпадать.
+ */
+export function checkContent(
+  dir = defaultContentDir(),
+  extraDirs: string[] = [],
+): { catalog: ContentCatalog; errors: ContentError[] } {
+  const result = readDir(dir);
+  const main = result.catalog;
+  for (const extra of extraDirs) {
+    const { catalog, errors } = readDir(extra);
+    result.errors.push(...errors);
+    for (const s of catalog.sections) {
+      if (main.sections.some((x) => x.code === s.code || x.position === s.position))
+        result.errors.push({ file: s.file, message: 'код или порядковый номер раздела уже есть в content/' });
+    }
+    for (const s of catalog.subjects) {
+      if (main.subjects.some((x) => x.code === s.code))
+        result.errors.push({ file: s.file, field: 'code', message: 'код предмета уже есть в content/' });
+    }
+    for (const t of catalog.topics) {
+      if (main.topics.some((x) => x.code === t.code))
+        result.errors.push({
+          file: `${t.dir}/ru.md`,
+          field: 'code',
+          message: 'код темы уже есть в content/',
+        });
+    }
+    main.sections.push(...catalog.sections);
+    main.subjects.push(...catalog.subjects);
+    main.topics.push(...catalog.topics);
+  }
+  return result;
 }
 
 class DryRun extends Error {
@@ -48,9 +86,9 @@ class DryRun extends Error {
  */
 export async function importContent(
   db: Database,
-  opts: { dir?: string; media: MediaStore | null; dryRun?: boolean },
+  opts: { dir?: string; extraDirs?: string[]; media: MediaStore | null; dryRun?: boolean },
 ): Promise<{ summary: ImportSummary | null; errors: ContentError[] }> {
-  const { catalog, errors } = checkContent(opts.dir);
+  const { catalog, errors } = checkContent(opts.dir, opts.extraDirs);
   if (errors.length) return { summary: null, errors };
   try {
     const summary = await db.transaction(async (tx) => {

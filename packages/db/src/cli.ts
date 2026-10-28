@@ -1,5 +1,6 @@
-// CLI БД: `pnpm db:migrate`, `pnpm db:rollback [--steps=N|--all]`, `pnpm db:reset`, `pnpm db:seed --set=config|demo|visual`,
-// `pnpm content:check`, `pnpm content:import [--dry-run] [--dir=<папка>]` (BR-CNT-01..07),
+// CLI БД: `pnpm db:migrate`, `pnpm db:rollback [--steps=N|--all]`, `pnpm db:reset`, `pnpm db:seed --set=config|demo|visual|e2e`,
+// `pnpm content:check`, `pnpm content:import [--dry-run] [--dir=<папка>] [--extra-dir=<папка>]` (BR-CNT-01..07;
+// --extra-dir — тестовый предмет e2e/fixtures/content вместе с основной папкой),
 // `pnpm battle:anonymize --student=<id>` (BR-BTL-11).
 import { resolve } from 'node:path';
 import {
@@ -43,8 +44,9 @@ function printSummary(s: ImportSummary, dryRun: boolean): void {
 async function main(): Promise<void> {
   const command = process.argv[2];
   const dir = arg('dir') ? resolve(arg('dir')!) : undefined;
+  const extraDirs = arg('extra-dir') ? [resolve(arg('extra-dir')!)] : [];
   if (command === 'content:check') {
-    const { catalog, errors } = checkContent(dir);
+    const { catalog, errors } = checkContent(dir, extraDirs);
     if (errors.length) {
       for (const e of errors) console.error(formatError(e));
       throw new Error(`content/: ошибок — ${errors.length}`);
@@ -85,7 +87,7 @@ async function main(): Promise<void> {
         const dryRun = Boolean(arg('dry-run'));
         const media = s3MediaStoreFromEnv();
         if (!media) throw new Error('S3_ENDPOINT, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY are not set');
-        const { summary, errors } = await importContent(db, { dir, media, dryRun });
+        const { summary, errors } = await importContent(db, { dir, extraDirs, media, dryRun });
         if (errors.length) {
           for (const e of errors) console.error(formatError(e));
           throw new Error(`content/: ошибок — ${errors.length}; БД не изменена`);

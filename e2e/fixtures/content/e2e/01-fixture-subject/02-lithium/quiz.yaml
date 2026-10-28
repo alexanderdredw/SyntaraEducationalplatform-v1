@@ -1,0 +1,12 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой атомный номер у элемента Литий?
+      kk: Элементтің атомдық нөмірі қандай?
+      en: What is the atomic number of the element?
+    options:
+      - text: { ru: '3', kk: '3', en: '3' }
+        correct: true
+      - text: { ru: '100', kk: '100', en: '100' }

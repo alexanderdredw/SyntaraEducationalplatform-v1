@@ -1,0 +1,12 @@
+questions:
+  - code: q1
+    type: single_choice
+    difficulty: easy
+    text:
+      ru: Какой атомный номер у элемента Кислород?
+      kk: Элементтің атомдық нөмірі қандай?
+      en: What is the atomic number of the element?
+    options:
+      - text: { ru: '8', kk: '8', en: '8' }
+        correct: true
+      - text: { ru: '100', kk: '100', en: '100' }
