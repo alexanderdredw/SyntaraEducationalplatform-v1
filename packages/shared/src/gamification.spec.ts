@@ -9,6 +9,8 @@ import {
   normalizeAnswer,
   scorePercent,
   streakOf,
+  topicQuizXp,
+  topicQuizXpAward,
 } from './gamification';
 
 const none: BadgeFacts = {
@@ -21,6 +23,25 @@ const none: BadgeFacts = {
 };
 
 describe('quiz and gamification rules', () => {
+  it('BR-XP-01 topic test XP = round(20 × correct / total), from the attempt percent', () => {
+    const pct = (c: number, n: number) => Math.round((10000 * c) / n) / 100; // BR-QZ-05
+    expect(topicQuizXp(pct(5, 5), 20)).toBe(20);
+    expect(topicQuizXp(pct(4, 5), 20)).toBe(16);
+    expect(topicQuizXp(pct(0, 5), 20)).toBe(0);
+    expect(topicQuizXp(pct(1, 3), 20)).toBe(7); // 6.67
+    expect(topicQuizXp(pct(1, 8), 20)).toBe(3); // 2.5 → 3
+    for (let n = 1; n <= 40; n++)
+      for (let c = 0; c <= n; c++) expect(topicQuizXp(pct(c, n), 20)).toBe(Math.round((20 * c) / n));
+  });
+
+  it('BR-XP-01 a repeat gives only the increase over the best previous result, never negative', () => {
+    expect(topicQuizXpAward(60, null, 20)).toBe(12);
+    expect(topicQuizXpAward(100, 60, 20)).toBe(8);
+    expect(topicQuizXpAward(60, 100, 20)).toBe(0);
+    expect(topicQuizXpAward(100, 100, 20)).toBe(0);
+    expect(topicQuizXpAward(0, null, 20)).toBe(0);
+  });
+
   it('BR-QZ-03, PH-28 text answers: trim, collapse spaces, lower case', () => {
     expect(normalizeAnswer('  Левый   Желудочек ')).toBe('левый желудочек');
     expect(normalizeAnswer('ЧЕТЫРЕ')).toBe(normalizeAnswer('четыре'));

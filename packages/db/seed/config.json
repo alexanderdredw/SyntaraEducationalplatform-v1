@@ -356,15 +356,18 @@
       "key": "xp",
       "note": "PH-39",
       "value": {
-        "quiz_finished": 10,
-        "high_score_bonus": 10,
-        "high_score_threshold": 80,
         "first_lesson_open": 5,
         "per_level": 100,
         "failed_attempt_below": 50,
         "atlas_quiz_per_correct": 1,
         "atlas_quiz_daily_cap": 20
       }
+    },
+    {
+      "key": "xp.topic_quiz_max",
+      "note": "PH-39",
+      "value": 20,
+      "confirmed": true
     },
     {
       "key": "class.leave_confirm",

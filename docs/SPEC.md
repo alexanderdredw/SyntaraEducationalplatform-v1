@@ -1117,8 +1117,13 @@ BR-QZ-09  Гостевой пробный вопрос: questions.is_demo = true
 
 ```text
 BR-XP-01  События и XP:
-            quiz_finished                → +10 XP
-            quiz_finished с score >= 80  → ещё +10 XP (reason = 'quiz_high_score')
+            quiz_finished (тест темы)       → round(xp.topic_quiz_max × правильные / всего вопросов) XP
+                                              (xp.topic_quiz_max = 20; решение владельца 2026-10-28, needs_confirmation
+                                              = false; reason = 'quiz_finished'). За повторную попытку той же темы —
+                                              только прирост к лучшему прошлому результату ученика по теме (никогда не
+                                              отрицательный; 0 → записи xp_ledger нет). Уже начисленные XP (прежнее
+                                              правило «+10 и ещё +10 за ≥ 80 %», reason 'quiz_high_score') не
+                                              пересчитываются
             lesson_opened (первое для темы) → +5 XP
 BR-XP-02  Идемпотентность: каждая запись xp_ledger уникальна по (student_id, source_event_id, reason);
           повторная обработка события не начисляет XP повторно.
@@ -2177,7 +2182,8 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
                   { "from": "2027-01-11", "to": "2027-03-21" }, { "from": "2027-03-29", "to": "2027-05-25" } ] },
     // Четверти 2026–2027 (решение владельца 2026-10-17): каникулы — по официальной публикации; начало 1 сентября
     // и конец 25 мая — стандартные. TODO(OWNER): сверить с приказом Минпросвещения РК. Меняются в app_config без кода.
-  "PH-39 xp": { "quiz_finished": 10, "high_score_bonus": 10, "high_score_threshold": 80, "first_lesson_open": 5, "per_level": 100, "failed_attempt_below": 50 },
+  "PH-39 xp": { "first_lesson_open": 5, "per_level": 100, "failed_attempt_below": 50, "atlas_quiz_per_correct": 1, "atlas_quiz_daily_cap": 20 },
+  "PH-39 xp.topic_quiz_max": 20,   // BR-XP-01, утверждено владельцем 2026-10-28 (needs_confirmation = false)
   "PH-40 class.leave_confirm": true,
   "PH-41 load.expected": { "schools": 50, "students": 20000, "concurrent_sessions": 2000 },
   "PH-42 platform.tz": "Asia/Almaty",

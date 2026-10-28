@@ -566,7 +566,8 @@ describe('assignments, progress, analytics (integration)', () => {
       condition: 'Пройден первый квиз',
     });
 
-    await passQuiz(s, own.topicId, 0);
+    // BR-XP-01: 2 из 4 → round(20 × 2 / 4) = 10 XP.
+    await passQuiz(s, own.topicId, 2);
     a = (await as(s).get('/api/student/achievements').expect(200)).body;
     expect(a).toMatchObject({ xpTotal: 10, xpToNext: 90, streakDays: 1, earnedCount: 1 });
     expect(a.badges.find((b: { code: string }) => b.code === 'first_step')).toMatchObject({

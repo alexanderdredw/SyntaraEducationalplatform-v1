@@ -262,7 +262,8 @@ test.describe('Задания, показатели, аналитика (ите�
     await page.goto('/ru/learn/achievements');
     await expect(page.getByTestId('rank-title')).toHaveText('Новичок');
     await expect(page.getByTestId('level-card')).toContainText(st.achievements.level.replace('{level}', '1'));
-    await expect(page.getByTestId('xp-total')).toHaveText('10 XP всего');
+    // BR-XP-01: попытка без ответов — 0 правильных → 0 XP; первый квиз всё равно даёт «Первый шаг».
+    await expect(page.getByTestId('xp-total')).toHaveText('0 XP всего');
     await expect(page.getByTestId('badges-earned')).toHaveText('Получено 1 из 12');
     const badges = page.getByTestId('badge');
     await expect(badges).toHaveCount(12);

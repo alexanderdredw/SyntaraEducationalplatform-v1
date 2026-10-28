@@ -51,11 +51,21 @@ describe('seed (integration)', () => {
     expect(enabled?.value).toEqual(['ru', 'kk', 'en']);
   });
 
-  it('AG-02 seed config stores every placeholder with needs_confirmation = true', async () => {
+  it('AG-02, BR-XP-01 seed config stores every placeholder with needs_confirmation = true; owner-approved keys — false', async () => {
     await runSeed(db, 'config');
     const rows = await db.select().from(appConfig);
     expect(rows).toHaveLength(Object.keys(CONFIG_KEYS).length);
-    expect(rows.every((r) => r.needsConfirmation && r.note?.startsWith('PH-'))).toBe(true);
+    // Утверждённые владельцем при добавлении (`confirmed` в config.json) — сразу needs_confirmation = false.
+    const confirmed = new Set(loadConfigSeed().flatMap((e) => (e.confirmed ? [e.key] : [])));
+    expect([...confirmed]).toEqual(['xp.topic_quiz_max']);
+    expect(rows.every((r) => r.note?.startsWith('PH-'))).toBe(true);
+    expect(rows.every((r) => r.needsConfirmation === !confirmed.has(r.key))).toBe(true);
+    // BR-XP-01 (решение владельца 2026-10-28): максимум XP за тест темы — 20, подтверждено.
+    expect(rows.find((r) => r.key === 'xp.topic_quiz_max')).toMatchObject({
+      value: 20,
+      needsConfirmation: false,
+      confirmedBy: 'owner',
+    });
     const email = rows.find((r) => r.key === 'support.email');
     expect(email?.value).toEqual({ value: 'support@syntara-edu.me', prodBlocked: true });
   });

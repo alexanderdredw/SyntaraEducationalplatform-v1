@@ -8,6 +8,7 @@ import {
   levelOf,
   STREAK_EVENTS,
   streakOf,
+  topicQuizXpAward,
   type XpConfig,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
@@ -64,16 +65,9 @@ export class GamificationService {
   async process(tx: Tx, event: LearningEvent, locale: Locale): Promise<ProcessResult> {
     const xp = await this.config.get<XpConfig>('xp');
     const awards: Array<{ reason: string; amount: number }> = [];
-    if (event.type === 'quiz_finished') {
-      awards.push({ reason: 'quiz_finished', amount: xp.quiz_finished });
-      const attemptId = event.idempotencyKey.replace(/^quiz:/, '');
-      const [attempt] = await tx
-        .select({ score: quizAttempts.scorePercent })
-        .from(quizAttempts)
-        .where(eq(quizAttempts.id, attemptId));
-      if (attempt?.score !== null && Number(attempt?.score) >= xp.high_score_threshold) {
-        awards.push({ reason: 'quiz_high_score', amount: xp.high_score_bonus });
-      }
+    if (event.type === 'quiz_finished' && event.topicId) {
+      const amount = await this.topicQuizAward(tx, event);
+      if (amount > 0) awards.push({ reason: 'quiz_finished', amount });
     }
     if (event.type === 'atlas_quiz_finished') {
       const amount = await this.atlasQuizAward(tx, event, xp);
@@ -110,6 +104,42 @@ export class GamificationService {
     const stats = await this.recalcStats(tx, event.studentId, xp.per_level);
     const badgesAwarded = await this.awardBadges(tx, event, stats, xp.failed_attempt_below, locale);
     return { xpAwarded, badgesAwarded };
+  }
+
+  /**
+   * BR-XP-01 (решение владельца 2026-10-28): XP теста темы пропорционально правильным ответам — round(max × score /
+   * 100); за повтор той же темы — только прирост к лучшему прошлому результату ученика. Блокировка по ученику и теме:
+   * два одновременных завершения не начислят прирост дважды. Начисленное раньше не пересчитывается.
+   */
+  private async topicQuizAward(tx: Tx, event: LearningEvent): Promise<number> {
+    await tx.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtext(${`quiz-xp:${event.studentId}:${event.topicId}`}))`,
+    );
+    const attemptId = event.idempotencyKey.replace(/^quiz:/, '');
+    const [attempt] = await tx
+      .select({ score: quizAttempts.scorePercent })
+      .from(quizAttempts)
+      .where(and(eq(quizAttempts.id, attemptId), eq(quizAttempts.studentId, event.studentId)));
+    if (attempt?.score === null || attempt?.score === undefined) return 0;
+    const [before] = await tx
+      .select({ best: sql<string | null>`max(${quizAttempts.scorePercent})` })
+      .from(quizAttempts)
+      .innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
+      .where(
+        and(
+          eq(quizAttempts.studentId, event.studentId),
+          eq(quizzes.topicId, event.topicId!),
+          eq(quizAttempts.status, 'finished'),
+          isNotNull(quizAttempts.scorePercent),
+          sql`${quizAttempts.id} <> ${attemptId}`,
+        ),
+      );
+    const max = await this.config.get<number>('xp.topic_quiz_max');
+    return topicQuizXpAward(
+      Number(attempt.score),
+      before?.best === null || !before ? null : Number(before.best),
+      max,
+    );
   }
 
   /**

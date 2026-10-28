@@ -201,7 +201,7 @@ describe('student learning (integration)', () => {
     await as(student).post(`/api/student/attempts/${started.body.attemptId}/finish`).expect(200);
   });
 
-  it('AC-ST-04 finishing with 85 % → +20 XP, the topic is mastered, «Первый шаг» and «Тема освоена»', async () => {
+  it('AC-ST-04, BR-XP-01 finishing with 85 % → +17 XP (round(20 × 17 / 20)), the topic is mastered, «Первый шаг» and «Тема освоена»', async () => {
     const { id, quizId: quiz } = await topicWithQuiz('Листья', 20);
     const fresh = await newStudent('learn.ac04', undefined);
     await stack.db.insert(schema.classMemberships).values({ classId, studentId: fresh.userId });
@@ -209,7 +209,7 @@ describe('student learning (integration)', () => {
     await answerAll(fresh, attempt, 17);
     const finished = await as(fresh).post(`/api/student/attempts/${attempt.attemptId}/finish`).expect(200);
     expect(finished.body.scorePercent).toBe(85);
-    expect(finished.body.xpAwarded).toBe(20);
+    expect(finished.body.xpAwarded).toBe(17);
     expect(finished.body.badgesAwarded.map((b: { code: string }) => b.code).sort()).toEqual([
       'first_step',
       'topic_mastered',
@@ -221,7 +221,7 @@ describe('student learning (integration)', () => {
       .where(and(eq(schema.topicMastery.studentId, fresh.userId), eq(schema.topicMastery.topicId, id)));
     expect(mastery).toMatchObject({ bestPercent: '85.00', attemptsCount: 1 });
     expect(mastery!.masteredAt).not.toBeNull();
-    expect(await stats(fresh)).toMatchObject({ xpTotal: 20, streakDays: 1 });
+    expect(await stats(fresh)).toMatchObject({ xpTotal: 17, streakDays: 1 });
     // Повторный finish → 409, ответ после завершения → 409 (SM-ATTEMPT).
     await as(fresh).post(`/api/student/attempts/${attempt.attemptId}/finish`).expect(409);
     await as(fresh)
@@ -255,18 +255,25 @@ describe('student learning (integration)', () => {
       ),
     );
     expect(again).toEqual({ xpAwarded: 0, badgesAwarded: [] });
-    expect((await stats(fresh)).xpTotal).toBe(20);
+    expect((await stats(fresh)).xpTotal).toBe(17);
 
     // Лучший результат сохраняется, попытки считаются (BR-QZ-06).
     const second = (await as(fresh).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
     await answerAll(fresh, second, 5);
     const low = await as(fresh).post(`/api/student/attempts/${second.attemptId}/finish`).expect(200);
-    expect(low.body).toMatchObject({ scorePercent: 25, xpAwarded: 10, badgesAwarded: [] });
+    // BR-XP-01: повтор хуже лучшего результата — прирост 0 (не отрицательный).
+    expect(low.body).toMatchObject({ scorePercent: 25, xpAwarded: 0, badgesAwarded: [] });
+    // Повтор лучше лучшего — только прирост: 20 − 17 = 3.
+    const third = (await as(fresh).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    await answerAll(fresh, third, 20);
+    const top = await as(fresh).post(`/api/student/attempts/${third.attemptId}/finish`).expect(200);
+    expect(top.body).toMatchObject({ scorePercent: 100, xpAwarded: 3 });
+    expect((await stats(fresh)).xpTotal).toBe(20);
     const [after] = await stack.db
       .select()
       .from(schema.topicMastery)
       .where(and(eq(schema.topicMastery.studentId, fresh.userId), eq(schema.topicMastery.topicId, id)));
-    expect(after).toMatchObject({ bestPercent: '85.00', attemptsCount: 2 });
+    expect(after).toMatchObject({ bestPercent: '100.00', attemptsCount: 3 });
 
     // API-S-18: статусы тем ученика — «Освоена», «Начата», «Не начата».
     const statuses = async () =>
@@ -285,6 +292,22 @@ describe('student learning (integration)', () => {
       })
       .expect(204);
     expect((await statuses())[topicId]).toBe('started');
+  });
+
+  it('BR-XP-01 0 correct answers → 0 XP and no ledger row; the attempt and the streak day still count', async () => {
+    const { quizId: quiz } = await topicWithQuiz('Корни', 4);
+    const fresh = await newStudent('learn.zero', undefined);
+    await stack.db.insert(schema.classMemberships).values({ classId, studentId: fresh.userId });
+    const attempt = (await as(fresh).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    await answerAll(fresh, attempt, 0);
+    const finished = await as(fresh).post(`/api/student/attempts/${attempt.attemptId}/finish`).expect(200);
+    expect(finished.body).toMatchObject({ scorePercent: 0, xpAwarded: 0 });
+    const ledger = await stack.db
+      .select()
+      .from(schema.xpLedger)
+      .where(eq(schema.xpLedger.studentId, fresh.userId));
+    expect(ledger).toEqual([]);
+    expect(await stats(fresh)).toMatchObject({ xpTotal: 0, streakDays: 1 });
   });
 
   it('BR-BDG-01 «Исправился»: a topic mastered after a failed attempt (< 50 %)', async () => {

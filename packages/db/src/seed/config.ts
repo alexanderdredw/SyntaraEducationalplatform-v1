@@ -8,6 +8,8 @@ export interface ConfigSeedEntry {
   key: string;
   note: string;
   value: unknown;
+  /** Значение уже утверждено владельцем (например, `xp.topic_quiz_max`, 2026-10-28): needs_confirmation = false. */
+  confirmed?: boolean;
 }
 
 export function loadConfigSeed(): ConfigSeedEntry[] {
@@ -16,14 +18,23 @@ export function loadConfigSeed(): ConfigSeedEntry[] {
 }
 
 /**
- * Раздел 11: все заглушки в app_config с needs_confirmation = true, PH-ID — в note.
- * Уже подтверждённые владельцем значения (needs_confirmation = false) seed не перезаписывает.
+ * Раздел 11: все заглушки в app_config с needs_confirmation = true, PH-ID — в note; значения, утверждённые владельцем
+ * при добавлении (`confirmed`), — сразу с needs_confirmation = false. Уже подтверждённые владельцем значения
+ * (needs_confirmation = false) seed не перезаписывает.
  */
 export async function seedConfig(db: Database): Promise<void> {
   const entries = loadConfigSeed();
   await db
     .insert(appConfig)
-    .values(entries.map((e) => ({ key: e.key, value: e.value, note: e.note, needsConfirmation: true })))
+    .values(
+      entries.map((e) => ({
+        key: e.key,
+        value: e.value,
+        note: e.note,
+        needsConfirmation: !e.confirmed,
+        ...(e.confirmed ? { confirmedBy: 'owner', confirmedAt: new Date() } : {}),
+      })),
+    )
     .onConflictDoUpdate({
       target: appConfig.key,
       set: { value: sql`excluded.value`, note: sql`excluded.note` },

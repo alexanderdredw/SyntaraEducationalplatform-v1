@@ -58,6 +58,8 @@ export const CONFIG_KEYS = {
   quiz: { ph: 'PH-37' },
   progress: { ph: 'PH-38' },
   xp: { ph: 'PH-39' },
+  /** BR-XP-01: максимум XP за попытку теста темы (решение владельца 2026-10-28, подтверждено). */
+  'xp.topic_quiz_max': { ph: 'PH-39' },
   'class.leave_confirm': { ph: 'PH-40' },
   'load.expected': { ph: 'PH-41' },
   'platform.tz': { ph: 'PH-42' },

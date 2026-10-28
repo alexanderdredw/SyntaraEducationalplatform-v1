@@ -13,9 +13,6 @@ export const MASTERY_THRESHOLD = 80;
 
 /** PH-39 `xp` */
 export interface XpConfig {
-  quiz_finished: number;
-  high_score_bonus: number;
-  high_score_threshold: number;
   first_lesson_open: number;
   per_level: number;
   failed_attempt_below: number;
@@ -28,6 +25,26 @@ export interface XpConfig {
  * BR-ST-02: события дня активности — серия, «Активность» профиля (API-ME-15) и показатели. Квиз атласа засчитывается
  * в серию (решение владельца А-11, docs/ATLAS_MAP.md).
  */
+/**
+ * BR-XP-01 (решение владельца 2026-10-28): XP попытки теста темы = round(max × правильные / всего), где max —
+ * `xp.topic_quiz_max` (20). Считается по проценту попытки (BR-QZ-05): max × score / 100 — то же самое, точные
+ * половины (×.5) у такого процента не теряются.
+ */
+export function topicQuizXp(scorePercent: number, max: number): number {
+  return Math.round((max * scorePercent) / 100);
+}
+
+/**
+ * BR-XP-01: за повторную попытку той же темы — только прирост к лучшему прошлому результату ученика (никогда не
+ * отрицательный). `bestBefore` — лучший процент прошлых завершённых попыток темы или null, если их не было.
+ */
+export function topicQuizXpAward(scorePercent: number, bestBefore: number | null, max: number): number {
+  return Math.max(
+    0,
+    topicQuizXp(scorePercent, max) - (bestBefore === null ? 0 : topicQuizXp(bestBefore, max)),
+  );
+}
+
 export const STREAK_EVENTS = ['lesson_opened', 'quiz_finished', 'atlas_quiz_finished'] as const;
 
 /** BR-QZ-03, PH-28: trim, схлопнуть пробелы, нижний регистр. */
