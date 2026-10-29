@@ -7,12 +7,12 @@ import { useRouter } from '@/i18n/navigation';
 import { AppLink } from '../../app-link';
 import type { Lesson } from '../../lesson/lesson-view';
 import { GROUP_COLORS, useAtlasData, useAtlasLesson, useAtlasSubject } from './atlas-data';
-import { AssistantBlock, type AssistantMode, DetailWindow } from './detail-window';
+import { type AiAsk, AiCard, AiPanel } from './ai-card';
+import { DetailWindow } from './detail-window';
 import { AtlasQuiz } from './quiz';
 import { SCIENTIST_TABS, ScientistBlocks, scientistParts, splitSources } from './lesson-text';
 import { atlasHref, scientistHref } from './routes';
 import {
-  AskAi,
   CheckPanel,
   Contemporaries,
   contemporariesOf,
@@ -74,7 +74,6 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
   const open = code ? scientists.find((s) => s.code === code) : undefined;
   const game = params.get('game') === '1' || params.has('session');
   const quizBlock = useRef<HTMLDivElement>(null);
-  const testHref = atlasHref(subjectId, 'scientists', '/test');
 
   useEffect(() => {
     if (test || game) quizBlock.current?.scrollIntoView({ block: 'start' });
@@ -162,13 +161,6 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
           all={scientists}
           lesson={lesson.data}
           onClose={() => router.push(atlasHref(subjectId, 'scientists'), { scroll: false })}
-          onMode={(mode: AssistantMode) => {
-            if (mode === 'quiz') router.push(testHref, { scroll: false });
-            else
-              router.push(
-                `${atlasHref(subjectId, 'syntara')}?scientists=1&action=${mode === 'simple' ? 'simpler' : 'more_detail'}`,
-              );
-          }}
         />
       ) : null}
     </section>
@@ -416,16 +408,15 @@ function ScientistWindow({
   all,
   lesson,
   onClose,
-  onMode,
 }: {
   scientist: Scientist;
   all: Scientist[];
   lesson: Lesson;
   onClose: () => void;
-  onMode: (mode: AssistantMode) => void;
 }) {
   const t = useTranslations('atlas');
   const subjectId = useAtlasSubject();
+  const topicId = useAtlasData().data?.scientists?.topicId;
   const { links } = splitSources(lesson.sections);
   // «Внешние ресурсы» учёного — его ссылки из раздела «Источники» урока.
   const resources = links.filter((l) => l.text.includes(s.name.split(' ').at(-1) ?? s.name));
@@ -433,6 +424,15 @@ function ScientistWindow({
   const index = all.findIndex((o) => o.code === s.code);
   const label = (code: string | null, title: string) =>
     code && (SCIENTIST_TABS as readonly string[]).includes(code) ? t(`sci.tabs.${code}`) : title;
+  const normalized =
+    parts.sections.length === 4 &&
+    parts.sections.every((p) => p.code && SCIENTIST_TABS.includes(p.code as never));
+  const [tab, setTab] = useState(0);
+  const [ask, setAsk] = useState<{ ask: AiAsk; trigger: HTMLElement | null } | null>(null);
+  const current = parts.sections[tab];
+  // REQ-SCI-09.2: подсказки вкладки — общие формулировки с именем, пока нет утверждённых по учёному (S1b).
+  const kind = tabKind(current, tab);
+  const prompts = (['p1', 'p2', 'p3'] as const).map((p) => t(`ai.sci.${kind}.${p}`, { name: s.name }));
   return (
     <DetailWindow
       testId="atlas-scientist-window"
@@ -540,11 +540,40 @@ function ScientistWindow({
         content: <ScientistBlocks blocks={p.blocks} />,
       }))}
       tabsLabel={t('sci.tabs.label')}
+      activeTab={tab}
+      onTabChange={setTab}
+      tabsEqual={normalized}
       extra={
         <>
-          <AskAi code={s.code} />
+          <AiCard
+            name={s.name}
+            tone="gold"
+            prompts={prompts}
+            onAsk={(question, trigger) =>
+              setAsk({
+                ask: {
+                  question,
+                  tab: current ? label(current.code, current.title) : null,
+                  nonce: Date.now(),
+                },
+                trigger,
+              })
+            }
+          />
           <Contemporaries list={contemporariesOf(s, all)} />
         </>
+      }
+      overlay={
+        ask && topicId ? (
+          <AiPanel
+            topicId={topicId}
+            ask={ask.ask}
+            subject={s.name}
+            fullHref={`${atlasHref(subjectId, 'syntara')}?scientists=1`}
+            onClose={() => setAsk(null)}
+            returnFocus={ask.trigger}
+          />
+        ) : null
       }
       footer={
         <div className="sci-window-footer">
@@ -553,11 +582,22 @@ function ScientistWindow({
         </div>
       }
       resources={resources}
-      assistant={
-        <AssistantBlock mode={null} onMode={onMode}>
-          {null}
-        </AssistantBlock>
-      }
     />
   );
+}
+
+/**
+ * Вид вкладки для подсказок (REQ-SCI-09.2): после нормализации — код подраздела; до неё — по заголовку («факт»,
+ * «наследие») или по месту (первая — биография, иначе — открытие).
+ */
+function tabKind(
+  section: { code: string | null; title: string } | undefined,
+  index: number,
+): (typeof SCIENTIST_TABS)[number] {
+  if (section?.code && (SCIENTIST_TABS as readonly string[]).includes(section.code))
+    return section.code as (typeof SCIENTIST_TABS)[number];
+  const title = section?.title.toLocaleLowerCase() ?? '';
+  if (/факт|дерек|fact/.test(title)) return 'facts';
+  if (/наслед|мұра|legacy/.test(title)) return 'legacy';
+  return index === 0 ? 'biography' : 'discovery';
 }

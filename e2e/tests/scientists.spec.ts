@@ -188,28 +188,100 @@ test.describe('«Учёные» — лента, панель, изучено, о
     await page.keyboard.press('End');
     await expect(tabs.last()).toHaveAttribute('aria-selected', 'true');
     await expect(win.getByTestId('atlas-take-test')).toBeVisible();
-    await expect(win.getByTestId('atlas-assistant')).toBeVisible();
+    await expect(win.getByTestId('atlas-ai-card')).toBeVisible();
     await expectNoSeriousA11yViolations(page);
   });
 
-  test('AC-SCI-08 «Спросить Syntara AI» with the scientist context and three questions; a guest is asked to sign in', async ({
+  test('AC-SCI-08 (REQ-SCI-09 ред. 2) the «AI-помощник» card: tab prompts, the answer panel on the page; a guest is asked to sign in', async ({
     page,
     baseURL,
   }) => {
     const chem = await chemistry(await request.newContext({ baseURL }));
-    await page.goto(`${chem.base}/scientists/bohr`);
-    const ask = page.getByTestId('atlas-sci-ask');
-    for (const q of ['explain', 'table', 'today'] as const) await expect(ask).toContainText(S.ai[q]);
-    await page.getByTestId('atlas-sci-ask-explain').click();
-    await expect(page).toHaveURL(/\/ai\?scientists=1&scientist=bohr&ask=explain$/);
-    await expect(page.getByTestId('atlas-guest-invite')).toBeVisible();
+    const A = ru.atlas.ai;
+    await page.goto(`${chem.base}/scientists/curie`);
+    const card = page.getByTestId('atlas-ai-card');
+    await expect(card).toContainText(fill(A.cardTitle, { name: 'Мария Кюри' }));
+    const prompts = card.getByTestId('atlas-ai-prompt');
+    await expect(prompts).toHaveCount(3);
+    // Смена вкладки — другие подсказки.
+    const first = await prompts.first().textContent();
+    await page.getByTestId('atlas-scientist-window').getByRole('tab').nth(1).click();
+    await expect(prompts.first()).not.toHaveText(first!);
+    // Гость: панель на этой же странице приглашает войти; Esc закрывает только панель, фокус — на подсказку.
+    await prompts.first().click();
+    const panel = page.getByTestId('atlas-ai-panel');
+    await expect(panel).toBeVisible();
+    await expect(panel.getByTestId('atlas-guest-invite')).toBeVisible();
+    await expect(page).toHaveURL(/\/scientists\/curie$/);
+    await page.keyboard.press('Escape');
+    await expect(panel).toHaveCount(0);
+    await expect(page.getByTestId('atlas-scientist-window')).toBeVisible();
+    await expect(prompts.first()).toBeFocused();
 
+    // Ученик: вопрос уходит с именем и вкладкой, можно спросить ещё; «Открыть полный чат →».
     await student(page, baseURL!);
     await page.goto(`${chem.base}/scientists/bohr`);
-    await page.getByTestId('atlas-sci-ask-table').click();
-    await expect(
-      page.getByText(fill(S.ai.message, { name: 'Нильс Бор', question: S.ai.table })),
-    ).toBeVisible();
+    const tab = await page.getByTestId('atlas-scientist-window').getByRole('tab').first().textContent();
+    const question = (await prompts.first().textContent())!.replace('→', '').trim();
+    await prompts.first().click();
+    await expect(panel.getByTestId('tutor-user-message').first()).toHaveText(
+      // Имя уже в подсказке — в контексте только вкладка.
+      question.includes('Нильс Бор')
+        ? fill(A.messageTab, { question, tab: tab!.trim() })
+        : fill(A.message, { question, name: 'Нильс Бор', tab: tab!.trim() }),
+    );
+    await expect(panel.getByTestId('atlas-ai-full')).toHaveAttribute('href', /\/ai\?scientists=1$/);
+    await panel.getByTestId('atlas-ai-panel-close').click();
+    await expect(panel).toHaveCount(0);
+    await expect(prompts.first()).toBeFocused();
+    // Свой вопрос из поля карточки.
+    await card.getByTestId('atlas-ai-custom').fill('Что такое квант?');
+    await card.getByTestId('atlas-ai-custom').press('Enter');
+    await expect(panel.getByTestId('tutor-user-message').last()).toContainText('Что такое квант?');
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test('REQ-SCI-09.4, REQ-SCI-09.5 the element window card and the phone sheet; 320 and 390 px — nothing overflows', async ({
+    page,
+    baseURL,
+  }) => {
+    const chem = await chemistry(await request.newContext({ baseURL }));
+    const A = ru.atlas.ai;
+    for (const width of [390, 320]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`${chem.base}/explore/oxygen`);
+      const card = page.getByTestId('atlas-ai-card');
+      await expect(card.getByTestId('atlas-ai-prompt')).toHaveText([
+        `${A.element.brief}→`,
+        `${A.element.detail}→`,
+        `${fill(A.element.uses, { name: 'Кислород' })}→`,
+      ]);
+      // «Пройти тест» — отдельная кнопка; «Кратко / Подробно / Тест» нет.
+      await expect(page.getByTestId('atlas-take-test')).toBeVisible();
+      await expect(page.locator('.ai-actions')).toHaveCount(0);
+      expect(await hasHorizontalScroll(page)).toBe(false);
+      // Вкладки элемента прокручиваются внутри полосы, активная видна целиком.
+      const list = page.getByTestId('atlas-element-window').getByRole('tablist');
+      const box = (await list.boundingBox())!;
+      const active = (await list.getByRole('tab', { selected: true }).boundingBox())!;
+      expect(active.x).toBeGreaterThanOrEqual(box.x);
+      expect(active.x + active.width).toBeLessThanOrEqual(box.x + box.width + 1);
+      // Шторка ~85 % высоты, прижата к низу; закрывается крестиком.
+      await card.getByTestId('atlas-ai-prompt').first().click();
+      const sheet = page.getByTestId('atlas-ai-panel');
+      // После появления (анимация сдвига) — прижата к низу экрана.
+      await expect
+        .poll(async () => Math.round((await sheet.boundingBox())!.y + (await sheet.boundingBox())!.height))
+        .toBe(800);
+      const s = (await sheet.boundingBox())!;
+      expect(s.height).toBeGreaterThan(800 * 0.8);
+      expect(s.width).toBe(width);
+      await sheet.getByTestId('atlas-ai-panel-close').click();
+      await expect(sheet).toHaveCount(0);
+      await page.goto(`${chem.base}/scientists/mendeleev`);
+      await expect(page.getByTestId('atlas-ai-card')).toBeVisible();
+      expect(await hasHorizontalScroll(page)).toBe(false);
+    }
   });
 
   test('AC-SCI-10 light theme and «Экономия трафика»: axe passes, the lifelines are drawn without animation', async ({

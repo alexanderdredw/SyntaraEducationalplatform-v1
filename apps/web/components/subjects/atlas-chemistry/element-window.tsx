@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,7 +15,8 @@ import {
   useAtlasSubject,
   usePlatformTimeZone,
 } from './atlas-data';
-import { AssistantBlock, type AssistantMode, DetailWindow } from './detail-window';
+import { type AiAsk, AiCard, AiPanel } from './ai-card';
+import { DetailWindow } from './detail-window';
 import { useExploreQuery } from './explore';
 import { useAtlasViewer } from './gate';
 import { ElementSection, splitSources } from './lesson-text';
@@ -79,13 +80,9 @@ export default function ElementWindow({
 
   const testHref = `${elementHref(subjectId, e.code, true)}${query({})}`;
   const lessonHref = `${elementHref(subjectId, e.code)}${query({})}`;
-  const onMode = (mode: AssistantMode) => {
-    if (mode === 'quiz') router.replace(testHref, { scroll: false });
-    else
-      router.push(
-        `${atlasHref(subjectId, 'syntara')}?element=${e.code}&action=${mode === 'simple' ? 'simpler' : 'more_detail'}`,
-      );
-  };
+  const [tab, setTab] = useState(0);
+  // REQ-SCI-09 ред. 2: вопрос из карточки «AI-помощник» — ответ в панели на этой странице (с контекстом вкладки).
+  const [ask, setAsk] = useState<{ ask: AiAsk; trigger: HTMLElement | null } | null>(null);
 
   return (
     <DetailWindow
@@ -184,25 +181,52 @@ export default function ElementWindow({
       // REQ-SCI-06: вкладки — разделы урока («Основные факты» — первая), текст полностью.
       tabs={text.map((s, i) => ({ id: `${i}`, label: s.title, content: <ElementSection body={s.body} /> }))}
       tabsLabel={t('detail.tabs')}
+      activeTab={tab}
+      onTabChange={setTab}
+      extra={
+        <AiCard
+          name={e.title}
+          tone="blue"
+          prompts={[t('ai.element.brief'), t('ai.element.detail'), t('ai.element.uses', { name: e.title })]}
+          onAsk={(question, trigger) =>
+            setAsk({ ask: { question, tab: text[tab]?.title ?? null, nonce: Date.now() }, trigger })
+          }
+        />
+      }
+      overlay={
+        ask ? (
+          <AiPanel
+            topicId={e.topicId}
+            ask={ask.ask}
+            subject={e.title}
+            fullHref={`${atlasHref(subjectId, 'syntara')}?element=${e.code}`}
+            onClose={() => setAsk(null)}
+            returnFocus={ask.trigger}
+          />
+        ) : null
+      }
       resources={links}
       assistant={
-        <div ref={assistant}>
-          <AssistantBlock mode={test ? 'quiz' : null} onMode={onMode}>
-            <TopicTest
-              topicId={e.topicId}
-              quizId={lesson.data?.quizId ?? null}
-              assignmentId={assignment}
-              // «Открыть урок», «К уроку» и «× Завершить» — это окно без теста.
-              place={{
-                lessonHref: lessonHref,
-                backHref: lessonHref,
-                onExit: () => router.replace(lessonHref, { scroll: false }),
-                // REQ-TST-01.3: свечение верного ответа — цветом семейства элемента.
-                accent: groupColor,
-              }}
-            />
-          </AssistantBlock>
-        </div>
+        // «Пройти тест» (/explore/:code/test) — тест урока отдельным блоком под окном (кнопка остаётся, REQ-SCI-09.4).
+        test ? (
+          <div ref={assistant} className="ai-assistant" data-testid="atlas-element-test">
+            <div className="ai-content">
+              <TopicTest
+                topicId={e.topicId}
+                quizId={lesson.data?.quizId ?? null}
+                assignmentId={assignment}
+                // «Открыть урок», «К уроку» и «× Завершить» — это окно без теста.
+                place={{
+                  lessonHref: lessonHref,
+                  backHref: lessonHref,
+                  onExit: () => router.replace(lessonHref, { scroll: false }),
+                  // REQ-TST-01.3: свечение верного ответа — цветом семейства элемента.
+                  accent: groupColor,
+                }}
+              />
+            </div>
+          </div>
+        ) : null
       }
     />
   );

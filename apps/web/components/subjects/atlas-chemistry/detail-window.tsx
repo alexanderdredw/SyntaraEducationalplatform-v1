@@ -1,10 +1,8 @@
 'use client';
 
-import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from 'react';
+import { type KeyboardEvent, type ReactNode, useId, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useDialog } from './dialog';
-
-export type AssistantMode = 'simple' | 'details' | 'quiz';
 
 /** Вкладка окна: подпись и содержимое (показывается полностью, без «Подробнее»). */
 export interface DetailTab {
@@ -17,7 +15,7 @@ export interface DetailTab {
  * Окно элемента или учёного (AnatomyViewer.js, openAnatomyDetail): на весь экран поверх шапки платформы (решение
  * А-8) — бейдж, крупное название, описание, большая картинка, вкладки-разделы (docs/SCIENTISTS_TZ.md, REQ-SCI-05,
  * REQ-SCI-06: вместо «Обзора» с «Подробнее» и некликабельных «Слоёв»), «Внешние ресурсы», блок «Syntara AI
- * Ассистент». `aside` — блоки рядом с картинкой (цитата, ключевые факты), `extra` — после вкладок, `footer` — перед
+ * Ассистент» заменён карточкой «AI-помощник» (REQ-SCI-09 ред. 2) в `extra`. `aside` — блоки рядом с картинкой (цитата, ключевые факты), `extra` — после вкладок, `footer` — перед
  * помощником. Кнопка «Пройти тест» — под описанием (решение А-3). Доступность — role dialog, фокус внутри, Esc = «×».
  */
 export function DetailWindow({
@@ -28,11 +26,15 @@ export function DetailWindow({
   aside,
   tabs,
   tabsLabel,
+  activeTab,
+  onTabChange,
+  tabsEqual = false,
   extra,
   footer,
   resources,
   takeTest,
   assistant,
+  overlay,
   onClose,
   testId,
 }: {
@@ -43,11 +45,17 @@ export function DetailWindow({
   aside?: ReactNode;
   tabs: DetailTab[];
   tabsLabel: string;
+  activeTab: number;
+  onTabChange: (index: number) => void;
+  /** Вкладки равной ширины без прокрутки (учёный после нормализации — REQ-SCI-09.5). */
+  tabsEqual?: boolean;
   extra?: ReactNode;
   footer?: ReactNode;
   resources: Array<{ text: string; url: string }>;
   takeTest: ReactNode;
-  assistant: ReactNode;
+  assistant?: ReactNode;
+  /** Панель ответа Syntara AI поверх окна (REQ-SCI-09.3). */
+  overlay?: ReactNode;
   onClose: () => void;
   testId: string;
 }) {
@@ -90,7 +98,15 @@ export function DetailWindow({
             </div>
           </div>
           <div className="detail-info">
-            {tabs.length ? <Tabs tabs={tabs} label={tabsLabel} /> : null}
+            {tabs.length ? (
+              <Tabs
+                tabs={tabs}
+                label={tabsLabel}
+                active={activeTab}
+                onActive={onTabChange}
+                equal={tabsEqual}
+              />
+            ) : null}
             {extra}
             {resources.length ? (
               <div className="resource-links">
@@ -114,7 +130,8 @@ export function DetailWindow({
         </div>
         {footer}
       </div>
-      <div id="ai-assistant-container">{assistant}</div>
+      {assistant ? <div id="ai-assistant-container">{assistant}</div> : null}
+      {overlay}
     </div>
   );
 }
@@ -123,13 +140,24 @@ export function DetailWindow({
  * Вкладки-разделы окна (REQ-SCI-05.2, REQ-SCI-06.2): роль tablist, стрелки влево/вправо, Home и End; полоса вкладок
  * прокручивается по горизонтали, активная — в зоне видимости. Содержимое — полностью.
  */
-function Tabs({ tabs, label }: { tabs: DetailTab[]; label: string }) {
+function Tabs({
+  tabs,
+  label,
+  active,
+  onActive,
+  equal,
+}: {
+  tabs: DetailTab[];
+  label: string;
+  active: number;
+  onActive: (index: number) => void;
+  equal: boolean;
+}) {
   const prefix = useId();
-  const [active, setActive] = useState(0);
   const buttons = useRef<Array<HTMLButtonElement | null>>([]);
   const current = Math.min(active, tabs.length - 1);
   const go = (i: number) => {
-    setActive(i);
+    onActive(i);
     const button = buttons.current[i];
     button?.focus();
     button?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -157,7 +185,7 @@ function Tabs({ tabs, label }: { tabs: DetailTab[]; label: string }) {
     go(next);
   };
   return (
-    <div className="atlas-tabs" data-testid="atlas-tabs">
+    <div className={`atlas-tabs${equal ? ' equal' : ''}`} data-testid="atlas-tabs">
       <div className="atlas-tablist" role="tablist" aria-label={label}>
         {tabs.map((tab, i) => (
           <button
@@ -194,51 +222,6 @@ function Tabs({ tabs, label }: { tabs: DetailTab[]; label: string }) {
           {tab.content}
         </div>
       ))}
-    </div>
-  );
-}
-
-/**
- * Блок «Syntara AI Ассистент» окна (LearningAssistant.js): «Кратко» и «Подробно» — в чат Syntara AI об элементе,
- * «Тест» — тест темы платформы; «Изучение» убран (решение А-3).
- */
-export function AssistantBlock({
-  mode,
-  onMode,
-  children,
-  id,
-}: {
-  mode: AssistantMode | null;
-  onMode: (mode: AssistantMode) => void;
-  children: ReactNode;
-  id?: string;
-}) {
-  const t = useTranslations('atlas.assistant');
-  return (
-    <div className="ai-assistant fade-in-up" id={id} data-testid="atlas-assistant">
-      <div className="ai-header">
-        <div className="ai-icon animated-logo" aria-hidden="true">
-          <div className="neural-node" />
-        </div>
-        <div className="ai-title">{t('title')}</div>
-      </div>
-      <div className="ai-content" id="ai-content-area">
-        {mode === 'quiz' ? children : <p className="ai-placeholder">{t('placeholder')}</p>}
-      </div>
-      <div className="ai-actions">
-        {(['simple', 'details', 'quiz'] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            className={`ai-btn${mode === m ? ' active' : ''}`}
-            aria-pressed={mode === m}
-            onClick={() => onMode(m)}
-            data-mode={m}
-          >
-            {t(m)}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

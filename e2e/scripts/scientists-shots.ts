@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 
 // Снимки S1 (docs/SCIENTISTS_TZ.md, раздел 6): список «Учёные» (тёмная и светлая тема), окно учёного, окно элемента
-// с вкладками; 1440 и 390 px → docs/media/scientists/*.webp (WebP q85, ширина ≤ 1600 px). Ученик отметил 3 учёных —
+// с вкладками, карточка «AI-помощник» и ответ в панели или шторке (REQ-SCI-09 ред. 2); 1440 и 390 px → docs/media/scientists/*.webp (WebP q85, ширина ≤ 1600 px). Ученик отметил 3 учёных —
 // видны отметки «Изучено» и приглашение. Запуск из папки e2e: npx playwright test -c scripts/scientists-shots.config.ts
 const root = `${resolve(__dirname, '../..')}/`;
 const sharp = createRequire(`${root}apps/worker/package.json`)('sharp');
@@ -93,6 +93,18 @@ test('S1 screenshots: scientists list, scientist window, element window with tab
     await shot(page, `scientist-window-${width}-dark`);
     await page.getByTestId('atlas-tabs').scrollIntoViewIfNeeded();
     await shot(page, `scientist-window-tabs-${width}-dark`);
+    // Карточка «AI-помощник» и ответ в панели (компьютер) или шторке (телефон) — REQ-SCI-09 ред. 2.
+    await page.getByTestId('atlas-ai-card').scrollIntoViewIfNeeded();
+    await shot(page, `scientist-ai-card-${width}-dark`);
+    await page.getByTestId('atlas-ai-prompt').first().click();
+    await page.getByTestId('atlas-ai-panel').waitFor();
+    await page
+      .getByTestId('tutor-assistant-message')
+      .first()
+      .waitFor({ timeout: 15_000 })
+      .catch(() => undefined);
+    await shot(page, `scientist-ai-${width > 600 ? 'panel' : 'sheet'}-${width}-dark`);
+    await page.getByTestId('atlas-ai-panel-close').click();
     await page.getByTestId('atlas-sci-studied').scrollIntoViewIfNeeded();
     await shot(page, `scientist-window-footer-${width}-dark`);
     await page.goto(`${base}/scientists/curie`, { waitUntil: 'networkidle' });
@@ -103,5 +115,15 @@ test('S1 screenshots: scientists list, scientist window, element window with tab
     await page.getByTestId('atlas-element-window').waitFor();
     await page.getByTestId('atlas-tabs').scrollIntoViewIfNeeded();
     await shot(page, `element-window-tabs-${width}-dark`);
+    await page.getByTestId('atlas-ai-card').scrollIntoViewIfNeeded();
+    await shot(page, `element-ai-card-${width}-dark`);
+    await page.getByTestId('atlas-ai-prompt').nth(2).click();
+    await page.getByTestId('atlas-ai-panel').waitFor();
+    await page
+      .getByTestId('tutor-assistant-message')
+      .first()
+      .waitFor({ timeout: 15_000 })
+      .catch(() => undefined);
+    await shot(page, `element-ai-${width > 600 ? 'panel' : 'sheet'}-${width}-dark`);
   }
 });

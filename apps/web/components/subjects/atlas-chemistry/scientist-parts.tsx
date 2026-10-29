@@ -456,37 +456,6 @@ export function ScientistNav({ prev, next }: { prev: Scientist | null; next: Sci
   );
 }
 
-const ASK = ['explain', 'table', 'today'] as const;
-
-/**
- * REQ-SCI-09: «Спросить Syntara AI об учёном» и три готовых вопроса — чат Syntara AI атласа с контекстом урока
- * «Учёные-химики»; выбранный вопрос отправляется сразу (с именем учёного). Гость — экран входа Syntara AI.
- */
-export function AskAi({ code }: { code: string }) {
-  const t = useTranslations('atlas.sci.ai');
-  const subjectId = useAtlasSubject();
-  const base = `${atlasHref(subjectId, 'syntara')}?scientists=1&scientist=${code}`;
-  return (
-    <section className="sci-ask" data-testid="atlas-sci-ask">
-      <AppLink href={base} className="btn btn-secondary sci-ask-main" data-testid="atlas-sci-ask-open">
-        {t('ask')}
-      </AppLink>
-      <div className="sci-ask-chips">
-        {ASK.map((q) => (
-          <AppLink
-            key={q}
-            href={`${base}&ask=${q}`}
-            className="filter-chip"
-            data-testid={`atlas-sci-ask-${q}`}
-          >
-            {t(q)}
-          </AppLink>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /** Цитата (REQ-SCI-12): крупные кавычки, курсив, золотая полоса; подпись «— {имя}» и пометка из урока. */
 export function QuoteCard({ quote, name }: { quote: { text: string; note: string | null }; name: string }) {
   const t = useTranslations('atlas.sci');

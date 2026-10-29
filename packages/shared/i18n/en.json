@@ -2305,18 +2305,48 @@
         "legacy": "Legacy",
         "facts": "Facts"
       },
-      "ai": {
-        "ask": "Ask Syntara AI about the scientist",
-        "explain": "Explain the discovery in simple words",
-        "table": "How is this connected to the periodic table?",
-        "today": "Why does it matter today?",
-        "message": "{name}: {question}"
-      },
       "contemporaries": "Contemporaries",
       "prev": "Previous scientist",
       "next": "Next scientist",
       "quoteBy": "— {name}",
       "quoteLabel": "Quote"
+    },
+    "ai": {
+      "cardTitle": "✦ Syntara AI · Ask about {name}",
+      "custom": "Your question…",
+      "send": "Send",
+      "panelTitle": "Syntara AI · {name}",
+      "openFull": "Open the full chat →",
+      "message": "{question} ({name}, section “{tab}”)",
+      "messageNoTab": "{question} ({name})",
+      "element": {
+        "brief": "Explain briefly",
+        "detail": "Tell me more",
+        "uses": "Where is {name} used?"
+      },
+      "sci": {
+        "biography": {
+          "p1": "Briefly tell the biography of {name}",
+          "p2": "Where did {name} study and work?",
+          "p3": "What led {name} to science?"
+        },
+        "discovery": {
+          "p1": "Explain the discovery of {name} in simple words",
+          "p2": "How was this discovery made?",
+          "p3": "What experiments or ideas led to it?"
+        },
+        "legacy": {
+          "p1": "Why does the work of {name} matter today?",
+          "p2": "Where are the results of this work used today?",
+          "p3": "How did it change science?"
+        },
+        "facts": {
+          "p1": "Tell me one more interesting fact about {name}",
+          "p2": "What difficulties had to be overcome?",
+          "p3": "What else is {name} known for?"
+        }
+      },
+      "messageTab": "{question} (section “{tab}”)"
     }
   },
   "test": {

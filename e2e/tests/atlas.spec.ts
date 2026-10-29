@@ -160,7 +160,7 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await page.getByTestId('atlas-card').first().click();
     const win = page.getByTestId('atlas-element-window');
     await expect(win).toBeVisible();
-    await expect(win.getByRole('heading', { name: halogens[0]!.title })).toBeVisible();
+    await expect(win.getByRole('heading', { name: halogens[0]!.title, exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(win).toHaveCount(0);
     await expect(page).toHaveURL(/explore\?group=halogen$/);
@@ -255,7 +255,7 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await page.locator('[data-testid="atlas-scientist-card"][data-code="curie"]').click();
     await expect(page).toHaveURL(new RegExp(`${chem.base}/scientists/curie$`));
     const win = page.getByTestId('atlas-scientist-window');
-    await expect(win.getByRole('heading', { name: 'Мария Кюри' })).toBeVisible();
+    await expect(win.getByRole('heading', { name: 'Мария Кюри', exact: true })).toBeVisible();
     await win.getByRole('button', { name: ru.common.close }).click();
     await expect(page).toHaveURL(new RegExp(`${chem.base}/scientists$`));
     // Тест урока — карточка панели «Проверь себя» вверху (REQ-SCI-03); нижнего блока нет.

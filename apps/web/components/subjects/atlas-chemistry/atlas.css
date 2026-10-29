@@ -6068,29 +6068,6 @@
 }
 
 /* «Спросить Syntara AI», современники, навигация и «Изучено» в окне. */
-.atlas .sci-ask {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.atlas .sci-ask-main {
-  align-self: flex-start;
-}
-
-.atlas .sci-ask-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.atlas .sci-ask-chips .filter-chip {
-  min-height: 44px;
-  text-decoration: none;
-  white-space: normal;
-}
-
 .atlas .sci-contemporaries {
   margin-top: 20px;
 }
@@ -6225,4 +6202,340 @@
 
 :root[data-data-saver='true'] .atlas .sci-life {
   animation: none;
+}
+
+/* ===== Карточка «AI-помощник» и панель ответа (docs/SCIENTISTS_TZ.md, REQ-SCI-09 ред. 2) ===== */
+
+.atlas .ai-card {
+  --tone: 253, 224, 71;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(var(--tone), 0.35);
+  background: linear-gradient(160deg, rgba(var(--tone), 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: 0 0 24px rgba(var(--tone), 0.08);
+}
+
+.atlas .ai-card[data-tone='blue'] {
+  --tone: var(--accent-rgb);
+}
+
+.atlas .ai-card-title,
+.atlas .ai-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font: 700 1rem var(--font-display);
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.atlas .ai-card-title > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.atlas .ai-card-logo {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+}
+
+.atlas .ai-card-prompts {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.atlas .ai-card-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: 500 0.9rem var(--font-ui);
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.atlas .ai-card-prompt > span:last-child {
+  flex-shrink: 0;
+  color: rgb(var(--tone));
+}
+
+.atlas .ai-card-prompt:hover,
+.atlas .ai-card-prompt:focus-visible {
+  border-color: rgba(var(--tone), 0.6);
+  background: rgba(var(--tone), 0.1);
+}
+
+.atlas .ai-card-prompt:focus-visible,
+.atlas .ai-card-input:focus-visible,
+.atlas .ai-card-send:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .ai-card-form {
+  display: flex;
+  gap: 8px;
+}
+
+.atlas .ai-card-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.atlas .ai-card-send {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-blue);
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.atlas .ai-card-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Панель ответа: компьютер — справа ~420 px, телефон — нижняя шторка ~85 % высоты. */
+.atlas .ai-panel-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+}
+
+.atlas .ai-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: default;
+}
+
+.atlas .ai-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 100%);
+  padding: 16px;
+  gap: 12px;
+  background: #0b0b10;
+  border-left: 1px solid rgba(var(--accent-rgb), 0.35);
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+  outline: none;
+  animation: ai-panel-in 0.25s ease-out;
+}
+
+@keyframes ai-panel-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+
+.atlas .ai-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.atlas .ai-panel-title {
+  flex: 1;
+  margin: 0;
+}
+
+.atlas .ai-panel-grab {
+  display: none;
+}
+
+.atlas .ai-panel-close {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  font-size: 1.6rem;
+}
+
+.atlas .ai-panel-close:hover {
+  color: var(--text-primary);
+}
+
+.atlas .ai-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.atlas .ai-panel-msg {
+  max-width: 92%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.atlas .ai-panel-msg.user {
+  align-self: flex-end;
+  background: rgba(var(--accent-rgb), 0.18);
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  color: var(--text-primary);
+}
+
+.atlas .ai-panel-msg.ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.atlas .ai-panel-problem {
+  color: var(--accent-red);
+}
+
+.atlas .ai-panel-full {
+  align-self: flex-start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .atlas .ai-panel {
+    top: auto;
+    left: 0;
+    width: 100%;
+    height: 85vh;
+    height: 85dvh;
+    border-left: 0;
+    border-top: 1px solid rgba(var(--accent-rgb), 0.35);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.5);
+    padding-top: 28px;
+    animation-name: ai-sheet-in;
+  }
+
+  @keyframes ai-sheet-in {
+    from {
+      transform: translateY(60px);
+      opacity: 0;
+    }
+  }
+
+  .atlas .ai-panel-grab {
+    display: block;
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    width: 120px;
+    height: 24px;
+    margin-left: -60px;
+    background: transparent;
+  }
+
+  .atlas .ai-panel-grab::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+:root[data-data-saver='true'] .atlas .ai-panel {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas .ai-panel {
+    animation: none;
+  }
+}
+
+/* Вкладки: учёный после нормализации — 4 равные без прокрутки; элемент — прокрутка с затенением краёв. */
+.atlas .atlas-tabs:not(.equal) .atlas-tablist {
+  padding-inline: 20px;
+  scroll-padding-inline: 24px;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 20px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(90deg, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
+}
+
+.atlas .atlas-tabs.equal .atlas-tablist {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: visible;
+}
+
+.atlas .atlas-tabs.equal .atlas-tab {
+  padding: 8px 4px;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
+}
+
+:root[data-theme='light'] .atlas .ai-panel {
+  background: #ffffff;
+}
+
+:root[data-theme='light'] .atlas .ai-card-input {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme='light'] .atlas .ai-card-prompt {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+:root[data-theme='light'] .atlas .ai-card[data-tone='gold'] .ai-card-prompt > span:last-child {
+  color: #8a6100;
+}
+
+:root[data-theme='light'] .atlas .ai-panel-full {
+  color: #0058c7;
 }
