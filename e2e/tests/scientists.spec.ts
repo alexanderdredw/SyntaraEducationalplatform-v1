@@ -177,7 +177,7 @@ test.describe('«Учёные» — лента, панель, изучено, о
     await expectNoSeriousA11yViolations(page);
   });
 
-  test('AC-SCI-06 the element window: tabs by the lesson sections, «Основные факты» first; the rest unchanged', async ({
+  test('AC-SCI-06, AC-EXP-06 the element window: 5 group tabs (REQ-EXP-07), «Основные факты» first in «Обзор»; the rest unchanged', async ({
     page,
     baseURL,
   }) => {
@@ -188,8 +188,10 @@ test.describe('«Учёные» — лента, панель, изучено, о
     await expect(win.locator('.layers-control')).toHaveCount(0);
     await expect(win.locator('.read-more-btn')).toHaveCount(0);
     const tabs = win.getByRole('tab');
-    await expect(tabs.first()).toHaveText('Основные факты');
-    expect(await tabs.count()).toBeGreaterThan(3);
+    // docs/EXPLORE_TZ.md, REQ-EXP-07: вкладки по разделам урока заменены 5 группами.
+    await expect(tabs.first()).toHaveText(ru.atlas.tabGroup.overview);
+    await expect(win.getByRole('tabpanel').locator('h3').first()).toHaveText('Основные факты');
+    await expect(tabs).toHaveCount(5);
     await tabs.first().focus();
     await page.keyboard.press('End');
     await expect(tabs.last()).toHaveAttribute('aria-selected', 'true');

@@ -2,61 +2,94 @@
 
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { ELEMENT_FAMILIES, MASTERY_THRESHOLD, matchesElement, periodicElement } from '@syntara/shared';
 import { useRouter } from '@/i18n/navigation';
 import { AppLink } from '../../app-link';
-import { type AtlasElement, GROUP_COLORS, useAtlasData, useAtlasSubject } from './atlas-data';
+import { type AtlasElement, GROUP_COLORS, useAtlasData, useAtlasLesson, useAtlasSubject } from './atlas-data';
+import AtlasTable from './atlas-table';
 import { useDialog } from './dialog';
+import ElementWindow, { formatMass } from './element-window';
+import {
+  EXPLORE_SORTS,
+  EXPLORE_VIEWS,
+  type ExploreState,
+  PROGRESS_FILTERS,
+  type ProgressFilter,
+  useExploreQuery,
+} from './explore-query';
+import { useAtlasViewer } from './gate';
 import { atlasHref, elementHref } from './routes';
 
-import AtlasTable from './atlas-table';
-import ElementWindow from './element-window';
+export { useExploreQuery } from './explore-query';
 
-/** Порядок групп в фильтре — по первому появлению в данных, как в оригинале. */
-function groupsOf(elements: AtlasElement[]): string[] {
-  return [...new Set(elements.map((e) => e.group))];
-}
-
-/** Запрос адреса Explore: фильтр (?group=) и вид (?view=table) — сохраняются при открытии и закрытии окна. */
-export function useExploreQuery() {
-  const params = useSearchParams();
-  const group = params.get('group') ?? 'all';
-  const view = params.get('view') === 'table' ? 'table' : 'cards';
-  const query = (next: { group?: string; view?: string }) => {
-    const p = new URLSearchParams();
-    const g = next.group ?? group;
-    const v = next.view ?? view;
-    if (g !== 'all') p.set('group', g);
-    if (v === 'table') p.set('view', 'table');
-    const s = p.toString();
-    return s ? `?${s}` : '';
-  };
-  return { group, view: view as 'cards' | 'table', query };
-}
+const statusOf = (e: AtlasElement): ProgressFilter => e.status ?? 'not_started';
 
 /**
- * Explore (REQ-ATL-03): строка «Фильтр по группам», панель фильтра, сетка карточек — как в AnatomyViewer.js
- * атласа; переключатель «Карточки / Таблица» (решение 3, А-7); статус темы ученика — точка у номера (А-6).
- * Окно элемента (/explore/:code) — поверх сетки: при закрытии фильтр и прокрутка сохраняются.
+ * «Исследовать» (REQ-ATL-03; docs/EXPLORE_TZ.md, И1): шапка прогресса ученика с кольцами семейств (REQ-EXP-01),
+ * панель инструментов — поиск, чипы семейств, фильтр прогресса, сортировка, вид «Карточки · Таблица · Список»
+ * (REQ-EXP-02; состояние — в адресе), новая карточка с быстрым просмотром «i» (REQ-EXP-03). Окно элемента
+ * (/explore/:code) — поверх: при закрытии фильтры и прокрутка сохраняются.
  */
 export default function AtlasExplore({ code, test }: { code?: string; test?: boolean }) {
   const t = useTranslations('atlas');
+  const locale = useLocale();
   const subjectId = useAtlasSubject();
   const atlas = useAtlasData();
-  const { group, view, query } = useExploreQuery();
+  const viewer = useAtlasViewer();
+  const state = useExploreQuery();
+  const { q, families, statuses, sort, view, query } = state;
   const router = useRouter();
   const params = useSearchParams();
   const cell = Number(params.get('cell')) || undefined;
-  const [drawer, setDrawer] = useState(false);
   const elements = useMemo(() => atlas.data?.elements ?? [], [atlas.data]);
-  const groups = useMemo(() => ['all', ...groupsOf(elements)], [elements]);
-  const filtered = group === 'all' ? elements : elements.filter((e) => e.group === group);
+  const student = viewer === 'student';
   const open = code ? elements.find((e) => e.code === code) : undefined;
+  const [quick, setQuick] = useState<{ element: AtlasElement; trigger: HTMLElement } | null>(null);
 
-  const activeColor = group === 'all' ? 'var(--text-primary, #ffffff)' : (GROUP_COLORS[group] ?? '#888');
-  const activeText = group === 'all' ? t('filter.all') : t(`group.${group}`);
-  const setGroup = (g: string) =>
-    router.replace(`${atlasHref(subjectId, 'explore')}${query({ group: g })}`, { scroll: false });
+  // Поиск: ввод — сразу в списке, адрес — через короткую паузу (replace, без лишних шагов «назад»).
+  const [text, setText] = useState(q);
+  // «Назад» меняет ?q= — поле ввода следует за адресом.
+  const [shownQ, setShownQ] = useState(q);
+  if (q !== shownQ) {
+    setShownQ(q);
+    setText(q);
+  }
+
+  // Любая смена фильтров берёт текущий текст поиска и отменяет отложенную запись поиска — иначе она перезапишет
+  // адрес фильтра, пока тот ещё применяется.
+  const timer = useRef<number | undefined>(undefined);
+  const go = (next: Partial<ExploreState>, replace = false) => {
+    window.clearTimeout(timer.current);
+    const href = `${atlasHref(subjectId, 'explore')}${query({ q: text, ...next })}`;
+    if (replace) router.replace(href, { scroll: false });
+    else router.push(href, { scroll: false });
+  };
+  const latest = useRef(go);
+  useEffect(() => {
+    latest.current = go;
+  });
+  useEffect(() => {
+    if (text === q) return;
+    timer.current = window.setTimeout(() => latest.current({}, true), 250);
+    return () => window.clearTimeout(timer.current);
+  }, [text, q]);
+
+  const shown = useMemo(() => {
+    const list = elements.filter(
+      (e) =>
+        matchesElement(text, e) &&
+        (!families.length || families.includes(e.group)) &&
+        (!student || !statuses.length || statuses.includes(statusOf(e))),
+    );
+    return sort === 'alpha'
+      ? [...list].sort((a, b) => a.title.localeCompare(b.title, locale))
+      : [...list].sort((a, b) => a.number - b.number);
+  }, [elements, text, families, statuses, sort, student, locale]);
+
+  const toggle = <T extends string>(list: T[], value: T) =>
+    list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+  const present = ELEMENT_FAMILIES.filter((f) => elements.some((e) => e.group === f));
 
   return (
     <section
@@ -65,94 +98,163 @@ export default function AtlasExplore({ code, test }: { code?: string; test?: boo
       style={{ display: 'flex' }}
       data-testid="atlas-explore"
     >
-      <div className="explore-filter-trigger" id="explore-filter-trigger">
-        <button
-          type="button"
-          className="atlas-filter-open"
-          aria-haspopup="dialog"
-          aria-expanded={drawer}
-          onClick={() => setDrawer(true)}
-          data-testid="atlas-filter"
-        >
-          <span className="explore-trigger-content">
-            <span className="explore-trigger-icon" aria-hidden="true">
-              ⚏
-            </span>
-            <span className="explore-trigger-text">{t('filter.title')}:</span>
-            <span className="explore-trigger-active-val" style={{ color: activeColor }}>
-              {activeText}
-            </span>
+      {student && elements.length ? (
+        <ProgressHeader
+          elements={elements}
+          families={families}
+          onFamily={(f) => go({ families: toggle(families, f) })}
+        />
+      ) : null}
+
+      <div className="ex-toolbar" data-testid="atlas-toolbar">
+        <div className="ex-search">
+          <label htmlFor="atlas-search" className="atlas-sr-only">
+            {t('explore.searchLabel')}
+          </label>
+          <span aria-hidden="true" className="ex-search-icon">
+            ⌕
           </span>
-          <span className="explore-trigger-chevron" aria-hidden="true">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </span>
-        </button>
-        <div className="atlas-view-toggle" role="group" aria-label={t('view.label')} data-testid="atlas-view">
-          {(['cards', 'table'] as const).map((v) => (
-            <AppLink
-              key={v}
-              href={`${atlasHref(subjectId, 'explore')}${query({ view: v })}`}
-              scroll={false}
-              replace
-              className={`atlas-view-btn${view === v ? ' active' : ''}`}
-              aria-current={view === v ? 'true' : undefined}
-              data-view={v}
-            >
-              {t(`view.${v}`)}
-            </AppLink>
-          ))}
+          <input
+            id="atlas-search"
+            type="search"
+            value={text}
+            onChange={(ev) => setText(ev.target.value)}
+            placeholder={t('explore.searchPlaceholder')}
+            autoComplete="off"
+            data-testid="atlas-search-input"
+          />
         </div>
+
+        <div className="ex-chips-wrap">
+          <div
+            className="ex-chips"
+            role="group"
+            aria-label={t('filter.title')}
+            data-testid="atlas-family-chips"
+          >
+            <button
+              type="button"
+              className="ex-chip"
+              aria-pressed={families.length === 0}
+              onClick={() => go({ families: [] })}
+              data-family="all"
+            >
+              {t('filter.all')}
+            </button>
+            {present.map((f) => (
+              <button
+                key={f}
+                type="button"
+                className="ex-chip"
+                aria-pressed={families.includes(f)}
+                style={{ '--chip-color': GROUP_COLORS[f] ?? '#888' } as CSSProperties}
+                onClick={() => go({ families: toggle(families, f) })}
+                data-family={f}
+              >
+                <span className="ex-chip-dot" aria-hidden="true" />
+                {t(`group.${f}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="ex-row">
+          {student ? (
+            <div
+              className="ex-seg"
+              role="group"
+              aria-label={t('explore.progressLabel')}
+              data-testid="atlas-status-filter"
+            >
+              {PROGRESS_FILTERS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={statuses.includes(s)}
+                  onClick={() => go({ statuses: toggle(statuses, s) })}
+                  data-status={s}
+                >
+                  {t(`explore.status.${s}`)}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <div className="ex-seg" role="group" aria-label={t('explore.sortLabel')} data-testid="atlas-sort">
+            {EXPLORE_SORTS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                aria-pressed={sort === s}
+                onClick={() => go({ sort: s })}
+                data-sort={s}
+              >
+                {t(`explore.sort.${s}`)}
+              </button>
+            ))}
+          </div>
+          <div className="ex-seg" role="group" aria-label={t('view.label')} data-testid="atlas-view">
+            {EXPLORE_VIEWS.map((v) => (
+              <AppLink
+                key={v}
+                href={`${atlasHref(subjectId, 'explore')}${query({ q: text, view: v })}`}
+                scroll={false}
+                onClick={() => window.clearTimeout(timer.current)}
+                aria-current={view === v ? 'true' : undefined}
+                className={view === v ? 'active' : undefined}
+                data-view={v}
+              >
+                {t(`view.${v}`)}
+              </AppLink>
+            ))}
+          </div>
+        </div>
+        <p className="ex-count" aria-live="polite" data-testid="atlas-count">
+          {t('explore.count', { count: view === 'table' ? elements.length : shown.length })}
+        </p>
       </div>
 
       {view === 'table' ? (
-        <AtlasTable elements={elements} group={group} query={query({})} target={cell} />
+        <AtlasTable elements={elements} families={families} search={text} query={query({})} target={cell} />
+      ) : shown.length === 0 ? (
+        <p className="ex-empty" data-testid="atlas-empty">
+          {t('filter.empty')}
+        </p>
+      ) : view === 'list' ? (
+        <ul className="ex-list" data-testid="atlas-list">
+          {shown.map((e) => (
+            <li key={e.code}>
+              <ListRow element={e} href={`${elementHref(subjectId, e.code)}${query({})}`} student={student} />
+            </li>
+          ))}
+        </ul>
       ) : (
-        <div className="anatomy-grid" data-testid="atlas-grid">
-          {filtered.length === 0 ? (
-            <p
-              style={{
-                color: 'var(--text-secondary)',
-                padding: '40px',
-                gridColumn: '1/-1',
-                textAlign: 'center',
-              }}
-            >
-              {t('filter.empty')}
-            </p>
-          ) : (
-            filtered.map((e) => (
-              <ElementCard key={e.code} element={e} href={`${elementHref(subjectId, e.code)}${query({})}`} />
-            ))
-          )}
+        <div className="ex-grid" data-testid="atlas-grid">
+          {shown.map((e) => (
+            <ElementCard
+              key={e.code}
+              element={e}
+              href={`${elementHref(subjectId, e.code)}${query({})}`}
+              testHref={`${elementHref(subjectId, e.code, true)}${query({})}`}
+              student={student}
+              onQuick={(trigger) => setQuick({ element: e, trigger })}
+            />
+          ))}
         </div>
       )}
 
-      {drawer ? (
-        <FilterDrawer
-          groups={groups}
-          active={group}
-          onSelect={(g) => {
-            setDrawer(false);
-            setGroup(g);
-          }}
-          onClose={() => setDrawer(false)}
+      {quick ? (
+        <QuickView
+          element={quick.element}
+          href={`${elementHref(subjectId, quick.element.code)}${query({})}`}
+          onClose={() => setQuick(null)}
         />
       ) : null}
 
       {open ? (
         <ElementWindow
+          key={open.code}
           element={open}
+          all={elements}
           test={test === true}
           onClose={() => router.push(`${atlasHref(subjectId, 'explore')}${query({})}`, { scroll: false })}
         />
@@ -161,234 +263,327 @@ export default function AtlasExplore({ code, test }: { code?: string; test?: boo
   );
 }
 
-/** Карточка элемента (AnatomyViewer.js, createSystemCard): вся карточка — ссылка на окно элемента. */
-function ElementCard({ element: e, href }: { element: AtlasElement; href: string }) {
+/**
+ * Шапка прогресса ученика (REQ-EXP-01): «Изучено {n} из 60», «Освоено (тест ≥ 80 %): {m}» — по статусам тем платформы
+ * (в процессе или освоена / освоена), мини-кольца семейств (доля освоенных); нажатие — фильтр по семейству.
+ */
+function ProgressHeader({
+  elements,
+  families,
+  onFamily,
+}: {
+  elements: AtlasElement[];
+  families: string[];
+  onFamily: (family: string) => void;
+}) {
+  const t = useTranslations('atlas');
+  const studied = elements.filter((e) => e.status === 'started' || e.status === 'mastered').length;
+  const mastered = elements.filter((e) => e.status === 'mastered').length;
+  const rings = ELEMENT_FAMILIES.map((f) => {
+    const list = elements.filter((e) => e.group === f);
+    return { f, total: list.length, done: list.filter((e) => e.status === 'mastered').length };
+  }).filter((r) => r.total);
+  return (
+    <div className="ex-progress" data-testid="atlas-progress">
+      <div className="ex-progress-counts">
+        <p data-testid="atlas-progress-studied">
+          {t('explore.studied', { count: studied, total: elements.length })}
+        </p>
+        <p data-testid="atlas-progress-mastered">
+          {t('explore.mastered', { count: mastered, threshold: MASTERY_THRESHOLD })}
+        </p>
+      </div>
+      <ul className="ex-rings">
+        {rings.map(({ f, total, done }) => {
+          const share = done / total;
+          const r = 15;
+          const len = 2 * Math.PI * r;
+          return (
+            <li key={f}>
+              <button
+                type="button"
+                className="ex-ring"
+                title={t(`group.${f}`)}
+                aria-pressed={families.includes(f)}
+                aria-label={t('explore.ring', { family: t(`group.${f}`), done, total })}
+                style={{ '--chip-color': GROUP_COLORS[f] ?? '#888' } as CSSProperties}
+                onClick={() => onFamily(f)}
+                data-family={f}
+                data-testid="atlas-ring"
+              >
+                <svg viewBox="0 0 40 40" aria-hidden="true">
+                  <circle cx="20" cy="20" r={r} className="ex-ring-track" />
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r={r}
+                    className="ex-ring-value"
+                    strokeDasharray={`${len * share} ${len}`}
+                    transform="rotate(-90 20 20)"
+                  />
+                </svg>
+                <span aria-hidden="true" className="ex-ring-text">
+                  {done}/{total}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+/** «Период p · Группа g» (у лантаноидов — «Период 6 · Лантаноиды») по справочнику C4 (REQ-EXP-03.3). */
+function usePlace() {
   const t = useTranslations('atlas');
   const tp = useTranslations('student.periodicTable');
-  const groupColor = GROUP_COLORS[e.group] ?? e.color ?? '#888';
-  const color = e.color ?? groupColor;
+  return (number: number) => {
+    const p = periodicElement(number);
+    if (!p) return '';
+    return p.group === null
+      ? t('explore.placeRow', {
+          period: p.period,
+          row: tp(p.row === 'actinides' ? 'actinides' : 'lanthanides'),
+        })
+      : t('explore.place', { period: p.period, group: p.group });
+  };
+}
+
+/** Плитка элемента в стиле таблицы: номер, символ, атомная масса (REQ-EXP-03.1). */
+function Tile({ element: e, size = 'md' }: { element: AtlasElement; size?: 'sm' | 'md' }) {
+  const locale = useLocale();
+  return (
+    <span className={`ex-tile ${size}`} aria-hidden="true">
+      <span className="ex-tile-number">{e.number}</span>
+      <span className="ex-tile-symbol">{e.symbol}</span>
+      {e.mass !== null && size === 'md' ? (
+        <span className="ex-tile-mass">{formatMass(e.mass, locale)}</span>
+      ) : null}
+    </span>
+  );
+}
+
+function StatusMark({ element: e }: { element: AtlasElement }) {
+  const t = useTranslations('atlas');
+  if (e.status === 'mastered')
+    return (
+      <span className="ex-mark mastered" data-testid="atlas-card-mark" data-status="mastered">
+        {t('explore.markMastered')}
+      </span>
+    );
+  if (e.status === 'started')
+    return (
+      <span className="ex-mark started" data-testid="atlas-card-mark" data-status="started">
+        {t('explore.markStudied')}
+      </span>
+    );
+  return null;
+}
+
+/**
+ * Карточка элемента (REQ-EXP-03): плитка с массой, иллюстрация целиком на фоне цвета семейства, «Период · Группа»,
+ * описание полностью, прогресс ученика, быстрый просмотр «i» и «Тест». Название — ссылка на окно (вся карточка
+ * нажимается), кнопки — поверх.
+ */
+function ElementCard({
+  element: e,
+  href,
+  testHref,
+  student,
+  onQuick,
+}: {
+  element: AtlasElement;
+  href: string;
+  testHref: string;
+  student: boolean;
+  onQuick: (trigger: HTMLElement) => void;
+}) {
+  const t = useTranslations('atlas');
+  const tp = useTranslations('student.periodicTable');
+  const place = usePlace();
+  const color = GROUP_COLORS[e.group] ?? e.color ?? '#888';
   const state = e.status === 'mastered' ? tp('mastered') : e.status === 'started' ? tp('started') : null;
-  const label = [
-    tp('cell', { name: e.title, symbol: e.symbol, number: e.number, family: t(`group.${e.group}`) }),
-    state,
-  ]
-    .filter(Boolean)
-    .join(', ');
+  return (
+    <article
+      className="ex-card"
+      style={{ '--fam': color } as CSSProperties}
+      data-system={e.code}
+      data-status={e.status}
+      data-testid="atlas-card"
+    >
+      <div className="ex-card-visual" aria-hidden="true">
+        {e.imageUrl ? (
+          <img src={e.imageUrl} alt="" loading="lazy" decoding="async" width={1024} height={1024} />
+        ) : null}
+        <Tile element={e} />
+        <span className="ex-family">{t(`group.${e.group}`)}</span>
+      </div>
+      <div className="ex-card-body">
+        <h3 className="ex-card-title">
+          <AppLink
+            href={href}
+            scroll={false}
+            className="ex-card-link"
+            aria-label={[
+              tp('cell', {
+                name: e.title,
+                symbol: e.symbol,
+                number: e.number,
+                family: t(`group.${e.group}`),
+              }),
+              state,
+            ]
+              .filter(Boolean)
+              .join(', ')}
+            data-testid="atlas-card-link"
+          >
+            {e.title}
+          </AppLink>
+        </h3>
+        <p className="ex-place" data-testid="atlas-card-place">
+          {place(e.number)}
+        </p>
+        {e.description ? <p className="ex-desc">{e.description}</p> : null}
+        {student ? (
+          <div className="ex-card-progress">
+            <div className="ex-bar-label">
+              <span>
+                {e.bestPercent !== null && e.bestPercent !== undefined
+                  ? t('explore.best', { percent: e.bestPercent })
+                  : t('explore.bestNone')}
+              </span>
+              <StatusMark element={e} />
+            </div>
+            <div
+              className="ex-bar"
+              role="progressbar"
+              aria-label={t('explore.bestLabel')}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={e.bestPercent ?? 0}
+            >
+              <span style={{ width: `${e.bestPercent ?? 0}%` }} />
+            </div>
+          </div>
+        ) : null}
+      </div>
+      <div className="ex-card-actions">
+        <button
+          type="button"
+          className="ex-icon-btn"
+          aria-label={t('explore.quick', { name: e.title })}
+          aria-haspopup="dialog"
+          onClick={(ev) => onQuick(ev.currentTarget)}
+          data-testid="atlas-quick-open"
+        >
+          i
+        </button>
+        <AppLink href={testHref} scroll={false} className="ex-test-btn" data-testid="atlas-card-test">
+          {t('explore.test')}
+          <span className="atlas-sr-only">: {e.title}</span>
+        </AppLink>
+      </div>
+    </article>
+  );
+}
+
+/** Вид «Список» (REQ-EXP-02.5): компактные строки — плитка, название, семейство, статус. */
+function ListRow({ element: e, href, student }: { element: AtlasElement; href: string; student: boolean }) {
+  const t = useTranslations('atlas');
+  const color = GROUP_COLORS[e.group] ?? '#888';
   return (
     <AppLink
       href={href}
       scroll={false}
-      className="anatomy-card"
-      data-system={e.code}
-      data-status={e.status}
-      aria-label={label}
-      data-testid="atlas-card"
+      className="ex-row-link"
+      style={{ '--fam': color } as CSSProperties}
+      data-testid="atlas-list-row"
     >
-      <div
-        className="card-visual"
-        style={{ borderColor: `${color}40`, overflow: 'hidden', position: 'relative' }}
-        aria-hidden="true"
-      >
-        {e.imageUrl ? (
-          <img
-            src={e.imageUrl}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            width={1024}
-            height={1024}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              opacity: 0.55,
-              mixBlendMode: 'luminosity',
-              transition: 'opacity 0.4s ease',
-            }}
-          />
-        ) : null}
-        <div
-          className="element-badge"
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            background: 'rgba(0,0,0,0.55)',
-            backdropFilter: 'blur(6px)',
-            border: `1px solid ${groupColor}40`,
-            borderRadius: 8,
-            padding: '4px 8px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            minWidth: 38,
-            zIndex: 2,
-          }}
-        >
-          <span style={{ fontSize: '0.65rem', color: groupColor, fontWeight: 700, lineHeight: 1 }}>
-            {e.number}
-          </span>
-          <span
-            style={{
-              fontSize: '1rem',
-              color: '#fff',
-              fontWeight: 800,
-              lineHeight: 1.1,
-              letterSpacing: '-0.03em',
-            }}
-          >
-            {e.symbol}
-          </span>
-          {e.status === 'mastered' || e.status === 'started' ? (
-            <span className="atlas-status-dot" data-status={e.status} data-testid="atlas-card-status" />
-          ) : null}
-        </div>
-        <span
-          className="group-tag"
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            zIndex: 2,
-            background: `${groupColor}20`,
-            border: `1px solid ${groupColor}40`,
-            color: groupColor,
-            fontSize: '0.6rem',
-            fontWeight: 700,
-            padding: '3px 7px',
-            borderRadius: 999,
-            whiteSpace: 'nowrap',
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          {t(`group.${e.group}`)}
-        </span>
-        <div
-          className="visual-placeholder"
-          style={{
-            background: `radial-gradient(circle at 50% 50%,${color} 0%,transparent 80%)`,
-            opacity: 0.3,
-          }}
-        />
-      </div>
-      <div className="card-content">
-        <h3 className="card-title">{e.title}</h3>
-        <p className="card-desc">{e.description}</p>
-      </div>
-      <div className="card-actions">
-        <span className="btn-text">{t('detail.explore')} &rarr;</span>
-      </div>
+      <Tile element={e} size="sm" />
+      <span className="ex-row-name">{e.title}</span>
+      <span className="ex-row-family">{t(`group.${e.group}`)}</span>
+      {student ? <StatusMark element={e} /> : null}
     </AppLink>
   );
 }
 
-/** Панель «Фильтр по группам» (AnatomyViewer.js, openFilterDrawer): на телефоне — шторка снизу. */
-function FilterDrawer({
-  groups,
-  active,
-  onSelect,
+/**
+ * Быстрый просмотр «i» (REQ-EXP-03.7): 3 первых пункта «Основных фактов», интересный факт и «Открыть урок».
+ * Компьютер — всплывающая карточка, телефон — нижняя шторка; Esc и крестик закрывают, фокус возвращается.
+ */
+function QuickView({
+  element: e,
+  href,
   onClose,
 }: {
-  groups: string[];
-  active: string;
-  onSelect: (group: string) => void;
+  element: AtlasElement;
+  href: string;
   onClose: () => void;
 }) {
   const t = useTranslations('atlas');
   const tc = useTranslations('common');
-  const [shown, setShown] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const overlay = useRef<HTMLDivElement>(null);
-  const close = () => {
-    setShown(false);
-    window.setTimeout(onClose, 400);
-  };
-  useDialog(panel, close);
+  const lesson = useAtlasLesson(e.topicId);
+  useDialog(panel, onClose);
+  // Нажатие на фон закрывает карточку (как панель фильтра); с клавиатуры — Esc (useDialog).
   useEffect(() => {
-    const id = window.setTimeout(() => setShown(true), 10);
-    // Нажатие на фон закрывает панель (как в оригинале); с клавиатуры — Esc (useDialog).
     const node = overlay.current;
-    const onClick = (e: MouseEvent) => {
-      if (e.target === node) close();
+    const onClick = (ev: MouseEvent) => {
+      if (ev.target === node) onClose();
     };
     node?.addEventListener('click', onClick);
-    return () => {
-      window.clearTimeout(id);
-      node?.removeEventListener('click', onClick);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- обработчик фона ставится один раз при открытии
-  }, []);
-
+    return () => node?.removeEventListener('click', onClick);
+  }, [onClose]);
+  const facts = (lesson.data?.sections.find((s) => s.code === 'basic-facts')?.body ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('- '))
+    .slice(0, 3)
+    .map((l) => l.slice(2));
   return (
-    <div ref={overlay} className={`explore-drawer-overlay${shown ? ' active' : ''}`}>
+    <div ref={overlay} className="ex-quick-overlay">
       <div
         ref={panel}
-        className="explore-drawer-panel"
+        className="ex-quick"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="atlas-filter-title"
-        data-testid="atlas-filter-drawer"
+        aria-labelledby="ex-quick-title"
+        style={{ '--fam': GROUP_COLORS[e.group] ?? '#888' } as CSSProperties}
+        data-testid="atlas-quick"
       >
-        <button type="button" className="explore-drawer-close" aria-label={tc('close')} onClick={close}>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+        <button
+          type="button"
+          className="ex-quick-close"
+          aria-label={tc('close')}
+          onClick={onClose}
+          data-testid="atlas-quick-close"
+        >
+          ×
         </button>
-        <div className="explore-drawer-header">
-          <h2 className="explore-drawer-title" id="atlas-filter-title">
-            {t('filter.title')}
-          </h2>
-          <p className="explore-drawer-subtitle">{t('filter.subtitle')}</p>
+        <div className="ex-quick-head">
+          <Tile element={e} />
+          <h2 id="ex-quick-title">{e.title}</h2>
         </div>
-        <div className="explore-drawer-list">
-          {groups.map((g) => {
-            const color = g === 'all' ? '#ffffff' : (GROUP_COLORS[g] ?? '#888');
-            return (
-              <button
-                type="button"
-                key={g}
-                className={`explore-drawer-item${active === g ? ' active' : ''}`}
-                aria-pressed={active === g}
-                style={
-                  {
-                    '--item-active-border': color,
-                    '--item-active-color': color,
-                    '--dot-glow': `${color}40`,
-                  } as CSSProperties
-                }
-                onClick={() => onSelect(g)}
-                data-group={g}
-              >
-                <span className="explore-drawer-item-left">
-                  <span className="explore-drawer-dot" style={{ background: color }} aria-hidden="true" />
-                  <span>{g === 'all' ? t('filter.all') : t(`group.${g}`)}</span>
-                </span>
-                <span className="explore-drawer-check" aria-hidden="true">
-                  ✓
-                </span>
-              </button>
-            );
-          })}
-        </div>
-        <div className="explore-drawer-footer">
-          <button type="button" className="explore-drawer-reset-btn" onClick={() => onSelect('all')}>
-            {t('filter.reset')}
-          </button>
-        </div>
+        <h3>{t('explore.quickFacts')}</h3>
+        {facts.length ? (
+          <ul className="ex-quick-facts">
+            {facts.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="ex-quick-loading">…</p>
+        )}
+        {e.funFact ? (
+          <p className="ex-quick-fun">
+            <b>{t('explore.funFact')}</b> {e.funFact}
+          </p>
+        ) : null}
+        <AppLink href={href} scroll={false} className="btn btn-primary" data-testid="atlas-quick-lesson">
+          {t('explore.openLesson')}
+        </AppLink>
       </div>
     </div>
   );

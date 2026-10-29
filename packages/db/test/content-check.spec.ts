@@ -2,6 +2,7 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:f
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { checkContent, defaultContentDir, e2eFixturesDir, formatError } from '../src/content';
+import { sectionGroup } from '@syntara/shared';
 
 const CARDIO = 'biology/01-human-anatomy/01-cardiovascular-system';
 
@@ -222,6 +223,46 @@ describe('content check', () => {
       expect.arrayContaining([
         expect.stringMatching(/scientists.yaml: scientists.2.elements.0.number — номер 1–118/),
         expect.stringMatching(/scientists.yaml: scientists.0.prompts.discovery.ru — ровно 3 подсказки/),
+      ]),
+    );
+  });
+
+  it('AC-EXP-06, BR-EXP-01 every section of all 60 element lessons falls into one of the 5 tab groups', () => {
+    const elements = checkContent(dir).catalog.topics.filter((t) => t.elementNumber);
+    expect(elements).toHaveLength(60);
+    for (const t of elements)
+      for (const s of t.sections) {
+        if (s.code.endsWith('#sources')) continue;
+        expect(sectionGroup(s.code, s.translations.ru!.title), `${t.code}: ${s.code}`).not.toBeNull();
+      }
+  });
+
+  it('REQ-EXP-05.3 bohr-default.yaml: 11 elements show the Bohr model while their picture is the same', () => {
+    const flagged = () =>
+      checkContent(dir)
+        .catalog.topics.filter((t) => t.bohrDefault)
+        .map((t) => t.code.split('/')[1]);
+    expect(flagged()).toEqual([
+      'lithium',
+      'carbon',
+      'nitrogen',
+      'oxygen',
+      'sodium',
+      'potassium',
+      'calcium',
+      'scandium',
+      'manganese',
+      'gallium',
+      'xenon',
+    ]);
+    // Новая картинка (другой хеш) — элемент уходит из списка; неизвестный урок — ошибка.
+    const file = 'natural-sciences/01-chemistry/bohr-default.yaml';
+    edit(file, '{ topic: lithium, image: 8', '{ topic: lithium, image: 9');
+    expect(flagged()).not.toContain('lithium');
+    edit(file, 'topic: xenon', 'topic: unobtainium');
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/bohr-default\.yaml: elements\.10\.topic — нет урока-элемента с иллюстрацией/),
       ]),
     );
   });

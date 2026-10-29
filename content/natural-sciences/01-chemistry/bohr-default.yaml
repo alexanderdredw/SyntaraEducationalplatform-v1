@@ -1,0 +1,14 @@
+# Иллюстрации атомов с ошибкой (docs/EXPLORE_TZ.md, REQ-EXP-05.3): в окне элемента по умолчанию — модель Бора.
+# image — SHA-256 текущего файла: после замены картинки запись перестаёт действовать; удалите её (CONTENT_GUIDE 12.2).
+elements:
+  - { topic: lithium, image: 8508bf693d059388fc042c460353f22fb062c68173dfea4b28738e8f88500dac }
+  - { topic: carbon, image: a1392300b38c55c84f1ed4338dc0679d198fd71891758edef332eb5ac0fa0eb0 }
+  - { topic: nitrogen, image: 88b6804bdbd20aea6a92feb61172a987f32b3d75b102677d06ac97d5b1ac1f39 }
+  - { topic: oxygen, image: 1e518d60644f09d2f306db28d84b27e9d9c2bebddaff5987213847eedbebc1ff }
+  - { topic: sodium, image: 2902c0243dcaded87d258c651dde21b333df7e25a2587078a33875a0430098ba }
+  - { topic: potassium, image: ada93fef3139eb6e4f7e6e3fbc35ce78c6fdfaddb687814201ccb050fb540d2b }
+  - { topic: calcium, image: b0a391449922ae5e06973cadac7d6522c8cb3f421d3496fa862a90470c8b9abc }
+  - { topic: scandium, image: ac4130c17faea79ebac47908446a09bf10ad24add34ec1b79d6184aa66edb031 }
+  - { topic: manganese, image: 4b2e776aa32131116a9cb470139718af21d36e779c23ea40d7fe0aee18e3e820 }
+  - { topic: gallium, image: 679c4e59c14e8ea263a0c0653fae04d4144535a077ec1f278d5885fdd06ccfc8 }
+  - { topic: xenon, image: 96746e83d232d7b0dc64d3d578d92303f015836e78875956e02aca5b5319a1d5 }

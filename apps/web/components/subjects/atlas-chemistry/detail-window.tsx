@@ -40,6 +40,7 @@ export function DetailWindow({
   overlay,
   onClose,
   testId,
+  compact = false,
 }: {
   title: string;
   subtitle: string;
@@ -67,17 +68,39 @@ export function DetailWindow({
   overlay?: ReactNode;
   onClose: () => void;
   testId: string;
+  /**
+   * Окно элемента (docs/EXPLORE_TZ.md, REQ-EXP-04): компактная шапка (бейдж, название и «Пройти тест» в одну строку,
+   * описание под ними) и закреплённая при прокрутке левая колонка на компьютере.
+   */
+  compact?: boolean;
 }) {
   const t = useTranslations('atlas.detail');
   const tc = useTranslations('common');
   const root = useRef<HTMLDivElement>(null);
+  const column = useRef<HTMLDivElement>(null);
   useDialog(root, onClose);
+
+  // REQ-EXP-04.2: левая колонка закреплена; если она выше окна — прокручивается до своего низа и закрепляется там
+  // (отрицательный top), чтобы мини-таблица и навигация не оказались недоступны.
+  useEffect(() => {
+    const scroller = root.current;
+    const node = column.current;
+    if (!compact || !scroller || !node || typeof ResizeObserver === 'undefined') return;
+    const update = () => {
+      node.style.top = `${Math.min(0, scroller.clientHeight - node.offsetHeight - 24)}px`;
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    observer.observe(scroller);
+    return () => observer.disconnect();
+  }, [compact]);
 
   // Окно — position: fixed внутри .atlas (без своего контекста наложения), z-index выше шапки платформы.
   return (
     <div
       ref={root}
-      className="detail-overlay fade-in"
+      className={`detail-overlay fade-in${compact ? ' detail-compact' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="atlas-detail-title"
@@ -88,16 +111,29 @@ export function DetailWindow({
         &times;
       </button>
       <div className="detail-content">
-        <div className="detail-header">
-          {badge}
-          <h2 className="detail-title" id="atlas-detail-title">
-            {title}
-          </h2>
-          <p className="detail-subtitle">{subtitle}</p>
-          {takeTest}
-        </div>
+        {compact ? (
+          <div className="detail-header">
+            <div className="detail-head-row">
+              {badge}
+              <h2 className="detail-title" id="atlas-detail-title">
+                {title}
+              </h2>
+              {takeTest}
+            </div>
+            <p className="detail-subtitle">{subtitle}</p>
+          </div>
+        ) : (
+          <div className="detail-header">
+            {badge}
+            <h2 className="detail-title" id="atlas-detail-title">
+              {title}
+            </h2>
+            <p className="detail-subtitle">{subtitle}</p>
+            {takeTest}
+          </div>
+        )}
         <div className="detail-body">
-          <div className="detail-visual">
+          <div ref={column} className="detail-visual">
             <div
               className="visual-stack"
               style={{ display: 'flex', flexDirection: 'column', gap: 20, width: '100%' }}

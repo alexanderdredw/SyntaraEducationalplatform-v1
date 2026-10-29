@@ -222,7 +222,10 @@ export interface TopicSnapshot {
   coverUrl?: string | null;
   materialIds?: string[];
   /** Химический элемент урока в модуле атласа (REQ-ATL-04): цвет карточки и подсветки картинки. */
-  element?: { color: string };
+  element?: {
+    color: string;
+    /** Иллюстрация с ошибкой — по умолчанию модель Бора (REQ-EXP-05.3). */ bohrDefault?: boolean;
+  };
   /** Лента времени базового урока (REQ-TL-01): события по году, раздел — полный код раздела урока. */
   timeline?: Array<{
     year: number;

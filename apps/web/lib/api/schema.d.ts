@@ -4190,11 +4190,17 @@ export interface components {
             /** @description Подписанная ссылка на 10 минут (BR-FILE-04) */
             imageUrl: string | null;
             imageAlt: string | null;
+            /** @description Атомная масса из «Основных фактов» урока (REQ-EXP-03.1); в уроке нет — null */
+            mass: number | null;
+            /** @description Иллюстрация с ошибкой — по умолчанию модель Бора (REQ-EXP-05.3) */
+            bohrDefault: boolean;
             /**
              * @description Статус темы — только у ученика (решение А-6)
              * @enum {string}
              */
             status?: "mastered" | "started" | "not_started";
+            /** @description Лучший результат теста темы, % — только у ученика (REQ-EXP-03.5); попыток нет — null */
+            bestPercent?: number | null;
         };
         AtlasTopicRefDto: {
             /** Format: uuid */

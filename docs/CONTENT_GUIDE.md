@@ -349,6 +349,7 @@ scientists:
 1. Положить новый PNG с тем же именем (`<id>_atom_lux.png`, например `oxygen_atom_lux.png`) в `assets/images/` папки атласа.
 2. `node scripts/content-import/atlas-chemistry.mjs --source <папка атласа>` — конвертер пересоберёт WebP (q85, ≤ 300 КБ, иначе ошибка) в `content/natural-sciences/01-chemistry/<NN>-<код>/media/<код>-atom.webp`; остальные файлы не изменятся.
 3. `pnpm content:check` → `pnpm content:import` (новая версия урока, картинка — в хранилище) → коммит изменённого WebP.
+4. Если элемент был в `content/natural-sciences/01-chemistry/bohr-default.yaml` (иллюстрации с ошибкой — в окне элемента по умолчанию модель Бора, docs/EXPLORE_TZ.md, REQ-EXP-05.3): запись привязана к SHA-256 старого файла и после замены перестаёт действовать сама; удалите строку элемента из файла. Формат: `elements: [{ topic: <код урока>, image: <sha256 файла иллюстрации> }]`; `content:check` — урок-элемент с иллюстрацией существует.
 
 ## 13. Подготовка уроков с помощью ИИ
 

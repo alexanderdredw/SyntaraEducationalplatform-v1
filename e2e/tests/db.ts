@@ -123,3 +123,20 @@ export async function attachLegacySpreadsheet(topicId: string, ownerEmail: strin
     await sql.end();
   }
 }
+
+/**
+ * Лучший результат теста темы ученика без прохождения теста (снимки и сценарии «Исследовать», docs/EXPLORE_TZ.md,
+ * REQ-EXP-01, REQ-EXP-03.5): ≥ 80 % — тема освоена (BR-QZ-07), иначе — начата.
+ */
+export async function setTopicMastery(login: string, topicId: string, percent: number): Promise<void> {
+  const sql = postgres(env('DATABASE_URL'), { max: 1 });
+  try {
+    await sql`
+      INSERT INTO topic_mastery (student_id, topic_id, best_percent, attempts_count, mastered_at)
+      SELECT id, ${topicId}, ${percent}, 1, CASE WHEN ${percent} >= 80 THEN now() END FROM users WHERE login = ${login}
+      ON CONFLICT (student_id, topic_id) DO UPDATE
+        SET best_percent = excluded.best_percent, mastered_at = excluded.mastered_at`;
+  } finally {
+    await sql.end();
+  }
+}

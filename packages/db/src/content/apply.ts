@@ -504,7 +504,9 @@ export async function applyCatalog(
       coverMediaId,
       coverUrl: null,
       materialIds: [],
-      ...(t.elementColor ? { element: { color: t.elementColor } } : {}),
+      ...(t.elementColor
+        ? { element: { color: t.elementColor, ...(t.bohrDefault ? { bohrDefault: true } : {}) } }
+        : {}),
       ...(t.timeline ? { timeline: t.timeline } : {}),
       ...(t.scientists ? { scientists: t.scientists } : {}),
     };

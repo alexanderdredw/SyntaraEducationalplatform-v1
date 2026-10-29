@@ -61,6 +61,8 @@ test.describe('Атлас — без горизонтального перепо
     const windows: Array<[string, string]> = [
       ['/explore/hydrogen', 'atlas-element-window'],
       ['/explore/praseodymium', 'atlas-element-window'],
+      // И1 (docs/EXPLORE_TZ.md): модель Бора по умолчанию, мини-таблица, ключевые данные.
+      ['/explore/sodium', 'atlas-element-window'],
       ['/scientists/mendeleev', 'atlas-scientist-window'],
     ];
     for (const width of WIDTHS) {
@@ -74,12 +76,26 @@ test.describe('Атлас — без горизонтального перепо
         // Картинка слева видна и не сжата (компьютер и планшет — две колонки).
         if (width >= 1024) {
           const visual = (await page.locator(`[data-testid="${testId}"] .large-visual`).boundingBox())!;
-          expect(visual.width, `${path} @ ${width}`).toBeGreaterThan(width * 0.25);
+          expect(visual.width, `${path} @ ${width}`).toBeGreaterThan(Math.min(width, 1200) * 0.25);
+          // REQ-EXP-07.4: 5 вкладок групп — в одну строку.
+          if (testId === 'atlas-element-window') {
+            const tops = await page
+              .locator(`[data-testid="${testId}"] [role="tab"]`)
+              .evaluateAll((tabs) => tabs.map((t) => Math.round(t.getBoundingClientRect().top)));
+            expect(new Set(tops).size, `${path} @ ${width}`).toBe(1);
+          }
         }
       }
-      for (const path of ['/explore', '/scientists']) {
+      // И1: виды «Карточки · Таблица · Список», поиск и выбранные чипы семейств.
+      for (const path of [
+        '/explore',
+        '/explore?view=list',
+        '/explore?view=table',
+        '/explore?family=alkali_metal,halogen&q=%D0%BB%D0%B8',
+        '/scientists',
+      ]) {
         await page.goto(`${base}${path}`);
-        await page.getByTestId(path === '/explore' ? 'atlas-explore' : 'atlas-scientists').waitFor();
+        await page.getByTestId(path.startsWith('/explore') ? 'atlas-explore' : 'atlas-scientists').waitFor();
         expect(await pageOverflow(page), `${path} @ ${width}`).toBeLessThanOrEqual(0);
       }
     }

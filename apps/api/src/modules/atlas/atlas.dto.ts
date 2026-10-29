@@ -33,11 +33,25 @@ class AtlasElementDto {
   @ApiProperty({ type: String, nullable: true, description: 'Подписанная ссылка на 10 минут (BR-FILE-04)' })
   imageUrl: string | null;
   @ApiProperty({ type: String, nullable: true }) imageAlt: string | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Атомная масса из «Основных фактов» урока (REQ-EXP-03.1); в уроке нет — null',
+  })
+  mass: number | null;
+  @ApiProperty({ description: 'Иллюстрация с ошибкой — по умолчанию модель Бора (REQ-EXP-05.3)' })
+  bohrDefault: boolean;
   @ApiPropertyOptional({
     enum: ['mastered', 'started', 'not_started'],
     description: 'Статус темы — только у ученика (решение А-6)',
   })
   status?: 'mastered' | 'started' | 'not_started';
+  @ApiPropertyOptional({
+    type: Number,
+    nullable: true,
+    description: 'Лучший результат теста темы, % — только у ученика (REQ-EXP-03.5); попыток нет — null',
+  })
+  bestPercent?: number | null;
 }
 
 class AtlasTopicRefDto {

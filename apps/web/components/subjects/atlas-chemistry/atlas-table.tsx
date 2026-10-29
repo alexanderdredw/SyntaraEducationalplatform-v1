@@ -2,7 +2,7 @@
 
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { PERIODIC_ELEMENTS, type PeriodicElement } from '@syntara/shared';
+import { matchesElement, PERIODIC_ELEMENTS, type PeriodicElement } from '@syntara/shared';
 import { AppLink } from '../../app-link';
 import { type AtlasElement, GROUP_COLORS, useAtlasSubject } from './atlas-data';
 import { elementHref } from './routes';
@@ -20,17 +20,21 @@ export const COLS = 18;
 /**
  * Вид «Таблица» в Explore (решение 3, REQ-ATL-03): 118 элементов, 60 — с уроками (ячейка открывает окно элемента),
  * остальные — «Скоро». Логика и доступность — блока C4 (REQ-PTBL-02…08: grid, стрелки, Home/End, подписи для
- * диктора, статусы ученика); вид — атласа: тёмная плитка, цвета групп атласа, свечение рамки. Фильтр по группе
- * подсвечивает свою группу. На телефоне таблица прокручивается внутри блока.
+ * диктора, статусы ученика); вид — атласа: тёмная плитка, цвета групп атласа, свечение рамки. Чипы семейств и поиск
+ * приглушают остальные ячейки. На телефоне таблица прокручивается внутри блока.
  */
 export default function AtlasTable({
   elements,
-  group,
+  families,
+  search,
   query,
   target,
 }: {
   elements: AtlasElement[];
-  group: string;
+  /** Чипы семейств «Исследовать» (REQ-EXP-02.2): остальные ячейки приглушены. */
+  families: string[];
+  /** Поиск по названию, символу и номеру (REQ-EXP-02.1): несовпавшие ячейки приглушены. */
+  search: string;
   query: string;
   /** Ячейка, к которой ведёт чип «Скоро» окна учёного (REQ-SCI-08.2, ?cell=): в фокусе и подсвечена. */
   target?: number;
@@ -89,7 +93,9 @@ export default function AtlasTable({
     const lesson = lessons.get(p.number);
     const name = lesson?.title ?? t(`elements.${p.symbol}`);
     const color = GROUP_COLORS[p.family] ?? '#888';
-    const dimmed = group !== 'all' && p.family !== group;
+    const dimmed =
+      (families.length > 0 && !families.includes(p.family)) ||
+      !matchesElement(search, { title: name, symbol: p.symbol, number: p.number });
     const state = !lesson
       ? t('soon')
       : lesson.status === 'mastered'

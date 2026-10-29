@@ -27,6 +27,7 @@ import {
   SectionFile,
   type SectionModel,
   SubjectFile,
+  BohrDefaultFile,
   ScientistsFile,
   SCIENTIST_TABS,
   TimelineFile,
@@ -140,11 +141,35 @@ export function readContent(
       }
       catalog.subjects.push(subject);
       const subjectTopics: TopicModel[] = [];
+      const errorsBeforeTopics = errors.length;
       for (const topicDir of dirs(subjectPath)) {
         const topic = readTopic(join(subjectPath, topicDir), data.code, rel, errors, validate);
         if (topic) subjectTopics.push(topic);
       }
+      const topicsValid = errors.length === errorsBeforeTopics;
       arrangeChapters(subject, subjectTopics, errors);
+      // REQ-EXP-05.3: модель Бора по умолчанию — пока иллюстрация урока та же (хеш файла совпадает).
+      const bohrPath = join(subjectPath, 'bohr-default.yaml');
+      if (existsSync(bohrPath)) {
+        const bohr = yamlFile(bohrPath, BohrDefaultFile);
+        bohr?.elements.forEach((e, i) => {
+          const topic = subjectTopics.find((t) => t.code === `${data.code}/${e.topic}`);
+          if (!topic?.elementNumber || !topic.illustration) {
+            // Урок с ошибкой уже в списке ошибок — не повторять его здесь.
+            if (topicsValid)
+              errors.push({
+                file: rel(bohrPath),
+                field: `elements.${i}.topic`,
+                message: `нет урока-элемента с иллюстрацией: ${e.topic}`,
+              });
+            return;
+          }
+          const image = join(repoRoot, topic.dir, topic.illustration);
+          if (!existsSync(image)) return;
+          if (createHash('sha256').update(readFileSync(image)).digest('hex') === e.image)
+            topic.bohrDefault = true;
+        });
+      }
       checkUnique(
         subjectTopics.filter((t) => t.elementNumber).map((t) => ({ ...t, file: `${t.dir}/ru.md` })),
         (t) => String(t.elementNumber),

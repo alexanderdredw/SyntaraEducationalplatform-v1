@@ -143,7 +143,7 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await expect(page.getByTestId('lesson-page')).toBeVisible();
   });
 
-  test('REQ-ATL-03 Explore: 60 cards; the group filter is kept in the URL and after closing the element window (Esc)', async ({
+  test('REQ-ATL-03, REQ-EXP-02 Explore: 60 cards; the family chip is kept in the URL and after closing the element window (Esc)', async ({
     page,
     baseURL,
   }) => {
@@ -151,19 +151,19 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     const halogens = chem.elements.filter((e) => e.group === 'halogen');
     await page.goto(`${chem.base}/explore`);
     await expect(page.getByTestId('atlas-card')).toHaveCount(60);
-    await page.getByTestId('atlas-filter').click();
-    const drawer = page.getByTestId('atlas-filter-drawer');
-    await expect(drawer).toBeVisible();
-    await drawer.getByRole('button', { name: ru.atlas.group.halogen }).click();
-    await expect(page).toHaveURL(/group=halogen/);
+    await page
+      .getByTestId('atlas-family-chips')
+      .getByRole('button', { name: ru.atlas.group.halogen })
+      .click();
+    await expect(page).toHaveURL(/family=halogen/);
     await expect(page.getByTestId('atlas-card')).toHaveCount(halogens.length);
-    await page.getByTestId('atlas-card').first().click();
+    await page.getByTestId('atlas-card-link').first().click();
     const win = page.getByTestId('atlas-element-window');
     await expect(win).toBeVisible();
     await expect(win.getByRole('heading', { name: halogens[0]!.title, exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(win).toHaveCount(0);
-    await expect(page).toHaveURL(/explore\?group=halogen$/);
+    await expect(page).toHaveURL(/explore\?family=halogen$/);
     await expect(page.getByTestId('atlas-card')).toHaveCount(halogens.length);
   });
 

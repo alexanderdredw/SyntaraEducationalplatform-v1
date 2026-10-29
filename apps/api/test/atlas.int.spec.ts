@@ -173,6 +173,34 @@ describe('atlas (integration)', () => {
     expect(en.body.needsReview).toBe(true);
   });
 
+  it('REQ-EXP-03.1, REQ-EXP-05.3 elements carry the mass from «Основные факты» and the Bohr-default flag; best % only for a student', async () => {
+    const res = await guest(`/api/public/subjects/${chemistry}/atlas`).expect(200);
+    const by = (code: string) => res.body.elements.find((e: { code: string }) => e.code === code);
+    expect(by('lithium')).toMatchObject({ mass: 6.94, bohrDefault: true });
+    expect(by('oxygen')).toMatchObject({ mass: 15.999, bohrDefault: true });
+    // В уроке водорода массы нет; иллюстрация водорода верна.
+    expect(by('hydrogen')).toMatchObject({ mass: null, bohrDefault: false });
+    expect(res.body.elements.filter((e: { bohrDefault: boolean }) => e.bohrDefault)).toHaveLength(11);
+    expect(by('lithium')).not.toHaveProperty('bestPercent');
+
+    const fresh = await register(`atlas.best.${Date.now()}`);
+    const before = await as(fresh).get(`/api/student/subjects/${chemistry}/atlas`).expect(200);
+    const li = before.body.elements.find((e: { code: string }) => e.code === 'lithium');
+    expect(li.bestPercent).toBeNull();
+    await stack.db.insert(schema.topicMastery).values({
+      studentId: fresh.userId,
+      topicId: li.topicId,
+      bestPercent: '86.67',
+      attemptsCount: 2,
+      masteredAt: new Date(),
+    });
+    const after = await as(fresh).get(`/api/student/subjects/${chemistry}/atlas`).expect(200);
+    expect(after.body.elements.find((e: { code: string }) => e.code === 'lithium')).toMatchObject({
+      bestPercent: 87,
+      status: 'mastered',
+    });
+  });
+
   it('REQ-ATL-01 a subject without the module and an unknown subject → 404', async () => {
     await guest(`/api/public/subjects/${B.subjectAnatomy}/atlas`).expect(404);
     await guest('/api/public/subjects/00000000-0000-7000-8000-000000000000/atlas').expect(404);

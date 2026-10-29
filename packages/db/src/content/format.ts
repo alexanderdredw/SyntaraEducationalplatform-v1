@@ -116,6 +116,23 @@ export const TimelineFile = z.strictObject({
 });
 export type TimelineFile = z.infer<typeof TimelineFile>;
 
+/**
+ * bohr-default.yaml в папке предмета (docs/EXPLORE_TZ.md, REQ-EXP-05.3): уроки-элементы с ошибочной иллюстрацией —
+ * в окне элемента по умолчанию модель Бора. image — SHA-256 текущего файла иллюстрации: после замены картинки хеш не
+ * совпадает и запись перестаёт действовать (элемент «уходит из списка» с импортом новой картинки).
+ */
+export const BohrDefaultFile = z.strictObject({
+  elements: z
+    .array(
+      z.strictObject({
+        topic: code,
+        image: z.string().regex(/^[0-9a-f]{64}$/, 'SHA-256 файла иллюстрации (64 шестнадцатеричных знака)'),
+      }),
+    )
+    .min(1, 'хотя бы один элемент'),
+});
+export type BohrDefaultFile = z.infer<typeof BohrDefaultFile>;
+
 /** Вид связи учёного с элементом (REQ-SCI-08, BR-SCI-02; подписи — в i18n `atlas.sci.rel.*`). */
 export const SCIENTIST_RELATIONS = [
   'discovered',
@@ -350,6 +367,8 @@ export interface TopicModel {
   elementNumber?: number;
   /** Цвет элемента в модуле атласа (REQ-ATL-04). */
   elementColor?: string;
+  /** Иллюстрация с ошибкой — в окне элемента по умолчанию модель Бора (bohr-default.yaml, REQ-EXP-05.3). */
+  bohrDefault?: boolean;
   dir: string;
   translations: Partial<Record<Locale, LocaleTexts>>;
   illustration?: string;

@@ -13549,6 +13549,15 @@
             "type": "string",
             "nullable": true
           },
+          "mass": {
+            "type": "number",
+            "nullable": true,
+            "description": "Атомная масса из «Основных фактов» урока (REQ-EXP-03.1); в уроке нет — null"
+          },
+          "bohrDefault": {
+            "type": "boolean",
+            "description": "Иллюстрация с ошибкой — по умолчанию модель Бора (REQ-EXP-05.3)"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -13557,6 +13566,11 @@
               "not_started"
             ],
             "description": "Статус темы — только у ученика (решение А-6)"
+          },
+          "bestPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Лучший результат теста темы, % — только у ученика (REQ-EXP-03.5); попыток нет — null"
           }
         },
         "required": [
@@ -13570,7 +13584,9 @@
           "description",
           "funFact",
           "imageUrl",
-          "imageAlt"
+          "imageAlt",
+          "mass",
+          "bohrDefault"
         ]
       },
       "AtlasTopicRefDto": {

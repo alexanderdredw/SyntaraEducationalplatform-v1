@@ -2115,7 +2115,8 @@
     "view": {
       "label": "View",
       "cards": "Cards",
-      "table": "Table"
+      "table": "Table",
+      "list": "List"
     },
     "group": {
       "nonmetal": "Nonmetal",
@@ -2372,7 +2373,110 @@
         }
       },
       "messageTab": "{question} (section “{tab}”)",
-      "cardTitleElement": "✦ Syntara AI · Ask about the element “{name}”"
+      "cardTitleElement": "✦ Syntara AI · Ask about the element “{name}”",
+      "group": {
+        "overview": {
+          "p1": "Explain briefly",
+          "p2": "Tell me more",
+          "p3": "Where is the element “{name}” used?"
+        },
+        "structure": {
+          "p1": "Explain the structure of the “{name}” atom",
+          "p2": "How are the electrons of “{name}” arranged in shells?",
+          "p3": "How do the isotopes of “{name}” differ?"
+        },
+        "properties": {
+          "p1": "What are the physical properties of “{name}”?",
+          "p2": "Which substances does “{name}” react with?",
+          "p3": "Why does “{name}” behave this way in reactions?"
+        },
+        "nature": {
+          "p1": "Where is “{name}” found in nature?",
+          "p2": "How is “{name}” produced in industry?",
+          "p3": "Why is “{name}” found in nature in these forms?"
+        },
+        "applications": {
+          "p1": "Where is the element “{name}” used?",
+          "p2": "Why is “{name}” important for science and technology?",
+          "p3": "How is “{name}” connected with other fields of science?"
+        }
+      }
+    },
+    "explore": {
+      "searchLabel": "Find an element",
+      "searchPlaceholder": "Name, symbol or number",
+      "progressLabel": "Progress",
+      "status": {
+        "not_started": "Not started",
+        "started": "In progress",
+        "mastered": "Mastered"
+      },
+      "sortLabel": "Sort",
+      "sort": {
+        "number": "By number",
+        "alpha": "A–Z"
+      },
+      "count": "Found: {count}",
+      "studied": "Studied {count} of {total}",
+      "mastered": "Mastered (test ≥ {threshold}%): {count}",
+      "ring": "{family}: {done} of {total} mastered; show the family",
+      "place": "Period {period} · Group {group}",
+      "placeRow": "Period {period} · {row}",
+      "markStudied": "Studied ✓",
+      "markMastered": "Mastered ★",
+      "best": "Test: best score {percent}%",
+      "bestNone": "Test: not taken yet",
+      "bestLabel": "Best test score",
+      "quick": "Quick view: {name}",
+      "test": "Test",
+      "quickFacts": "Key facts",
+      "funFact": "Fun fact:",
+      "openLesson": "Open the lesson"
+    },
+    "model": {
+      "label": "Picture",
+      "image": "Illustration",
+      "bohr": "Bohr model"
+    },
+    "bohr": {
+      "shell": "n={n}: {count}e⁻",
+      "label": "Bohr model: {name}. Electrons by shell: {shells}"
+    },
+    "data": {
+      "title": "Key data",
+      "number": "Atomic number",
+      "symbol": "Symbol",
+      "mass": "Atomic mass",
+      "config": "Electron configuration",
+      "period": "Period",
+      "group": "Group",
+      "family": "Family"
+    },
+    "mini": {
+      "title": "Place in the table",
+      "caption": "Period {period} · Group {group} · {block}-block",
+      "captionRow": "Period {period} · {row} · {block}-block",
+      "lanthanides": "Lanthanides",
+      "actinides": "Actinides",
+      "neighbors": "Neighbours in the table",
+      "dir": {
+        "up": "Above: {name}",
+        "down": "Below: {name}",
+        "left": "Left: {name}",
+        "right": "Right: {name}"
+      }
+    },
+    "elNav": {
+      "label": "Neighbouring elements by number",
+      "prev": "← {name}",
+      "next": "{name} →"
+    },
+    "tabGroup": {
+      "overview": "Overview",
+      "structure": "Structure",
+      "properties": "Properties",
+      "nature": "In nature and industry",
+      "applications": "Uses"
     }
   },
   "test": {

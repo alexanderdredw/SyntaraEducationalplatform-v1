@@ -103,7 +103,7 @@ export class AtlasService {
     const rows = await this.topics(subjectId);
     const elements = AtlasService.elements(rows);
     const scientists = AtlasService.scientists(rows);
-    const [subjectTr, [glossary], images, statuses] = await Promise.all([
+    const [subjectTr, [glossary], images, statuses, best] = await Promise.all([
       this.db.select().from(subjectTranslations).where(eq(subjectTranslations.subjectId, subjectId)),
       this.db
         .select({ id: glossarySections.id })
@@ -116,6 +116,12 @@ export class AtlasService {
         : this.content.topicStatuses(
             viewer,
             rows.map((r) => r.id),
+          ),
+      viewer === null
+        ? Promise.resolve(null)
+        : this.bestPercents(
+            viewer,
+            elements.map((e) => e.id),
           ),
     ]);
     let needsReview = false;
@@ -138,7 +144,10 @@ export class AtlasService {
           funFact: tr?.funFact ?? null,
           imageUrl: (e.coverMediaId && images.get(e.coverMediaId)) || null,
           imageAlt: tr?.illustrationAlt ?? null,
+          mass: AtlasService.mass(e.snapshot),
+          bohrDefault: e.snapshot.element?.bohrDefault === true,
           ...status(e.id),
+          ...(best ? { bestPercent: best.get(e.id) ?? null } : {}),
         };
       }),
       scientists: scientists
@@ -152,6 +161,28 @@ export class AtlasService {
       needsReview,
       ...(viewer === null ? {} : { stats: await this.stats(viewer, elements, locale) }),
     };
+  }
+
+  /**
+   * Атомная масса из «Основных фактов» урока (REQ-EXP-03.1): строка «Атомная масса — 6.94» RU-текста раздела
+   * basic-facts. Другого источника массы в данных нет (справочник свойств — И2, REQ-EXP-09); строки нет — null.
+   */
+  static mass(snapshot: TopicSnapshot): number | null {
+    const facts = snapshot.sections.find((s) => s.code?.endsWith('#basic-facts'));
+    const m = /^-\s*Атомная масса\s*[—–:-]\s*(\d+(?:[.,]\d+)?)\s*$/m.exec(facts?.translations.ru?.body ?? '');
+    return m ? Number(m[1]!.replace(',', '.')) : null;
+  }
+
+  /** Лучший результат теста по темам ученика, % (REQ-EXP-03.5) — topic_mastery (BR-QZ-07), без новых правил. */
+  private async bestPercents(studentId: string, ids: string[]): Promise<Map<string, number>> {
+    if (ids.length === 0) return new Map();
+    const rows = await this.db
+      .select({ topicId: topicMastery.topicId, best: topicMastery.bestPercent })
+      .from(topicMastery)
+      .where(and(eq(topicMastery.studentId, studentId), inArray(topicMastery.topicId, ids)));
+    return new Map(
+      rows.flatMap((r) => (r.topicId ? [[r.topicId, Math.round(Number(r.best))] as const] : [])),
+    );
   }
 
   /**

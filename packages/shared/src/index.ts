@@ -19,4 +19,5 @@ export * from './format';
 export * from './periodic-table';
 export * from './atlas';
 export * from './atlas-questions';
+export * from './atlas-explore';
 export * from './test-run';
