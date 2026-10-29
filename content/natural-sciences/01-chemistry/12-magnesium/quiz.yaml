@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома магния?
       kk: Магний атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a magnesium atom?
+    explanation:
+      ru: 'Атомный номер магния — 12, значит, в ядре двенадцать протонов.'
+      kk: 'Магнийдің атомдық нөмірі — 12, демек, ядросында он екі протон бар.'
+      en: 'The atomic number of magnesium is 12, so its nucleus contains twelve protons.'
     options:
       - text:
           ru: '24'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип иона образует магний, теряя два валентных электрона?
       kk: Екі валенттік электронын жоғалтқанда магний қандай ион түзеді?
       en: What kind of ion does magnesium form when it loses its two valence electrons?
+    explanation:
+      ru: 'Потеряв два отрицательных электрона, атом магния становится положительно заряженным ионом Mg²⁺ — катионом.'
+      kk: 'Екі теріс электронын жоғалтқан магний атомы оң зарядталған Mg²⁺ ионына — катионға айналады.'
+      en: 'Having lost two negative electrons, a magnesium atom becomes a positively charged Mg²⁺ ion — a cation.'
     options:
       - text:
           ru: Анион
@@ -56,6 +64,10 @@ questions:
       ru: Какое свойство магния объясняет его использование в качестве жертвенного анода для защиты трубопроводов от коррозии?
       kk: Магнийдің қай қасиеті оны құбырларды коррозиядан қорғайтын протекторлық анод ретінде пайдалануды түсіндіреді?
       en: Which property of magnesium explains its use as a sacrificial anode protecting pipelines from corrosion?
+    explanation:
+      ru: 'Магний отдаёт электроны охотнее железа, поэтому окисляется сам вместо трубы и защищает её от ржавления.'
+      kk: 'Магний электрондарды темірге қарағанда оңай береді, сондықтан құбырдың орнына өзі тотығып, оны таттанудан қорғайды.'
+      en: 'Magnesium gives up electrons more readily than iron, so it oxidizes itself instead of the pipe and protects it from rusting.'
     options:
       - text:
           ru: Высокая электропроводность
@@ -81,6 +93,10 @@ questions:
       ru: Какой изотоп магния является самым распространённым в природе?
       kk: Магнийдің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of magnesium is the most common in nature?
+    explanation:
+      ru: 'Около 79 % природного магния — изотоп магний-24 (12 протонов и 12 нейтронов).'
+      kk: 'Табиғи магнийдің шамамен 79 %-ы — магний-24 изотопы (12 протон және 12 нейтрон).'
+      en: 'About 79% of natural magnesium is the isotope magnesium-24 (12 protons and 12 neutrons).'
     options:
       - text:
           ru: Магний-25
@@ -106,6 +122,10 @@ questions:
       ru: Сколько валентных электронов у атома магния согласно его электронной конфигурации?
       kk: Электрондық конфигурациясы бойынша магний атомында қанша валенттік электрон бар?
       en: How many valence electrons does a magnesium atom have according to its electron configuration?
+    explanation:
+      ru: 'Конфигурация магния [Ne] 3s²: на внешнем уровне два электрона, как у всех элементов 2-й группы.'
+      kk: 'Магнийдің конфигурациясы [Ne] 3s²: сыртқы деңгейде екі электрон, 2-топтың барлық элементтеріндегідей.'
+      en: 'Magnesium’s configuration is [Ne] 3s²: two electrons on the outer level, like all group 2 elements.'
     options:
       - text:
           ru: '3'

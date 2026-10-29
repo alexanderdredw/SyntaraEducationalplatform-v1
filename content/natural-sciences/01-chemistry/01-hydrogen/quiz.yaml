@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома водорода?
       kk: Сутегі атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a hydrogen atom?
+    explanation:
+      ru: 'Атомный номер водорода — 1, а атомный номер равен числу протонов в ядре.'
+      kk: 'Сутегінің атомдық нөмірі — 1, ал атомдық нөмір ядродағы протон санына тең.'
+      en: 'The atomic number of hydrogen is 1, and the atomic number equals the number of protons in the nucleus.'
     options:
       - text:
           ru: '1'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи образует водород при соединении с неметаллами?
       kk: Сутегі бейметалдармен қосылғанда химиялық байланыстың қандай түрін түзеді?
       en: What type of chemical bond does hydrogen form with nonmetals?
+    explanation:
+      ru: 'С неметаллами водород образует общие электронные пары, то есть ковалентную связь, — например, в воде H₂O и метане CH₄.'
+      kk: 'Бейметалдармен сутегі ортақ электрон жұптарын, яғни коваленттік байланыс түзеді — мысалы, су H₂O мен метан CH₄ молекулаларында.'
+      en: 'With nonmetals, hydrogen forms shared electron pairs, that is, covalent bonds — for example, in water H₂O and methane CH₄.'
     options:
       - text:
           ru: Водородная связь
@@ -56,6 +64,10 @@ questions:
       ru: Какой из изотопов водорода является радиоактивным и используется в научных исследованиях?
       kk: Сутегінің қай изотопы радиоактивті және ғылыми зерттеулерде қолданылады?
       en: Which isotope of hydrogen is radioactive and used in scientific research?
+    explanation:
+      ru: 'У водорода три изотопа: протий, дейтерий и тритий; радиоактивен только тритий, в ядре которого два нейтрона.'
+      kk: 'Сутегінің үш изотопы бар: протий, дейтерий және тритий; тек тритий радиоактивті, оның ядросында екі нейтрон бар.'
+      en: 'Hydrogen has three isotopes: protium, deuterium and tritium; only tritium, with two neutrons in its nucleus, is radioactive.'
     options:
       - text:
           ru: Водород-4
@@ -81,6 +93,10 @@ questions:
       ru: Какая степень окисления водорода в соединениях с металлами?
       kk: Металдармен қосылыстарда сутегінің тотығу дәрежесі қандай?
       en: What is the oxidation state of hydrogen in compounds with metals?
+    explanation:
+      ru: 'В гидридах металлов (например, NaH) водород принимает электрон от металла, поэтому его степень окисления −1, а не обычная +1.'
+      kk: 'Металл гидридтерінде (мысалы, NaH) сутегі металдан электрон алады, сондықтан оның тотығу дәрежесі әдеттегі +1 емес, −1.'
+      en: 'In metal hydrides (for example, NaH), hydrogen takes an electron from the metal, so its oxidation state is −1 rather than the usual +1.'
     options:
       - text:
           ru: '+2'
@@ -106,6 +122,10 @@ questions:
       ru: Какой метод производства водорода использует возобновляемые источники энергии и считается экологически чистым?
       kk: Сутегін өндірудің қай әдісі жаңартылатын энергия көздерін пайдаланады және экологиялық таза болып саналады?
       en: Which method of producing hydrogen uses renewable energy sources and is considered environmentally clean?
+    explanation:
+      ru: '«Зелёный» водород получают электролизом воды на энергии солнца или ветра, без выбросов углекислого газа.'
+      kk: '«Жасыл» сутегіні күн немесе жел энергиясымен суды электролиздеу арқылы, көмірқышқыл газын шығармай алады.'
+      en: '“Green” hydrogen is produced by electrolysis of water using solar or wind power, without carbon dioxide emissions.'
     options:
       - text:
           ru: Газификация угля

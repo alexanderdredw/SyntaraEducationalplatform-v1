@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство селена объясняет его использование в солнечных элементах и датчиках света?
       kk: Селеннің қай қасиеті оның күн элементтері мен жарық датчиктерінде қолданылуын түсіндіреді?
       en: Which property of selenium explains its use in solar cells and light sensors?
+    explanation:
+      ru: 'На свету сопротивление селена падает в тысячи раз, поэтому он превращает свет в электрический сигнал.'
+      kk: 'Жарықта селеннің кедергісі мыңдаған есе төмендейді, сондықтан ол жарықты электр сигналына айналдырады.'
+      en: 'In light, the resistance of selenium drops thousands of times, so it turns light into an electrical signal.'
     options:
       - text:
           ru: Наличие нескольких аллотропных форм
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома селена?
       kk: Селен атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a selenium atom?
+    explanation:
+      ru: 'Атомный номер селена — 34, значит, в ядре тридцать четыре протона.'
+      kk: 'Селеннің атомдық нөмірі — 34, демек, ядросында отыз төрт протон бар.'
+      en: 'The atomic number of selenium is 34, so its nucleus contains thirty-four protons.'
     options:
       - text:
           ru: '80'
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления НЕ является типичной для селена в соединениях?
       kk: Қосылыстардағы селенге қай тотығу дәрежесі тән ЕМЕС?
       en: Which oxidation state is NOT typical of selenium in compounds?
+    explanation:
+      ru: 'Селен, как и сера, проявляет степени окисления −2, +4 и +6, а +2 для него не типична.'
+      kk: 'Селен күкірт сияқты −2, +4 және +6 тотығу дәрежелерін көрсетеді, ал +2 оған тән емес.'
+      en: 'Like sulfur, selenium shows oxidation states of −2, +4 and +6, while +2 is not typical for it.'
     options:
       - text:
           ru: '+4'
@@ -81,6 +93,10 @@ questions:
       ru: Какой изотоп селена является самым распространённым в природе?
       kk: Селеннің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of selenium is the most common in nature?
+    explanation:
+      ru: 'Почти половина природного селена — изотоп селен-80 (34 протона и 46 нейтронов).'
+      kk: 'Табиғи селеннің жартысына жуығы — селен-80 изотопы (34 протон және 46 нейтрон).'
+      en: 'Almost half of natural selenium is the isotope selenium-80 (34 protons and 46 neutrons).'
     options:
       - text:
           ru: Селен-75
@@ -106,6 +122,10 @@ questions:
       ru: В какой группе и периоде Периодической системы находится селен?
       kk: Селен периодтық жүйенің қай тобы мен периодында орналасқан?
       en: In which group and period of the periodic table is selenium?
+    explanation:
+      ru: 'Селен стоит под серой в группе халькогенов (16-я) и находится в 4-м периоде.'
+      kk: 'Селен халькогендер тобында (16-топ) күкірттің астында тұр және 4-периодта орналасқан.'
+      en: 'Selenium sits below sulfur in the chalcogen group (group 16) and is in period 4.'
     options:
       - text:
           ru: 4-й период, 15-я группа

@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома азота?
       kk: Азот атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a nitrogen atom?
+    explanation:
+      ru: 'Атомный номер азота — 7, значит, в ядре семь протонов.'
+      kk: 'Азоттың атомдық нөмірі — 7, демек, ядросында жеті протон бар.'
+      en: 'The atomic number of nitrogen is 7, so its nucleus contains seven protons.'
     options:
       - text:
           ru: '5'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи удерживает атомы в молекуле N₂, делая её очень прочной?
       kk: N₂ молекуласындағы атомдарды қандай химиялық байланыс ұстап, оны өте берік етеді?
       en: Which chemical bond holds the atoms together in the N₂ molecule, making it very strong?
+    explanation:
+      ru: 'Два атома азота делят три пары электронов; тройная связь очень прочна, поэтому азот воздуха малоактивен.'
+      kk: 'Екі азот атомы үш электрон жұбын ортақ пайдаланады; үштік байланыс өте берік, сондықтан ауадағы азот белсенділігі төмен.'
+      en: 'Two nitrogen atoms share three electron pairs; the triple bond is very strong, so nitrogen in the air is unreactive.'
     options:
       - text:
           ru: Одинарная связь
@@ -56,6 +64,10 @@ questions:
       ru: Какой изотоп азота является самым распространённым в природе?
       kk: Азоттың қай изотопы табиғатта ең көп таралған?
       en: Which isotope of nitrogen is the most common in nature?
+    explanation:
+      ru: 'Более 99 % природного азота — изотоп азот-14 (7 протонов и 7 нейтронов).'
+      kk: 'Табиғи азоттың 99 %-дан астамы — азот-14 изотопы (7 протон және 7 нейтрон).'
+      en: 'More than 99% of natural nitrogen is the isotope nitrogen-14 (7 protons and 7 neutrons).'
     options:
       - text:
           ru: Азот-13
@@ -81,6 +93,10 @@ questions:
       ru: Сколько электронов находится на внешнем энергетическом уровне атома азота?
       kk: Азот атомының сыртқы энергетикалық деңгейінде қанша электрон бар?
       en: How many electrons are in the outer energy level of a nitrogen atom?
+    explanation:
+      ru: 'Конфигурация азота 1s² 2s² 2p³: на внешнем, втором уровне 2 + 3 = 5 электронов.'
+      kk: 'Азоттың конфигурациясы 1s² 2s² 2p³: сыртқы, екінші деңгейде 2 + 3 = 5 электрон.'
+      en: 'Nitrogen’s configuration is 1s² 2s² 2p³: the outer, second level has 2 + 3 = 5 electrons.'
     options:
       - text:
           ru: '5'
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство азота позволяет использовать его для создания инертной среды в металлургии?
       kk: Азоттың қай қасиеті оны металлургияда инертті орта жасауға пайдалануға мүмкіндік береді?
       en: Which property of nitrogen allows it to be used to create an inert atmosphere in metallurgy?
+    explanation:
+      ru: 'Из-за прочной тройной связи азот при обычных условиях почти не вступает в реакции и защищает металлы от окисления.'
+      kk: 'Берік үштік байланыстың арқасында азот қалыпты жағдайда реакцияларға дерлік түспейді және металдарды тотығудан қорғайды.'
+      en: 'Because of its strong triple bond, nitrogen hardly reacts under normal conditions and protects metals from oxidation.'
     options:
       - text:
           ru: Способность образовывать оксиды

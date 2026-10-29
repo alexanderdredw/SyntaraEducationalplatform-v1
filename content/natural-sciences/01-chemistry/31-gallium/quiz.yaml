@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство галлия позволяет ему плавиться в руке человека?
       kk: Галлийдің қай қасиеті оның адамның қолында балқуына мүмкіндік береді?
       en: Which property of gallium lets it melt in a person’s hand?
+    explanation:
+      ru: 'Галлий плавится при 29,76 °C — ниже температуры тела, поэтому тает на ладони.'
+      kk: 'Галлий 29,76 °C-та балқиды — дене температурасынан төмен, сондықтан алақанда ериді.'
+      en: 'Gallium melts at 29.76 °C — below body temperature — so it melts in your palm.'
     options:
       - text:
           ru: Высокая температура кипения (2229°C)
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома галлия?
       kk: Галлий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a gallium atom?
+    explanation:
+      ru: 'Атомный номер галлия — 31, значит, в ядре тридцать один протон.'
+      kk: 'Галлийдің атомдық нөмірі — 31, демек, ядросында отыз бір протон бар.'
+      en: 'The atomic number of gallium is 31, so its nucleus contains thirty-one protons.'
     options:
       - text:
           ru: '31'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип ионов образует галлий, исходя из его степени окисления +3?
       kk: +3 тотығу дәрежесін ескергенде галлий қандай ион түзеді?
       en: Given its oxidation state of +3, what kind of ion does gallium form?
+    explanation:
+      ru: 'При степени окисления +3 галлий отдал три электрона и стал положительным ионом Ga³⁺ — катионом.'
+      kk: 'Тотығу дәрежесі +3 болғанда галлий үш электрон беріп, оң Ga³⁺ ионына — катионға айналған.'
+      en: 'At an oxidation state of +3, gallium has given away three electrons and become the positive Ga³⁺ ion — a cation.'
     options:
       - text:
           ru: Нейтральный атом
@@ -81,6 +93,10 @@ questions:
       ru: Какое применение галлия связано с его способностью образовывать соединения для высокоскоростной электроники?
       kk: Галлийдің қай қолданылуы оның жоғары жылдамдықты электроникаға арналған қосылыстар түзу қабілетімен байланысты?
       en: Which use of gallium is related to its ability to form compounds for high-speed electronics?
+    explanation:
+      ru: 'Арсенид галлия — полупроводник, в котором электроны движутся быстрее, чем в кремнии, поэтому его используют в быстрых микросхемах.'
+      kk: 'Галлий арсениді — электрондар кремнийге қарағанда жылдам қозғалатын жартылай өткізгіш, сондықтан оны жылдам микросхемаларда қолданады.'
+      en: 'Gallium arsenide is a semiconductor in which electrons move faster than in silicon, so it is used in fast microchips.'
     options:
       - text:
           ru: Арсенид галлия (GaAs) для микросхем
@@ -106,6 +122,10 @@ questions:
       ru: Какое соединение галлия — полупроводник синих и белых светодиодов?
       kk: Галлийдің қай қосылысы көк және ақ жарықдиодтардың жартылай өткізгіші болып табылады?
       en: Which gallium compound is the semiconductor of blue and white LEDs?
+    explanation:
+      ru: 'Нитрид галлия излучает синий свет; на его основе сделаны синие и белые светодиоды.'
+      kk: 'Галлий нитриді көк жарық шығарады; оның негізінде көк және ақ жарықдиодтар жасалған.'
+      en: 'Gallium nitride emits blue light; blue and white LEDs are based on it.'
     options:
       - text:
           ru: Хлорид галлия (GaCl₃)

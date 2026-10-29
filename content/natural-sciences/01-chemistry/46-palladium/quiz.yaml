@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство атома палладия объясняет его уникальную способность поглощать до 900 объемов водорода?
       kk: Палладий атомының қай қасиеті оның өз көлемінен 900 есе көп сутегіні сіңіру қабілетін түсіндіреді?
       en: Which property of the palladium atom explains its unique ability to absorb up to 900 times its own volume of hydrogen?
+    explanation:
+      ru: 'У палладия конфигурация [Kr] 4d¹⁰ с пустой 5s-орбиталью, и атомы водорода легко входят в его кристаллическую решётку.'
+      kk: 'Палладийдің конфигурациясы — бос 5s орбитальды [Kr] 4d¹⁰, және сутегі атомдары оның кристалдық торына оңай енеді.'
+      en: 'Palladium has the configuration [Kr] 4d¹⁰ with an empty 5s orbital, and hydrogen atoms easily enter its crystal lattice.'
     options:
       - text:
           ru: Низкая плотность по сравнению с платиной
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип частиц образуется, когда атом палладия теряет два электрона, проявляя степень окисления +2?
       kk: Палладий атомы екі электронын жоғалтып, +2 тотығу дәрежесін көрсеткенде қандай бөлшек түзіледі?
       en: Which particle forms when a palladium atom loses two electrons and shows an oxidation state of +2?
+    explanation:
+      ru: 'Потеряв два электрона, атом палладия становится положительным ионом Pd²⁺ — катионом.'
+      kk: 'Екі электронын жоғалтқан палладий атомы оң Pd²⁺ ионына — катионға айналады.'
+      en: 'Having lost two electrons, a palladium atom becomes the positive Pd²⁺ ion — a cation.'
     options:
       - text:
           ru: Катион
@@ -56,6 +64,10 @@ questions:
       ru: Почему палладий, имея атомный номер 46, относят к металлам, а не к неметаллам?
       kk: Атомдық нөмірі 46 палладий неге бейметалдарға емес, металдарға жатады?
       en: Why is palladium, with atomic number 46, classed as a metal rather than a nonmetal?
+    explanation:
+      ru: 'Блеск, ковкость, тепло- и электропроводность — главные признаки металлов, и палладий ими обладает.'
+      kk: 'Жылтыр, созылғыштық, жылу мен электр өткізгіштік — металдардың басты белгілері, және палладийде олардың бәрі бар.'
+      en: 'Luster, malleability and thermal and electrical conductivity are the main signs of metals, and palladium has them all.'
     options:
       - text:
           ru: Он имеет серебристо-белый цвет и назван в честь астероида
@@ -81,6 +93,10 @@ questions:
       ru: Какое применение палладия в медицине основано на использовании его изотопа ¹⁰³Pd?
       kk: Палладийдің медицинадағы қай қолданылуы оның ¹⁰³Pd изотопын пайдалануға негізделген?
       en: Which medical use of palladium is based on its isotope ¹⁰³Pd?
+    explanation:
+      ru: 'Крошечные капсулы с радиоактивным палладием-103 вводят прямо в опухоль, и излучение разрушает её изнутри.'
+      kk: 'Радиоактивті палладий-103 бар кішкентай капсулаларды тікелей ісікке енгізеді, және сәуле оны іштен бұзады.'
+      en: 'Tiny capsules with radioactive palladium-103 are placed directly into a tumor, and the radiation destroys it from within.'
     options:
       - text:
           ru: Создание водородных топливных элементов
@@ -106,6 +122,10 @@ questions:
       ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа палладия (¹⁰⁶Pd), если атомный номер элемента равен 46?
       kk: Элементтің атомдық нөмірі 46 болса, палладийдің ең көп таралған тұрақты изотопының (¹⁰⁶Pd) ядросында қанша нейтрон бар?
       en: If the atomic number is 46, how many neutrons are in the nucleus of the most common stable isotope of palladium (¹⁰⁶Pd)?
+    explanation:
+      ru: 'В палладии-106 нейтронов 106 − 46 = 60.'
+      kk: 'Палладий-106-да нейтрондар саны 106 − 46 = 60.'
+      en: 'Palladium-106 has 106 − 46 = 60 neutrons.'
     options:
       - text:
           ru: '106'

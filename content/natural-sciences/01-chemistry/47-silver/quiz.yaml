@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство серебра делает его наиболее подходящим для использования в электрических контактах?
       kk: Күмістің қай қасиеті оны электр түйіспелерінде пайдалануға ең қолайлы етеді?
       en: Which property of silver makes it the best choice for electrical contacts?
+    explanation:
+      ru: 'Серебро проводит ток лучше всех металлов, поэтому контакты из него почти не нагреваются и не теряют энергию.'
+      kk: 'Күміс токты барлық металдардан жақсы өткізеді, сондықтан одан жасалған түйіспелер дерлік қызбайды және энергия жоғалтпайды.'
+      en: 'Silver conducts electricity better than any other metal, so contacts made of it barely heat up and lose almost no energy.'
     options:
       - text:
           ru: Самая высокая теплопроводность среди всех металлов
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержится в ядре самого распространенного стабильного изотопа серебра (Серебро-107)?
       kk: Күмістің ең көп таралған тұрақты изотопының (күміс-107) ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common stable isotope of silver (silver-107)?
+    explanation:
+      ru: 'У серебра 47 протонов, поэтому в серебре-107 нейтронов 107 − 47 = 60.'
+      kk: 'Күмісте 47 протон бар, сондықтан күміс-107-де нейтрондар саны 107 − 47 = 60.'
+      en: 'Silver has 47 protons, so silver-107 has 107 − 47 = 60 neutrons.'
     options:
       - text:
           ru: '60'
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является наиболее типичной для серебра в его соединениях?
       kk: Қосылыстарындағы күміске қай тотығу дәрежесі ең тән?
       en: Which oxidation state is most typical of silver in its compounds?
+    explanation:
+      ru: 'Серебро обычно отдаёт один электрон 5s¹ и образует ион Ag⁺, например в нитрате серебра AgNO₃.'
+      kk: 'Күміс әдетте бір 5s¹ электронын беріп, Ag⁺ ионын түзеді, мысалы күміс нитратында AgNO₃.'
+      en: 'Silver usually gives away its one 5s¹ electron and forms the Ag⁺ ion, for example in silver nitrate AgNO₃.'
     options:
       - text:
           ru: '-1'
@@ -81,6 +93,10 @@ questions:
       ru: Какой процесс используется для извлечения серебра из свинца в промышленном производстве?
       kk: Өнеркәсіпте күмісті қорғасыннан бөліп алу үшін қай процесс қолданылады?
       en: Which process is used industrially to extract silver from lead?
+    explanation:
+      ru: 'В процессе Паркеса в расплавленный свинец добавляют цинк: серебро переходит в цинк, и его отделяют.'
+      kk: 'Паркес процесінде балқытылған қорғасынға мырыш қосады: күміс мырышқа өтеді де, оны бөліп алады.'
+      en: 'In the Parkes process zinc is added to molten lead: the silver passes into the zinc and is separated.'
     options:
       - text:
           ru: Электролитическое рафинирование
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство серебра объясняет его использование в традиционной фотографии?
       kk: Күмістің қай қасиеті оның дәстүрлі фотографияда қолданылуын түсіндіреді?
       en: Which property of silver explains its use in traditional photography?
+    explanation:
+      ru: 'Галогениды серебра (например, AgBr) разлагаются на свету, и на плёнке остаётся изображение.'
+      kk: 'Күміс галогенидтері (мысалы, AgBr) жарықта ыдырайды, және пленкада бейне қалады.'
+      en: 'Silver halides (for example, AgBr) decompose in light, leaving an image on the film.'
     options:
       - text:
           ru: Высокая отражательная способность

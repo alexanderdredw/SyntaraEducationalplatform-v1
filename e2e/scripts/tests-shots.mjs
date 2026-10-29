@@ -2,10 +2,8 @@
 // Снимки T1 (docs/TESTS_TZ.md, этап T1c): тест темы платформы, тест элемента атласа, квиз «Проверь знания» —
 // вопрос, ответ с объяснением, результат; 1440 и 390 px; тёмная тема (платформа — и светлая).
 // → docs/media/tests/*.webp (WebP q85, ширина ≤ 1600 px). Нужны запущенные web и api (сид demo с content/).
-// Объяснения тестов элементов ещё не в content/ (ждут утверждения, REQ-TST-09.2): для снимка теста атласа объяснение
-// вопроса берётся из docs/TEST_EXPLANATIONS.md и подставляется в ответ API только в браузере съёмки.
-// Запуск из папки e2e: node scripts/tests-shots.mjs
-import { mkdirSync, readFileSync } from 'node:fs';
+// Запуск из папки e2e: node scripts/tests-shots.mjs [platform|atlas-test|atlas-quiz] — без аргумента все разделы.
+import { mkdirSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -18,17 +16,8 @@ const out = `${root}docs/media/tests/`;
 mkdirSync(out, { recursive: true });
 const MAX_H = 3200;
 const uid = () => randomUUID().slice(0, 8);
-
-/** Черновик объяснения из docs/TEST_EXPLANATIONS.md по тексту вопроса. */
-const drafts = new Map();
-{
-  const lines = readFileSync(`${root}docs/TEST_EXPLANATIONS.md`, 'utf8').split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    const q = /^- \*\*[\w-]+\.\*\* (.+) — \*\*.+\*\*$/.exec(lines[i]);
-    const e = /^\s+Объяснение: (.+)$/.exec(lines[i + 1] ?? '');
-    if (q && e) drafts.set(q[1], e[1]);
-  }
-}
+const only = process.argv[2];
+const run = (part) => !only || only === part;
 
 async function json(ctx, method, path, data) {
   const csrf = (await ctx.storageState()).cookies.find((c) => c.name === 'csrf')?.value;
@@ -178,13 +167,21 @@ async function context(cookies, width, theme) {
     { name: 'theme', value: theme, url: base },
     { name: 'consent', value: 'necessary', url: base },
   ]);
+  // Значок Next.js в режиме разработки — не часть интерфейса.
+  await ctx.addInitScript(() =>
+    document.addEventListener('DOMContentLoaded', () => {
+      const style = document.createElement('style');
+      style.textContent = 'nextjs-portal { display: none !important; }';
+      document.head.append(style);
+    }),
+  );
   return ctx;
 }
 
 /* ---------- Тест темы платформы ---------- */
-const platform = await platformTopic();
+const platform = run('platform') ? await platformTopic() : null;
 let n = 0;
-for (const width of [1440, 390]) {
+for (const width of platform ? [1440, 390] : []) {
   for (const theme of ['dark', 'light']) {
     const ctx = await context(platform.students[n++], width, theme);
     const page = await ctx.newPage();
@@ -222,22 +219,9 @@ for (const width of [1440, 390]) {
 }
 
 /* ---------- Тест элемента атласа (кислород) ---------- */
-for (const width of [1440, 390]) {
+for (const width of run('atlas-test') ? [1440, 390] : []) {
   const ctx = await context(await atlasStudent(), width, 'dark');
   const page = await ctx.newPage();
-  await page.route('**/api/student/attempts/*/answers', async (route) => {
-    const res = await route.fetch();
-    const body = await res.json();
-    const question = JSON.parse(route.request().postData() ?? '{}').questionId;
-    const text = await page.evaluate(
-      (id) => document.querySelector(`[data-testid="atest-question"]`)?.textContent ?? id,
-      question,
-    );
-    await route.fulfill({
-      response: res,
-      json: { ...body, explanation: body.explanation ?? drafts.get(text) ?? null },
-    });
-  });
   await page.goto(`${base}${S}/explore/oxygen/test`, { waitUntil: 'networkidle' });
   const test = page.getByTestId('atlas-test');
   await test.waitFor();
@@ -245,7 +229,7 @@ for (const width of [1440, 390]) {
   await page.locator('[data-testid="atest-option"][data-state="removed"]').first().waitFor();
   await page.getByTestId('atest-panel').scrollIntoViewIfNeeded();
   await shot(page, `atlas-test-question-${width}-dark`);
-  // Ответ «8» — верно, свечение цветом элемента, объяснение.
+  // Ответ «8» — верно: зелёные рамка и галочка, мягкое свечение цветом семейства, объяснение из content/.
   const right = page.locator('[data-testid="atest-option"]').filter({ hasText: /^A?B?C?D?8$/ });
   if (await right.count()) await right.first().click();
   else await page.locator('[data-testid="atest-option"]:not([aria-disabled])').first().click();
@@ -269,7 +253,7 @@ for (const width of [1440, 390]) {
 }
 
 /* ---------- Квиз «Проверь знания» ---------- */
-for (const width of [1440, 390]) {
+for (const width of run('atlas-quiz') ? [1440, 390] : []) {
   const ctx = await context(await atlasStudent(), width, 'dark');
   const page = await ctx.newPage();
   await page.goto(`${base}${S}/quiz`, { waitUntil: 'networkidle' });

@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство рубидия объясняет его способность образовывать ионные соединения с галогенами, например, с хлором?
       kk: Рубидийдің қай қасиеті оның галогендермен, мысалы хлормен, иондық қосылыстар түзу қабілетін түсіндіреді?
       en: Which property of rubidium explains its ability to form ionic compounds with halogens such as chlorine?
+    explanation:
+      ru: 'Рубидий очень легко отдаёт внешний электрон и становится ионом Rb⁺, а хлор его принимает — так возникает ионная связь.'
+      kk: 'Рубидий сыртқы электронын өте оңай беріп, Rb⁺ ионына айналады, ал хлор оны қабылдайды — осылай иондық байланыс түзіледі.'
+      en: 'Rubidium gives away its outer electron very easily and becomes the Rb⁺ ion, while chlorine accepts it — this is how an ionic bond forms.'
     options:
       - text:
           ru: Рубидий обладает низкой реакционной способностью и не вступает в реакции с галогенами.
@@ -31,6 +35,10 @@ questions:
       ru: Почему рубидий никогда не встречается в природе в свободном виде, а содержится только в соединениях?
       kk: Рубидий табиғатта неге ешқашан бос күйінде кездеспей, тек қосылыстар құрамында болады?
       en: Why is rubidium never found free in nature, only in compounds?
+    explanation:
+      ru: 'Рубидий воспламеняется на воздухе и бурно реагирует с водой, поэтому в природе может существовать только в соединениях.'
+      kk: 'Рубидий ауада тұтанады және сумен қатты әрекеттеседі, сондықтан табиғатта тек қосылыстарда бола алады.'
+      en: 'Rubidium ignites in air and reacts violently with water, so in nature it can exist only in compounds.'
     options:
       - text:
           ru: Рубидий имеет очень низкую температуру плавления и испаряется в природе.
@@ -56,6 +64,10 @@ questions:
       ru: Какая особенность строения атома рубидия определяет его принадлежность к щелочным металлам и степень окисления +1?
       kk: Рубидий атомы құрылысының қай ерекшелігі оның сілтілік металдарға жататынын және +1 тотығу дәрежесін анықтайды?
       en: Which feature of the rubidium atom makes it an alkali metal with an oxidation state of +1?
+    explanation:
+      ru: 'Единственный внешний электрон 5s¹ рубидий легко отдаёт — отсюда и щелочной характер, и степень окисления +1.'
+      kk: 'Жалғыз сыртқы 5s¹ электронын рубидий оңай береді — сілтілік сипаты да, +1 тотығу дәрежесі де осыдан.'
+      en: 'Rubidium easily gives away its single outer 5s¹ electron — hence both its alkaline character and its oxidation state of +1.'
     options:
       - text:
           ru: Электронная конфигурация [Kr] 5s¹, то есть один валентный электрон на внешнем энергетическом уровне.
@@ -81,6 +93,10 @@ questions:
       ru: Какое применение рубидия напрямую связано с его способностью образовывать катионы и использоваться в медицинской диагностике?
       kk: Рубидийдің қай қолданылуы оның катион түзу қабілетімен және медициналық диагностикамен тікелей байланысты?
       en: Which use of rubidium is directly related to its ability to form cations and to medical diagnostics?
+    explanation:
+      ru: 'Ион Rb⁺ клетки сердца поглощают так же, как калий, поэтому радиоактивный рубидий-82 показывает на ПЭТ, как кровоснабжается миокард.'
+      kk: 'Жүрек жасушалары Rb⁺ ионын калий сияқты сіңіреді, сондықтан радиоактивті рубидий-82 ПЭТ-те миокардтың қанмен қамтамасыз етілуін көрсетеді.'
+      en: 'Heart cells take up the Rb⁺ ion just like potassium, so radioactive rubidium-82 shows on PET how well the heart muscle is supplied with blood.'
     options:
       - text:
           ru: Рубидий применяется в атомных часах для систем GPS.
@@ -106,6 +122,10 @@ questions:
       ru: Какой из изотопов рубидия используется для определения возраста горных пород и какое свойство делает это возможным?
       kk: Рубидийдің қай изотопы тау жыныстарының жасын анықтау үшін қолданылады және мұны қай қасиеті мүмкін етеді?
       en: Which isotope of rubidium is used to date rocks, and which property makes this possible?
+    explanation:
+      ru: 'Рубидий-87 очень медленно превращается в стронций-87, и по их соотношению вычисляют возраст горных пород.'
+      kk: 'Рубидий-87 өте баяу стронций-87-ге айналады, олардың арақатынасы бойынша тау жыныстарының жасын есептейді.'
+      en: 'Rubidium-87 very slowly turns into strontium-87, and their ratio is used to calculate the age of rocks.'
     options:
       - text:
           ru: Рубидий-37, так как его атомный номер соответствует числу протонов.

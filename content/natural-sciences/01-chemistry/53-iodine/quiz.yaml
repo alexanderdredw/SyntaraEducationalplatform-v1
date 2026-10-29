@@ -6,6 +6,10 @@ questions:
       ru: Какое из следующих утверждений о йоде является верным на основе его атомной структуры?
       kk: Атомдық құрылысына қарай йод туралы қай тұжырым дұрыс?
       en: Based on its atomic structure, which statement about iodine is true?
+    explanation:
+      ru: 'Атомный номер равен числу протонов в ядре, а у йода он 53.'
+      kk: 'Атомдық нөмір ядродағы протон санына тең, ал йодта ол 53.'
+      en: 'The atomic number equals the number of protons in the nucleus, and for iodine it is 53.'
     options:
       - text:
           ru: Йод имеет 53 нейтрона в ядре, что соответствует его атомному номеру.
@@ -31,6 +35,10 @@ questions:
       ru: Какой из перечисленных изотопов йода является единственным стабильным в природе?
       kk: Йодтың қай изотопы табиғаттағы жалғыз тұрақты изотоп?
       en: Which isotope of iodine is the only stable one in nature?
+    explanation:
+      ru: 'Весь природный стабильный йод — изотоп йод-127 (53 протона и 74 нейтрона).'
+      kk: 'Табиғи тұрақты йодтың бәрі — йод-127 изотопы (53 протон және 74 нейтрон).'
+      en: 'All natural stable iodine is the isotope iodine-127 (53 protons and 74 neutrons).'
     options:
       - text:
           ru: Йод-123
@@ -56,6 +64,10 @@ questions:
       ru: Какое физическое свойство йода объясняет его способность переходить из твердого состояния в газообразное без промежуточной жидкой фазы?
       kk: Йодтың қатты күйден сұйық фазасыз бірден газ күйіне өту қабілетін қай физикалық құбылыс түсіндіреді?
       en: Which physical property of iodine explains how it turns from a solid directly into a gas, skipping the liquid phase?
+    explanation:
+      ru: 'Переход твёрдого вещества сразу в газ называется сублимацией (возгонкой); при нагреве йод даёт фиолетовые пары.'
+      kk: 'Қатты заттың бірден газға айналуы сублимация (айдау) деп аталады; қыздырғанда йод күлгін бу береді.'
+      en: 'The direct change of a solid into a gas is called sublimation; when heated, iodine gives off violet vapor.'
     options:
       - text:
           ru: Конденсация
@@ -81,6 +93,10 @@ questions:
       ru: Какое из следующих утверждений о химических свойствах йода является верным?
       kk: Йодтың химиялық қасиеттері туралы қай тұжырым дұрыс?
       en: Which statement about the chemical properties of iodine is true?
+    explanation:
+      ru: 'Йод с крахмалом даёт тёмно-синее окрашивание — так обнаруживают и крахмал, и йод.'
+      kk: 'Йод крахмалмен қою көк түс береді — крахмалды да, йодты да осылай анықтайды.'
+      en: 'Iodine turns starch dark blue — this is how both starch and iodine are detected.'
     options:
       - text:
           ru: Йод образует темно-синий комплекс с крахмалом, что используется как классический тест.
@@ -106,6 +122,10 @@ questions:
       ru: Какое применение йода связано с его ролью в эндокринной системе?
       kk: Йодтың қай қолданылуы оның эндокриндік жүйедегі рөлімен байланысты?
       en: Which use of iodine is related to its role in the endocrine system?
+    explanation:
+      ru: 'Йод нужен щитовидной железе для гормонов; при его нехватке развивается зоб, поэтому соль йодируют.'
+      kk: 'Йод қалқанша безге гормондар үшін қажет; ол жетіспегенде жемсау дамиды, сондықтан тұзды йодтайды.'
+      en: 'The thyroid gland needs iodine to make hormones; a lack of it causes goiter, which is why salt is iodized.'
     options:
       - text:
           ru: Добавка в йодированную соль для профилактики зоба.

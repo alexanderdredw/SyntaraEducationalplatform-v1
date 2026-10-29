@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома родия?
       kk: Родий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a rhodium atom?
+    explanation:
+      ru: 'Атомный номер родия — 45, значит, в ядре сорок пять протонов.'
+      kk: 'Родийдің атомдық нөмірі — 45, демек, ядросында қырық бес протон бар.'
+      en: 'The atomic number of rhodium is 45, so its nucleus contains forty-five protons.'
     options:
       - text:
           ru: '78'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химического элемента представляет родий согласно классификации?
       kk: Жіктеу бойынша родий химиялық элементтің қай түріне жатады?
       en: According to classification, what type of element is rhodium?
+    explanation:
+      ru: 'Родий стоит в d-блоке 5-го периода и входит в платиновую группу — это переходный металл.'
+      kk: 'Родий 5-периодтың d-блогында тұр және платина тобына кіреді — бұл ауыспалы металл.'
+      en: 'Rhodium is in the d-block of period 5 and belongs to the platinum group — it is a transition metal.'
     options:
       - text:
           ru: Неметалл
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация характерна для атома родия?
       kk: Родий атомына қай электрондық конфигурация тән?
       en: Which electron configuration does the rhodium atom have?
+    explanation:
+      ru: 'У родия 45 электронов: 36 как у криптона, восемь на 4d и один на 5s.'
+      kk: 'Родийдің 45 электроны бар: 36-сы криптондағыдай, сегізі 4d-де және біреуі 5s-те.'
+      en: 'Rhodium has 45 electrons: 36 as in krypton, eight in 4d and one in 5s.'
     options:
       - text:
           ru: '[Kr] 4d¹⁰ 5s⁰'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство родия делает его пригодным для использования в каталитических конвертерах?
       kk: Родийдің қай қасиеті оны каталитикалық түрлендіргіштерде пайдалануға жарамды етеді?
       en: Which property of rhodium makes it suitable for catalytic converters?
+    explanation:
+      ru: 'Родий ускоряет превращение ядовитых оксидов азота выхлопа в безвредный азот, сам при этом не расходуясь.'
+      kk: 'Родий пайдаланылған газдағы улы азот оксидтерінің зиянсыз азотқа айналуын жылдамдатады, ал өзі жұмсалмайды.'
+      en: 'Rhodium speeds up the conversion of toxic nitrogen oxides in exhaust into harmless nitrogen without being used up itself.'
     options:
       - text:
           ru: Способность растворяться в воде
@@ -106,6 +122,10 @@ questions:
       ru: Сколько нейтронов содержит самый распространенный стабильный изотоп родия?
       kk: Родийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
       en: How many neutrons does the most common stable isotope of rhodium have?
+    explanation:
+      ru: 'Единственный стабильный изотоп — родий-103; нейтронов 103 − 45 = 58.'
+      kk: 'Жалғыз тұрақты изотоп — родий-103; нейтрондар саны 103 − 45 = 58.'
+      en: 'The only stable isotope is rhodium-103; it has 103 − 45 = 58 neutrons.'
     options:
       - text:
           ru: '45'

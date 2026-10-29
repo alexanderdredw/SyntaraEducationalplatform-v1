@@ -6,6 +6,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома кальция?
       kk: Кальций атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a calcium atom?
+    explanation:
+      ru: 'Атомный номер кальция — 20, значит, в ядре двадцать протонов.'
+      kk: 'Кальцийдің атомдық нөмірі — 20, демек, ядросында жиырма протон бар.'
+      en: 'The atomic number of calcium is 20, so its nucleus contains twenty protons.'
     options:
       - text:
           ru: '22'
@@ -31,6 +35,10 @@ questions:
       ru: Какова электронная конфигурация атома кальция?
       kk: Кальций атомының электрондық конфигурациясы қандай?
       en: What is the electron configuration of a calcium atom?
+    explanation:
+      ru: 'У кальция 20 электронов: 18 как у аргона и ещё два на 4s.'
+      kk: 'Кальцийдің 20 электроны бар: 18-і аргондағыдай және тағы екеуі 4s-те.'
+      en: 'Calcium has 20 electrons: 18 as in argon and two more in 4s.'
     options:
       - text:
           ru: '[Ar] 3d²'
@@ -56,6 +64,10 @@ questions:
       ru: Какую степень окисления обычно проявляет кальций в соединениях?
       kk: Кальций қосылыстарда әдетте қандай тотығу дәрежесін көрсетеді?
       en: Which oxidation state does calcium usually show in compounds?
+    explanation:
+      ru: 'Кальций отдаёт два внешних электрона 4s², поэтому его степень окисления +2, например в CaCO₃.'
+      kk: 'Кальций екі сыртқы 4s² электронын береді, сондықтан оның тотығу дәрежесі +2, мысалы CaCO₃-те.'
+      en: 'Calcium gives away its two outer 4s² electrons, so its oxidation state is +2, for example in CaCO₃.'
     options:
       - text:
           ru: '+3'
@@ -81,6 +93,10 @@ questions:
       ru: Какая частица образуется, когда атом кальция теряет два электрона?
       kk: Кальций атомы екі электронын жоғалтқанда қандай бөлшек түзіледі?
       en: Which particle forms when a calcium atom loses two electrons?
+    explanation:
+      ru: 'Потеряв два электрона, атом становится положительно заряженным ионом Ca²⁺ — катионом.'
+      kk: 'Екі электронын жоғалтқан атом оң зарядталған Ca²⁺ ионына — катионға айналады.'
+      en: 'Having lost two electrons, the atom becomes a positively charged Ca²⁺ ion — a cation.'
     options:
       - text:
           ru: Анион
@@ -106,6 +122,10 @@ questions:
       ru: Какой тип химической связи образует кальций с неметаллами, например, с хлором?
       kk: Кальций бейметалдармен, мысалы хлормен, химиялық байланыстың қай түрін түзеді?
       en: What type of chemical bond does calcium form with nonmetals such as chlorine?
+    explanation:
+      ru: 'Кальций отдаёт электроны хлору, образуются ионы Ca²⁺ и Cl⁻; в CaCl₂ связь ионная.'
+      kk: 'Кальций хлорға электрон береді, Ca²⁺ және Cl⁻ иондары түзіледі; CaCl₂-де байланыс иондық.'
+      en: 'Calcium gives electrons to chlorine, forming Ca²⁺ and Cl⁻ ions; the bond in CaCl₂ is ionic.'
     options:
       - text:
           ru: Ковалентная полярная

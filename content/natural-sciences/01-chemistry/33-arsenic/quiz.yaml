@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома мышьяка?
       kk: Мышьяк атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an arsenic atom?
+    explanation:
+      ru: 'Атомный номер мышьяка — 33, значит, в ядре тридцать три протона.'
+      kk: 'Мышьяктың атомдық нөмірі — 33, демек, ядросында отыз үш протон бар.'
+      en: 'The atomic number of arsenic is 33, so its nucleus contains thirty-three protons.'
     options:
       - text:
           ru: '33'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип элемента представляет собой мышьяк?
       kk: Мышьяк элементтің қай түріне жатады?
       en: What type of element is arsenic?
+    explanation:
+      ru: 'Серый мышьяк блестит, как металл, но хрупок и по химическим свойствам близок к неметаллам — это полуметалл.'
+      kk: 'Сұр мышьяк металл сияқты жылтырайды, бірақ сынғыш және химиялық қасиеттері бойынша бейметалдарға жақын — бұл жартылай металл.'
+      en: 'Gray arsenic shines like a metal but is brittle and chemically close to nonmetals — it is a metalloid.'
     options:
       - text:
           ru: Металл
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому мышьяка?
       kk: Мышьяк атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the arsenic atom?
+    explanation:
+      ru: 'У мышьяка 33 электрона: 18 как у аргона, заполненная 3d¹⁰, затем 4s² и три электрона на 4p.'
+      kk: 'Мышьяктың 33 электроны бар: 18-і аргондағыдай, толтырылған 3d¹⁰, содан кейін 4s² және 4p-да үш электрон.'
+      en: 'Arsenic has 33 electrons: 18 as in argon, a filled 3d¹⁰, then 4s² and three electrons in 4p.'
     options:
       - text:
           ru: '[Ar] 3d¹⁰ 4s² 4p²'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство характерно для серой аллотропной формы мышьяка?
       kk: Мышьяктың сұр аллотропиялық түріне қандай қасиет тән?
       en: Which property is typical of the grey allotrope of arsenic?
+    explanation:
+      ru: 'Серый мышьяк — самая устойчивая форма: твёрдое хрупкое вещество с металлическим блеском.'
+      kk: 'Сұр мышьяк — ең тұрақты түрі: металдық жылтыры бар қатты сынғыш зат.'
+      en: 'Gray arsenic is the most stable form: a hard, brittle substance with a metallic luster.'
     options:
       - text:
           ru: Растворимость в воде
@@ -106,6 +122,10 @@ questions:
       ru: Какая степень окисления НЕ является типичной для мышьяка в соединениях?
       kk: Қосылыстардағы мышьякқа қай тотығу дәрежесі тән ЕМЕС?
       en: Which oxidation state is NOT typical of arsenic in compounds?
+    explanation:
+      ru: 'С пятью внешними электронами мышьяк проявляет степени окисления −3, +3 и +5, а +2 для него не характерна.'
+      kk: 'Бес сыртқы электроны бар мышьяк −3, +3 және +5 тотығу дәрежелерін көрсетеді, ал +2 оған тән емес.'
+      en: 'With five outer electrons, arsenic shows oxidation states of −3, +3 and +5, while +2 is not typical for it.'
     options:
       - text:
           ru: '+5'

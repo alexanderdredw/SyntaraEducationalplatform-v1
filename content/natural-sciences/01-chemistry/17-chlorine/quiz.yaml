@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома хлора?
       kk: Хлор атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a chlorine atom?
+    explanation:
+      ru: 'Атомный номер хлора — 17, значит, в ядре семнадцать протонов.'
+      kk: 'Хлордың атомдық нөмірі — 17, демек, ядросында он жеті протон бар.'
+      en: 'The atomic number of chlorine is 17, so its nucleus contains seventeen protons.'
     options:
       - text:
           ru: '18'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи образует хлор с металлами?
       kk: Хлор металдармен химиялық байланыстың қай түрін түзеді?
       en: What type of chemical bond does chlorine form with metals?
+    explanation:
+      ru: 'Хлор забирает электрон у металла и становится ионом Cl⁻, металл — катионом; их притяжение — ионная связь, как в NaCl.'
+      kk: 'Хлор металдан электрон алып, Cl⁻ ионына айналады, ал металл — катионға; олардың тартылысы — NaCl-дегідей иондық байланыс.'
+      en: 'Chlorine takes an electron from a metal and becomes the Cl⁻ ion, while the metal becomes a cation; their attraction is an ionic bond, as in NaCl.'
     options:
       - text:
           ru: Водородная
@@ -56,6 +64,10 @@ questions:
       ru: Какой из стабильных изотопов хлора является наиболее распространённым в природе?
       kk: Хлордың тұрақты изотоптарының қайсысы табиғатта ең көп таралған?
       en: Which stable isotope of chlorine is the most common in nature?
+    explanation:
+      ru: 'Природный хлор — смесь хлора-35 (около 76 %) и хлора-37, поэтому его атомная масса около 35,5.'
+      kk: 'Табиғи хлор — хлор-35 (шамамен 76 %) мен хлор-37 қоспасы, сондықтан оның атомдық массасы шамамен 35,5.'
+      en: 'Natural chlorine is a mixture of chlorine-35 (about 76%) and chlorine-37, so its atomic mass is about 35.5.'
     options:
       - text:
           ru: Хлор-34
@@ -81,6 +93,10 @@ questions:
       ru: Какое физическое свойство хлора делает его опасным при утечке в помещении?
       kk: Хлордың қай физикалық қасиеті оны бөлмеде ағып кеткенде қауіпті етеді?
       en: Which physical property of chlorine makes a leak indoors dangerous?
+    explanation:
+      ru: 'Тяжёлый ядовитый газ скапливается у пола и в низких местах и не рассеивается сам.'
+      kk: 'Ауыр улы газ еденге және ойпаң жерлерге жиналады және өздігінен шашырап кетпейді.'
+      en: 'The heavy poisonous gas collects near the floor and in low places and does not disperse by itself.'
     options:
       - text:
           ru: Он легко сжижается под давлением
@@ -106,6 +122,10 @@ questions:
       ru: Какая степень окисления хлора характерна для хлорноватистой кислоты (HClO), образующейся при реакции с водой?
       kk: Хлор сумен әрекеттескенде түзілетін хлорлылау қышқылында (HClO) хлордың тотығу дәрежесі қандай?
       en: What is the oxidation state of chlorine in hypochlorous acid (HClO), formed when it reacts with water?
+    explanation:
+      ru: 'В HClO водород даёт +1, кислород −2, поэтому у хлора +1; эта кислота и обеззараживает воду.'
+      kk: 'HClO-да сутегі +1, оттегі −2 береді, сондықтан хлорда +1; дәл осы қышқыл суды залалсыздандырады.'
+      en: 'In HClO hydrogen gives +1 and oxygen −2, so chlorine is +1; it is this acid that disinfects water.'
     options:
       - text:
           ru: '-1'

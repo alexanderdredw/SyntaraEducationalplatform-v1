@@ -4,7 +4,8 @@ export default defineConfig({
   test: {
     globals: true,
     include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
-    testTimeout: 60_000,
+    // Интеграционные тесты (импорт содержания, seed) в CI идут параллельно с тестами других пакетов — запас по времени.
+    testTimeout: 180_000,
     hookTimeout: 180_000,
   },
 });

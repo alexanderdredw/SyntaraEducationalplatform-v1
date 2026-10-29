@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома сурьмы?
       kk: Сүрме атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an antimony atom?
+    explanation:
+      ru: 'Атомный номер сурьмы — 51, значит, в ядре пятьдесят один протон.'
+      kk: 'Сүрменің атомдық нөмірі — 51, демек, ядросында елу бір протон бар.'
+      en: 'The atomic number of antimony is 51, so its nucleus contains fifty-one protons.'
     options:
       - text:
           ru: '51'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип элемента представляет собой сурьма согласно классификации по свойствам?
       kk: Қасиеттері бойынша жіктегенде сурьма элементтің қай түріне жатады?
       en: According to its properties, what type of element is antimony?
+    explanation:
+      ru: 'Сурьма блестит, как металл, но хрупка и плохо проводит ток — это полуметалл.'
+      kk: 'Сүрме металл сияқты жылтырайды, бірақ сынғыш және токты нашар өткізеді — бұл жартылай металл.'
+      en: 'Antimony shines like a metal but is brittle and conducts electricity poorly — it is a metalloid.'
     options:
       - text:
           ru: Инертный газ
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому сурьмы?
       kk: Сурьма атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the antimony atom?
+    explanation:
+      ru: 'У сурьмы 51 электрон: 36 как у криптона, заполненная 4d¹⁰, затем 5s² и три электрона на 5p.'
+      kk: 'Сүрменің 51 электроны бар: 36-сы криптондағыдай, толтырылған 4d¹⁰, содан кейін 5s² және 5p-да үш электрон.'
+      en: 'Antimony has 51 electrons: 36 as in krypton, a filled 4d¹⁰, then 5s² and three electrons in 5p.'
     options:
       - text:
           ru: '[Kr] 4d¹⁰ 5s² 5p⁵'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство сурьмы делает её полезной для точного литья?
       kk: Сурьманың қай қасиеті оны дәл құю үшін пайдалы етеді?
       en: Which property of antimony makes it useful for precision casting?
+    explanation:
+      ru: 'Сплав с сурьмой при застывании чуть расширяется и заполняет все мелкие детали формы, поэтому отливка получается точной.'
+      kk: 'Сүрме қосылған қорытпа қатқанда сәл ұлғайып, қалыптың барлық ұсақ бөлшектерін толтырады, сондықтан құйма дәл шығады.'
+      en: 'An alloy with antimony expands slightly as it solidifies and fills every fine detail of the mold, so the casting comes out precise.'
     options:
       - text:
           ru: Является хорошим проводником электричества
@@ -106,6 +122,10 @@ questions:
       ru: Какая степень окисления НЕ является типичной для сурьмы в соединениях?
       kk: Қосылыстардағы сүрмеға қай тотығу дәрежесі тән ЕМЕС?
       en: Which oxidation state is NOT typical of antimony in compounds?
+    explanation:
+      ru: 'С пятью внешними электронами сурьма проявляет степени окисления −3, +3 и +5, а +2 для неё не типична.'
+      kk: 'Бес сыртқы электроны бар сүрме −3, +3 және +5 тотығу дәрежелерін көрсетеді, ал +2 оған тән емес.'
+      en: 'With five outer electrons, antimony shows oxidation states of −3, +3 and +5, while +2 is not typical for it.'
     options:
       - text:
           ru: '+3'

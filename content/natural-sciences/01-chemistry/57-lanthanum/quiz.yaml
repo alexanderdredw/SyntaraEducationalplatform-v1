@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома лантана?
       kk: Лантан атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a lanthanum atom?
+    explanation:
+      ru: 'Атомный номер лантана — 57, значит, в ядре пятьдесят семь протонов.'
+      kk: 'Лантанның атомдық нөмірі — 57, демек, ядросында елу жеті протон бар.'
+      en: 'The atomic number of lanthanum is 57, so its nucleus contains fifty-seven protons.'
     options:
       - text:
           ru: '82'
@@ -31,6 +35,10 @@ questions:
       ru: Какова электронная конфигурация атома лантана?
       kk: Лантан атомының электрондық конфигурациясы қандай?
       en: What is the electron configuration of a lanthanum atom?
+    explanation:
+      ru: 'У лантана 57 электронов: 54 как у ксенона, 6s² и один электрон на 5d (4f-оболочка у него ещё пуста).'
+      kk: 'Лантанның 57 электроны бар: 54-і ксенондағыдай, 6s² және 5d-де бір электрон (4f қабаты әлі бос).'
+      en: 'Lanthanum has 57 electrons: 54 as in xenon, 6s² and one electron in 5d (its 4f subshell is still empty).'
     options:
       - text:
           ru: '[Xe] 5d¹ 6s²'
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является типичной и очень стабильной для лантана в соединениях?
       kk: Қосылыстардағы лантанға қай тотығу дәрежесі тән және өте тұрақты?
       en: Which oxidation state is typical and very stable for lanthanum in compounds?
+    explanation:
+      ru: 'Лантан отдаёт три внешних электрона (5d¹ 6s²) и образует устойчивый ион La³⁺, как и другие лантаноиды.'
+      kk: 'Лантан үш сыртқы электронын (5d¹ 6s²) беріп, басқа лантаноидтар сияқты тұрақты La³⁺ ионын түзеді.'
+      en: 'Lanthanum gives away three outer electrons (5d¹ 6s²) and forms the stable La³⁺ ion, like the other lanthanides.'
     options:
       - text:
           ru: '+2'
@@ -81,6 +93,10 @@ questions:
       ru: Какой изотоп лантана является самым распространённым стабильным изотопом?
       kk: Лантанның қай изотопы ең көп таралған тұрақты изотоп?
       en: Which isotope of lanthanum is the most common stable isotope?
+    explanation:
+      ru: 'Более 99 % природного лантана — стабильный лантан-139.'
+      kk: 'Табиғи лантанның 99 %-дан астамы — тұрақты лантан-139.'
+      en: 'More than 99% of natural lanthanum is stable lanthanum-139.'
     options:
       - text:
           ru: Лантан-138
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство лантана позволяет использовать его в никель-металлгидридных (NiMH) батареях для гибридных автомобилей?
       kk: Лантанның қай қасиеті оны гибридті автомобильдерге арналған никель-металл гидридті (NiMH) батареяларда пайдалануға мүмкіндік береді?
       en: Which property of lanthanum allows it to be used in nickel–metal hydride (NiMH) batteries for hybrid cars?
+    explanation:
+      ru: 'Сплав LaNi₅ при зарядке поглощает водород, а при разрядке отдаёт его — на этом и работает NiMH-аккумулятор.'
+      kk: 'LaNi₅ қорытпасы зарядталғанда сутегіні сіңіреді, ал разрядталғанда береді — NiMH аккумуляторы осыған негізделген.'
+      en: 'The LaNi₅ alloy absorbs hydrogen when charging and releases it when discharging — this is how a NiMH battery works.'
     options:
       - text:
           ru: Высокая температура плавления

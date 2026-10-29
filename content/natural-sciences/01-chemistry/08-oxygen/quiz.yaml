@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома кислорода?
       kk: Оттегі атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an oxygen atom?
+    explanation:
+      ru: 'Атомный номер кислорода — 8, значит, в ядре восемь протонов.'
+      kk: 'Оттегінің атомдық нөмірі — 8, демек, ядросында сегіз протон бар.'
+      en: 'The atomic number of oxygen is 8, so its nucleus contains eight protons.'
     options:
       - text:
           ru: '16'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи характерен для молекулы кислорода (O₂)?
       kk: Оттегі молекуласына (O₂) химиялық байланыстың қай түрі тән?
       en: Which type of chemical bond is typical of the oxygen molecule (O₂)?
+    explanation:
+      ru: 'В O₂ связаны два одинаковых атома, общие электроны не смещены ни к одному из них — связь ковалентная неполярная.'
+      kk: 'O₂-де екі бірдей атом байланысқан, ортақ электрондар ешқайсысына ығыспайды — байланыс коваленттік полюссіз.'
+      en: 'In O₂ two identical atoms are bonded, and the shared electrons are not shifted toward either of them — the bond is nonpolar covalent.'
     options:
       - text:
           ru: Металлическая
@@ -56,6 +64,10 @@ questions:
       ru: Какое свойство кислорода позволяет ему поддерживать горение, но не гореть самому?
       kk: Оттегінің қай қасиеті оған жануды қолдауға, бірақ өзі жанбауға мүмкіндік береді?
       en: Which property of oxygen lets it support combustion without burning itself?
+    explanation:
+      ru: 'При горении вещество окисляется, а кислород забирает электроны, то есть выступает окислителем, а не горючим.'
+      kk: 'Жанғанда зат тотығады, ал оттегі электрондарды алады, яғни отын емес, тотықтырғыш болады.'
+      en: 'In burning, a substance is oxidized while oxygen takes electrons, so it acts as the oxidizer, not as the fuel.'
     options:
       - text:
           ru: Он является восстановителем
@@ -81,6 +93,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома кислорода?
       kk: Оттегі атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of an oxygen atom?
+    explanation:
+      ru: 'Конфигурация кислорода 1s² 2s² 2p⁴: на внешнем уровне 2 + 4 = 6 электронов.'
+      kk: 'Оттегінің конфигурациясы 1s² 2s² 2p⁴: сыртқы деңгейде 2 + 4 = 6 электрон.'
+      en: 'Oxygen’s configuration is 1s² 2s² 2p⁴: the outer level has 2 + 4 = 6 electrons.'
     options:
       - text:
           ru: '2'
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп кислорода используется в палеоклиматологии для изучения температур прошлого?
       kk: Палеоклиматологияда өткен дәуірлердің температурасын зерттеу үшін оттегінің қай изотопы қолданылады?
       en: Which isotope of oxygen is used in palaeoclimatology to study past temperatures?
+    explanation:
+      ru: 'Доля тяжёлого кислорода-18 во льду и раковинах зависит от температуры, поэтому по ней восстанавливают климат прошлого.'
+      kk: 'Мұз бен бақалшақтардағы ауыр оттегі-18 үлесі температураға байланысты, сондықтан ол бойынша өткен климатты қалпына келтіреді.'
+      en: 'The share of heavy oxygen-18 in ice and shells depends on temperature, so it is used to reconstruct past climates.'
     options:
       - text:
           ru: Кислород-16

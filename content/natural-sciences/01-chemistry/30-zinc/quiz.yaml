@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство цинка позволяет ему образовывать соединения как с кислотами, так и с сильными щелочами?
       kk: Мырыштың қай қасиеті оған қышқылдармен де, күшті сілтілермен де қосылыстар түзуге мүмкіндік береді?
       en: Which property of zinc allows it to form compounds with both acids and strong alkalis?
+    explanation:
+      ru: 'Цинк и его оксид амфотерны: реагируют и с кислотами, и со щелочами, проявляя свойства и основания, и кислоты.'
+      kk: 'Мырыш пен оның оксиді амфотерлі: қышқылдармен де, сілтілермен де әрекеттесіп, негіздің де, қышқылдың да қасиеттерін көрсетеді.'
+      en: 'Zinc and its oxide are amphoteric: they react with both acids and alkalis, showing the properties of both a base and an acid.'
     options:
       - text:
           ru: Низкая температура плавления
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа цинка (Цинк-64)?
       kk: Мырыштың ең көп таралған тұрақты изотопының (мырыш-64) ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common stable isotope of zinc (zinc-64)?
+    explanation:
+      ru: 'У цинка 30 протонов, поэтому в цинке-64 нейтронов 64 − 30 = 34.'
+      kk: 'Мырышта 30 протон бар, сондықтан мырыш-64-те нейтрондар саны 64 − 30 = 34.'
+      en: 'Zinc has 30 protons, so zinc-64 has 64 − 30 = 34 neutrons.'
     options:
       - text:
           ru: '30'
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является типичной для цинка в его соединениях?
       kk: Қосылыстарындағы мырышқа қай тотығу дәрежесі тән?
       en: Which oxidation state is typical of zinc in its compounds?
+    explanation:
+      ru: 'Цинк отдаёт два электрона 4s², а заполненную 3d¹⁰ не трогает, поэтому в соединениях всегда +2.'
+      kk: 'Мырыш екі 4s² электронын береді, ал толтырылған 3d¹⁰-ға тимейді, сондықтан қосылыстарда әрқашан +2.'
+      en: 'Zinc gives away its two 4s² electrons and leaves the filled 3d¹⁰ untouched, so it is always +2 in compounds.'
     options:
       - text:
           ru: '+1'
@@ -81,6 +93,10 @@ questions:
       ru: Какое применение цинка составляет около 50% его мирового потребления?
       kk: Мырыштың қай қолданылуы оның әлемдік тұтынуының шамамен 50%-ын құрайды?
       en: Which use of zinc accounts for about 50% of its world consumption?
+    explanation:
+      ru: 'Около половины цинка идёт на оцинковку: слой цинка защищает сталь от ржавчины.'
+      kk: 'Мырыштың жартысына жуығы мырыштауға жұмсалады: мырыш қабаты болатты таттан қорғайды.'
+      en: 'About half of all zinc is used for galvanizing: a zinc layer protects steel from rust.'
     options:
       - text:
           ru: Гальванизация стали
@@ -106,6 +122,10 @@ questions:
       ru: Какой тип частиц образуется, когда атом цинка теряет два электрона?
       kk: Мырыш атомы екі электронын жоғалтқанда қандай бөлшек түзіледі?
       en: Which particle forms when a zinc atom loses two electrons?
+    explanation:
+      ru: 'Потеряв два электрона, атом цинка становится положительным ионом Zn²⁺ — катионом.'
+      kk: 'Екі электронын жоғалтқан мырыш атомы оң Zn²⁺ ионына — катионға айналады.'
+      en: 'Having lost two electrons, a zinc atom becomes the positive Zn²⁺ ion — a cation.'
     options:
       - text:
           ru: Катион

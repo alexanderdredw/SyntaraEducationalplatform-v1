@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство атома фтора является причиной его самой высокой химической активности среди всех элементов?
       kk: Фтор атомының қай қасиеті оның барлық элементтердің ішіндегі ең жоғары химиялық белсенділігінің себебі?
       en: Which property of the fluorine atom causes its highest chemical activity of all elements?
+    explanation:
+      ru: 'Фтор сильнее всех элементов притягивает электроны (электроотрицательность 4,0), поэтому отнимает их почти у любого вещества.'
+      kk: 'Фтор электрондарды барлық элементтерден күштірек тартады (электртерістілігі 4,0), сондықтан оларды кез келген дерлік заттан тартып алады.'
+      en: 'Fluorine attracts electrons more strongly than any other element (electronegativity 4.0), so it takes them from almost any substance.'
     options:
       - text:
           ru: Самая высокая электроотрицательность (4.0)
@@ -31,6 +35,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома фтора, исходя из его электронной конфигурации [He] 2s² 2p⁵?
       kk: Электрондық конфигурациясы [He] 2s² 2p⁵ бойынша фтор атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of a fluorine atom, given its electron configuration [He] 2s² 2p⁵?
+    explanation:
+      ru: 'На внешнем уровне 2s² 2p⁵ — 2 + 5 = 7 электронов; до устойчивой восьмёрки фтору не хватает одного.'
+      kk: 'Сыртқы деңгейде 2s² 2p⁵ — 2 + 5 = 7 электрон; тұрақты сегіздікке фторға біреуі жетпейді.'
+      en: 'The outer level 2s² 2p⁵ holds 2 + 5 = 7 electrons; fluorine is one short of a stable octet.'
     options:
       - text:
           ru: '2'
@@ -56,6 +64,10 @@ questions:
       ru: Почему фтор, являясь галогеном, способен реагировать даже с инертными газами, такими как ксенон и криптон?
       kk: Галоген болып табылатын фтор неге тіпті ксенон мен криптон сияқты инертті газдармен де әрекеттесе алады?
       en: Why can fluorine, a halogen, react even with inert gases such as xenon and krypton?
+    explanation:
+      ru: 'Фтор — самый сильный окислитель, и он способен отнять электроны даже у ксенона и криптона, образуя, например, фториды ксенона.'
+      kk: 'Фтор — ең күшті тотықтырғыш, ол тіпті ксенон мен криптоннан да электрон тартып алып, мысалы, ксенон фторидтерін түзе алады.'
+      en: 'Fluorine is the strongest oxidizer and can take electrons even from xenon and krypton, forming, for example, xenon fluorides.'
     options:
       - text:
           ru: Потому что он является самым сильным окислителем и обладает максимальной электроотрицательностью
@@ -81,6 +93,10 @@ questions:
       ru: Какое утверждение о фторе как о химическом элементе является верным?
       kk: Химиялық элемент ретінде фтор туралы қай тұжырым дұрыс?
       en: Which statement about fluorine as a chemical element is true?
+    explanation:
+      ru: 'Фтор мгновенно реагирует с другими веществами, поэтому в природе он есть только в соединениях — например, во флюорите CaF₂.'
+      kk: 'Фтор басқа заттармен лезде әрекеттеседі, сондықтан табиғатта ол тек қосылыстарда кездеседі — мысалы, флюорит CaF₂-де.'
+      en: 'Fluorine reacts instantly with other substances, so in nature it occurs only in compounds — for example, in fluorite CaF₂.'
     options:
       - text:
           ru: Фтор является металлом, так как находится в 17 группе
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп фтора используется в медицине для позитронно-эмиссионной томографии (ПЭТ-сканирования), и чем он отличается от стабильного изотопа?
       kk: Медицинада позитрондық-эмиссиялық томография (ПЭТ) үшін фтордың қай изотопы қолданылады және оның тұрақты изотоптан айырмашылығы неде?
       en: Which fluorine isotope is used in medicine for positron emission tomography (PET), and how does it differ from the stable isotope?
+    explanation:
+      ru: 'Стабильный фтор — фтор-19, а фтор-18 радиоактивен и испускает позитроны, которые регистрирует ПЭТ-сканер.'
+      kk: 'Тұрақты фтор — фтор-19, ал фтор-18 радиоактивті және ПЭТ-сканер тіркейтін позитрондар шығарады.'
+      en: 'Stable fluorine is fluorine-19, while fluorine-18 is radioactive and emits positrons that a PET scanner detects.'
     options:
       - text:
           ru: Фтор-19; он имеет 10 нейтронов

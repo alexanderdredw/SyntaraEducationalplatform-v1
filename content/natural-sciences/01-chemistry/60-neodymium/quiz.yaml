@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома неодима?
       kk: Неодим атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a neodymium atom?
+    explanation:
+      ru: 'Атомный номер неодима — 60, значит, в ядре шестьдесят протонов.'
+      kk: 'Неодимнің атомдық нөмірі — 60, демек, ядросында алпыс протон бар.'
+      en: 'The atomic number of neodymium is 60, so its nucleus contains sixty protons.'
     options:
       - text:
           ru: '60'
@@ -31,6 +35,10 @@ questions:
       ru: Какова типичная и наиболее стабильная степень окисления неодима в его соединениях?
       kk: Қосылыстарындағы неодимнің әдеттегі әрі ең тұрақты тотығу дәрежесі қандай?
       en: What is the typical and most stable oxidation state of neodymium in its compounds?
+    explanation:
+      ru: 'Неодим, как и другие лантаноиды, обычно отдаёт три электрона и образует ион Nd³⁺.'
+      kk: 'Неодим басқа лантаноидтар сияқты әдетте үш электрон беріп, Nd³⁺ ионын түзеді.'
+      en: 'Like other lanthanides, neodymium usually gives away three electrons and forms the Nd³⁺ ion.'
     options:
       - text:
           ru: '+2'
@@ -56,6 +64,10 @@ questions:
       ru: Какой из перечисленных изотопов неодима является самым распространенным в природе?
       kk: Неодимнің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of neodymium is the most common in nature?
+    explanation:
+      ru: 'Около 27 % природного неодима — изотоп неодим-142, это больше, чем любого другого.'
+      kk: 'Табиғи неодимнің шамамен 27 %-ы — неодим-142 изотопы, бұл басқаларының кез келгенінен көп.'
+      en: 'About 27% of natural neodymium is the isotope neodymium-142, more than any other.'
     options:
       - text:
           ru: Неодим-146
@@ -81,6 +93,10 @@ questions:
       ru: Какое физическое свойство неодима делает его критически важным для создания мощных постоянных магнитов?
       kk: Неодимнің қай физикалық қасиеті оны қуатты тұрақты магниттер жасау үшін аса маңызды етеді?
       en: Which physical property of neodymium makes it critical for making powerful permanent magnets?
+    explanation:
+      ru: 'В сплаве Nd₂Fe₁₄B неодим даёт очень сильную и устойчивую намагниченность — это самые мощные постоянные магниты.'
+      kk: 'Nd₂Fe₁₄B қорытпасында неодим өте күшті әрі тұрақты магниттелу береді — бұл ең қуатты тұрақты магниттер.'
+      en: 'In the Nd₂Fe₁₄B alloy, neodymium gives very strong and stable magnetization — these are the most powerful permanent magnets.'
     options:
       - text:
           ru: Исключительные магнитные свойства (ферромагнитен в сплавах)
@@ -106,6 +122,10 @@ questions:
       ru: В каком периоде периодической таблицы Менделеева расположен неодим?
       kk: Неодим Менделеевтің периодтық кестесінің қай периодында орналасқан?
       en: In which period of the periodic table is neodymium?
+    explanation:
+      ru: 'Неодим — лантаноид, а все лантаноиды относятся к 6-му периоду (в таблице их выносят отдельным рядом).'
+      kk: 'Неодим — лантаноид, ал барлық лантаноидтар 6-периодқа жатады (кестеде оларды жеке қатарға шығарады).'
+      en: 'Neodymium is a lanthanide, and all lanthanides belong to period 6 (in the table they are placed in a separate row).'
     options:
       - text:
           ru: В 7-м

@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство титана делает его особенно ценным для авиакосмической промышленности?
       kk: Титанның қай қасиеті оны авиация-ғарыш өнеркәсібі үшін аса құнды етеді?
       en: Which property of titanium makes it especially valuable for the aerospace industry?
+    explanation:
+      ru: 'Титан прочен, как сталь, но на 45 % легче её — это главное для самолётов и ракет.'
+      kk: 'Титан болаттай берік, бірақ одан 45 %-ға жеңіл — ұшақтар мен зымырандар үшін ең бастысы осы.'
+      en: 'Titanium is as strong as steel but 45% lighter — that is what matters most for airplanes and rockets.'
     options:
       - text:
           ru: Способность гореть в чистом азоте
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа титана (Титан-48)?
       kk: Титанның ең көп таралған тұрақты изотопының (титан-48) ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common stable isotope of titanium (titanium-48)?
+    explanation:
+      ru: 'У титана 22 протона, поэтому в титане-48 нейтронов 48 − 22 = 26.'
+      kk: 'Титанда 22 протон бар, сондықтан титан-48-де нейтрондар саны 48 − 22 = 26.'
+      en: 'Titanium has 22 protons, so titanium-48 has 48 − 22 = 26 neutrons.'
     options:
       - text:
           ru: '24'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип химической связи в простом веществе титан?
       kk: Титан жай затында химиялық байланыстың қай түрі бар?
       en: What type of chemical bond is found in titanium as a simple substance?
+    explanation:
+      ru: 'Титан — металл: его атомы связаны общими подвижными электронами, то есть металлической связью.'
+      kk: 'Титан — металл: оның атомдары ортақ қозғалғыш электрондар арқылы, яғни металдық байланыспен байланысқан.'
+      en: 'Titanium is a metal: its atoms are held together by shared mobile electrons, that is, by metallic bonding.'
     options:
       - text:
           ru: Ковалентная неполярная
@@ -81,6 +93,10 @@ questions:
       ru: Какое из перечисленных веществ образуется на поверхности титана, обеспечивая его исключительную коррозийную стойкость?
       kk: Титанның бетінде оның ерекше коррозияға төзімділігін қамтамасыз ететін қандай зат түзіледі?
       en: Which substance forms on the surface of titanium and gives it exceptional corrosion resistance?
+    explanation:
+      ru: 'Титан покрывается тонкой прочной плёнкой TiO₂, которая защищает его даже в морской воде и хлоре.'
+      kk: 'Титан жұқа берік TiO₂ қабыршағымен жабылады, ол оны тіпті теңіз суы мен хлорда да қорғайды.'
+      en: 'Titanium is covered with a thin strong film of TiO₂ that protects it even in seawater and chlorine.'
     options:
       - text:
           ru: Пассивный оксидный слой (TiO₂)
@@ -106,6 +122,10 @@ questions:
       ru: В каком периоде и группе Периодической системы Д.И. Менделеева находится титан?
       kk: Титан Д.И. Менделеевтің периодтық жүйесінің қай периоды мен тобында орналасқан?
       en: In which period and group of Mendeleev's periodic table is titanium?
+    explanation:
+      ru: 'Электроны титана занимают четыре уровня (4-й период), а внешних электронов четыре — 3d² 4s² (4-я группа).'
+      kk: 'Титанның электрондары төрт деңгейді алады (4-период), ал сыртқы электрондары төртеу — 3d² 4s² (4-топ).'
+      en: 'Titanium’s electrons occupy four levels (period 4), and it has four outer electrons — 3d² 4s² (group 4).'
     options:
       - text:
           ru: 4-й период, 3-я группа

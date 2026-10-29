@@ -6,6 +6,10 @@ questions:
       ru: Сколько валентных электронов содержит атом натрия в основном состоянии?
       kk: Негізгі күйдегі натрий атомында қанша валенттік электрон бар?
       en: How many valence electrons does a sodium atom have in its ground state?
+    explanation:
+      ru: 'Натрий — щелочной металл 1-й группы: на внешнем уровне у него один электрон (3s¹).'
+      kk: 'Натрий — 1-топтың сілтілік металы: сыртқы деңгейінде бір электрон (3s¹) бар.'
+      en: 'Sodium is a group 1 alkali metal: it has one electron on its outer level (3s¹).'
     options:
       - text:
           ru: '3'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи образует натрий с неметаллами, например, с хлором?
       kk: Натрий бейметалдармен, мысалы хлормен, химиялық байланыстың қай түрін түзеді?
       en: What type of chemical bond does sodium form with nonmetals such as chlorine?
+    explanation:
+      ru: 'Натрий отдаёт электрон хлору, получаются ионы Na⁺ и Cl⁻, которые притягиваются, — это ионная связь поваренной соли.'
+      kk: 'Натрий хлорға электрон береді, Na⁺ және Cl⁻ иондары түзіліп, бір-біріне тартылады — бұл ас тұзының иондық байланысы.'
+      en: 'Sodium gives an electron to chlorine, forming Na⁺ and Cl⁻ ions that attract each other — this is the ionic bond of table salt.'
     options:
       - text:
           ru: Ковалентная полярная
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является типичной для натрия в соединениях?
       kk: Қосылыстардағы натрийге қай тотығу дәрежесі тән?
       en: Which oxidation state is typical of sodium in compounds?
+    explanation:
+      ru: 'Натрий отдаёт свой единственный внешний электрон, поэтому в соединениях его степень окисления +1.'
+      kk: 'Натрий жалғыз сыртқы электронын береді, сондықтан қосылыстарда оның тотығу дәрежесі +1.'
+      en: 'Sodium gives away its only outer electron, so its oxidation state in compounds is +1.'
     options:
       - text:
           ru: '0'
@@ -81,6 +93,10 @@ questions:
       ru: Почему натрий никогда не встречается в природе в свободном виде?
       kk: Натрий табиғатта неге ешқашан бос күйінде кездеспейді?
       en: Why is sodium never found free in nature?
+    explanation:
+      ru: 'Натрий быстро окисляется на воздухе и бурно реагирует с водой, поэтому в природе он есть только в соединениях, например в поваренной соли.'
+      kk: 'Натрий ауада тез тотығады және сумен қатты әрекеттеседі, сондықтан табиғатта ол тек қосылыстарда, мысалы, ас тұзында кездеседі.'
+      en: 'Sodium quickly oxidizes in air and reacts violently with water, so in nature it occurs only in compounds, such as table salt.'
     options:
       - text:
           ru: Из-за его высокой реакционной способности
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп натрия является единственным стабильным в природе?
       kk: Натрийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?
       en: Which isotope of sodium is the only stable one in nature?
+    explanation:
+      ru: 'Весь природный натрий — это изотоп натрий-23 (11 протонов и 12 нейтронов).'
+      kk: 'Табиғи натрийдің бәрі — натрий-23 изотопы (11 протон және 12 нейтрон).'
+      en: 'All natural sodium is the isotope sodium-23 (11 protons and 12 neutrons).'
     options:
       - text:
           ru: Натрий-23

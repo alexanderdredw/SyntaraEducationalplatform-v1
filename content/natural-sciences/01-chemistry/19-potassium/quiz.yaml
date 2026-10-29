@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома калия?
       kk: Калий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a potassium atom?
+    explanation:
+      ru: 'Атомный номер калия — 19, значит, в ядре девятнадцать протонов.'
+      kk: 'Калийдің атомдық нөмірі — 19, демек, ядросында он тоғыз протон бар.'
+      en: 'The atomic number of potassium is 19, so its nucleus contains nineteen protons.'
     options:
       - text:
           ru: '4'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи характерен для соединения калия с неметаллами, например, хлорида калия (KCl)?
       kk: Калийдің бейметалдармен қосылысына, мысалы калий хлоридіне (KCl), химиялық байланыстың қай түрі тән?
       en: Which type of chemical bond is typical of potassium compounds with nonmetals, for example potassium chloride (KCl)?
+    explanation:
+      ru: 'Калий отдаёт электрон хлору, образуются ионы K⁺ и Cl⁻ — связь в KCl ионная.'
+      kk: 'Калий хлорға электрон береді, K⁺ және Cl⁻ иондары түзіледі — KCl-дегі байланыс иондық.'
+      en: 'Potassium gives an electron to chlorine, forming K⁺ and Cl⁻ ions — the bond in KCl is ionic.'
     options:
       - text:
           ru: Металлическая
@@ -56,6 +64,10 @@ questions:
       ru: Какой из перечисленных изотопов калия является радиоактивным и используется для датирования горных пород?
       kk: Калийдің қай изотопы радиоактивті және тау жыныстарының жасын анықтау үшін қолданылады?
       en: Which isotope of potassium is radioactive and used to date rocks?
+    explanation:
+      ru: 'Калий-40 медленно распадается до аргона-40, и по их соотношению определяют возраст горных пород.'
+      kk: 'Калий-40 баяу ыдырап, аргон-40-қа айналады, олардың арақатынасы бойынша тау жыныстарының жасын анықтайды.'
+      en: 'Potassium-40 slowly decays to argon-40, and their ratio is used to date rocks.'
     options:
       - text:
           ru: Калий-40
@@ -81,6 +93,10 @@ questions:
       ru: Какую степень окисления обычно проявляет калий в своих соединениях?
       kk: Калий өз қосылыстарында әдетте қандай тотығу дәрежесін көрсетеді?
       en: Which oxidation state does potassium usually show in its compounds?
+    explanation:
+      ru: 'Калий — щелочной металл и отдаёт свой единственный внешний электрон, поэтому его степень окисления +1.'
+      kk: 'Калий — сілтілік металл және жалғыз сыртқы электронын береді, сондықтан оның тотығу дәрежесі +1.'
+      en: 'Potassium is an alkali metal and gives away its only outer electron, so its oxidation state is +1.'
     options:
       - text:
           ru: '-1'
@@ -106,6 +122,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома калия?
       kk: Калий атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of a potassium atom?
+    explanation:
+      ru: 'Конфигурация калия [Ar] 4s¹ — на внешнем уровне один электрон.'
+      kk: 'Калийдің конфигурациясы [Ar] 4s¹ — сыртқы деңгейде бір электрон.'
+      en: 'Potassium’s configuration is [Ar] 4s¹ — one electron on the outer level.'
     options:
       - text:
           ru: '4'

@@ -6,6 +6,10 @@ questions:
       ru: Какая степень окисления церия делает его уникальным среди лантаноидов и позволяет ему быть мощным окислителем?
       kk: Церийдің қай тотығу дәрежесі оны лантаноидтардың ішінде ерекше етеді және оған күшті тотықтырғыш болуға мүмкіндік береді?
       en: Which oxidation state of cerium makes it unique among the lanthanides and lets it be a powerful oxidising agent?
+    explanation:
+      ru: 'Кроме обычной для лантаноидов +3, церий образует устойчивую степень +4, и ион Ce⁴⁺ легко забирает электрон, поэтому он сильный окислитель.'
+      kk: 'Лантаноидтарға тән +3-тен басқа церий тұрақты +4 дәрежесін түзеді, және Ce⁴⁺ ионы электронды оңай тартып алады, сондықтан ол күшті тотықтырғыш.'
+      en: 'Besides the +3 usual for lanthanides, cerium forms a stable +4 state, and the Ce⁴⁺ ion easily takes an electron, so it is a strong oxidizer.'
     options:
       - text:
           ru: '+3'
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержит самый распространенный стабильный изотоп церия-140?
       kk: Церийдің ең көп таралған тұрақты изотопы церий-140-та қанша нейтрон бар?
       en: How many neutrons does cerium-140, the most common stable isotope of cerium, have?
+    explanation:
+      ru: 'У церия 58 протонов, поэтому в церии-140 нейтронов 140 − 58 = 82.'
+      kk: 'Церийде 58 протон бар, сондықтан церий-140-та нейтрондар саны 140 − 58 = 82.'
+      en: 'Cerium has 58 protons, so cerium-140 has 140 − 58 = 82 neutrons.'
     options:
       - text:
           ru: '58'
@@ -56,6 +64,10 @@ questions:
       ru: Какое свойство церия объясняет его использование в автокатализаторах для очистки выхлопных газов?
       kk: Церийдің қай қасиеті оның пайдаланылған газдарды тазартатын автокатализаторларда қолданылуын түсіндіреді?
       en: Which property of cerium explains its use in car catalytic converters that clean exhaust gases?
+    explanation:
+      ru: 'CeO₂ легко переходит между степенями +4 и +3, запасая и отдавая кислород, который нужен для дожигания угарного газа.'
+      kk: 'CeO₂ +4 және +3 дәрежелері арасында оңай ауысып, иіс газын толық жағуға қажетті оттегіні жинап, береді.'
+      en: 'CeO₂ easily switches between the +4 and +3 states, storing and releasing the oxygen needed to burn off carbon monoxide.'
     options:
       - text:
           ru: Высокая электропроводность
@@ -81,6 +93,10 @@ questions:
       ru: Какой тип частицы образуется, когда атом церия теряет электроны и приобретает положительный заряд?
       kk: Церий атомы электрондарын жоғалтып, оң заряд алғанда қандай бөлшек түзіледі?
       en: Which particle forms when a cerium atom loses electrons and becomes positively charged?
+    explanation:
+      ru: 'Положительно заряженный ион, который образуется при потере электронов, называется катионом — Ce³⁺ или Ce⁴⁺.'
+      kk: 'Электрон жоғалтқанда түзілетін оң зарядталған ион катион деп аталады — Ce³⁺ немесе Ce⁴⁺.'
+      en: 'A positively charged ion that forms when electrons are lost is called a cation — Ce³⁺ or Ce⁴⁺.'
     options:
       - text:
           ru: Катион
@@ -106,6 +122,10 @@ questions:
       ru: Какое из перечисленных физических свойств церия связано с его способностью самовоспламеняться на воздухе в виде мелких частиц?
       kk: Церийдің қай физикалық қасиеті ұсақ бөлшектер түрінде ауада өздігінен тұтану қабілетімен байланысты?
       en: Which physical property of cerium is related to fine cerium particles igniting spontaneously in air?
+    explanation:
+      ru: 'Пирофорность — способность вещества самовоспламеняться на воздухе; поэтому сплав церия даёт искры в кремнях зажигалок.'
+      kk: 'Пирофорлық — заттың ауада өздігінен тұтану қабілеті; сондықтан церий қорытпасы оттықтардың шақпақ тастарында ұшқын береді.'
+      en: 'Pyrophoricity is the ability of a substance to ignite spontaneously in air; that is why a cerium alloy gives sparks in lighter flints.'
     options:
       - text:
           ru: Парамагнетизм

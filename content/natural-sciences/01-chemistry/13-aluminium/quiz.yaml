@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство алюминия объясняет его широкое использование в авиакосмической промышленности?
       kk: Алюминийдің қай қасиеті оның авиация-ғарыш өнеркәсібінде кеңінен қолданылуын түсіндіреді?
       en: Which property of aluminium explains its wide use in the aerospace industry?
+    explanation:
+      ru: 'Алюминий лёгкий и при этом прочный, особенно в сплавах, поэтому из него делают корпуса самолётов и ракет.'
+      kk: 'Алюминий жеңіл әрі берік, әсіресе қорытпаларда, сондықтан одан ұшақтар мен зымырандардың корпустарын жасайды.'
+      en: 'Aluminum is light yet strong, especially in alloys, so it is used for the bodies of airplanes and rockets.'
     options:
       - text:
           ru: Немагнитность
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома алюминия?
       kk: Алюминий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an aluminium atom?
+    explanation:
+      ru: 'Атомный номер алюминия — 13, значит, в ядре тринадцать протонов.'
+      kk: 'Алюминийдің атомдық нөмірі — 13, демек, ядросында он үш протон бар.'
+      en: 'The atomic number of aluminum is 13, so its nucleus contains thirteen protons.'
     options:
       - text:
           ru: '27'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип иона образует атом алюминия, теряя три электрона?
       kk: Үш электронын жоғалтқанда алюминий атомы қандай ион түзеді?
       en: What kind of ion does an aluminium atom form when it loses three electrons?
+    explanation:
+      ru: 'У алюминия три внешних электрона; отдав их, он становится ионом Al³⁺.'
+      kk: 'Алюминийдің үш сыртқы электроны бар; оларды берген соң ол Al³⁺ ионына айналады.'
+      en: 'Aluminum has three outer electrons; having given them away, it becomes the Al³⁺ ion.'
     options:
       - text:
           ru: Катион с зарядом +3
@@ -81,6 +93,10 @@ questions:
       ru: Почему алюминий устойчив к коррозии, несмотря на его высокую реакционную способность?
       kk: Реакциялық қабілеті жоғары болса да, алюминий неге коррозияға төзімді?
       en: Why is aluminium resistant to corrosion despite its high reactivity?
+    explanation:
+      ru: 'На воздухе поверхность алюминия сразу покрывается тонкой плотной плёнкой Al₂O₃, которая не пропускает кислород и воду дальше.'
+      kk: 'Ауада алюминий беті бірден Al₂O₃-тің жұқа тығыз қабыршағымен жабылады, ол оттегі мен суды әрі қарай өткізбейді.'
+      en: 'In air, the surface of aluminum is immediately covered with a thin dense film of Al₂O₃ that keeps oxygen and water out.'
     options:
       - text:
           ru: Не реагирует с кислородом
@@ -106,6 +122,10 @@ questions:
       ru: Какое количество нейтронов содержит самый распространенный стабильный изотоп алюминия?
       kk: Алюминийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
       en: How many neutrons does the most common stable isotope of aluminium have?
+    explanation:
+      ru: 'Стабильный изотоп — алюминий-27; нейтронов 27 − 13 = 14.'
+      kk: 'Тұрақты изотоп — алюминий-27; нейтрондар саны 27 − 13 = 14.'
+      en: 'The stable isotope is aluminum-27; it has 27 − 13 = 14 neutrons.'
     options:
       - text:
           ru: '14'

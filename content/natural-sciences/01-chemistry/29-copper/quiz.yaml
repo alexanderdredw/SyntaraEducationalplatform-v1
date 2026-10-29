@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство меди делает её основным материалом для электропроводки?
       kk: Мыстың қай қасиеті оны электр сымдарының негізгі материалы етеді?
       en: Which property of copper makes it the main material for electrical wiring?
+    explanation:
+      ru: 'Медь проводит ток лучше всех металлов, кроме серебра, но намного дешевле его — поэтому провода делают из меди.'
+      kk: 'Мыс токты күмістен басқа барлық металдардан жақсы өткізеді, бірақ одан әлдеқайда арзан — сондықтан сымдарды мыстан жасайды.'
+      en: 'Copper conducts electricity better than any metal except silver, yet is much cheaper — so wires are made of copper.'
     options:
       - text:
           ru: Способность образовывать патину
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома меди?
       kk: Мыс атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a copper atom?
+    explanation:
+      ru: 'Атомный номер меди — 29, значит, в ядре двадцать девять протонов.'
+      kk: 'Мыстың атомдық нөмірі — 29, демек, ядросында жиырма тоғыз протон бар.'
+      en: 'The atomic number of copper is 29, so its nucleus contains twenty-nine protons.'
     options:
       - text:
           ru: '29'
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому меди?
       kk: Мыс атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the copper atom?
+    explanation:
+      ru: 'Один электрон меди переходит с 4s на 3d, и 3d-оболочка заполняется полностью (3d¹⁰) — так устойчивее.'
+      kk: 'Мыстың бір электроны 4s-тен 3d-ге ауысады, және 3d қабаты толық толады (3d¹⁰) — бұл тұрақтырақ.'
+      en: 'One copper electron moves from 4s to 3d, and the 3d subshell becomes completely filled (3d¹⁰) — this is more stable.'
     options:
       - text:
           ru: '[Ar] 3d⁹ 4s²'
@@ -81,6 +93,10 @@ questions:
       ru: Какое из следующих утверждений о меди является верным?
       kk: Мыс туралы қай тұжырым дұрыс?
       en: Which statement about copper is true?
+    explanation:
+      ru: 'Медь в малых количествах нужна всем живым организмам: она входит в ферменты, участвующие в дыхании клеток.'
+      kk: 'Мыс аз мөлшерде барлық тірі ағзаларға қажет: ол жасушалардың тыныс алуына қатысатын ферменттердің құрамына кіреді.'
+      en: 'Small amounts of copper are needed by all living things: it is part of enzymes involved in cell respiration.'
     options:
       - text:
           ru: Медь — это неметалл
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп меди является самым распространённым в природе?
       kk: Мыстың қай изотопы табиғатта ең көп таралған?
       en: Which isotope of copper is the most common in nature?
+    explanation:
+      ru: 'Около 69 % природной меди — медь-63, остальное — медь-65.'
+      kk: 'Табиғи мыстың шамамен 69 %-ы — мыс-63, қалғаны — мыс-65.'
+      en: 'About 69% of natural copper is copper-63; the rest is copper-65.'
     options:
       - text:
           ru: Медь-63

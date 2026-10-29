@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома кремния?
       kk: Кремний атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a silicon atom?
+    explanation:
+      ru: 'Атомный номер кремния — 14, значит, в ядре четырнадцать протонов.'
+      kk: 'Кремнийдің атомдық нөмірі — 14, демек, ядросында он төрт протон бар.'
+      en: 'The atomic number of silicon is 14, so its nucleus contains fourteen protons.'
     options:
       - text:
           ru: '7'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип элемента представляет собой кремний согласно классификации по свойствам?
       kk: Қасиеттері бойынша жіктегенде кремний элементтің қай түріне жатады?
       en: According to its properties, what type of element is silicon?
+    explanation:
+      ru: 'Кремний блестит, как металл, но хрупок и проводит ток хуже металлов — это полуметалл и полупроводник.'
+      kk: 'Кремний металл сияқты жылтырайды, бірақ сынғыш және токты металдардан нашар өткізеді — бұл жартылай металл және жартылай өткізгіш.'
+      en: 'Silicon shines like a metal but is brittle and conducts electricity worse than metals — it is a metalloid and a semiconductor.'
     options:
       - text:
           ru: Инертный газ
@@ -56,6 +64,10 @@ questions:
       ru: Как изменяется электрическая проводимость кремния при повышении температуры?
       kk: Температура жоғарылағанда кремнийдің электр өткізгіштігі қалай өзгереді?
       en: How does the electrical conductivity of silicon change as temperature rises?
+    explanation:
+      ru: 'Кремний — полупроводник: при нагревании больше электронов освобождается для переноса тока, и проводимость растёт, в отличие от металлов.'
+      kk: 'Кремний — жартылай өткізгіш: қыздырғанда ток тасымалдауға көбірек электрон босайды, сондықтан металдардан айырмашылығы, өткізгіштігі артады.'
+      en: 'Silicon is a semiconductor: when heated, more electrons are freed to carry current, so its conductivity rises, unlike that of metals.'
     options:
       - text:
           ru: Уменьшается
@@ -81,6 +93,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома кремния?
       kk: Кремний атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of a silicon atom?
+    explanation:
+      ru: 'Кремний стоит в 14-й группе, его внешний уровень 3s² 3p² — четыре электрона.'
+      kk: 'Кремний 14-топта орналасқан, оның сыртқы деңгейі 3s² 3p² — төрт электрон.'
+      en: 'Silicon is in group 14, and its outer level 3s² 3p² holds four electrons.'
     options:
       - text:
           ru: '4'
@@ -106,6 +122,10 @@ questions:
       ru: Какой из изотопов кремния является самым распространённым в природе?
       kk: Кремнийдің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of silicon is the most common in nature?
+    explanation:
+      ru: 'Около 92 % природного кремния — изотоп кремний-28 (14 протонов и 14 нейтронов).'
+      kk: 'Табиғи кремнийдің шамамен 92 %-ы — кремний-28 изотопы (14 протон және 14 нейтрон).'
+      en: 'About 92% of natural silicon is the isotope silicon-28 (14 protons and 14 neutrons).'
     options:
       - text:
           ru: Кремний-29

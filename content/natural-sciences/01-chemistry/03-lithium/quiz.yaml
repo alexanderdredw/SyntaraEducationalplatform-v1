@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство лития позволяет отнести его к щелочным металлам?
       kk: Литийдің қай қасиеті оны сілтілік металдарға жатқызуға мүмкіндік береді?
       en: Which property of lithium makes it an alkali metal?
+    explanation:
+      ru: 'Щелочные металлы — элементы 1-й группы с одним внешним электроном, который они легко отдают; литий — первый из них.'
+      kk: 'Сілтілік металдар — бір сыртқы электроны бар, оны оңай беретін 1-топ элементтері; литий — солардың біріншісі.'
+      en: 'Alkali metals are group 1 elements with one outer electron that they easily give away; lithium is the first of them.'
     options:
       - text:
           ru: Способность окрашивать пламя в красный цвет
@@ -31,6 +35,10 @@ questions:
       ru: Сколько валентных электронов содержит атом лития согласно его электронной конфигурации [He] 2s¹?
       kk: Электрондық конфигурациясы [He] 2s¹ бойынша литий атомында қанша валенттік электрон бар?
       en: How many valence electrons does a lithium atom have according to its electron configuration [He] 2s¹?
+    explanation:
+      ru: 'После оболочки гелия у лития остаётся один электрон 2s¹ — это и есть его единственный валентный электрон.'
+      kk: 'Гелий қабатынан кейін литийде бір 2s¹ электрон қалады — бұл оның жалғыз валенттік электроны.'
+      en: 'After the helium shell, lithium has one 2s¹ electron left — this is its only valence electron.'
     options:
       - text:
           ru: '4'
@@ -56,6 +64,10 @@ questions:
       ru: Почему литий не встречается в природе в свободном виде?
       kk: Литий табиғатта неге бос күйінде кездеспейді?
       en: Why is lithium never found free in nature?
+    explanation:
+      ru: 'Литий легко отдаёт электрон и сразу реагирует с водой и кислородом, поэтому в природе он есть только в составе минералов и солей.'
+      kk: 'Литий электронды оңай береді және сумен, оттегімен бірден әрекеттеседі, сондықтан табиғатта ол тек минералдар мен тұздар құрамында кездеседі.'
+      en: 'Lithium gives away its electron easily and reacts at once with water and oxygen, so in nature it occurs only in minerals and salts.'
     options:
       - text:
           ru: Из-за высокой химической активности
@@ -81,6 +93,10 @@ questions:
       ru: Какая частица в атоме лития определяет его принадлежность к химическому элементу?
       kk: Литий атомындағы қай бөлшек оның химиялық элемент ретінде қандай екенін анықтайды?
       en: Which particle in a lithium atom determines which chemical element it is?
+    explanation:
+      ru: 'Элемент определяется числом протонов в ядре: любой атом с тремя протонами — литий, сколько бы в нём ни было нейтронов.'
+      kk: 'Элемент ядродағы протон санымен анықталады: үш протоны бар кез келген атом — литий, нейтрондары қанша болса да.'
+      en: 'An element is defined by the number of protons in the nucleus: any atom with three protons is lithium, however many neutrons it has.'
     options:
       - text:
           ru: Электрон
@@ -106,6 +122,10 @@ questions:
       ru: Какое применение лития связано с его способностью образовывать легкие сплавы?
       kk: Литийдің қай қолданылуы оның жеңіл қорытпалар түзу қабілетімен байланысты?
       en: Which use of lithium is related to its ability to form light alloys?
+    explanation:
+      ru: 'Литий — самый лёгкий металл, и сплавы с алюминием и магнием получаются лёгкими и прочными, что важно для авиации и космоса.'
+      kk: 'Литий — ең жеңіл металл, оның алюминий және магниймен қорытпалары жеңіл әрі берік, бұл авиация мен ғарыш үшін маңызды.'
+      en: 'Lithium is the lightest metal, and its alloys with aluminum and magnesium are light and strong, which matters for aviation and spaceflight.'
     options:
       - text:
           ru: Литий-ионные аккумуляторы

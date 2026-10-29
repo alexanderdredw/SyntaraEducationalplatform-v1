@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство празеодима объясняет его использование в защитных очках для сварщиков?
       kk: Празеодимнің қай қасиеті оның дәнекерлеушілердің қорғаныш көзілдіріктерінде қолданылуын түсіндіреді?
       en: Which property of praseodymium explains its use in protective goggles for welders?
+    explanation:
+      ru: 'Стекло с празеодимом и неодимом (дидимовое) поглощает яркое жёлтое, ультрафиолетовое и инфракрасное излучение сварки.'
+      kk: 'Празеодим мен неодим қосылған (дидим) шыны дәнекерлеудің ашық сары, ультракүлгін және инфрақызыл сәулесін жұтады.'
+      en: 'Glass with praseodymium and neodymium (didymium glass) absorbs the bright yellow, ultraviolet and infrared light of welding.'
     options:
       - text:
           ru: Высокая температура плавления 931°C
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержится в ядре самого распространенного стабильного изотопа празеодима?
       kk: Празеодимнің ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common stable isotope of praseodymium?
+    explanation:
+      ru: 'Единственный стабильный изотоп — празеодим-141; нейтронов 141 − 59 = 82.'
+      kk: 'Жалғыз тұрақты изотоп — празеодим-141; нейтрондар саны 141 − 59 = 82.'
+      en: 'The only stable isotope is praseodymium-141; it has 141 − 59 = 82 neutrons.'
     options:
       - text:
           ru: 59 и 82
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является наиболее стабильной для празеодима в соединениях?
       kk: Қосылыстардағы празеодим үшін қай тотығу дәрежесі ең тұрақты?
       en: Which oxidation state is the most stable for praseodymium in compounds?
+    explanation:
+      ru: 'Как и большинство лантаноидов, празеодим чаще всего отдаёт три электрона и образует ион Pr³⁺ с зелёными солями.'
+      kk: 'Көптеген лантаноидтар сияқты празеодим көбінесе үш электрон беріп, жасыл тұздары бар Pr³⁺ ионын түзеді.'
+      en: 'Like most lanthanides, praseodymium usually gives away three electrons and forms the Pr³⁺ ion, whose salts are green.'
     options:
       - text:
           ru: '+3'
@@ -81,6 +93,10 @@ questions:
       ru: Какой тип частицы образуется, когда атом празеодима теряет три электрона?
       kk: Празеодим атомы үш электронын жоғалтқанда қандай бөлшек түзіледі?
       en: Which particle forms when a praseodymium atom loses three electrons?
+    explanation:
+      ru: 'Потеряв три электрона, атом празеодима становится ионом Pr³⁺.'
+      kk: 'Үш электронын жоғалтқан празеодим атомы Pr³⁺ ионына айналады.'
+      en: 'Having lost three electrons, a praseodymium atom becomes the Pr³⁺ ion.'
     options:
       - text:
           ru: Нейтральный атом с измененной электронной конфигурацией
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство празеодима позволяет отнести его к металлам?
       kk: Празеодимнің қай қасиеті оны металдарға жатқызуға мүмкіндік береді?
       en: Which property of praseodymium makes it a metal?
+    explanation:
+      ru: 'Хорошая проводимость тепла и тока, блеск и ковкость — признаки металлов, и празеодим ими обладает.'
+      kk: 'Жылу мен токты жақсы өткізу, жылтыр және созылғыштық — металдардың белгілері, және празеодимде олар бар.'
+      en: 'Good conduction of heat and electricity, luster and malleability are signs of metals, and praseodymium has them.'
     options:
       - text:
           ru: Наличие 59 протонов в ядре

@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство технеция позволяет использовать его в качестве бета-излучателя для калибровки приборов?
       kk: Технецийдің қай қасиеті оны құралдарды калибрлеуге арналған бета-сәуле шығарғыш ретінде пайдалануға мүмкіндік береді?
       en: Which property of technetium allows it to be used as a beta source for calibrating instruments?
+    explanation:
+      ru: 'У технеция нет стабильных изотопов, все они радиоактивны, поэтому его используют как источник излучения для калибровки.'
+      kk: 'Технецийдің тұрақты изотоптары жоқ, бәрі радиоактивті, сондықтан оны калибрлеу үшін сәуле көзі ретінде қолданады.'
+      en: 'Technetium has no stable isotopes — all are radioactive — so it is used as a radiation source for calibration.'
     options:
       - text:
           ru: Серебристо-серый вид, похожий на платину
@@ -31,6 +35,10 @@ questions:
       ru: Какой изотоп технеция имеет 55 нейтронов в ядре?
       kk: Технецийдің қай изотопының ядросында 55 нейтрон бар?
       en: Which isotope of technetium has 55 neutrons in its nucleus?
+    explanation:
+      ru: 'У технеция 43 протона, поэтому изотоп с 55 нейтронами имеет массовое число 43 + 55 = 98.'
+      kk: 'Технецийде 43 протон бар, сондықтан 55 нейтроны бар изотоптың массалық саны 43 + 55 = 98.'
+      en: 'Technetium has 43 protons, so the isotope with 55 neutrons has a mass number of 43 + 55 = 98.'
     options:
       - text:
           ru: Технеций-98
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления технеция является наиболее частой, помимо +7?
       kk: +7-ден басқа технецийдің ең жиі кездесетін тотығу дәрежесі қандай?
       en: Apart from +7, which oxidation state of technetium is the most common?
+    explanation:
+      ru: 'Кроме высшей степени +7 (в пертехнетатах), технеций чаще всего встречается со степенью окисления +4, например в TcO₂.'
+      kk: 'Ең жоғары +7 дәрежесінен (пертехнетаттарда) басқа, технеций көбінесе +4 тотығу дәрежесімен кездеседі, мысалы TcO₂-де.'
+      en: 'Apart from its highest state of +7 (in pertechnetates), technetium most often occurs with an oxidation state of +4, for example in TcO₂.'
     options:
       - text:
           ru: '+1'
@@ -81,6 +93,10 @@ questions:
       ru: Почему технеций почти не применяют как ингибитор коррозии стали, хотя он эффективен?
       kk: Тиімді болса да, технеций неге болат коррозиясының ингибиторы ретінде іс жүзінде қолданылмайды?
       en: Why is technetium hardly used as a corrosion inhibitor for steel, even though it is effective?
+    explanation:
+      ru: 'Пертехнетаты защищают сталь от коррозии, но технеций радиоактивен, поэтому применять его в обычной технике опасно.'
+      kk: 'Пертехнетаттар болатты коррозиядан қорғайды, бірақ технеций радиоактивті, сондықтан оны қарапайым техникада қолдану қауіпті.'
+      en: 'Pertechnetates protect steel from corrosion, but technetium is radioactive, so using it in ordinary equipment is dangerous.'
     options:
       - text:
           ru: Из-за высокой температуры плавления
@@ -106,6 +122,10 @@ questions:
       ru: Какое применение технеция связано с его способностью испускать гамма-излучение?
       kk: Технецийдің қай қолданылуы оның гамма-сәуле шығару қабілетімен байланысты?
       en: Which use of technetium is related to its ability to emit gamma rays?
+    explanation:
+      ru: 'Гамма-лучи технеция-99m проходят сквозь тело и регистрируются камерой, что позволяет увидеть кости, сердце и другие органы.'
+      kk: 'Технеций-99m гамма-сәулелері денеден өтіп, камерамен тіркеледі, бұл сүйектерді, жүректі және басқа мүшелерді көруге мүмкіндік береді.'
+      en: 'Gamma rays from technetium-99m pass through the body and are recorded by a camera, which makes bones, the heart and other organs visible.'
     options:
       - text:
           ru: Изучение процессов коррозии металлов

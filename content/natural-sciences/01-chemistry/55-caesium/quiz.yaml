@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство цезия, связанное с его электронной конфигурацией, делает его самым реакционноспособным металлом?
       kk: Цезийдің электрондық конфигурациясымен байланысты қай қасиеті оны ең белсенді металға айналдырады?
       en: Which property of caesium, related to its electron configuration, makes it the most reactive metal?
+    explanation:
+      ru: 'Единственный внешний электрон 6s¹ цезия далеко от ядра и удерживается очень слабо, поэтому легко отдаётся.'
+      kk: 'Цезийдің жалғыз 6s¹ сыртқы электроны ядродан алыс және өте әлсіз ұсталады, сондықтан оңай беріледі.'
+      en: 'Cesium’s single outer electron 6s¹ is far from the nucleus and held very weakly, so it is given away easily.'
     options:
       - text:
           ru: Высокая электроотрицательность
@@ -31,6 +35,10 @@ questions:
       ru: Почему цезий никогда не встречается в природе в свободном виде, а только в соединениях?
       kk: Цезий табиғатта неге ешқашан бос күйінде кездеспей, тек қосылыстар құрамында болады?
       en: Why is caesium never found free in nature, only in compounds?
+    explanation:
+      ru: 'Цезий мгновенно реагирует с воздухом и со взрывом — с водой, поэтому в природе есть только его соединения.'
+      kk: 'Цезий ауамен лезде, ал сумен жарылыспен әрекеттеседі, сондықтан табиғатта тек оның қосылыстары бар.'
+      en: 'Cesium reacts instantly with air and explosively with water, so only its compounds exist in nature.'
     options:
       - text:
           ru: Из-за его радиоактивности
@@ -56,6 +64,10 @@ questions:
       ru: Какое применение цезия основано на стабильности его изотопа цезий-133 и его электронных переходов?
       kk: Цезийдің қай қолданылуы оның цезий-133 изотопының тұрақтылығына және электрондық ауысуларына негізделген?
       en: Which use of caesium is based on the stability of its isotope caesium-133 and its electron transitions?
+    explanation:
+      ru: 'Секунда определена через частоту излучения атома цезия-133, поэтому цезиевые атомные часы — самые точные эталоны времени.'
+      kk: 'Секунда цезий-133 атомының сәуле шығару жиілігі арқылы анықталған, сондықтан цезий атомдық сағаттары — уақыттың ең дәл эталондары.'
+      en: 'The second is defined by the radiation frequency of the cesium-133 atom, so cesium atomic clocks are the most precise time standards.'
     options:
       - text:
           ru: Использование в буровых растворах
@@ -81,6 +93,10 @@ questions:
       ru: Какой тип иона образует цезий, отдавая свой единственный валентный электрон, и какова его типичная степень окисления?
       kk: Жалғыз валенттік электронын бергенде цезий қандай ион түзеді және оның әдеттегі тотығу дәрежесі қандай?
       en: What kind of ion does caesium form when it gives away its single valence electron, and what is its typical oxidation state?
+    explanation:
+      ru: 'Отдав один электрон, цезий становится ионом Cs⁺ — катионом со степенью окисления +1.'
+      kk: 'Бір электрон берген цезий Cs⁺ ионына — тотығу дәрежесі +1 катионға айналады.'
+      en: 'Having given away one electron, cesium becomes the Cs⁺ ion — a cation with an oxidation state of +1.'
     options:
       - text:
           ru: Катион со степенью окисления +2
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство цезия напрямую связано с его положением в 1-й группе и 6-м периоде таблицы Менделеева?
       kk: Цезийдің қай қасиеті оның Менделеев кестесінің 1-тобы мен 6-периодындағы орнымен тікелей байланысты?
       en: Which property of caesium is directly related to its position in group 1 and period 6 of the periodic table?
+    explanation:
+      ru: 'В 1-й группе активность растёт сверху вниз, и цезий в 6-м периоде отдаёт электрон легче всех стабильных элементов.'
+      kk: '1-топта белсенділік жоғарыдан төмен қарай артады, және 6-периодтағы цезий электронды барлық тұрақты элементтерден оңай береді.'
+      en: 'In group 1 reactivity increases from top to bottom, and cesium in period 6 gives away an electron more easily than any other stable element.'
     options:
       - text:
           ru: Он является самым легким из всех металлов

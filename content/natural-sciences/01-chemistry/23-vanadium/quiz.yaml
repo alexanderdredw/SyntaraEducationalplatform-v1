@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома ванадия?
       kk: Ванадий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a vanadium atom?
+    explanation:
+      ru: 'Атомный номер ванадия — 23, значит, в ядре двадцать три протона.'
+      kk: 'Ванадийдің атомдық нөмірі — 23, демек, ядросында жиырма үш протон бар.'
+      en: 'The atomic number of vanadium is 23, so its nucleus contains twenty-three protons.'
     options:
       - text:
           ru: '50'
@@ -31,6 +35,10 @@ questions:
       ru: Какой из перечисленных изотопов ванадия является единственным стабильным природным изотопом?
       kk: Ванадийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?
       en: Which isotope of vanadium is its only stable natural isotope?
+    explanation:
+      ru: 'Почти весь природный ванадий — стабильный ванадий-51 (23 протона и 28 нейтронов).'
+      kk: 'Табиғи ванадийдің түгелге жуығы — тұрақты ванадий-51 (23 протон және 28 нейтрон).'
+      en: 'Almost all natural vanadium is stable vanadium-51 (23 protons and 28 neutrons).'
     options:
       - text:
           ru: Ванадий-49
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому ванадия?
       kk: Ванадий атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the vanadium atom?
+    explanation:
+      ru: 'У ванадия 23 электрона: 18 как у аргона, затем 4s² и три электрона на 3d.'
+      kk: 'Ванадийдің 23 электроны бар: 18-і аргондағыдай, содан кейін 4s² және 3d-де үш электрон.'
+      en: 'Vanadium has 23 electrons: 18 as in argon, then 4s² and three electrons in 3d.'
     options:
       - text:
           ru: '[Ar] 3d⁵ 4s²'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство ванадия объясняет его использование в качестве добавки к стали для повышения прочности?
       kk: Ванадийдің қай қасиеті оны беріктікті арттыру үшін болатқа қоспа ретінде пайдалануды түсіндіреді?
       en: Which property of vanadium explains its use as an additive to make steel stronger?
+    explanation:
+      ru: 'Небольшая добавка ванадия делает сталь прочнее и износостойче — из неё делают инструменты и пружины.'
+      kk: 'Аз ғана ванадий қоспасы болатты берік әрі тозуға төзімді етеді — одан құралдар мен серіппелер жасайды.'
+      en: 'A small addition of vanadium makes steel stronger and more wear-resistant — it is used for tools and springs.'
     options:
       - text:
           ru: Высокая структурная прочность и долговечность
@@ -106,6 +122,10 @@ questions:
       ru: Какая степень окисления ванадия характерна для его соединения V₂O₅, используемого в качестве катализатора?
       kk: Катализатор ретінде қолданылатын V₂O₅ қосылысындағы ванадийдің тотығу дәрежесі қандай?
       en: What is the oxidation state of vanadium in V₂O₅, a compound used as a catalyst?
+    explanation:
+      ru: 'В V₂O₅ пять атомов кислорода дают −10, значит, на два атома ванадия приходится +10, по +5 на каждый.'
+      kk: 'V₂O₅-те бес оттегі атомы −10 береді, демек, екі ванадий атомына +10, әрқайсысына +5 келеді.'
+      en: 'In V₂O₅ five oxygen atoms give −10, so the two vanadium atoms have +10 together, +5 each.'
     options:
       - text:
           ru: '+4'

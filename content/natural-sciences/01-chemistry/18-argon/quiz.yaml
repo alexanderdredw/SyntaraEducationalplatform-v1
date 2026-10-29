@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство аргона делает его пригодным для использования в качестве защитной атмосферы при сварке?
       kk: Аргонның қай қасиеті оны дәнекерлеу кезінде қорғаныш атмосфера ретінде пайдалануға жарамды етеді?
       en: Which property of argon makes it suitable as a shielding atmosphere for welding?
+    explanation:
+      ru: 'Аргон не реагирует с раскалённым металлом и вытесняет воздух, поэтому шов не окисляется.'
+      kk: 'Аргон қызған металмен әрекеттеспейді және ауаны ығыстырады, сондықтан жік тотықпайды.'
+      en: 'Argon does not react with hot metal and pushes air away, so the weld does not oxidize.'
     options:
       - text:
           ru: Способность поддерживать горение
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома аргона?
       kk: Аргон атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an argon atom?
+    explanation:
+      ru: 'Атомный номер аргона — 18, значит, в ядре восемнадцать протонов.'
+      kk: 'Аргонның атомдық нөмірі — 18, демек, ядросында он сегіз протон бар.'
+      en: 'The atomic number of argon is 18, so its nucleus contains eighteen protons.'
     options:
       - text:
           ru: '40'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип частиц образует аргон в газообразном состоянии при стандартных условиях?
       kk: Стандартты жағдайда газ күйіндегі аргон қандай бөлшектерден тұрады?
       en: What particles make up gaseous argon under standard conditions?
+    explanation:
+      ru: 'Как и другие благородные газы, аргон не образует связей даже с собой и существует в виде отдельных атомов.'
+      kk: 'Басқа асыл газдар сияқты аргон тіпті өзімен де байланыс түзбейді және жеке атомдар түрінде болады.'
+      en: 'Like other noble gases, argon forms no bonds, even with itself, and exists as separate atoms.'
     options:
       - text:
           ru: Трехатомные молекулы
@@ -81,6 +93,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому аргона?
       kk: Аргон атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the argon atom?
+    explanation:
+      ru: 'У аргона 18 электронов: 10 как у неона и ещё восемь на третьем уровне — 3s² 3p⁶, заполненный октет.'
+      kk: 'Аргонның 18 электроны бар: 10-ы неондағыдай және тағы сегізі үшінші деңгейде — 3s² 3p⁶, толтырылған октет.'
+      en: 'Argon has 18 electrons: 10 as in neon and eight more on the third level — 3s² 3p⁶, a filled octet.'
     options:
       - text:
           ru: '[Ne] 3s² 3p⁴'
@@ -106,6 +122,10 @@ questions:
       ru: Какое из перечисленных применений аргона связано с его низкой теплопроводностью?
       kk: Аргонның қай қолданылуы оның жылу өткізгіштігінің төмендігімен байланысты?
       en: Which use of argon is related to its low thermal conductivity?
+    explanation:
+      ru: 'Аргон хуже воздуха проводит тепло, поэтому им заполняют промежутки между стёклами в окнах.'
+      kk: 'Аргон жылуды ауадан нашар өткізеді, сондықтан онымен терезедегі шынылар арасындағы саңылауларды толтырады.'
+      en: 'Argon conducts heat worse than air, so it is used to fill the gaps between window panes.'
     options:
       - text:
           ru: Хранение продуктов питания

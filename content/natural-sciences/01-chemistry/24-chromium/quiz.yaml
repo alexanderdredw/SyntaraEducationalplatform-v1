@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство хрома объясняет его использование в качестве защитного покрытия для других металлов?
       kk: Хромның қай қасиеті оны басқа металдарға қорғаныш жабын ретінде пайдалануды түсіндіреді?
       en: Which property of chromium explains its use as a protective coating for other metals?
+    explanation:
+      ru: 'Хром сразу покрывается плотной плёнкой Cr₂O₃, и покрытие из хрома не даёт кислороду добраться до металла под ним.'
+      kk: 'Хром бірден тығыз Cr₂O₃ қабыршағымен жабылады, және хром жабыны оттегінің астындағы металға жетуіне жол бермейді.'
+      en: 'Chromium is immediately covered with a dense film of Cr₂O₃, and chrome plating keeps oxygen from reaching the metal underneath.'
     options:
       - text:
           ru: Растворимость в соляной кислоте
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа хрома, если его атомный номер равен 24?
       kk: Атомдық нөмірі 24 болса, хромның ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?
       en: If its atomic number is 24, how many neutrons are in the nucleus of the most common stable isotope of chromium?
+    explanation:
+      ru: 'Самый распространённый изотоп — хром-52; нейтронов 52 − 24 = 28.'
+      kk: 'Ең көп таралған изотоп — хром-52; нейтрондар саны 52 − 24 = 28.'
+      en: 'The most common isotope is chromium-52; it has 52 − 24 = 28 neutrons.'
     options:
       - text:
           ru: '52'
@@ -56,6 +64,10 @@ questions:
       ru: Какая особенность электронной конфигурации хрома ([Ar] 3d⁵ 4s¹) обеспечивает его стабильность?
       kk: Хромның электрондық конфигурациясының ([Ar] 3d⁵ 4s¹) қай ерекшелігі оның тұрақтылығын қамтамасыз етеді?
       en: Which feature of the electron configuration of chromium ([Ar] 3d⁵ 4s¹) makes it stable?
+    explanation:
+      ru: 'Один электрон переходит с 4s на 3d, и пять 3d-электронов наполовину заполняют оболочку — такое состояние особенно устойчиво.'
+      kk: 'Бір электрон 4s-тен 3d-ге ауысады, және бес 3d электроны қабатты жартылай толтырады — мұндай күй ерекше тұрақты.'
+      en: 'One electron moves from 4s to 3d, and five 3d electrons fill the subshell halfway — such a state is especially stable.'
     options:
       - text:
           ru: Полузаполненная 3d-оболочка
@@ -81,6 +93,10 @@ questions:
       ru: Почему хром, будучи металлом, не тускнеет на воздухе, сохраняя свой блеск?
       kk: Металл бола тұра хром неге ауада күңгірттенбей, жылтырын сақтайды?
       en: Why does chromium, a metal, not tarnish in air and keep its shine?
+    explanation:
+      ru: 'Оксидная плёнка Cr₂O₃ прозрачна и очень тонка, поэтому металл остаётся блестящим, но дальше не окисляется.'
+      kk: 'Cr₂O₃ оксид қабыршағы мөлдір әрі өте жұқа, сондықтан металл жылтыр күйінде қалады, бірақ әрі қарай тотықпайды.'
+      en: 'The Cr₂O₃ oxide film is transparent and very thin, so the metal stays shiny but does not oxidize further.'
     options:
       - text:
           ru: Вследствие его высокой температуры плавления
@@ -106,6 +122,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома хрома, если его порядковый номер равен 24?
       kk: Реттік нөмірі 24 болса, хром атомының ядросында қанша протон бар?
       en: If its atomic number is 24, how many protons are in the nucleus of a chromium atom?
+    explanation:
+      ru: 'Порядковый (атомный) номер равен числу протонов в ядре — у хрома их 24.'
+      kk: 'Реттік (атомдық) нөмір ядродағы протон санына тең — хромда олар 24.'
+      en: 'The atomic number equals the number of protons in the nucleus — chromium has 24.'
     options:
       - text:
           ru: '48'

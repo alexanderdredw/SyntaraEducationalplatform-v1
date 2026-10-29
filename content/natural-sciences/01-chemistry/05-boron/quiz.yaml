@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома бора?
       kk: Бор атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a boron atom?
+    explanation:
+      ru: 'Атомный номер бора — 5, значит, в ядре пять протонов.'
+      kk: 'Бордың атомдық нөмірі — 5, демек, ядросында бес протон бар.'
+      en: 'The atomic number of boron is 5, so its nucleus contains five protons.'
     options:
       - text:
           ru: '6'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химического элемента представляет собой бор согласно классификации?
       kk: Жіктеу бойынша бор химиялық элементтің қай түріне жатады?
       en: According to classification, what type of chemical element is boron?
+    explanation:
+      ru: 'Бор сочетает свойства металлов и неметаллов (например, он полупроводник), поэтому его относят к полуметаллам.'
+      kk: 'Бор металдар мен бейметалдардың қасиеттерін ұштастырады (мысалы, ол жартылай өткізгіш), сондықтан оны жартылай металдарға жатқызады.'
+      en: 'Boron combines properties of metals and nonmetals (for example, it is a semiconductor), so it is classed as a metalloid.'
     options:
       - text:
           ru: Неметалл
@@ -56,6 +64,10 @@ questions:
       ru: Какова электронная конфигурация атома бора?
       kk: Бор атомының электрондық конфигурациясы қандай?
       en: What is the electron configuration of a boron atom?
+    explanation:
+      ru: 'Пять электронов бора: два на первой оболочке (как у гелия), затем 2s² и один электрон на 2p.'
+      kk: 'Бордың бес электроны: екеуі бірінші қабатта (гелийдегідей), содан кейін 2s² және 2p-да бір электрон.'
+      en: 'Boron’s five electrons: two on the first shell (as in helium), then 2s² and one electron in 2p.'
     options:
       - text:
           ru: '[He] 2s² 2p¹'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство бора делает его важным для использования в ядерных реакторах?
       kk: Бордың қай қасиеті оны ядролық реакторларда маңызды етеді?
       en: Which property of boron makes it important in nuclear reactors?
+    explanation:
+      ru: 'Бор-10 хорошо захватывает нейтроны, поэтому стержни с бором замедляют цепную реакцию и управляют реактором.'
+      kk: 'Бор-10 нейтрондарды жақсы қармайды, сондықтан бор қосылған стерженьдер тізбекті реакцияны баяулатып, реакторды басқарады.'
+      en: 'Boron-10 captures neutrons well, so boron rods slow the chain reaction and control the reactor.'
     options:
       - text:
           ru: Низкая температура плавления
@@ -106,6 +122,10 @@ questions:
       ru: Какое из перечисленных соединений бора является сверхтвердым и используется в бронежилетах?
       kk: Бор қосылыстарының қайсысы аса қатты және оқ өтпейтін кеудешелерде қолданылады?
       en: Which boron compound is superhard and used in body armour?
+    explanation:
+      ru: 'Карбид бора — одно из самых твёрдых веществ после алмаза, при этом лёгкое, поэтому из него делают пластины бронежилетов.'
+      kk: 'Бор карбиді — алмаздан кейінгі ең қатты заттардың бірі, әрі жеңіл, сондықтан одан бронежилет пластиналарын жасайды.'
+      en: 'Boron carbide is one of the hardest substances after diamond, yet light, so it is used for body armor plates.'
     options:
       - text:
           ru: Бура

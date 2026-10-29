@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство криптона объясняет его использование в качестве газа-заполнителя в энергоэффективных окнах?
       kk: Криптонның қай қасиеті оны энергия үнемдейтін терезелерде толтырғыш газ ретінде пайдалануды түсіндіреді?
       en: Which property of krypton explains its use as a filler gas in energy-efficient windows?
+    explanation:
+      ru: 'Криптон плохо проводит тепло и ни с чем не реагирует, поэтому им заполняют пространство между стёклами.'
+      kk: 'Криптон жылуды нашар өткізеді және ештеңемен әрекеттеспейді, сондықтан онымен шынылар арасындағы кеңістікті толтырады.'
+      en: 'Krypton conducts heat poorly and reacts with nothing, so it is used to fill the space between window panes.'
     options:
       - text:
           ru: Высокая реакционная способность с фтором
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов и нейтронов содержит ядро самого распространённого стабильного изотопа криптона?
       kk: Криптонның ең көп таралған тұрақты изотопының ядросында қанша протон мен нейтрон бар?
       en: How many protons and neutrons are in the nucleus of the most common stable isotope of krypton?
+    explanation:
+      ru: 'Самый распространённый изотоп — криптон-84: 36 протонов (атомный номер) и 84 − 36 = 48 нейтронов.'
+      kk: 'Ең көп таралған изотоп — криптон-84: 36 протон (атомдық нөмір) және 84 − 36 = 48 нейтрон.'
+      en: 'The most common isotope is krypton-84: 36 protons (the atomic number) and 84 − 36 = 48 neutrons.'
     options:
       - text:
           ru: 36 протонов и 48 нейтронов
@@ -56,6 +64,10 @@ questions:
       ru: Почему криптон, как благородный газ, существует в виде одноатомных молекул (Kr), а не образует двухатомные молекулы, как кислород?
       kk: Неге асыл газ ретіндегі криптон оттегі сияқты екі атомды молекулалар түзбей, бір атомды молекулалар (Kr) күйінде болады?
       en: Why does krypton, a noble gas, exist as single atoms (Kr) rather than forming diatomic molecules like oxygen?
+    explanation:
+      ru: 'У криптона восемь внешних электронов — оболочка заполнена, и атомам незачем объединяться в пары.'
+      kk: 'Криптонның сегіз сыртқы электроны бар — қабат толтырылған, сондықтан атомдарға жұпқа бірігудің қажеті жоқ.'
+      en: 'Krypton has eight outer electrons — the shell is filled, so its atoms have no need to pair up.'
     options:
       - text:
           ru: Из-за полного октета валентных электронов
@@ -81,6 +93,10 @@ questions:
       ru: Какое применение криптона основано на его способности давать яркое бело-зеленоватое свечение при электрическом разряде?
       kk: Криптонның қай қолданылуы оның электр разрядында ашық ақ-жасылдау жарық беру қабілетіне негізделген?
       en: Which use of krypton is based on its bright greenish-white glow in an electric discharge?
+    explanation:
+      ru: 'Разряд в криптоне даёт яркий белый свет, хорошо видный издалека, поэтому криптоновыми лампами освещают взлётно-посадочные полосы.'
+      kk: 'Криптондағы разряд алыстан жақсы көрінетін ашық ақ жарық береді, сондықтан криптон шамдарымен ұшу-қону жолақтарын жарықтандырады.'
+      en: 'A discharge in krypton gives a bright white light that is visible from far away, so krypton lamps are used to light runways.'
     options:
       - text:
           ru: Мониторинг переработки ядерного топлива
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп криптона используется для обнаружения скрытых ядерных реакторов?
       kk: Жасырын ядролық реакторларды анықтау үшін криптонның қай изотопы қолданылады?
       en: Which isotope of krypton is used to detect hidden nuclear reactors?
+    explanation:
+      ru: 'Радиоактивный криптон-85 образуется при делении урана и выходит в воздух, поэтому по нему можно обнаружить работу реактора.'
+      kk: 'Радиоактивті криптон-85 уран бөлінгенде түзіліп, ауаға шығады, сондықтан ол бойынша реактордың жұмысын анықтауға болады.'
+      en: 'Radioactive krypton-85 forms during uranium fission and escapes into the air, so it can reveal a working reactor.'
     options:
       - text:
           ru: Криптон-81

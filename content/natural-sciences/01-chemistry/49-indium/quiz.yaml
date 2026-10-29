@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство индия позволяет использовать его в качестве прозрачного проводящего покрытия для сенсорных экранов?
       kk: Индийдің қай қасиеті оны сенсорлық экрандарға арналған мөлдір өткізгіш жабын ретінде пайдалануға мүмкіндік береді?
       en: Which property of indium allows it to be used as a transparent conductive coating for touch screens?
+    explanation:
+      ru: 'Оксид индия-олова (ITO) проводит ток и при этом прозрачен, поэтому им покрывают сенсорные экраны и ЖК-дисплеи.'
+      kk: 'Индий-қалайы оксиді (ITO) ток өткізеді әрі мөлдір, сондықтан онымен сенсорлық экрандар мен СК-дисплейлерді жабады.'
+      en: 'Indium tin oxide (ITO) conducts electricity and is transparent, so it is used to coat touchscreens and LCD displays.'
     options:
       - text:
           ru: Низкая температура плавления, позволяющая наносить покрытия распылением
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержится в ядре самого распространенного изотопа индия (Индий-115)?
       kk: Индийдің ең көп таралған изотопының (индий-115) ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common isotope of indium (indium-115)?
+    explanation:
+      ru: 'У индия 49 протонов, поэтому в индии-115 нейтронов 115 − 49 = 66.'
+      kk: 'Индийде 49 протон бар, сондықтан индий-115-те нейтрондар саны 115 − 49 = 66.'
+      en: 'Indium has 49 protons, so indium-115 has 115 − 49 = 66 neutrons.'
     options:
       - text:
           ru: '49'
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления наиболее типична для индия в соединениях?
       kk: Қосылыстардағы индийге қай тотығу дәрежесі ең тән?
       en: Which oxidation state is most typical of indium in compounds?
+    explanation:
+      ru: 'Индий стоит в 13-й группе и отдаёт три внешних электрона, поэтому чаще всего имеет степень окисления +3.'
+      kk: 'Индий 13-топта тұр және үш сыртқы электронын береді, сондықтан көбінесе +3 тотығу дәрежесін көрсетеді.'
+      en: 'Indium is in group 13 and gives away three outer electrons, so it most often has an oxidation state of +3.'
     options:
       - text:
           ru: '0'
@@ -81,6 +93,10 @@ questions:
       ru: Почему индий относят к категории «постпереходных металлов», а не к щелочным металлам, несмотря на его мягкость?
       kk: Жұмсақ болса да, индий неге сілтілік металдарға емес, «постөтпелі металдар» санатына жатады?
       en: Why is indium classed among the "post-transition metals" and not the alkali metals, despite its softness?
+    explanation:
+      ru: 'Тип металла определяется не мягкостью, а строением атома: три валентных электрона и место в 13-й группе.'
+      kk: 'Металдың түрі жұмсақтығымен емес, атомның құрылысымен анықталады: үш валенттік электрон және 13-топтағы орны.'
+      en: 'The type of metal is determined not by softness but by the structure of the atom: three valence electrons and a place in group 13.'
     options:
       - text:
           ru: Потому что он имеет высокую температуру кипения
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп индия используется в медицинской диагностике для отслеживания лейкоцитов?
       kk: Медициналық диагностикада лейкоциттерді бақылау үшін индийдің қай изотопы қолданылады?
       en: Which isotope of indium is used in medical diagnostics to track white blood cells?
+    explanation:
+      ru: 'Лейкоциты метят радиоактивным индием-111, и по его гамма-излучению видно, где в организме воспаление.'
+      kk: 'Лейкоциттерді радиоактивті индий-111-мен белгілейді, және оның гамма-сәулесі бойынша ағзада қабыну қай жерде екені көрінеді.'
+      en: 'White blood cells are labeled with radioactive indium-111, and its gamma radiation shows where in the body there is inflammation.'
     options:
       - text:
           ru: Индий-49

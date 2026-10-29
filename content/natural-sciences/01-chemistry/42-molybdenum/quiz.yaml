@@ -6,6 +6,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома молибдена?
       kk: Молибден атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a molybdenum atom?
+    explanation:
+      ru: 'Атомный номер молибдена — 42, значит, в ядре сорок два протона.'
+      kk: 'Молибденнің атомдық нөмірі — 42, демек, ядросында қырық екі протон бар.'
+      en: 'The atomic number of molybdenum is 42, so its nucleus contains forty-two protons.'
     options:
       - text:
           ru: '98'
@@ -31,6 +35,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому молибдена в основном состоянии?
       kk: Негізгі күйдегі молибден атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the molybdenum atom in its ground state?
+    explanation:
+      ru: 'Как у хрома, один электрон переходит на d-оболочку, и наполовину заполненная 4d⁵ делает атом устойчивее.'
+      kk: 'Хромдағыдай бір электрон d-қабатқа ауысады, және жартылай толтырылған 4d⁵ атомды тұрақтырақ етеді.'
+      en: 'As in chromium, one electron moves to the d subshell, and the half-filled 4d⁵ makes the atom more stable.'
     options:
       - text:
           ru: '[Kr] 4d⁴ 5s²'
@@ -56,6 +64,10 @@ questions:
       ru: Какой из перечисленных изотопов молибдена является самым распространённым в природе?
       kk: Молибденнің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of molybdenum is the most common in nature?
+    explanation:
+      ru: 'Около четверти природного молибдена — изотоп молибден-98, это больше, чем любого другого.'
+      kk: 'Табиғи молибденнің төрттен біріне жуығы — молибден-98 изотопы, бұл басқаларының кез келгенінен көп.'
+      en: 'About a quarter of natural molybdenum is the isotope molybdenum-98, more than any other.'
     options:
       - text:
           ru: Молибден-98
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство молибдена делает его особенно ценным для использования в компонентах реактивных двигателей и лопатках турбин?
       kk: Молибденнің қай қасиеті оны реактивті қозғалтқыштардың бөлшектері мен турбина қалақтарында пайдалану үшін аса құнды етеді?
       en: Which property of molybdenum makes it especially valuable for jet engine parts and turbine blades?
+    explanation:
+      ru: 'Молибден тугоплавок и не теряет прочности при сильном нагреве, поэтому работает в горячих частях двигателей.'
+      kk: 'Молибден қиын балқиды және қатты қызғанда беріктігін жоғалтпайды, сондықтан қозғалтқыштардың ыстық бөліктерінде жұмыс істейді.'
+      en: 'Molybdenum is refractory and keeps its strength when strongly heated, so it works in the hot parts of engines.'
     options:
       - text:
           ru: Низкий коэффициент термического расширения
@@ -106,6 +122,10 @@ questions:
       ru: В каком минерале молибден преимущественно встречается в природе?
       kk: Молибден табиғатта негізінен қай минералда кездеседі?
       en: In which mineral is molybdenum mainly found in nature?
+    explanation:
+      ru: 'Главный минерал молибдена — молибденит, сульфид MoS₂; из него и получают металл.'
+      kk: 'Молибденнің негізгі минералы — молибденит, MoS₂ сульфиді; металды содан алады.'
+      en: 'The main molybdenum mineral is molybdenite, the sulfide MoS₂; the metal is produced from it.'
     options:
       - text:
           ru: Кварц

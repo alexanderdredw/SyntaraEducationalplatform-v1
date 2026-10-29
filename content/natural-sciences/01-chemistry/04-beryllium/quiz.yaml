@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома бериллия?
       kk: Бериллий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a beryllium atom?
+    explanation:
+      ru: 'Атомный номер бериллия — 4, значит, в ядре четыре протона.'
+      kk: 'Бериллийдің атомдық нөмірі — 4, демек, ядросында төрт протон бар.'
+      en: 'The atomic number of beryllium is 4, so its nucleus contains four protons.'
     options:
       - text:
           ru: '4'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи наиболее характерен для соединений бериллия, учитывая его положение в группе щелочноземельных металлов и амфотерные свойства?
       kk: Сілтілік жер металдары тобындағы орны мен амфотерлік қасиеттерін ескергенде, бериллий қосылыстарына химиялық байланыстың қай түрі тән?
       en: Given its position among the alkaline earth metals and its amphoteric properties, which type of chemical bond is most typical of beryllium compounds?
+    explanation:
+      ru: 'Маленький атом бериллия сильно удерживает электроны, поэтому, в отличие от других щелочноземельных металлов, он образует в основном ковалентные полярные связи.'
+      kk: 'Бериллийдің кішкентай атомы электрондарды мықты ұстайды, сондықтан басқа сілтілік жер металдарынан айырмашылығы, ол негізінен коваленттік полюсті байланыстар түзеді.'
+      en: 'The small beryllium atom holds its electrons tightly, so, unlike other alkaline earth metals, it forms mainly polar covalent bonds.'
     options:
       - text:
           ru: Ковалентная полярная
@@ -56,6 +64,10 @@ questions:
       ru: Какой из перечисленных изотопов бериллия является единственным стабильным природным изотопом?
       kk: Бериллийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп болып табылады?
       en: Which isotope of beryllium is its only stable natural isotope?
+    explanation:
+      ru: 'Природный бериллий почти целиком состоит из бериллия-9 (4 протона и 5 нейтронов) — единственного стабильного изотопа.'
+      kk: 'Табиғи бериллий түгелге жуық бериллий-9-дан (4 протон және 5 нейтрон) тұрады — бұл жалғыз тұрақты изотоп.'
+      en: 'Natural beryllium consists almost entirely of beryllium-9 (4 protons and 5 neutrons) — its only stable isotope.'
     options:
       - text:
           ru: Бериллий-8
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство бериллия делает его особенно ценным для использования в окнах рентгеновских трубок?
       kk: Бериллийдің қай қасиеті оны рентген түтіктерінің терезелері үшін аса құнды етеді?
       en: Which property of beryllium makes it especially valuable for X-ray tube windows?
+    explanation:
+      ru: 'Лёгкие атомы бериллия почти не задерживают рентгеновские лучи, поэтому из него делают «окна» рентгеновских трубок.'
+      kk: 'Бериллийдің жеңіл атомдары рентген сәулелерін дерлік ұстамайды, сондықтан одан рентген түтіктерінің «терезелерін» жасайды.'
+      en: 'Light beryllium atoms barely stop X-rays, so it is used to make the “windows” of X-ray tubes.'
     options:
       - text:
           ru: Высокая теплопроводность
@@ -106,6 +122,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома бериллия, исходя из его электронной конфигурации [He] 2s²?
       kk: Электрондық конфигурациясы [He] 2s² бойынша бериллий атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of a beryllium atom, given its electron configuration [He] 2s²?
+    explanation:
+      ru: 'После оболочки гелия у бериллия два электрона 2s², поэтому валентных электронов два — как у всех элементов 2-й группы.'
+      kk: 'Гелий қабатынан кейін бериллийде екі 2s² электрон бар, сондықтан валенттік электрондары екеу — 2-топтың барлық элементтеріндегідей.'
+      en: 'After the helium shell, beryllium has two 2s² electrons, so it has two valence electrons — like all group 2 elements.'
     options:
       - text:
           ru: '3'

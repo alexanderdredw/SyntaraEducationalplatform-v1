@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома скандия?
       kk: Скандий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a scandium atom?
+    explanation:
+      ru: 'Атомный номер скандия — 21, значит, в ядре двадцать один протон.'
+      kk: 'Скандийдің атомдық нөмірі — 21, демек, ядросында жиырма бір протон бар.'
+      en: 'The atomic number of scandium is 21, so its nucleus contains twenty-one protons.'
     options:
       - text:
           ru: '45'
@@ -31,6 +35,10 @@ questions:
       ru: Какова типичная степень окисления скандия в соединениях?
       kk: Қосылыстардағы скандийдің әдеттегі тотығу дәрежесі қандай?
       en: What is the typical oxidation state of scandium in compounds?
+    explanation:
+      ru: 'Скандий отдаёт три электрона — два 4s и один 3d — и в соединениях почти всегда имеет степень окисления +3.'
+      kk: 'Скандий үш электрон береді — екі 4s және бір 3d — және қосылыстарда дерлік әрқашан +3 тотығу дәрежесін көрсетеді.'
+      en: 'Scandium gives away three electrons — two 4s and one 3d — and almost always has an oxidation state of +3 in compounds.'
     options:
       - text:
           ru: '+3'
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому скандия?
       kk: Скандий атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the scandium atom?
+    explanation:
+      ru: 'Скандий — первый переходный элемент: после 4s² у него появляется первый электрон на 3d.'
+      kk: 'Скандий — бірінші ауыспалы элемент: 4s²-ден кейін оның 3d-де бірінші электроны пайда болады.'
+      en: 'Scandium is the first transition element: after 4s² it gets its first electron in 3d.'
     options:
       - text:
           ru: '[Ar] 3d² 4s¹'
@@ -81,6 +93,10 @@ questions:
       ru: Сколько нейтронов содержит самый распространённый стабильный изотоп скандия?
       kk: Скандийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
       en: How many neutrons does the most common stable isotope of scandium have?
+    explanation:
+      ru: 'Единственный стабильный изотоп — скандий-45; нейтронов 45 − 21 = 24.'
+      kk: 'Жалғыз тұрақты изотоп — скандий-45; нейтрондар саны 45 − 21 = 24.'
+      en: 'The only stable isotope is scandium-45; it has 45 − 21 = 24 neutrons.'
     options:
       - text:
           ru: '46'
@@ -106,6 +122,10 @@ questions:
       ru: В какой группе периодической таблицы находится скандий?
       kk: Скандий периодтық кестенің қай тобында орналасқан?
       en: In which group of the periodic table is scandium?
+    explanation:
+      ru: 'Скандий открывает ряд переходных металлов и стоит в 3-й группе 4-го периода.'
+      kk: 'Скандий ауыспалы металдар қатарын бастайды және 4-периодтың 3-тобында тұр.'
+      en: 'Scandium opens the series of transition metals and stands in group 3 of period 4.'
     options:
       - text:
           ru: 2-й

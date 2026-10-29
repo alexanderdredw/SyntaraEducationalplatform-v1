@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство стронция делает его пригодным для использования в пиротехнике?
       kk: Стронцийдің қай қасиеті оны пиротехникада пайдалануға жарамды етеді?
       en: Which property of strontium makes it suitable for fireworks?
+    explanation:
+      ru: 'Соли стронция окрашивают пламя в ярко-красный цвет — так получается красный цвет салютов.'
+      kk: 'Стронций тұздары жалынды ашық қызыл түске бояйды — салюттың қызыл түсі осылай шығады.'
+      en: 'Strontium salts color a flame bright red — this is where the red in fireworks comes from.'
     options:
       - text:
           ru: Низкая плотность для металлического элемента
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержит самый распространенный стабильный изотоп стронция?
       kk: Стронцийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
       en: How many neutrons does the most common stable isotope of strontium have?
+    explanation:
+      ru: 'Самый распространённый изотоп — стронций-88; нейтронов 88 − 38 = 50.'
+      kk: 'Ең көп таралған изотоп — стронций-88; нейтрондар саны 88 − 38 = 50.'
+      en: 'The most common isotope is strontium-88; it has 88 − 38 = 50 neutrons.'
     options:
       - text:
           ru: '50'
@@ -56,6 +64,10 @@ questions:
       ru: Какую степень окисления обычно проявляет стронций в своих соединениях?
       kk: Стронций өз қосылыстарында әдетте қандай тотығу дәрежесін көрсетеді?
       en: Which oxidation state does strontium usually show in its compounds?
+    explanation:
+      ru: 'Стронций — щелочноземельный металл и отдаёт два внешних электрона 5s², поэтому его степень окисления +2.'
+      kk: 'Стронций — сілтілік жер металы және екі сыртқы 5s² электронын береді, сондықтан оның тотығу дәрежесі +2.'
+      en: 'Strontium is an alkaline earth metal and gives away its two outer 5s² electrons, so its oxidation state is +2.'
     options:
       - text:
           ru: '-2'
@@ -81,6 +93,10 @@ questions:
       ru: Какая частица в атоме стронция определяет его принадлежность к химическому элементу?
       kk: Стронций атомындағы қай бөлшек оның химиялық элемент ретінде қандай екенін анықтайды?
       en: Which particle in a strontium atom determines which chemical element it is?
+    explanation:
+      ru: 'Элемент определяется числом протонов: любой атом с 38 протонами — стронций.'
+      kk: 'Элемент протон санымен анықталады: 38 протоны бар кез келген атом — стронций.'
+      en: 'An element is defined by the number of protons: any atom with 38 protons is strontium.'
     options:
       - text:
           ru: Нейтрон
@@ -106,6 +122,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома стронция?
       kk: Стронций атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of a strontium atom?
+    explanation:
+      ru: 'Конфигурация стронция [Kr] 5s² — на внешнем уровне два электрона, как у всех элементов 2-й группы.'
+      kk: 'Стронцийдің конфигурациясы [Kr] 5s² — сыртқы деңгейде екі электрон, 2-топтың барлық элементтеріндегідей.'
+      en: 'Strontium’s configuration is [Kr] 5s² — two electrons on the outer level, like all group 2 elements.'
     options:
       - text:
           ru: '2'

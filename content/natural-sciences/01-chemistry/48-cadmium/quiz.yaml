@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома кадмия?
       kk: Кадмий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a cadmium atom?
+    explanation:
+      ru: 'Атомный номер кадмия — 48, значит, в ядре сорок восемь протонов.'
+      kk: 'Кадмийдің атомдық нөмірі — 48, демек, ядросында қырық сегіз протон бар.'
+      en: 'The atomic number of cadmium is 48, so its nucleus contains forty-eight protons.'
     options:
       - text:
           ru: '48'
@@ -31,6 +35,10 @@ questions:
       ru: Какова электронная конфигурация атома кадмия?
       kk: Кадмий атомының электрондық конфигурациясы қандай?
       en: What is the electron configuration of a cadmium atom?
+    explanation:
+      ru: 'У кадмия 48 электронов: 36 как у криптона, заполненная 4d¹⁰ и два электрона на 5s.'
+      kk: 'Кадмийдің 48 электроны бар: 36-сы криптондағыдай, толтырылған 4d¹⁰ және 5s-те екі электрон.'
+      en: 'Cadmium has 48 electrons: 36 as in krypton, a filled 4d¹⁰ and two electrons in 5s.'
     options:
       - text:
           ru: '[Kr] 4d¹⁰ 5s¹'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип иона образует кадмий в своих соединениях, согласно его типичной степени окисления?
       kk: Әдеттегі тотығу дәрежесіне сәйкес кадмий өз қосылыстарында қандай ион түзеді?
       en: Given its typical oxidation state, what kind of ion does cadmium form in its compounds?
+    explanation:
+      ru: 'Как и цинк, кадмий отдаёт два электрона 5s² и образует ион Cd²⁺.'
+      kk: 'Мырыш сияқты кадмий екі 5s² электронын беріп, Cd²⁺ ионын түзеді.'
+      en: 'Like zinc, cadmium gives away two 5s² electrons and forms the Cd²⁺ ion.'
     options:
       - text:
           ru: Катион с зарядом +1
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство кадмия делает его пригодным для использования в управляющих стержнях ядерных реакторов?
       kk: Кадмийдің қай қасиеті оны ядролық реакторлардың басқару өзектерінде пайдалануға жарамды етеді?
       en: Which property of cadmium makes it suitable for control rods in nuclear reactors?
+    explanation:
+      ru: 'Кадмий сильно поглощает нейтроны, поэтому стержни с ним замедляют цепную реакцию.'
+      kk: 'Кадмий нейтрондарды күшті жұтады, сондықтан ол қосылған стерженьдер тізбекті реакцияны баяулатады.'
+      en: 'Cadmium strongly absorbs neutrons, so rods containing it slow down the chain reaction.'
     options:
       - text:
           ru: Способность поглощать нейтроны
@@ -106,6 +122,10 @@ questions:
       ru: Кадмий получают в промышленности как побочный продукт производства какого металла?
       kk: Өнеркәсіпте кадмий қай металды өндірудің жанама өнімі ретінде алынады?
       en: Industrially, cadmium is a by-product of producing which metal?
+    explanation:
+      ru: 'Кадмий химически похож на цинк и встречается в его рудах, поэтому его выделяют при производстве цинка.'
+      kk: 'Кадмий химиялық жағынан мырышқа ұқсас және оның кендерінде кездеседі, сондықтан оны мырыш өндірісінде бөліп алады.'
+      en: 'Cadmium is chemically similar to zinc and occurs in its ores, so it is recovered during zinc production.'
     options:
       - text:
           ru: Меди

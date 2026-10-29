@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома олова?
       kk: Қалайы атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a tin atom?
+    explanation:
+      ru: 'Атомный номер олова — 50, значит, в ядре пятьдесят протонов.'
+      kk: 'Қалайының атомдық нөмірі — 50, демек, ядросында елу протон бар.'
+      en: 'The atomic number of tin is 50, so its nucleus contains fifty protons.'
     options:
       - text:
           ru: '70'
@@ -31,6 +35,10 @@ questions:
       ru: Какой химический символ соответствует олову?
       kk: Қалайыға қай химиялық таңба сәйкес келеді?
       en: Which chemical symbol corresponds to tin?
+    explanation:
+      ru: 'Символ Sn происходит от латинского названия олова — stannum.'
+      kk: 'Sn таңбасы қалайының латынша атауынан — stannum сөзінен шыққан.'
+      en: 'The symbol Sn comes from the Latin name of tin — stannum.'
     options:
       - text:
           ru: Ti
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому олова?
       kk: Қалайы атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the tin atom?
+    explanation:
+      ru: 'У олова 50 электронов: 36 как у криптона, заполненная 4d¹⁰, затем 5s² и два электрона на 5p.'
+      kk: 'Қалайының 50 электроны бар: 36-сы криптондағыдай, толтырылған 4d¹⁰, содан кейін 5s² және 5p-да екі электрон.'
+      en: 'Tin has 50 electrons: 36 as in krypton, a filled 4d¹⁰, then 5s² and two electrons in 5p.'
     options:
       - text:
           ru: '[Xe] 4d¹⁰ 5s² 5p²'
@@ -81,6 +93,10 @@ questions:
       ru: Какая из перечисленных аллотропных форм олова является неметаллическим порошком?
       kk: Қалайының қай аллотропиялық түрі бейметалл ұнтақ болып табылады?
       en: Which allotrope of tin is a nonmetallic powder?
+    explanation:
+      ru: 'На холоде белое олово превращается в серое — хрупкий неметаллический порошок («оловянная чума»).'
+      kk: 'Суықта ақ қалайы сұр қалайыға — сынғыш бейметалл ұнтаққа айналады («қалайы обасы»).'
+      en: 'In the cold, white tin turns into gray tin — a brittle nonmetallic powder (“tin pest”).'
     options:
       - text:
           ru: Кристаллическое олово
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп олова является самым распространённым в природе?
       kk: Қалайының қай изотопы табиғатта ең көп таралған?
       en: Which isotope of tin is the most common in nature?
+    explanation:
+      ru: 'Из десяти стабильных изотопов олова больше всего в природе олова-120 — около трети.'
+      kk: 'Қалайының он тұрақты изотопының ішінде табиғатта ең көбі — қалайы-120, шамамен үштен бірі.'
+      en: 'Of tin’s ten stable isotopes, tin-120 is the most abundant in nature — about a third.'
     options:
       - text:
           ru: Олово-120

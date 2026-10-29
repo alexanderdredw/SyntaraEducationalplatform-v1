@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома бария?
       kk: Барий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a barium atom?
+    explanation:
+      ru: 'Атомный номер бария — 56, значит, в ядре пятьдесят шесть протонов.'
+      kk: 'Барийдің атомдық нөмірі — 56, демек, ядросында елу алты протон бар.'
+      en: 'The atomic number of barium is 56, so its nucleus contains fifty-six protons.'
     options:
       - text:
           ru: '82'
@@ -31,6 +35,10 @@ questions:
       ru: Какова электронная конфигурация атома бария в основном состоянии?
       kk: Негізгі күйдегі барий атомының электрондық конфигурациясы қандай?
       en: What is the electron configuration of a barium atom in its ground state?
+    explanation:
+      ru: 'У бария 56 электронов: 54 как у ксенона и два на 6s — как у всех щелочноземельных металлов.'
+      kk: 'Барийдің 56 электроны бар: 54-і ксенондағыдай және екеуі 6s-те — барлық сілтілік жер металдарындағыдай.'
+      en: 'Barium has 56 electrons: 54 as in xenon and two in 6s — like all alkaline earth metals.'
     options:
       - text:
           ru: '[Xe] 6s²'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип иона образует барий, отдавая свои валентные электроны?
       kk: Валенттік электрондарын бергенде барий қандай ион түзеді?
       en: What kind of ion does barium form when it gives away its valence electrons?
+    explanation:
+      ru: 'Барий отдаёт два внешних электрона 6s² и становится ионом Ba²⁺.'
+      kk: 'Барий екі сыртқы 6s² электронын беріп, Ba²⁺ ионына айналады.'
+      en: 'Barium gives away its two outer 6s² electrons and becomes the Ba²⁺ ion.'
     options:
       - text:
           ru: Катион с зарядом +1
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство бария объясняет его использование в качестве геттера в вакуумных трубках?
       kk: Барийдің қай қасиеті оның вакуумдық түтіктерде геттер ретінде қолданылуын түсіндіреді?
       en: Which property of barium explains its use as a getter in vacuum tubes?
+    explanation:
+      ru: 'Барий охотно реагирует с остатками кислорода и азота, связывает их и тем самым поддерживает вакуум в трубке.'
+      kk: 'Барий оттегі мен азоттың қалдықтарымен оңай әрекеттесіп, оларды байланыстырады және сол арқылы түтіктегі вакуумды сақтайды.'
+      en: 'Barium readily reacts with leftover oxygen and nitrogen, binds them and thus maintains the vacuum in the tube.'
     options:
       - text:
           ru: Парамагнетизм
@@ -106,6 +122,10 @@ questions:
       ru: Почему сульфат бария (BaSO₄) безопасен для использования в медицинской диагностике, несмотря на токсичность других соединений бария?
       kk: Барийдің басқа қосылыстары уытты болса да, барий сульфатын (BaSO₄) медициналық диагностикада пайдалану неге қауіпсіз?
       en: Why is barium sulfate (BaSO₄) safe to use in medical diagnostics, even though other barium compounds are toxic?
+    explanation:
+      ru: 'Ядовиты растворимые соли бария, а BaSO₄ не растворяется и проходит через кишечник, задерживая рентгеновские лучи.'
+      kk: 'Барийдің еритін тұздары улы, ал BaSO₄ ерімейді және рентген сәулелерін ұстай отырып, ішек арқылы өтеді.'
+      en: 'Soluble barium salts are poisonous, but BaSO₄ does not dissolve and passes through the intestines, blocking X-rays.'
     options:
       - text:
           ru: Он нерастворим в воде и не всасывается в кровь

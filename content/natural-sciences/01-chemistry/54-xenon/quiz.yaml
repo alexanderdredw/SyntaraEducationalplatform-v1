@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома ксенона?
       kk: Ксенон атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a xenon atom?
+    explanation:
+      ru: 'Атомный номер ксенона — 54, значит, в ядре пятьдесят четыре протона.'
+      kk: 'Ксенонның атомдық нөмірі — 54, демек, ядросында елу төрт протон бар.'
+      en: 'The atomic number of xenon is 54, so its nucleus contains fifty-four protons.'
     options:
       - text:
           ru: '132'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип частиц образуется, когда атом ксенона теряет или принимает электроны?
       kk: Ксенон атомы электрон бергенде немесе қабылдағанда қандай бөлшек түзіледі?
       en: Which particle forms when a xenon atom loses or gains electrons?
+    explanation:
+      ru: 'Любой атом, отдавший или принявший электроны, становится заряженной частицей — ионом.'
+      kk: 'Электрон берген немесе қабылдаған кез келген атом зарядталған бөлшекке — ионға айналады.'
+      en: 'Any atom that has given or accepted electrons becomes a charged particle — an ion.'
     options:
       - text:
           ru: Молекула
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому ксенона?
       kk: Ксенон атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the xenon atom?
+    explanation:
+      ru: 'У ксенона 54 электрона: 36 как у криптона, 4d¹⁰ и заполненный октет 5s² 5p⁶.'
+      kk: 'Ксенонның 54 электроны бар: 36-сы криптондағыдай, 4d¹⁰ және толтырылған 5s² 5p⁶ октеті.'
+      en: 'Xenon has 54 electrons: 36 as in krypton, 4d¹⁰ and a filled octet 5s² 5p⁶.'
     options:
       - text:
           ru: '[Xe] 4f¹⁴ 5d¹⁰ 6s²'
@@ -81,6 +93,10 @@ questions:
       ru: Почему ксенон, будучи благородным газом, способен образовывать химические соединения, в отличие от других элементов своей группы?
       kk: Асыл газ бола тұра, ксенон өз тобындағы басқа элементтерден айырмашылығы неге химиялық қосылыстар түзе алады?
       en: Why can xenon, a noble gas, form chemical compounds, unlike the other elements of its group?
+    explanation:
+      ru: 'Внешние электроны большого атома ксенона удерживаются слабее, и самые электроотрицательные элементы — фтор и кислород — могут их оттянуть.'
+      kk: 'Ксенонның үлкен атомының сыртқы электрондары әлсізірек ұсталады, және ең электртеріс элементтер — фтор мен оттегі — оларды тарта алады.'
+      en: 'The outer electrons of the large xenon atom are held more weakly, and the most electronegative elements — fluorine and oxygen — can pull them away.'
     options:
       - text:
           ru: Из-за высокой плотности газа, которая способствует реакциям
@@ -106,6 +122,10 @@ questions:
       ru: Какое из перечисленных свойств ксенона делает его пригодным для использования в качестве рабочего тела в ионных двигателях?
       kk: Ксенонның қай қасиеті оны иондық қозғалтқыштарда жұмыс денесі ретінде пайдалануға жарамды етеді?
       en: Which property of xenon makes it suitable as the propellant in ion engines?
+    explanation:
+      ru: 'Тяжёлые атомы ксенона дают большую тягу при разгоне, а инертность не даёт ему разрушать детали двигателя.'
+      kk: 'Ксенонның ауыр атомдары үдеткенде үлкен тарту күшін береді, ал инерттілігі оған қозғалтқыш бөлшектерін бүлдіруге жол бермейді.'
+      en: 'Heavy xenon atoms give strong thrust when accelerated, and its inertness keeps it from damaging engine parts.'
     options:
       - text:
           ru: Высокая растворимость в липидах

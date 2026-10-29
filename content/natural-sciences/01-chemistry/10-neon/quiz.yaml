@@ -6,6 +6,10 @@ questions:
       ru: Какое из следующих утверждений о неоне является верным?
       kk: Неон туралы қай тұжырым дұрыс?
       en: Which statement about neon is true?
+    explanation:
+      ru: 'Внешняя оболочка неона 2s² 2p⁶ заполнена полностью, поэтому он не вступает в реакции и не образует стабильных соединений.'
+      kk: 'Неонның 2s² 2p⁶ сыртқы қабаты толық толтырылған, сондықтан ол реакцияларға түспейді және тұрақты қосылыстар түзбейді.'
+      en: 'Neon’s outer shell 2s² 2p⁶ is completely filled, so it does not react and forms no stable compounds.'
     options:
       - text:
           ru: Неон — это благородный газ, который химически инертен и не образует стабильных соединений.
@@ -31,6 +35,10 @@ questions:
       ru: Сколько валентных электронов находится на внешнем энергетическом уровне атома неона, если его электронная конфигурация [He] 2s² 2p⁶?
       kk: Электрондық конфигурациясы [He] 2s² 2p⁶ болса, неон атомының сыртқы энергетикалық деңгейінде қанша валенттік электрон бар?
       en: How many valence electrons are in the outer energy level of a neon atom if its electron configuration is [He] 2s² 2p⁶?
+    explanation:
+      ru: 'На внешнем уровне 2s² 2p⁶ — 2 + 6 = 8 электронов: это устойчивый октет благородного газа.'
+      kk: 'Сыртқы деңгейде 2s² 2p⁶ — 2 + 6 = 8 электрон: бұл асыл газдың тұрақты октеті.'
+      en: 'The outer level 2s² 2p⁶ holds 2 + 6 = 8 electrons: the stable octet of a noble gas.'
     options:
       - text:
           ru: '6'
@@ -56,6 +64,10 @@ questions:
       ru: Какое применение неона связано с его способностью светиться ярко-оранжевым цветом при электрическом разряде?
       kk: Неонның қай қолданылуы оның электр разрядында ашық қызғылт сары түспен жарқырауымен байланысты?
       en: Which use of neon is related to its bright orange glow in an electric discharge?
+    explanation:
+      ru: 'Электрический разряд в трубке с неоном вызывает яркое красно-оранжевое свечение — на этом основаны неоновые вывески и индикаторные лампы.'
+      kk: 'Неоны бар түтіктегі электр разряды ашық қызыл-сарғылт жарқырау тудырады — неон жарнамалары мен индикатор шамдары осыған негізделген.'
+      en: 'An electric discharge in a neon tube produces a bright red-orange glow — this is the basis of neon signs and indicator lamps.'
     options:
       - text:
           ru: Защита высоковольтного оборудования.
@@ -81,6 +93,10 @@ questions:
       ru: Какое из следующих свойств неона объясняется его полной электронной оболочкой?
       kk: Неонның қай қасиеті оның толық электрондық қабатымен түсіндіріледі?
       en: Which property of neon is explained by its full electron shell?
+    explanation:
+      ru: 'Атому с заполненной оболочкой невыгодно отдавать или принимать электроны, поэтому неон химически инертен.'
+      kk: 'Қабаты толтырылған атомға электрон беру немесе алу тиімсіз, сондықтан неон химиялық инертті.'
+      en: 'For an atom with a filled shell it is unfavorable to give or take electrons, so neon is chemically inert.'
     options:
       - text:
           ru: Яркое свечение при нагревании.
@@ -106,6 +122,10 @@ questions:
       ru: Где используют жидкий неон?
       kk: Сұйық неон қайда қолданылады?
       en: Where is liquid neon used?
+    explanation:
+      ru: 'Неон сжижается при очень низкой температуре и, будучи инертным, безопасно охлаждает приборы в криогенной технике.'
+      kk: 'Неон өте төмен температурада сұйылады және инертті болғандықтан, криогендік техникада аспаптарды қауіпсіз салқындатады.'
+      en: 'Neon liquefies at a very low temperature and, being inert, safely cools instruments in cryogenic equipment.'
     options:
       - text:
           ru: Как ракетное топливо

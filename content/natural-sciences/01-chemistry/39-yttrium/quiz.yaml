@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома иттрия?
       kk: Иттрий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an yttrium atom?
+    explanation:
+      ru: 'Атомный номер иттрия — 39, значит, в ядре тридцать девять протонов.'
+      kk: 'Иттрийдің атомдық нөмірі — 39, демек, ядросында отыз тоғыз протон бар.'
+      en: 'The atomic number of yttrium is 39, so its nucleus contains thirty-nine protons.'
     options:
       - text:
           ru: '89'
@@ -31,6 +35,10 @@ questions:
       ru: Какова типичная степень окисления иттрия в соединениях?
       kk: Қосылыстардағы иттрийдің әдеттегі тотығу дәрежесі қандай?
       en: What is the typical oxidation state of yttrium in compounds?
+    explanation:
+      ru: 'Иттрий отдаёт три электрона — 5s² и 4d¹ — и в соединениях, как и лантаноиды, имеет степень окисления +3.'
+      kk: 'Иттрий үш электрон береді — 5s² және 4d¹ — және қосылыстарда лантаноидтар сияқты +3 тотығу дәрежесін көрсетеді.'
+      en: 'Yttrium gives away three electrons — 5s² and 4d¹ — and, like the lanthanides, has an oxidation state of +3 in compounds.'
     options:
       - text:
           ru: '+1'
@@ -56,6 +64,10 @@ questions:
       ru: Какой из перечисленных изотопов иттрия является единственным стабильным природным изотопом?
       kk: Иттрийдің қай изотопы табиғаттағы жалғыз тұрақты изотоп?
       en: Which isotope of yttrium is its only stable natural isotope?
+    explanation:
+      ru: 'Весь природный иттрий — стабильный иттрий-89 (39 протонов и 50 нейтронов).'
+      kk: 'Табиғи иттрийдің бәрі — тұрақты иттрий-89 (39 протон және 50 нейтрон).'
+      en: 'All natural yttrium is stable yttrium-89 (39 protons and 50 neutrons).'
     options:
       - text:
           ru: ⁹⁰Y
@@ -81,6 +93,10 @@ questions:
       ru: В какой группе и периоде периодической системы находится иттрий?
       kk: Иттрий периодтық жүйенің қай тобы мен периодында орналасқан?
       en: In which group and period of the periodic table is yttrium?
+    explanation:
+      ru: 'Иттрий стоит под скандием в 3-й группе и открывает ряд переходных металлов 5-го периода.'
+      kk: 'Иттрий 3-топта скандийдің астында тұр және 5-периодтың ауыспалы металдар қатарын бастайды.'
+      en: 'Yttrium sits below scandium in group 3 and opens the series of transition metals of period 5.'
     options:
       - text:
           ru: 5-я группа, 3-й период

@@ -6,6 +6,10 @@ questions:
       ru: Что создал Дмитрий Менделеев?
       kk: Дмитрий Менделеев не жасады?
       en: What did Dmitri Mendeleev create?
+    explanation:
+      ru: 'Менделеев расположил элементы по атомной массе, заметил, что их свойства повторяются, и построил периодическую таблицу.'
+      kk: 'Менделеев элементтерді атомдық массасы бойынша орналастырып, олардың қасиеттері қайталанатынын байқады және периодтық кестені құрды.'
+      en: 'Mendeleev arranged the elements by atomic mass, noticed that their properties repeat and built the periodic table.'
     options:
       - text:
           ru: Периодическую таблицу
@@ -31,6 +35,10 @@ questions:
       ru: В каком году Менделеев опубликовал периодическую таблицу?
       kk: Менделеев периодтық кестені қай жылы жариялады?
       en: In which year did Mendeleev publish the periodic table?
+    explanation:
+      ru: 'Свою периодическую систему Менделеев представил в 1869 году и даже предсказал свойства ещё не открытых элементов.'
+      kk: 'Менделеев өзінің периодтық жүйесін 1869 жылы ұсынды және тіпті әлі ашылмаған элементтердің қасиеттерін болжады.'
+      en: 'Mendeleev presented his periodic system in 1869 and even predicted the properties of elements not yet discovered.'
     options:
       - text:
           ru: '1869'
@@ -56,6 +64,10 @@ questions:
       ru: Какие элементы открыла Мария Кюри?
       kk: Мария Кюри қандай элементтерді ашты?
       en: Which elements did Marie Curie discover?
+    explanation:
+      ru: 'Исследуя излучение урановой руды, Мария Кюри открыла два новых элемента — полоний и радий.'
+      kk: 'Уран кенінің сәулесін зерттей отырып, Мария Кюри екі жаңа элемент — полоний мен радийді ашты.'
+      en: 'While studying the radiation of uranium ore, Marie Curie discovered two new elements — polonium and radium.'
     options:
       - text:
           ru: Полоний и Радий
@@ -81,6 +93,10 @@ questions:
       ru: Какой термин ввела Мария Кюри?
       kk: Мария Кюри қандай терминді енгізді?
       en: Which term did Marie Curie coin?
+    explanation:
+      ru: 'Мария Кюри ввела слово «радиоактивность» для способности атомов самопроизвольно испускать излучение.'
+      kk: 'Мария Кюри атомдардың өздігінен сәуле шығару қабілетіне «радиоактивтілік» сөзін енгізді.'
+      en: 'Marie Curie introduced the word “radioactivity” for the ability of atoms to emit radiation spontaneously.'
     options:
       - text:
           ru: Магнетизм
@@ -106,6 +122,10 @@ questions:
       ru: Какой закон сформулировал Антуан Лавуазье?
       kk: Антуан Лавуазье қандай заңды тұжырымдады?
       en: Which law did Antoine Lavoisier formulate?
+    explanation:
+      ru: 'Лавуазье взвешивал вещества до и после реакции и доказал, что общая масса при химических реакциях не меняется.'
+      kk: 'Лавуазье заттарды реакцияға дейін және кейін өлшеп, химиялық реакцияларда жалпы масса өзгермейтінін дәлелдеді.'
+      en: 'Lavoisier weighed substances before and after reactions and proved that the total mass does not change in chemical reactions.'
     options:
       - text:
           ru: Гравитации
@@ -131,6 +151,10 @@ questions:
       ru: Какую модель предложил Нильс Бор?
       kk: Нильс Бор қандай модельді ұсынды?
       en: Which model did Niels Bohr propose?
+    explanation:
+      ru: 'В модели Бора электроны движутся по определённым орбитам и излучают или поглощают энергию, перескакивая между ними.'
+      kk: 'Бор моделінде электрондар белгілі орбиталар бойымен қозғалады және олардың арасында секіргенде энергия шығарады немесе жұтады.'
+      en: 'In Bohr’s model, electrons move in fixed orbits and emit or absorb energy when they jump between them.'
     options:
       - text:
           ru: Солнечную систему
@@ -156,6 +180,10 @@ questions:
       ru: Каким экспериментом известен Эрнест Резерфорд?
       kk: Эрнест Резерфорд қандай тәжірибесімен танымал?
       en: Which experiment is Ernest Rutherford famous for?
+    explanation:
+      ru: 'Резерфорд облучал тонкую золотую фольгу альфа-частицами, и редкие отскоки показали, что в атоме есть маленькое плотное ядро.'
+      kk: 'Резерфорд жұқа алтын фольганы альфа-бөлшектермен атқылады, және сирек кері серпілістер атомда кішкентай тығыз ядро бар екенін көрсетті.'
+      en: 'Rutherford fired alpha particles at thin gold foil, and the rare rebounds showed that an atom has a small dense nucleus.'
     options:
       - text:
           ru: Эксперимент с каплей масла
@@ -181,6 +209,10 @@ questions:
       ru: Что Эрнест Резерфорд открыл в атоме?
       kk: Эрнест Резерфорд атомда нені ашты?
       en: What did Ernest Rutherford discover in the atom?
+    explanation:
+      ru: 'Опыт с золотой фольгой (1911) показал, что почти вся масса атома сосредоточена в крошечном положительно заряженном ядре.'
+      kk: 'Алтын фольгамен жасалған тәжірибе (1911) атом массасының түгелге жуығы кішкентай оң зарядталған ядрода шоғырланғанын көрсетті.'
+      en: 'The gold foil experiment (1911) showed that almost all the mass of an atom is concentrated in a tiny positively charged nucleus.'
     options:
       - text:
           ru: Фотон
@@ -206,6 +238,10 @@ questions:
       ru: Какой теорией известен Джон Дальтон?
       kk: Джон Дальтон қандай теориясымен танымал?
       en: Which theory is John Dalton known for?
+    explanation:
+      ru: 'Дальтон вернул в науку идею неделимых атомов и показал, что химические реакции — это перестановка атомов.'
+      kk: 'Дальтон ғылымға бөлінбейтін атомдар идеясын қайтарып, химиялық реакциялар — атомдардың орын ауыстыруы екенін көрсетті.'
+      en: 'Dalton brought the idea of indivisible atoms back into science and showed that chemical reactions are rearrangements of atoms.'
     options:
       - text:
           ru: Атомная теория
@@ -231,6 +267,10 @@ questions:
       ru: Какое нарушение зрения изучал Джон Дальтон?
       kk: Джон Дальтон көру қабілетінің қандай бұзылысын зерттеді?
       en: Which vision condition did John Dalton study?
+    explanation:
+      ru: 'Дальтон первым научно описал цветовую слепоту, которой страдал сам, — поэтому её называют дальтонизмом.'
+      kk: 'Дальтон өзі зардап шеккен түс соқырлығын алғаш ғылыми түрде сипаттады — сондықтан оны дальтонизм деп атайды.'
+      en: 'Dalton was the first to describe scientifically the color blindness he himself had — which is why it is called daltonism.'
     options:
       - text:
           ru: Дальтонизм
@@ -256,6 +296,10 @@ questions:
       ru: Какое понятие ввёл Лайнус Полинг?
       kk: Лайнус Полинг қандай ұғымды енгізді?
       en: Which concept did Linus Pauling introduce?
+    explanation:
+      ru: 'Полинг ввёл шкалу электроотрицательности, которая показывает, насколько сильно атом притягивает электроны в связи.'
+      kk: 'Полинг атомның байланыста электрондарды қаншалықты күшті тартатынын көрсететін электртерістілік шкаласын енгізді.'
+      en: 'Pauling introduced the electronegativity scale, which shows how strongly an atom attracts electrons in a bond.'
     options:
       - text:
           ru: Электроотрицательность
@@ -281,6 +325,10 @@ questions:
       ru: Что изобрёл Альфред Нобель?
       kk: Альфред Нобель нені ойлап тапты?
       en: What did Alfred Nobel invent?
+    explanation:
+      ru: 'В 1867 году Нобель смешал нитроглицерин с кизельгуром и получил динамит — более безопасное взрывчатое вещество.'
+      kk: '1867 жылы Нобель нитроглицеринді кизельгурмен араластырып, динамит — қауіпсіздеу жарылғыш зат алды.'
+      en: 'In 1867 Nobel mixed nitroglycerin with kieselguhr and obtained dynamite — a safer explosive.'
     options:
       - text:
           ru: Динамит
@@ -306,6 +354,10 @@ questions:
       ru: Структуру какого витамина определила Дороти Ходжкин?
       kk: Дороти Ходжкин қай дәрумен құрылымын анықтады?
       en: Which vitamin's structure did Dorothy Hodgkin determine?
+    explanation:
+      ru: 'С помощью рентгеноструктурного анализа Ходжкин определила структуру витамина B12 и получила за это Нобелевскую премию 1964 года.'
+      kk: 'Рентгендік құрылымдық талдау арқылы Ходжкин B12 дәруменінің құрылымын анықтап, бұл үшін 1964 жылғы Нобель сыйлығын алды.'
+      en: 'Using X-ray crystallography, Hodgkin determined the structure of vitamin B12 and received the 1964 Nobel Prize for it.'
     options:
       - text:
           ru: Витамин B12

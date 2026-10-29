@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство германия позволяет использовать его в приборах ночного видения?
       kk: Германийдің қай қасиеті оны түнгі көру құралдарында пайдалануға мүмкіндік береді?
       en: Which property of germanium allows it to be used in night-vision devices?
+    explanation:
+      ru: 'Германий пропускает инфракрасные лучи, поэтому из него делают линзы тепловизоров и приборов ночного видения.'
+      kk: 'Германий инфрақызыл сәулелерді өткізеді, сондықтан одан жылу бейнелегіштер мен түнгі көру аспаптарының линзаларын жасайды.'
+      en: 'Germanium transmits infrared rays, so it is used for lenses of thermal imagers and night vision devices.'
     options:
       - text:
           ru: Способность расширяться при затвердевании
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержит ядро самого распространенного стабильного изотопа германия?
       kk: Германийдің ең көп таралған тұрақты изотопының ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common stable isotope of germanium?
+    explanation:
+      ru: 'Самый распространённый изотоп — германий-74; нейтронов 74 − 32 = 42.'
+      kk: 'Ең көп таралған изотоп — германий-74; нейтрондар саны 74 − 32 = 42.'
+      en: 'The most common isotope is germanium-74; it has 74 − 32 = 42 neutrons.'
     options:
       - text:
           ru: '42'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип элемента представляет собой германий?
       kk: Германий элементтің қай түріне жатады?
       en: What type of element is germanium?
+    explanation:
+      ru: 'Германий блестит, как металл, но хрупок и является полупроводником — это полуметалл, похожий на кремний.'
+      kk: 'Германий металл сияқты жылтырайды, бірақ сынғыш және жартылай өткізгіш — бұл кремнийге ұқсас жартылай металл.'
+      en: 'Germanium shines like a metal but is brittle and a semiconductor — a metalloid similar to silicon.'
     options:
       - text:
           ru: Неметалл
@@ -81,6 +93,10 @@ questions:
       ru: Какое применение германия связано с его способностью проводить электричество только при определенных условиях?
       kk: Германийдің қай қолданылуы оның электрді тек белгілі бір жағдайларда өткізу қабілетімен байланысты?
       en: Which use of germanium is related to its ability to conduct electricity only under certain conditions?
+    explanation:
+      ru: 'Германий — полупроводник, и первый в мире транзистор 1947 года был сделан именно из него.'
+      kk: 'Германий — жартылай өткізгіш, және әлемдегі алғашқы 1947 жылғы транзистор дәл одан жасалған.'
+      en: 'Germanium is a semiconductor, and the world’s first transistor, in 1947, was made of it.'
     options:
       - text:
           ru: Компонент инфракрасной оптики
@@ -106,6 +122,10 @@ questions:
       ru: Какой из изотопов германия используется в медицинских ПЭТ-сканерах?
       kk: Германийдің қай изотопы медициналық ПЭТ-сканерлерде қолданылады?
       en: Which isotope of germanium is used in medical PET scanners?
+    explanation:
+      ru: 'Радиоактивный германий-68 используют в ПЭТ-сканерах для калибровки и для получения радиоактивного галлия-68.'
+      kk: 'Радиоактивті германий-68-ді ПЭТ-сканерлерде калибрлеу үшін және радиоактивті галлий-68 алу үшін қолданады.'
+      en: 'Radioactive germanium-68 is used in PET scanners for calibration and to produce radioactive gallium-68.'
     options:
       - text:
           ru: Германий-76

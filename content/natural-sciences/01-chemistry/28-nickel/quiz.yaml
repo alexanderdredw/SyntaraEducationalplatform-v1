@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство никеля объясняет его широкое использование в производстве нержавеющей стали и гальванических покрытиях?
       kk: Никельдің қай қасиеті оның тот баспайтын болат өндірісінде және гальваникалық жабындарда кеңінен қолданылуын түсіндіреді?
       en: Which property of nickel explains its wide use in stainless steel and electroplating?
+    explanation:
+      ru: 'Никель устойчив к коррозии и окислению, поэтому защищает сталь в сплаве и металлы в виде покрытия.'
+      kk: 'Никель коррозия мен тотығуға төзімді, сондықтан қорытпада болатты, ал жабын ретінде металдарды қорғайды.'
+      en: 'Nickel resists corrosion and oxidation, so it protects steel in alloys and other metals as a coating.'
     options:
       - text:
           ru: Устойчивость к коррозии и окислению
@@ -31,6 +35,10 @@ questions:
       ru: Сколько нейтронов содержится в ядре самого распространенного стабильного изотопа никеля (Никель-58)?
       kk: Никельдің ең көп таралған тұрақты изотопының (никель-58) ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of the most common stable isotope of nickel (nickel-58)?
+    explanation:
+      ru: 'У никеля 28 протонов, поэтому в никеле-58 нейтронов 58 − 28 = 30.'
+      kk: 'Никельде 28 протон бар, сондықтан никель-58-де нейтрондар саны 58 − 28 = 30.'
+      en: 'Nickel has 28 protons, so nickel-58 has 58 − 28 = 30 neutrons.'
     options:
       - text:
           ru: '86'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип химической связи характерен для простого вещества никеля?
       kk: Никель жай затына химиялық байланыстың қай түрі тән?
       en: Which type of chemical bond is typical of nickel as a simple substance?
+    explanation:
+      ru: 'Атомы никеля, как и всех металлов, связаны общими подвижными электронами — металлической связью.'
+      kk: 'Никель атомдары барлық металдар сияқты ортақ қозғалғыш электрондар арқылы — металдық байланыспен байланысқан.'
+      en: 'Like all metals, nickel atoms are held together by shared mobile electrons — by metallic bonding.'
     options:
       - text:
           ru: Ионная связь
@@ -81,6 +93,10 @@ questions:
       ru: Какая степень окисления является типичной для никеля в его соединениях?
       kk: Қосылыстарындағы никельге қай тотығу дәрежесі тән?
       en: Which oxidation state is typical of nickel in its compounds?
+    explanation:
+      ru: 'Никель обычно отдаёт два электрона 4s² и в соединениях, например в NiSO₄, имеет степень окисления +2.'
+      kk: 'Никель әдетте екі 4s² электронын береді және қосылыстарда, мысалы NiSO₄-те, +2 тотығу дәрежесін көрсетеді.'
+      en: 'Nickel usually gives away its two 4s² electrons and has an oxidation state of +2 in compounds such as NiSO₄.'
     options:
       - text:
           ru: '+2'
@@ -106,6 +122,10 @@ questions:
       ru: Какое применение никеля связано с его свойством сохранять структурную прочность при высоких температурах?
       kk: Никельдің қай қолданылуы оның жоғары температурада құрылымдық беріктігін сақтау қасиетімен байланысты?
       en: Which use of nickel is related to its ability to stay structurally strong at high temperatures?
+    explanation:
+      ru: 'Никелевые суперсплавы не теряют прочности при сильном нагреве, поэтому работают в газовых турбинах и ракетных двигателях.'
+      kk: 'Никель суперқорытпалары қатты қызғанда беріктігін жоғалтпайды, сондықтан газ турбиналары мен зымыран қозғалтқыштарында жұмыс істейді.'
+      en: 'Nickel superalloys keep their strength when strongly heated, so they work in gas turbines and rocket engines.'
     options:
       - text:
           ru: Гальваническое покрытие

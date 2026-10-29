@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома серы?
       kk: Күкірт атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a sulfur atom?
+    explanation:
+      ru: 'Атомный номер серы — 16, значит, в ядре шестнадцать протонов.'
+      kk: 'Күкірттің атомдық нөмірі — 16, демек, ядросында он алты протон бар.'
+      en: 'The atomic number of sulfur is 16, so its nucleus contains sixteen protons.'
     options:
       - text:
           ru: '32'
@@ -31,6 +35,10 @@ questions:
       ru: Сколько электронов находится на внешнем энергетическом уровне атома серы?
       kk: Күкірт атомының сыртқы энергетикалық деңгейінде қанша электрон бар?
       en: How many electrons are in the outer energy level of a sulfur atom?
+    explanation:
+      ru: 'Сера — элемент 16-й группы, её внешний уровень 3s² 3p⁴ — шесть электронов.'
+      kk: 'Күкірт — 16-топ элементі, оның сыртқы деңгейі 3s² 3p⁴ — алты электрон.'
+      en: 'Sulfur is a group 16 element; its outer level 3s² 3p⁴ holds six electrons.'
     options:
       - text:
           ru: '4'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип химического элемента представляет сера согласно её физическим свойствам?
       kk: Физикалық қасиеттері бойынша күкірт химиялық элементтің қай түріне жатады?
       en: According to its physical properties, what type of chemical element is sulfur?
+    explanation:
+      ru: 'Сера хрупкая, не блестит и не проводит ток и тепло — это признаки неметалла.'
+      kk: 'Күкірт сынғыш, жылтырамайды, ток пен жылуды өткізбейді — бұл бейметалдың белгілері.'
+      en: 'Sulfur is brittle, has no luster and does not conduct electricity or heat — these are signs of a nonmetal.'
     options:
       - text:
           ru: Металл
@@ -81,6 +93,10 @@ questions:
       ru: Какое простое вещество образует сера при комнатной температуре?
       kk: Бөлме температурасында күкірт қандай жай зат түзеді?
       en: Which simple substance does sulfur form at room temperature?
+    explanation:
+      ru: 'При комнатной температуре атомы серы соединены в кольца из восьми атомов — молекулы S₈.'
+      kk: 'Бөлме температурасында күкірт атомдары сегіз атомнан тұратын сақиналарға — S₈ молекулаларына біріккен.'
+      en: 'At room temperature sulfur atoms are joined in rings of eight atoms — S₈ molecules.'
     options:
       - text:
           ru: S₆
@@ -106,6 +122,10 @@ questions:
       ru: Какая степень окисления серы характерна для серной кислоты (H₂SO₄)?
       kk: Күкірт қышқылындағы (H₂SO₄) күкірттің тотығу дәрежесі қандай?
       en: What is the oxidation state of sulfur in sulfuric acid (H₂SO₄)?
+    explanation:
+      ru: 'В H₂SO₄ два водорода дают +2, четыре кислорода −8, поэтому у серы +6, чтобы сумма была равна нулю.'
+      kk: 'H₂SO₄-те екі сутегі +2, төрт оттегі −8 береді, сондықтан қосынды нөлге тең болуы үшін күкіртте +6.'
+      en: 'In H₂SO₄ two hydrogens give +2 and four oxygens give −8, so sulfur is +6 for the total to be zero.'
     options:
       - text:
           ru: '+4'

@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома теллура?
       kk: Теллур атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a tellurium atom?
+    explanation:
+      ru: 'Атомный номер теллура — 52, значит, в ядре пятьдесят два протона.'
+      kk: 'Теллурдың атомдық нөмірі — 52, демек, ядросында елу екі протон бар.'
+      en: 'The atomic number of tellurium is 52, so its nucleus contains fifty-two protons.'
     options:
       - text:
           ru: '78'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип элемента представляет собой теллур согласно классификации по свойствам?
       kk: Қасиеттері бойынша жіктегенде теллур элементтің қай түріне жатады?
       en: According to its properties, what type of element is tellurium?
+    explanation:
+      ru: 'Теллур блестит, как металл, но хрупок и является полупроводником — это полуметалл.'
+      kk: 'Теллур металл сияқты жылтырайды, бірақ сынғыш және жартылай өткізгіш — бұл жартылай металл.'
+      en: 'Tellurium shines like a metal but is brittle and a semiconductor — it is a metalloid.'
     options:
       - text:
           ru: Полуметалл
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому теллура?
       kk: Теллур атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the tellurium atom?
+    explanation:
+      ru: 'У теллура 52 электрона: 36 как у криптона, заполненная 4d¹⁰, затем 5s² и четыре электрона на 5p.'
+      kk: 'Теллурдың 52 электроны бар: 36-сы криптондағыдай, толтырылған 4d¹⁰, содан кейін 5s² және 5p-да төрт электрон.'
+      en: 'Tellurium has 52 electrons: 36 as in krypton, a filled 4d¹⁰, then 5s² and four electrons in 5p.'
     options:
       - text:
           ru: '[Kr] 4d¹⁰ 5s² 5p⁶'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство теллура подтверждает, что он является полуметаллом?
       kk: Теллурдың қай қасиеті оның жартылай металл екенін растайды?
       en: Which property of tellurium confirms that it is a metalloid?
+    explanation:
+      ru: 'У металлов проводимость при нагреве падает, а у теллура, как у полупроводника, растёт.'
+      kk: 'Металдарда қыздырғанда өткізгіштік төмендейді, ал теллурда, жартылай өткізгіштегідей, артады.'
+      en: 'In metals conductivity falls when heated, while in tellurium, as in a semiconductor, it rises.'
     options:
       - text:
           ru: Электропроводность растет с температурой
@@ -106,6 +122,10 @@ questions:
       ru: Какая степень окисления теллура является типичной?
       kk: Теллурға қай тотығу дәрежесі тән?
       en: Which oxidation state is typical of tellurium?
+    explanation:
+      ru: 'Теллур, как и сера, проявляет степени окисления −2, +4 и +6; самая обычная из них — +4, например в TeO₂.'
+      kk: 'Теллур күкірт сияқты −2, +4 және +6 тотығу дәрежелерін көрсетеді; олардың ең кең таралғаны — +4, мысалы TeO₂-де.'
+      en: 'Like sulfur, tellurium shows oxidation states of −2, +4 and +6; the most common of them is +4, for example in TeO₂.'
     options:
       - text:
           ru: '+4'

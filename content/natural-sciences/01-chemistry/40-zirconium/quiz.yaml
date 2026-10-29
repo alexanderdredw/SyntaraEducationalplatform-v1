@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство циркония делает его критически важным материалом для оболочек ТВЭЛов в ядерных реакторах?
       kk: Цирконийдің қай қасиеті оны ядролық реакторлардағы жылу бөлгіш элементтердің қабықшалары үшін аса маңызды материал етеді?
       en: Which property of zirconium makes it a critical material for fuel-rod cladding in nuclear reactors?
+    explanation:
+      ru: 'Цирконий почти не поглощает нейтроны, поэтому оболочка из него не мешает цепной реакции в топливе.'
+      kk: 'Цирконий нейтрондарды дерлік жұтпайды, сондықтан одан жасалған қабық отындағы тізбекті реакцияға кедергі келтірмейді.'
+      en: 'Zirconium barely absorbs neutrons, so cladding made of it does not interfere with the chain reaction in the fuel.'
     options:
       - text:
           ru: Высокая температура плавления
@@ -31,6 +35,10 @@ questions:
       ru: Атом циркония содержит 40 протонов. Сколько электронов находится в нейтральном атоме циркония?
       kk: Цирконий атомында 40 протон бар. Бейтарап цирконий атомында қанша электрон бар?
       en: A zirconium atom has 40 protons. How many electrons are in a neutral zirconium atom?
+    explanation:
+      ru: 'В нейтральном атоме число электронов равно числу протонов, иначе атом был бы заряжен.'
+      kk: 'Бейтарап атомда электрон саны протон санына тең, әйтпесе атом зарядталған болар еді.'
+      en: 'In a neutral atom the number of electrons equals the number of protons; otherwise the atom would be charged.'
     options:
       - text:
           ru: '90'
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является типичной для циркония в его соединениях?
       kk: Қосылыстарындағы цирконийге қай тотығу дәрежесі тән?
       en: Which oxidation state is typical of zirconium in its compounds?
+    explanation:
+      ru: 'Цирконий отдаёт четыре внешних электрона (4d² 5s²) и в соединениях, например ZrO₂, имеет степень окисления +4.'
+      kk: 'Цирконий төрт сыртқы электронын (4d² 5s²) береді және қосылыстарда, мысалы ZrO₂-де, +4 тотығу дәрежесін көрсетеді.'
+      en: 'Zirconium gives away four outer electrons (4d² 5s²) and has an oxidation state of +4 in compounds such as ZrO₂.'
     options:
       - text:
           ru: '+1'
@@ -81,6 +93,10 @@ questions:
       ru: Какой изотоп циркония является самым распространённым в природе?
       kk: Цирконийдің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of zirconium is the most common in nature?
+    explanation:
+      ru: 'Около половины природного циркония — изотоп цирконий-90 (40 протонов и 50 нейтронов).'
+      kk: 'Табиғи цирконийдің жартысына жуығы — цирконий-90 изотопы (40 протон және 50 нейтрон).'
+      en: 'About half of natural zirconium is the isotope zirconium-90 (40 protons and 50 neutrons).'
     options:
       - text:
           ru: Цирконий-96
@@ -106,6 +122,10 @@ questions:
       ru: Какой метод используется для промышленного получения циркония из цирконового песка?
       kk: Циркон құмынан цирконийді өнеркәсіптік жолмен алу үшін қай әдіс қолданылады?
       en: Which method is used to produce zirconium industrially from zircon sand?
+    explanation:
+      ru: 'В процессе Кролла хлорид циркония восстанавливают магнием до металла — так же получают и титан.'
+      kk: 'Кролл процесінде цирконий хлоридін магниймен металға дейін тотықсыздандырады — титанды да осылай алады.'
+      en: 'In the Kroll process zirconium chloride is reduced to the metal with magnesium — titanium is produced the same way.'
     options:
       - text:
           ru: Прямое восстановление водородом

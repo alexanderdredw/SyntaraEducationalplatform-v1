@@ -6,6 +6,10 @@ questions:
       ru: Какое свойство марганца делает его незаменимым в металлургии для производства стали?
       kk: Марганецтің қай қасиеті оны металлургияда болат өндіру үшін таптырмас етеді?
       en: Which property of manganese makes it indispensable in steelmaking?
+    explanation:
+      ru: 'Марганец связывает вредную серу и кислород в стали и делает её твёрже и износостойче — альтернативы ему нет.'
+      kk: 'Марганец болаттағы зиянды күкірт пен оттегіні байланыстырып, оны қатты әрі тозуға төзімді етеді — оның баламасы жоқ.'
+      en: 'Manganese binds harmful sulfur and oxygen in steel and makes it harder and more wear-resistant — there is no substitute for it.'
     options:
       - text:
           ru: Увеличивает электропроводность стали
@@ -31,6 +35,10 @@ questions:
       ru: Сколько протонов содержится в ядре атома марганца?
       kk: Марганец атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a manganese atom?
+    explanation:
+      ru: 'Атомный номер марганца — 25, значит, в ядре двадцать пять протонов.'
+      kk: 'Марганецтің атомдық нөмірі — 25, демек, ядросында жиырма бес протон бар.'
+      en: 'The atomic number of manganese is 25, so its nucleus contains twenty-five protons.'
     options:
       - text:
           ru: '55'
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому марганца в основном состоянии?
       kk: Негізгі күйдегі марганец атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the manganese atom in its ground state?
+    explanation:
+      ru: 'У марганца 25 электронов: 18 как у аргона, 4s² и пять электронов на 3d.'
+      kk: 'Марганецтің 25 электроны бар: 18-і аргондағыдай, 4s² және 3d-де бес электрон.'
+      en: 'Manganese has 25 electrons: 18 as in argon, 4s² and five electrons in 3d.'
     options:
       - text:
           ru: '[Ar] 3d⁶ 4s¹'
@@ -81,6 +93,10 @@ questions:
       ru: Какое соединение марганца является мощным окислителем?
       kk: Марганецтің қай қосылысы күшті тотықтырғыш болып табылады?
       en: Which manganese compound is a powerful oxidising agent?
+    explanation:
+      ru: 'В KMnO₄ марганец имеет высшую степень окисления +7 и охотно отнимает электроны у других веществ — это сильный окислитель («марганцовка»).'
+      kk: 'KMnO₄-те марганецтің ең жоғары тотығу дәрежесі +7, ол басқа заттардан электрондарды оңай тартып алады — бұл күшті тотықтырғыш («марганцовка»).'
+      en: 'In KMnO₄ manganese has its highest oxidation state of +7 and readily takes electrons from other substances — it is a strong oxidizer (potassium permanganate).'
     options:
       - text:
           ru: Оксид марганца(II) (MnO)
@@ -106,6 +122,10 @@ questions:
       ru: Какое значение имеет марганец для фотосинтеза растений?
       kk: Марганецтің өсімдіктердің фотосинтезі үшін маңызы қандай?
       en: Why is manganese important for photosynthesis in plants?
+    explanation:
+      ru: 'Атомы марганца входят в комплекс, который при фотосинтезе расщепляет воду и выделяет кислород.'
+      kk: 'Марганец атомдары фотосинтез кезінде суды ыдыратып, оттегі бөлетін кешеннің құрамына кіреді.'
+      en: 'Manganese atoms are part of the complex that splits water and releases oxygen during photosynthesis.'
     options:
       - text:
           ru: Фундаментален для расщепления воды

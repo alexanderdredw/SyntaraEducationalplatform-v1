@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома кобальта?
       kk: Кобальт атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a cobalt atom?
+    explanation:
+      ru: 'Атомный номер кобальта — 27, значит, в ядре двадцать семь протонов.'
+      kk: 'Кобальттың атомдық нөмірі — 27, демек, ядросында жиырма жеті протон бар.'
+      en: 'The atomic number of cobalt is 27, so its nucleus contains twenty-seven protons.'
     options:
       - text:
           ru: '59'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип иона образует атом кобальта, если он теряет два электрона?
       kk: Екі электронын жоғалтса, кобальт атомы қандай ион түзеді?
       en: What kind of ion does a cobalt atom form if it loses two electrons?
+    explanation:
+      ru: 'Потеряв два отрицательных электрона, атом кобальта становится ионом Co²⁺.'
+      kk: 'Екі теріс электронын жоғалтқан кобальт атомы Co²⁺ ионына айналады.'
+      en: 'Having lost two negative electrons, a cobalt atom becomes the Co²⁺ ion.'
     options:
       - text:
           ru: Нейтральный атом
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому кобальта?
       kk: Кобальт атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the cobalt atom?
+    explanation:
+      ru: 'У кобальта 27 электронов: 18 как у аргона, 4s² и семь электронов на 3d.'
+      kk: 'Кобальттың 27 электроны бар: 18-і аргондағыдай, 4s² және 3d-де жеті электрон.'
+      en: 'Cobalt has 27 electrons: 18 as in argon, 4s² and seven electrons in 3d.'
     options:
       - text:
           ru: '[Ar] 3d⁸ 4s¹'
@@ -81,6 +93,10 @@ questions:
       ru: Какой изотоп кобальта является единственным стабильным природным изотопом?
       kk: Кобальттың қай изотопы табиғаттағы жалғыз тұрақты изотоп?
       en: Which isotope of cobalt is its only stable natural isotope?
+    explanation:
+      ru: 'Весь природный кобальт — стабильный кобальт-59 (27 протонов и 32 нейтрона).'
+      kk: 'Табиғи кобальттың бәрі — тұрақты кобальт-59 (27 протон және 32 нейтрон).'
+      en: 'All natural cobalt is stable cobalt-59 (27 protons and 32 neutrons).'
     options:
       - text:
           ru: Кобальт-59
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство кобальта позволяет использовать его в суперсплавах для реактивных двигателей?
       kk: Кобальттың қай қасиеті оны реактивті қозғалтқыштарға арналған суперқорытпаларда пайдалануға мүмкіндік береді?
       en: Which property of cobalt allows it to be used in superalloys for jet engines?
+    explanation:
+      ru: 'Сплавы кобальта сохраняют прочность при очень высоких температурах, поэтому из них делают лопатки турбин.'
+      kk: 'Кобальт қорытпалары өте жоғары температурада да беріктігін сақтайды, сондықтан олардан турбина қалақтарын жасайды.'
+      en: 'Cobalt alloys keep their strength at very high temperatures, so they are used for turbine blades.'
     options:
       - text:
           ru: Способность образовывать синие пигменты

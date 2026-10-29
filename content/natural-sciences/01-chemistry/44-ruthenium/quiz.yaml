@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома рутения?
       kk: Рутений атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a ruthenium atom?
+    explanation:
+      ru: 'Атомный номер рутения — 44, значит, в ядре сорок четыре протона.'
+      kk: 'Рутенийдің атомдық нөмірі — 44, демек, ядросында қырық төрт протон бар.'
+      en: 'The atomic number of ruthenium is 44, so its nucleus contains forty-four protons.'
     options:
       - text:
           ru: '102'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химического элемента представляет собой рутений согласно его свойствам и положению в таблице Менделеева?
       kk: Қасиеттері мен Менделеев кестесіндегі орнына қарай рутений химиялық элементтің қай түріне жатады?
       en: Based on its properties and position in the periodic table, what type of element is ruthenium?
+    explanation:
+      ru: 'Рутений — переходный металл платиновой группы: блестящий, твёрдый, проводит ток.'
+      kk: 'Рутений — платина тобының ауыспалы металы: жылтыр, қатты, ток өткізеді.'
+      en: 'Ruthenium is a transition metal of the platinum group: shiny, hard and electrically conductive.'
     options:
       - text:
           ru: Металл
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация характерна для атома рутения в основном состоянии?
       kk: Негізгі күйдегі рутений атомына қай электрондық конфигурация тән?
       en: Which electron configuration does the ruthenium atom have in its ground state?
+    explanation:
+      ru: 'У рутения 44 электрона: 36 как у криптона, семь на 4d и один на 5s — один электрон 5s переходит на 4d.'
+      kk: 'Рутенийдің 44 электроны бар: 36-сы криптондағыдай, жетеуі 4d-де және біреуі 5s-те — бір 5s электроны 4d-ге ауысады.'
+      en: 'Ruthenium has 44 electrons: 36 as in krypton, seven in 4d and one in 5s — one 5s electron moves to 4d.'
     options:
       - text:
           ru: '[Kr] 4d⁷ 5s¹'
@@ -81,6 +93,10 @@ questions:
       ru: Какой изотоп рутения является самым распространённым в природе?
       kk: Рутенийдің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of ruthenium is the most common in nature?
+    explanation:
+      ru: 'Около трети природного рутения — изотоп рутений-102, это больше, чем любого другого.'
+      kk: 'Табиғи рутенийдің үштен біріне жуығы — рутений-102 изотопы, бұл басқаларының кез келгенінен көп.'
+      en: 'About a third of natural ruthenium is the isotope ruthenium-102, more than any other.'
     options:
       - text:
           ru: Рутений-96
@@ -106,6 +122,10 @@ questions:
       ru: Какое свойство рутения делает его особенно ценным для использования в электронике, например, в чип-резисторах?
       kk: Рутенийдің қай қасиеті оны электроникада, мысалы чип-резисторларда, пайдалану үшін аса құнды етеді?
       en: Which property of ruthenium makes it especially valuable in electronics, for example in chip resistors?
+    explanation:
+      ru: 'Рутений почти не окисляется и не стирается, поэтому контакты и резисторы с ним долго работают без изменений.'
+      kk: 'Рутений дерлік тотықпайды және үйкеліп тозбайды, сондықтан ол қосылған түйіспелер мен резисторлар ұзақ уақыт өзгеріссіз жұмыс істейді.'
+      en: 'Ruthenium hardly oxidizes or wears off, so contacts and resistors containing it work unchanged for a long time.'
     options:
       - text:
           ru: Способность становиться сверхпроводником

@@ -4393,6 +4393,56 @@
   --primary-glow: initial;
 }
 
+/*
+ * Кнопки помощника «Кратко / Подробно / Тест» (решение владельца 2026-10-29): у оригинала их фон и рамка — на
+ * незаданных переменных, поэтому на телефоне это был голый текст в две строки. Одна строка из трёх равных кнопок
+ * в виде чипов атласа (.tag), активная — акцентом атласа.
+ */
+.atlas .ai-actions {
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.atlas .ai-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 200px;
+  min-height: 44px;
+  padding: 10px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.atlas .ai-btn:hover {
+  border-color: rgba(var(--accent-rgb), 0.6);
+  background: rgba(var(--accent-rgb), 0.12);
+  color: var(--text-primary);
+}
+
+.atlas .ai-btn.active {
+  border-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.2);
+  color: var(--text-primary);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.35);
+}
+
+:root[data-theme='light'] .atlas .ai-btn {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='light'] .atlas .ai-btn.active {
+  border-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.14);
+}
+
 /* Наведение на мини-карточку «Рекомендуется повторить» (обработчики mouseenter оригинала). */
 .atlas .atlas-rec-card:hover {
   transform: translateY(-2px);
@@ -4506,7 +4556,8 @@
 /* ===== Тесты в стиле атласа (docs/TESTS_TZ.md, T1; test-view.tsx) =====
  * Решение владельца 5: тёмный фон, стекло и свечение, цвета семейств, шрифты атласа. Компьютер — две колонки
  * (вопрос и «Ход попытки»), узкий контейнер (телефон, блок помощника) — одна колонка, «Ход попытки» строкой сверху.
- * Верный ответ — свечение цветом семейства (--atest-accent), неверный — «вздрагивание»; без анимаций при
+ * Верный ответ — зелёные рамка и галочка (решение владельца 2026-10-29: жёлтый на полосе — «верно с подсказкой»),
+ * цвет семейства (--atest-accent) — только мягким свечением; неверный — «вздрагивание»; без анимаций при
  * prefers-reduced-motion и в «Экономии трафика» (правила в конце файла). */
 .atlas .atest {
   container-type: inline-size;
@@ -4770,9 +4821,9 @@
 }
 
 .atlas .atest-opt[data-state='correct'] {
-  border-color: var(--atest-accent);
-  background: color-mix(in srgb, var(--atest-accent) 22%, transparent);
-  box-shadow: 0 0 24px color-mix(in srgb, var(--atest-accent) 60%, transparent);
+  border-color: var(--success);
+  background: rgba(52, 199, 89, 0.14);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--atest-accent) 35%, transparent);
   animation: atest-glow 0.9s ease-out;
 }
 
@@ -4865,8 +4916,8 @@
 }
 
 .atlas .atest-input[data-state='correct'] {
-  border-color: var(--atest-accent);
-  box-shadow: 0 0 20px color-mix(in srgb, var(--atest-accent) 50%, transparent);
+  border-color: var(--success);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--atest-accent) 35%, transparent);
 }
 
 .atlas .atest-input[data-state='wrong'] {
@@ -4891,7 +4942,7 @@
 }
 
 .atlas .atest-verdict[data-state='correct'] {
-  border-color: color-mix(in srgb, var(--atest-accent) 60%, transparent);
+  border-color: rgba(52, 199, 89, 0.6);
 }
 
 .atlas .atest-verdict[data-state='wrong'] {
@@ -5134,10 +5185,10 @@
 
 @keyframes atest-glow {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--atest-accent) 80%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--atest-accent) 50%, transparent);
   }
   60% {
-    box-shadow: 0 0 36px 6px color-mix(in srgb, var(--atest-accent) 70%, transparent);
+    box-shadow: 0 0 32px 4px color-mix(in srgb, var(--atest-accent) 45%, transparent);
   }
 }
 

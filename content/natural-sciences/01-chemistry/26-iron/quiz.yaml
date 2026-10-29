@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома железа?
       kk: Темір атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of an iron atom?
+    explanation:
+      ru: 'Атомный номер железа — 26, значит, в ядре двадцать шесть протонов.'
+      kk: 'Темірдің атомдық нөмірі — 26, демек, ядросында жиырма алты протон бар.'
+      en: 'The atomic number of iron is 26, so its nucleus contains twenty-six protons.'
     options:
       - text:
           ru: '8'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип иона образует атом железа, теряя электроны?
       kk: Электрондарын жоғалтқанда темір атомы қандай ион түзеді?
       en: What kind of ion does an iron atom form when it loses electrons?
+    explanation:
+      ru: 'Отдав электроны, атом железа становится положительно заряженным ионом — Fe²⁺ или Fe³⁺, то есть катионом.'
+      kk: 'Электрондарын берген темір атомы оң зарядталған ионға — Fe²⁺ немесе Fe³⁺-ке, яғни катионға айналады.'
+      en: 'Having given away electrons, an iron atom becomes a positively charged ion — Fe²⁺ or Fe³⁺, that is, a cation.'
     options:
       - text:
           ru: Нейтрон
@@ -56,6 +64,10 @@ questions:
       ru: Какая электронная конфигурация соответствует атому железа в основном состоянии?
       kk: Негізгі күйдегі темір атомына қай электрондық конфигурация сәйкес келеді?
       en: Which electron configuration corresponds to the iron atom in its ground state?
+    explanation:
+      ru: 'У железа 26 электронов: 18 как у аргона, 4s² и шесть электронов на 3d.'
+      kk: 'Темірдің 26 электроны бар: 18-і аргондағыдай, 4s² және 3d-де алты электрон.'
+      en: 'Iron has 26 electrons: 18 as in argon, 4s² and six electrons in 3d.'
     options:
       - text:
           ru: '[Ar] 3d⁶ 4s²'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство железа объясняет его способность притягиваться к магниту при комнатной температуре?
       kk: Темірдің қай қасиеті оның бөлме температурасында магнитке тартылуын түсіндіреді?
       en: Which property of iron explains why it is attracted to a magnet at room temperature?
+    explanation:
+      ru: 'Железо ферромагнитно: магнитные моменты его атомов выстраиваются в одном направлении, поэтому оно притягивается к магниту.'
+      kk: 'Темір ферромагнитті: оның атомдарының магниттік моменттері бір бағытта тізіледі, сондықтан ол магнитке тартылады.'
+      en: 'Iron is ferromagnetic: the magnetic moments of its atoms line up in one direction, so it is attracted to a magnet.'
     options:
       - text:
           ru: Ковкость
@@ -106,6 +122,10 @@ questions:
       ru: Какой изотоп железа является самым распространённым в природе?
       kk: Темірдің қай изотопы табиғатта ең көп таралған?
       en: Which isotope of iron is the most common in nature?
+    explanation:
+      ru: 'Около 92 % природного железа — изотоп железо-56 (26 протонов и 30 нейтронов).'
+      kk: 'Табиғи темірдің шамамен 92 %-ы — темір-56 изотопы (26 протон және 30 нейтрон).'
+      en: 'About 92% of natural iron is the isotope iron-56 (26 protons and 30 neutrons).'
     options:
       - text:
           ru: Железо-54

@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома ниобия?
       kk: Ниобий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a niobium atom?
+    explanation:
+      ru: 'Атомный номер ниобия — 41, значит, в ядре сорок один протон.'
+      kk: 'Ниобийдің атомдық нөмірі — 41, демек, ядросында қырық бір протон бар.'
+      en: 'The atomic number of niobium is 41, so its nucleus contains forty-one protons.'
     options:
       - text:
           ru: '5'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип химической связи характерен для простого вещества ниобия?
       kk: Ниобий жай затына химиялық байланыстың қай түрі тән?
       en: Which type of chemical bond is typical of niobium as a simple substance?
+    explanation:
+      ru: 'Ниобий — металл, его атомы связаны общими подвижными электронами — металлической связью.'
+      kk: 'Ниобий — металл, оның атомдары ортақ қозғалғыш электрондар арқылы — металдық байланыспен байланысқан.'
+      en: 'Niobium is a metal; its atoms are held together by shared mobile electrons — by metallic bonding.'
     options:
       - text:
           ru: Ковалентная неполярная
@@ -56,6 +64,10 @@ questions:
       ru: Какая степень окисления является типичной для ниобия в соединениях?
       kk: Қосылыстардағы ниобийге қай тотығу дәрежесі тән?
       en: Which oxidation state is typical of niobium in compounds?
+    explanation:
+      ru: 'Ниобий отдаёт все пять внешних электронов и чаще всего имеет степень окисления +5, например в Nb₂O₅.'
+      kk: 'Ниобий бес сыртқы электронының бәрін береді және көбінесе +5 тотығу дәрежесін көрсетеді, мысалы Nb₂O₅-те.'
+      en: 'Niobium gives away all five outer electrons and most often has an oxidation state of +5, for example in Nb₂O₅.'
     options:
       - text:
           ru: '+5'
@@ -81,6 +93,10 @@ questions:
       ru: Какое свойство ниобия делает его критически важным для сверхпроводящих магнитов?
       kk: Ниобийдің қай қасиеті оны асқын өткізгіш магниттер үшін аса маңызды етеді?
       en: Which property of niobium makes it critical for superconducting magnets?
+    explanation:
+      ru: 'При охлаждении ниже 9,2 К ниобий проводит ток без сопротивления, поэтому из его сплавов делают обмотки магнитов МРТ.'
+      kk: '9,2 К-нен төмен салқындатқанда ниобий токты кедергісіз өткізеді, сондықтан оның қорытпаларынан МРТ магниттерінің орамаларын жасайды.'
+      en: 'Cooled below 9.2 K, niobium conducts current without resistance, so its alloys are used for MRI magnet coils.'
     options:
       - text:
           ru: Становится сверхпроводником при 9.2 К
@@ -106,6 +122,10 @@ questions:
       ru: Сколько нейтронов содержит самый распространенный стабильный изотоп ниобия?
       kk: Ниобийдің ең көп таралған тұрақты изотопында қанша нейтрон бар?
       en: How many neutrons does the most common stable isotope of niobium have?
+    explanation:
+      ru: 'Единственный стабильный изотоп — ниобий-93; нейтронов 93 − 41 = 52.'
+      kk: 'Жалғыз тұрақты изотоп — ниобий-93; нейтрондар саны 93 − 41 = 52.'
+      en: 'The only stable isotope is niobium-93; it has 93 − 41 = 52 neutrons.'
     options:
       - text:
           ru: '41'

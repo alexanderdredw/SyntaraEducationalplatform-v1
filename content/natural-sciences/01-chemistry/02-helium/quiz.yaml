@@ -6,6 +6,10 @@ questions:
       ru: Какое количество протонов содержится в ядре атома гелия?
       kk: Гелий атомының ядросында қанша протон бар?
       en: How many protons are in the nucleus of a helium atom?
+    explanation:
+      ru: 'Атомный номер гелия — 2, значит, в ядре два протона.'
+      kk: 'Гелийдің атомдық нөмірі — 2, демек, ядросында екі протон бар.'
+      en: 'The atomic number of helium is 2, so its nucleus contains two protons.'
     options:
       - text:
           ru: '3'
@@ -31,6 +35,10 @@ questions:
       ru: Какой тип частиц не имеет заряда и входит в состав ядра гелия-4?
       kk: Зарядсыз және гелий-4 ядросының құрамына кіретін бөлшек қандай?
       en: Which particle has no charge and is part of the helium-4 nucleus?
+    explanation:
+      ru: 'Ядро гелия-4 состоит из двух протонов и двух нейтронов; нейтрон — частица без заряда.'
+      kk: 'Гелий-4 ядросы екі протон мен екі нейтроннан тұрады; нейтрон — заряды жоқ бөлшек.'
+      en: 'A helium-4 nucleus consists of two protons and two neutrons; the neutron is a particle with no charge.'
     options:
       - text:
           ru: Протон
@@ -56,6 +64,10 @@ questions:
       ru: Почему гелий относят к инертным газам, исходя из его химических свойств?
       kk: Химиялық қасиеттеріне қарай гелий неге инертті газдарға жатады?
       en: Based on its chemical properties, why is helium classed as an inert gas?
+    explanation:
+      ru: 'Внешняя оболочка гелия 1s² полностью заполнена, поэтому он не отдаёт и не принимает электроны и не образует стабильных соединений.'
+      kk: 'Гелийдің 1s² сыртқы қабаты толық толтырылған, сондықтан ол электрон бермейді де, алмайды да, тұрақты қосылыстар түзбейді.'
+      en: 'Helium’s outer shell 1s² is completely filled, so it neither gives nor accepts electrons and forms no stable compounds.'
     options:
       - text:
           ru: Он имеет высокую теплопроводность
@@ -81,6 +93,10 @@ questions:
       ru: Какое из перечисленных свойств гелия позволяет использовать его в качестве хладагента для сверхпроводящих магнитов?
       kk: Гелийдің қай қасиеті оны асқын өткізгіш магниттерді салқындатуға пайдалануға мүмкіндік береді?
       en: Which property of helium allows it to be used as a coolant for superconducting magnets?
+    explanation:
+      ru: 'Жидкий гелий кипит при −268,9 °C — ниже всех веществ, поэтому он охлаждает магниты почти до абсолютного нуля, например в МРТ.'
+      kk: 'Сұйық гелий −268,9 °C-та қайнайды — барлық заттардан төмен, сондықтан ол магниттерді абсолюттік нөлге дейін дерлік салқындатады, мысалы МРТ-да.'
+      en: 'Liquid helium boils at −268.9 °C — lower than any other substance — so it cools magnets almost to absolute zero, for example in MRI scanners.'
     options:
       - text:
           ru: Самая низкая температура кипения (−268.9°C)
@@ -106,6 +122,10 @@ questions:
       ru: Сколько валентных электронов имеет атом гелия, если его электронная конфигурация 1s²?
       kk: Электрондық конфигурациясы 1s² болса, гелий атомында қанша валенттік электрон бар?
       en: How many valence electrons does a helium atom have if its electron configuration is 1s²?
+    explanation:
+      ru: 'Конфигурация 1s² означает два электрона на единственной оболочке, и оба они внешние.'
+      kk: '1s² конфигурациясы жалғыз қабатта екі электрон бар екенін білдіреді, екеуі де сыртқы электрондар.'
+      en: 'The configuration 1s² means two electrons on the only shell, and both of them are outer electrons.'
     options:
       - text:
           ru: '1'

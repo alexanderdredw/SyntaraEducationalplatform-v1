@@ -6,6 +6,10 @@ questions:
       ru: Какое из утверждений о броме как простом веществе верно?
       kk: Жай зат ретіндегі бром туралы қай тұжырым дұрыс?
       en: Which statement about bromine as a simple substance is true?
+    explanation:
+      ru: 'При комнатной температуре жидки только два элемента — ртуть и бром, и бром из них единственный неметалл.'
+      kk: 'Бөлме температурасында тек екі элемент сұйық — сынап пен бром, және олардың ішінде бром жалғыз бейметалл.'
+      en: 'At room temperature only two elements are liquid — mercury and bromine, and bromine is the only nonmetal of the two.'
     options:
       - text:
           ru: Бром при комнатной температуре является твердым веществом.
@@ -31,6 +35,10 @@ questions:
       ru: Сколько электронов находится на внешнем энергетическом уровне атома брома, если его электронная конфигурация [Ar] 3d¹⁰ 4s² 4p⁵?
       kk: Электрондық конфигурациясы [Ar] 3d¹⁰ 4s² 4p⁵ болса, бром атомының сыртқы энергетикалық деңгейінде қанша электрон бар?
       en: How many electrons are in the outer energy level of a bromine atom if its electron configuration is [Ar] 3d¹⁰ 4s² 4p⁵?
+    explanation:
+      ru: 'На внешнем, четвёртом уровне 4s² 4p⁵ — 2 + 5 = 7 электронов, как у всех галогенов.'
+      kk: 'Сыртқы, төртінші деңгейде 4s² 4p⁵ — 2 + 5 = 7 электрон, барлық галогендердегідей.'
+      en: 'The outer, fourth level 4s² 4p⁵ holds 2 + 5 = 7 electrons, as in all halogens.'
     options:
       - text:
           ru: '7'
@@ -56,6 +64,10 @@ questions:
       ru: Какой тип химической связи, скорее всего, образует бром при реакции с щелочным металлом, например, натрием?
       kk: Сілтілік металмен, мысалы натриймен, әрекеттескенде бром химиялық байланыстың қай түрін түзеді?
       en: Which type of chemical bond will bromine most likely form when it reacts with an alkali metal such as sodium?
+    explanation:
+      ru: 'Натрий отдаёт электрон, бром его принимает; ионы Na⁺ и Br⁻ образуют ионную связь в NaBr.'
+      kk: 'Натрий электрон береді, бром оны қабылдайды; Na⁺ және Br⁻ иондары NaBr-де иондық байланыс түзеді.'
+      en: 'Sodium gives an electron and bromine accepts it; the Na⁺ and Br⁻ ions form an ionic bond in NaBr.'
     options:
       - text:
           ru: Ковалентная неполярная
@@ -81,6 +93,10 @@ questions:
       ru: Какое из перечисленных свойств брома характеризует его как сильный окислитель?
       kk: Бромның қай қасиеті оны күшті тотықтырғыш ретінде сипаттайды?
       en: Which property of bromine characterises it as a strong oxidising agent?
+    explanation:
+      ru: 'Окислитель — тот, кто принимает электроны; бром охотно забирает их у металлов и многих неметаллов.'
+      kk: 'Тотықтырғыш — электрон қабылдайтын зат; бром оларды металдардан және көптеген бейметалдардан оңай тартып алады.'
+      en: 'An oxidizer is what accepts electrons; bromine readily takes them from metals and many nonmetals.'
     options:
       - text:
           ru: Низкая температура кипения (58.8°C).
@@ -106,6 +122,10 @@ questions:
       ru: Сколько нейтронов содержится в ядре наиболее распространенного стабильного изотопа брома-79?
       kk: Бромның ең көп таралған тұрақты изотопы бром-79 ядросында қанша нейтрон бар?
       en: How many neutrons are in the nucleus of bromine-79, the most common stable isotope of bromine?
+    explanation:
+      ru: 'У брома 35 протонов, поэтому в броме-79 нейтронов 79 − 35 = 44.'
+      kk: 'Бромда 35 протон бар, сондықтан бром-79-да нейтрондар саны 79 − 35 = 44.'
+      en: 'Bromine has 35 protons, so bromine-79 has 79 − 35 = 44 neutrons.'
     options:
       - text:
           ru: '44'
