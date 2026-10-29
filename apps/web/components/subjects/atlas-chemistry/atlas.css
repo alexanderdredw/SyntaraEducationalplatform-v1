@@ -373,10 +373,16 @@
   margin-bottom: var(--spacing-sm);
 }
 
+/* Колонки minmax(0, 1fr): длинное содержимое (строка вкладок, карточка AI) не раздвигает сетку окна. */
 .atlas .detail-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--spacing-xl);
+}
+
+.atlas .detail-body > .detail-visual,
+.atlas .detail-body > .detail-info {
+  min-width: 0;
 }
 
 .atlas .large-visual {
@@ -4879,7 +4885,7 @@
 }
 
 .atlas .atest-tf {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .atlas .atest-tf .atest-opt {
@@ -5866,7 +5872,7 @@
 
 @media (max-width: 1100px) and (min-width: 600px) {
   .atlas .sci-check-cards {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
@@ -5969,28 +5975,29 @@
   box-shadow: 0 0 24px rgba(253, 224, 71, 0.25);
 }
 
-/* Вкладки окна (REQ-SCI-05, REQ-SCI-06): прокрутка по горизонтали; активная у учёного — золотом, у элемента — синим. */
+/* Вкладки окна (REQ-SCI-05, REQ-SCI-06): компьютер и планшет — перенос на вторую строку без прокрутки (телефон — статья/аккордеон); активная у учёного — золотом, у элемента — синим. */
 .atlas .atlas-tabs {
   margin-top: 16px;
 }
 
 .atlas .atlas-tablist {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: thin;
   padding-bottom: 6px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .atlas .atlas-tab {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  max-width: 100%;
   min-height: 44px;
   padding: 8px 14px;
   border-radius: 10px 10px 0 0;
   color: var(--text-secondary);
   font: 600 0.88rem var(--font-ui);
-  white-space: nowrap;
+  text-align: left;
+  overflow-wrap: anywhere;
   border-bottom: 2px solid transparent;
 }
 
@@ -6490,19 +6497,7 @@
   }
 }
 
-/* Вкладки: учёный после нормализации — 4 равные без прокрутки; элемент — прокрутка с затенением краёв. */
-.atlas .atlas-tabs:not(.equal) .atlas-tablist {
-  padding-inline: 20px;
-  scroll-padding-inline: 24px;
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    #000 20px,
-    #000 calc(100% - 20px),
-    transparent 100%
-  );
-  mask-image: linear-gradient(90deg, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
-}
+/* Вкладки учёного после нормализации — 4 равные. */
 
 .atlas .atlas-tabs.equal .atlas-tablist {
   display: grid;
