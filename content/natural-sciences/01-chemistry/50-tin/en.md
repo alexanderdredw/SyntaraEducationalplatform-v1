@@ -1,6 +1,6 @@
 ---
 title: Tin
-description: A versatile post-transition metal essential for various scientific and industrial applications.
+description: A soft post-transition metal used in solders, tin-plated cans and bronze.
 illustrationAlt: 'Atom model: Tin (Sn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

@@ -8,7 +8,7 @@ element:
   group: post_transition
   color: '#E2E8F0'
 title: Индий
-description: Универсальный постпереходный металл, необходимый для различных научных и промышленных применений.
+description: Очень мягкий постпереходный металл для прозрачных проводящих покрытий сенсорных экранов.
 illustration: media/indium-atom.webp
 illustrationAlt: 'Модель атома: Индий (In) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

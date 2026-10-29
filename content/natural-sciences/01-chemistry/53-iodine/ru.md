@@ -8,7 +8,7 @@ element:
   group: halogen
   color: '#A855F7'
 title: Йод
-description: Универсальный галоген, необходимый для различных научных и промышленных применений.
+description: Фиолетово-чёрный галоген — антисептик и добавка к йодированной соли против зоба.
 illustration: media/iodine-atom.webp
 illustrationAlt: 'Модель атома: Йод (I) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

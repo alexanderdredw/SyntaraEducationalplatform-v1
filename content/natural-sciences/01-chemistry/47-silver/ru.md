@@ -8,7 +8,7 @@ element:
   group: transition_metal
   color: '#E2E8F0'
 title: Серебро
-description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
+description: Мягкий блестящий металл — лучший проводник тепла среди металлов, известный по украшениям и монетам.
 illustration: media/silver-atom.webp
 illustrationAlt: 'Модель атома: Серебро (Ag) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

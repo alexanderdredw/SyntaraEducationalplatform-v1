@@ -1,6 +1,6 @@
 ---
 title: Cerium
-description: A versatile lanthanide essential for various scientific and industrial applications.
+description: A lanthanide whose oxide cleans exhaust and polishes lenses, and whose alloy is used in lighter flints.
 illustrationAlt: 'Atom model: Cerium (Ce) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

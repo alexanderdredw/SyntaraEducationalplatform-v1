@@ -8,7 +8,7 @@ element:
   group: lanthanide
   color: '#E2E8F0'
 title: Неодим
-description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
+description: Лантаноид для мощнейших в мире постоянных магнитов (NdFeB) и хирургических лазеров.
 illustration: media/neodymium-atom.webp
 illustrationAlt: 'Модель атома: Неодим (Nd) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

@@ -8,7 +8,7 @@ element:
   group: transition_metal
   color: '#CBD5E1'
 title: Рутений
-description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
+description: Твёрдый металл платиновой группы для износостойких электрических контактов и химических катализаторов.
 illustration: media/ruthenium-atom.webp
 illustrationAlt: 'Модель атома: Рутений (Ru) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

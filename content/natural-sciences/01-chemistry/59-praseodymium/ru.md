@@ -8,7 +8,7 @@ element:
   group: lanthanide
   color: '#E2E8F0'
 title: Празеодим
-description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
+description: Лантаноид, который используется в мощных постоянных магнитах и в стёклах для очков сварщиков.
 illustration: media/praseodymium-atom.webp
 illustrationAlt: 'Модель атома: Празеодим (Pr) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

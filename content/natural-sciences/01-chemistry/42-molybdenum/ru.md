@@ -8,7 +8,7 @@ element:
   group: transition_metal
   color: '#CBD5E1'
 title: Молибден
-description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
+description: Тугоплавкий переходный металл, который упрочняет жаропрочные стали и нужен ферментам растений и человека.
 illustration: media/molybdenum-atom.webp
 illustrationAlt: 'Модель атома: Молибден (Mo) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

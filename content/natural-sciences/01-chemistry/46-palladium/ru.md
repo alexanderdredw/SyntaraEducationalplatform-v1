@@ -8,7 +8,7 @@ element:
   group: transition_metal
   color: '#CBD5E1'
 title: Палладий
-description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
+description: Металл платиновой группы, который очищает выхлопные газы и поглощает до 900 объёмов водорода.
 illustration: media/palladium-atom.webp
 illustrationAlt: 'Модель атома: Палладий (Pd) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

@@ -1,6 +1,6 @@
 ---
 title: Rhodium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A chemically inert transition metal used in car catalytic converters and shiny jewellery plating.
 illustrationAlt: 'Atom model: Rhodium (Rh) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

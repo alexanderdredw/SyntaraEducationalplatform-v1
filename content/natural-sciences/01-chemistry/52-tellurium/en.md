@@ -1,6 +1,6 @@
 ---
 title: Tellurium
-description: A versatile semimetal essential for various scientific and industrial applications.
+description: A brittle metalloid used in cadmium telluride solar panels and thermoelectric coolers.
 illustrationAlt: 'Atom model: Tellurium (Te) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

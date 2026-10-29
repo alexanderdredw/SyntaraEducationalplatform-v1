@@ -8,7 +8,7 @@ element:
   group: lanthanide
   color: '#E2E8F0'
 title: Церий
-description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
+description: Лантаноид, оксид которого очищает выхлоп и полирует линзы, а сплав входит в кремни зажигалок.
 illustration: media/cerium-atom.webp
 illustrationAlt: 'Модель атома: Церий (Ce) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

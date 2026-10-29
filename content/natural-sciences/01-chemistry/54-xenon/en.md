@@ -1,6 +1,6 @@
 ---
 title: Xenon
-description: A versatile noble gas essential for various scientific and industrial applications.
+description: A heavy noble gas used in powerful lamps, spacecraft ion engines and anaesthesia.
 illustrationAlt: 'Atom model: Xenon (Xe) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

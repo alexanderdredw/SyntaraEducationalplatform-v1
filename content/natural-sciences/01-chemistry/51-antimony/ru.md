@@ -8,7 +8,7 @@ element:
   group: metalloid
   color: '#94A3B8'
 title: Сурьма
-description: Универсальный полуметалл, необходимый для различных научных и промышленных применений.
+description: Блестящий серый полуметалл, который входит в антипирены и упрочняет свинцовые сплавы.
 illustration: media/antimony-atom.webp
 illustrationAlt: 'Модель атома: Сурьма (Sb) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

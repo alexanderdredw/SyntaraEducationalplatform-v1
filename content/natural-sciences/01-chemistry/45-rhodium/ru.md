@@ -8,7 +8,7 @@ element:
   group: transition_metal
   color: '#E2E8F0'
 title: Родий
-description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
+description: Химически инертный переходный металл для автомобильных катализаторов и блестящих ювелирных покрытий.
 illustration: media/rhodium-atom.webp
 illustrationAlt: 'Модель атома: Родий (Rh) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

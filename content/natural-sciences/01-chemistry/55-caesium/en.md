@@ -1,6 +1,6 @@
 ---
 title: Cesium
-description: A versatile alkali metal essential for various scientific and industrial applications.
+description: An extremely soft alkali metal that atomic clocks use to define the second.
 illustrationAlt: 'Atom model: Cesium (Cs) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

@@ -383,7 +383,8 @@ async function elementTopic(it) {
           }
         : {}),
       title,
-      description: text(l, it.descKey),
+      // Утверждённые описания вместо шаблонных (решение владельца 2026-10-29) — fixes.descriptions.
+      description: FIX.descriptions?.[it.id]?.[l] ?? text(l, it.descKey),
       ...(fact ? { funFact: fact } : {}),
       ...(l === 'ru' ? { illustration: image } : {}),
       illustrationAlt: ALT[l](title, it.symbol),

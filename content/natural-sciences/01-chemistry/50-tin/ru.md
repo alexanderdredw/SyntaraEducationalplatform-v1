@@ -8,7 +8,7 @@ element:
   group: post_transition
   color: '#CBD5E1'
 title: Олово
-description: Универсальный постпереходный металл, необходимый для различных научных и промышленных применений.
+description: Мягкий постпереходный металл, который используется в припоях, лужёных консервных банках и бронзе.
 illustration: media/tin-atom.webp
 illustrationAlt: 'Модель атома: Олово (Sn) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

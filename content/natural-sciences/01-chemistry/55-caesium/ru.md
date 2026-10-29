@@ -8,7 +8,7 @@ element:
   group: alkali_metal
   color: '#EF4444'
 title: Цезий
-description: Универсальный щелочной металл, необходимый для различных научных и промышленных применений.
+description: Чрезвычайно мягкий щелочной металл, по которому атомные часы определяют секунду.
 illustration: media/caesium-atom.webp
 illustrationAlt: 'Модель атома: Цезий (Cs) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

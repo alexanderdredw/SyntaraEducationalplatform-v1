@@ -1,6 +1,6 @@
 ---
 title: Palladium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A platinum-group metal that cleans exhaust gases and absorbs up to 900 volumes of hydrogen.
 illustrationAlt: 'Atom model: Palladium (Pd) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

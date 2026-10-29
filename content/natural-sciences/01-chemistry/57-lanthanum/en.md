@@ -1,6 +1,6 @@
 ---
 title: Lanthanum
-description: A versatile lanthanide essential for various scientific and industrial applications.
+description: The first of the lanthanides, used in hybrid car batteries and optical lenses.
 illustrationAlt: 'Atom model: Lanthanum (La) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

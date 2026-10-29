@@ -8,7 +8,7 @@ element:
   group: transition_metal
   color: '#94A3B8'
 title: Технеций
-description: Универсальный переходный металл, необходимый для различных научных и промышленных применений.
+description: Элемент с самым низким атомным номером без стабильных изотопов, применяемый в медицинской диагностике.
 illustration: media/technetium-atom.webp
 illustrationAlt: 'Модель атома: Технеций (Tc) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

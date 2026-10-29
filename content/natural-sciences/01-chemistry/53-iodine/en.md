@@ -1,6 +1,6 @@
 ---
 title: Iodine
-description: A versatile halogen essential for various scientific and industrial applications.
+description: A violet-black halogen — an antiseptic and an additive to iodised salt against goitre.
 illustrationAlt: 'Atom model: Iodine (I) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

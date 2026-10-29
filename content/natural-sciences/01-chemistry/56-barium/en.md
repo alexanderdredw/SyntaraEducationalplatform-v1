@@ -1,6 +1,6 @@
 ---
 title: Barium
-description: A versatile alkaline earth metal essential for various scientific and industrial applications.
+description: A soft alkaline earth metal used in the X-ray "barium meal" and to colour firework flames green.
 illustrationAlt: 'Atom model: Barium (Ba) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

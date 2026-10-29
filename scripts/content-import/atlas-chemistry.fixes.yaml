@@ -69,6 +69,95 @@ facts:
 
 # Описания тем (CHEM_MAP 3.6).
 descriptions:
+  # Описания 22 элементов вместо шаблонных (утверждены владельцем 2026-10-29, docs/ATLAS_DESCRIPTIONS.md).
+  carbon:
+    ru: 'Основа всей жизни на Земле и органической химии, способная образовывать длинные цепи и кольца.'
+    kk: 'Жердегі барлық тіршілік пен органикалық химияның негізі, ұзын тізбектер мен сақиналар түзе алады.'
+    en: 'The basis of all life on Earth and of organic chemistry, able to form long chains and rings.'
+  fluorine:
+    ru: 'Самый реакционноспособный элемент, который защищает зубную эмаль и входит в состав тефлона.'
+    kk: 'Ең белсенді элемент: тіс кіреукесін қорғайды және тефлон құрамына кіреді.'
+    en: 'The most reactive element, which protects tooth enamel and is part of Teflon.'
+  niobium:
+    ru: 'Ковкий переходный металл, который используется в сверхпроводящих магнитах МРТ и жаропрочных сплавах реактивных двигателей.'
+    kk: 'МРТ-ның асқын өткізгіш магниттері мен реактивті қозғалтқыштардың ыстыққа төзімді қорытпаларына арналған созылғыш өтпелі металл.'
+    en: 'A ductile transition metal used in superconducting MRI magnets and heat-resistant jet engine alloys.'
+  molybdenum:
+    ru: 'Тугоплавкий переходный металл, который упрочняет жаропрочные стали и нужен ферментам растений и человека.'
+    kk: 'Ыстыққа төзімді болаттарды беріктендіретін және өсімдіктер мен адам ферменттеріне қажет қиын балқитын өтпелі металл.'
+    en: 'A refractory transition metal that strengthens heat-resistant steels and is needed by plant and human enzymes.'
+  technetium:
+    ru: 'Элемент с самым низким атомным номером без стабильных изотопов, применяемый в медицинской диагностике.'
+    kk: 'Тұрақты изотоптары жоқ ең кіші атомдық нөмірлі элемент, медициналық диагностикада қолданылады.'
+    en: 'The element with the lowest atomic number that has no stable isotopes, used in medical diagnostics.'
+  ruthenium:
+    ru: 'Твёрдый металл платиновой группы для износостойких электрических контактов и химических катализаторов.'
+    kk: 'Тозуға төзімді электр түйіспелері мен химиялық катализаторларға арналған платина тобының қатты металы.'
+    en: 'A hard platinum-group metal used in wear-resistant electrical contacts and chemical catalysts.'
+  rhodium:
+    ru: 'Химически инертный переходный металл для автомобильных катализаторов и блестящих ювелирных покрытий.'
+    kk: 'Автомобиль катализаторлары мен жылтыр зергерлік жабындарға арналған химиялық инертті өтпелі металл.'
+    en: 'A chemically inert transition metal used in car catalytic converters and shiny jewellery plating.'
+  palladium:
+    ru: 'Металл платиновой группы, который очищает выхлопные газы и поглощает до 900 объёмов водорода.'
+    kk: 'Пайдаланылған газдарды тазартатын және 900 көлемге дейін сутекті сіңіретін платина тобының металы.'
+    en: 'A platinum-group metal that cleans exhaust gases and absorbs up to 900 volumes of hydrogen.'
+  silver:
+    ru: 'Мягкий блестящий металл — лучший проводник тепла среди металлов, известный по украшениям и монетам.'
+    kk: 'Жұмсақ жылтыр металл — металдар арасындағы жылуды ең жақсы өткізгіш, әшекейлер мен тиындардан белгілі.'
+    en: 'A soft, shiny metal — the best conductor of heat among metals, known from jewellery and coins.'
+  cadmium:
+    ru: 'Мягкий токсичный переходный металл, который используется в никель-кадмиевых аккумуляторах и ярких жёлтых пигментах.'
+    kk: 'Никель-кадмий аккумуляторлары мен ашық сары пигменттерге арналған жұмсақ улы өтпелі металл.'
+    en: 'A soft, toxic transition metal used in nickel-cadmium batteries and bright yellow pigments.'
+  indium:
+    ru: 'Очень мягкий постпереходный металл для прозрачных проводящих покрытий сенсорных экранов.'
+    kk: 'Сенсорлы экрандардың мөлдір өткізгіш жабындарына арналған өте жұмсақ постөтпелі металл.'
+    en: 'A very soft post-transition metal used in transparent conductive coatings of touch screens.'
+  tin:
+    ru: 'Мягкий постпереходный металл, который используется в припоях, лужёных консервных банках и бронзе.'
+    kk: 'Дәнекерлер, қалайыланған консерві банкалары мен қола жасауға арналған жұмсақ постөтпелі металл.'
+    en: 'A soft post-transition metal used in solders, tin-plated cans and bronze.'
+  antimony:
+    ru: 'Блестящий серый полуметалл, который входит в антипирены и упрочняет свинцовые сплавы.'
+    kk: 'Жалынға қарсы заттардың құрамына кіретін және қорғасын қорытпаларын беріктендіретін жылтыр сұр жартылай металл.'
+    en: 'A shiny grey metalloid used in flame retardants and to harden lead alloys.'
+  tellurium:
+    ru: 'Хрупкий полуметалл, который используется в солнечных панелях на основе теллурида кадмия и в термоэлектрических охладителях.'
+    kk: 'Кадмий теллуриді негізіндегі күн панельдері мен термоэлектрлік салқындатқыштарға арналған морт жартылай металл.'
+    en: 'A brittle metalloid used in cadmium telluride solar panels and thermoelectric coolers.'
+  iodine:
+    ru: 'Фиолетово-чёрный галоген — антисептик и добавка к йодированной соли против зоба.'
+    kk: 'Күлгін-қара галоген — антисептик және жемсауға қарсы йодталған тұзға қосылатын қоспа.'
+    en: 'A violet-black halogen — an antiseptic and an additive to iodised salt against goitre.'
+  xenon:
+    ru: 'Тяжёлый благородный газ, который используется в мощных лампах, ионных двигателях космических аппаратов и для наркоза.'
+    kk: 'Қуатты шамдарға, ғарыш аппараттарының иондық қозғалтқыштарына және наркозға арналған ауыр асыл газ.'
+    en: 'A heavy noble gas used in powerful lamps, spacecraft ion engines and anaesthesia.'
+  cesium:
+    ru: 'Чрезвычайно мягкий щелочной металл, по которому атомные часы определяют секунду.'
+    kk: 'Атомдық сағаттар секундты анықтайтын өте жұмсақ сілтілік металл.'
+    en: 'An extremely soft alkali metal that atomic clocks use to define the second.'
+  barium:
+    ru: 'Мягкий щелочноземельный металл, который используется в рентгеновской «бариевой каше» и окрашивает пламя фейерверков в зелёный цвет.'
+    kk: 'Рентгенде «барий ботқасы» ретінде қолданылатын және отшашу жалынын жасыл түске бояйтын жұмсақ сілтілік жер металы.'
+    en: 'A soft alkaline earth metal used in the X-ray "barium meal" and to colour firework flames green.'
+  lanthanum:
+    ru: 'Первый из лантаноидов, применяемый в аккумуляторах гибридных автомобилей и оптических линзах.'
+    kk: 'Гибридті автомобильдердің аккумуляторлары мен оптикалық линзаларда қолданылатын лантаноидтардың біріншісі.'
+    en: 'The first of the lanthanides, used in hybrid car batteries and optical lenses.'
+  cerium:
+    ru: 'Лантаноид, оксид которого очищает выхлоп и полирует линзы, а сплав входит в кремни зажигалок.'
+    kk: 'Оксиді пайдаланылған газды тазартып, линзаларды жылтырататын, ал қорытпасы оттық тастарына кіретін лантаноид.'
+    en: 'A lanthanide whose oxide cleans exhaust and polishes lenses, and whose alloy is used in lighter flints.'
+  praseodymium:
+    ru: 'Лантаноид, который используется в мощных постоянных магнитах и в стёклах для очков сварщиков.'
+    kk: 'Қуатты тұрақты магниттер мен дәнекерлеушілер көзілдірігінің шынысына арналған лантаноид.'
+    en: "A lanthanide used in powerful permanent magnets and welders' goggle glass."
+  neodymium:
+    ru: 'Лантаноид для мощнейших в мире постоянных магнитов (NdFeB) и хирургических лазеров.'
+    kk: 'Әлемдегі ең қуатты тұрақты магниттер (NdFeB) мен хирургиялық лазерлерге арналған лантаноид.'
+    en: "A lanthanide used in the world's most powerful permanent magnets (NdFeB) and surgical lasers."
   curie:
     ru: Первая женщина — лауреат Нобелевской премии, исследовательница радиоактивности и первооткрывательница двух новых элементов.
     kk: Нобель сыйлығын алған алғашқы әйел, радиоактивтілікті зерттеуші және екі жаңа элементті ашушы.

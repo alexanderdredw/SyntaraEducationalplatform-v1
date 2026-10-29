@@ -1,6 +1,6 @@
 ---
 title: Silver
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A soft, shiny metal — the best conductor of heat among metals, known from jewellery and coins.
 illustrationAlt: 'Atom model: Silver (Ag) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

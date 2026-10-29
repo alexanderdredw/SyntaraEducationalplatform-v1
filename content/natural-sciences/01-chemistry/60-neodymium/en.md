@@ -1,6 +1,6 @@
 ---
 title: Neodymium
-description: A versatile lanthanide essential for various scientific and industrial applications.
+description: A lanthanide used in the world's most powerful permanent magnets (NdFeB) and surgical lasers.
 illustrationAlt: 'Atom model: Neodymium (Nd) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

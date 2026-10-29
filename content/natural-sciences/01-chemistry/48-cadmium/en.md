@@ -1,6 +1,6 @@
 ---
 title: Cadmium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A soft, toxic transition metal used in nickel-cadmium batteries and bright yellow pigments.
 illustrationAlt: 'Atom model: Cadmium (Cd) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

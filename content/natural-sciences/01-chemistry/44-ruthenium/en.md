@@ -1,6 +1,6 @@
 ---
 title: Ruthenium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A hard platinum-group metal used in wear-resistant electrical contacts and chemical catalysts.
 illustrationAlt: 'Atom model: Ruthenium (Ru) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

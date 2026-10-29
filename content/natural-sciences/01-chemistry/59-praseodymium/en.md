@@ -1,6 +1,6 @@
 ---
 title: Praseodymium
-description: A versatile lanthanide essential for various scientific and industrial applications.
+description: A lanthanide used in powerful permanent magnets and welders' goggle glass.
 illustrationAlt: 'Atom model: Praseodymium (Pr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

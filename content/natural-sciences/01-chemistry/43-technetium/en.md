@@ -1,6 +1,6 @@
 ---
 title: Technetium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: The element with the lowest atomic number that has no stable isotopes, used in medical diagnostics.
 illustrationAlt: 'Atom model: Technetium (Tc) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

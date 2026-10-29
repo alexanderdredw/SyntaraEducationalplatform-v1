@@ -1,6 +1,6 @@
 ---
 title: Antimony
-description: A versatile semimetal essential for various scientific and industrial applications.
+description: A shiny grey metalloid used in flame retardants and to harden lead alloys.
 illustrationAlt: 'Atom model: Antimony (Sb) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

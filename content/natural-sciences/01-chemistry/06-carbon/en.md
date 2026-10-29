@@ -1,6 +1,6 @@
 ---
 title: Carbon
-description: A versatile nonmetal essential for various scientific applications.
+description: The basis of all life on Earth and of organic chemistry, able to form long chains and rings.
 illustrationAlt: 'Atom model: Carbon (C) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

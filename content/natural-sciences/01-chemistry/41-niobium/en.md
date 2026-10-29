@@ -1,6 +1,6 @@
 ---
 title: Niobium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A ductile transition metal used in superconducting MRI magnets and heat-resistant jet engine alloys.
 illustrationAlt: 'Atom model: Niobium (Nb) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

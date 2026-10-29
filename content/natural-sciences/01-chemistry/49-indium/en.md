@@ -1,6 +1,6 @@
 ---
 title: Indium
-description: A versatile post-transition metal essential for various scientific and industrial applications.
+description: A very soft post-transition metal used in transparent conductive coatings of touch screens.
 illustrationAlt: 'Atom model: Indium (In) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

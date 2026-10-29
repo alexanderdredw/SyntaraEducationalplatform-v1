@@ -248,17 +248,29 @@ describe('atlas (integration)', () => {
     expect(session?.answers).toBe(0);
   });
 
-  it('REQ-ATL-03 the element quiz skips elements with non-unique descriptions (owner decision 2026-10-28)', async () => {
+  it('REQ-ATL-03 the element quiz uses all elements again after the approved unique descriptions (owner decision 2026-10-29)', async () => {
     const seen = new Set<string>();
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 10; i++) {
       const preview = await as(teacher)
         .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
         .expect(200);
-      for (const q of preview.body.questions) for (const o of q.options) seen.add(o.text ?? o);
+      for (const q of preview.body.questions) for (const o of q.options) seen.add(o);
     }
-    expect(seen.size).toBeGreaterThan(10);
-    for (const name of ['Ниобий', 'Серебро', 'Олово', 'Углерод', 'Ксенон', 'Неодим'])
-      expect(seen).not.toContain(name);
+    const formerlySkipped = [
+      'Углерод',
+      'Ниобий',
+      'Молибден',
+      'Серебро',
+      'Индий',
+      'Олово',
+      'Йод',
+      'Ксенон',
+      'Цезий',
+      'Барий',
+      'Лантан',
+      'Неодим',
+    ];
+    expect(formerlySkipped.filter((name) => seen.has(name)).length).toBeGreaterThan(0);
   });
 
   it('API-T-32, API-T-34 a teacher gets questions with correct answers; nothing is recorded; a student cannot', async () => {

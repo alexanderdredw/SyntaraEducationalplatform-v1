@@ -1,6 +1,6 @@
 ---
 title: Molybdenum
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A refractory transition metal that strengthens heat-resistant steels and is needed by plant and human enzymes.
 illustrationAlt: 'Atom model: Molybdenum (Mo) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
 ---

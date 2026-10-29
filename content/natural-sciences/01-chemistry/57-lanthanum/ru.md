@@ -8,7 +8,7 @@ element:
   group: lanthanide
   color: '#E2E8F0'
 title: Лантан
-description: Универсальный лантаноид, необходимый для различных научных и промышленных применений.
+description: Первый из лантаноидов, применяемый в аккумуляторах гибридных автомобилей и оптических линзах.
 illustration: media/lanthanum-atom.webp
 illustrationAlt: 'Модель атома: Лантан (La) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:

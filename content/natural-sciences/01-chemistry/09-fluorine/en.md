@@ -1,6 +1,6 @@
 ---
 title: Fluorine
-description: A versatile halogen essential for various industrial and biological processes.
+description: The most reactive element, which protects tooth enamel and is part of Teflon.
 funFact: 'Fluorine is the most reactive element: it reacts even with the noble gases xenon and krypton.'
 illustrationAlt: 'Atom model: Fluorine (F) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

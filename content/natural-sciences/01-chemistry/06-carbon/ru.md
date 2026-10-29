@@ -8,7 +8,7 @@ element:
   group: nonmetal
   color: '#FBBF24'
 title: Углерод
-description: Универсальный неметалл, необходимый для различных научных и промышленных применений.
+description: Основа всей жизни на Земле и органической химии, способная образовывать длинные цепи и кольца.
 illustration: media/carbon-atom.webp
 illustrationAlt: 'Модель атома: Углерод (C) — ядро и электронные оболочки. Иллюстрация Mendeleev Atlas, подписи на английском.'
 media:
