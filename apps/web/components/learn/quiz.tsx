@@ -281,7 +281,7 @@ function RunPanel({ run, difficulty }: { run: TestRun; difficulty: Difficulty })
           );
         })}
       </ol>
-      <Pill data-testid="quiz-progress" className="text-[var(--text-muted)]">
+      <Pill data-testid="quiz-progress" className="text-[var(--text-muted)] lg:self-start">
         {t('progress', { index: current + 1, count: run.total })}
       </Pill>
       {run.streak >= 2 ? (

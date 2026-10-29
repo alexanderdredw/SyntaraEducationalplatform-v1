@@ -4797,6 +4797,28 @@
   cursor: default;
 }
 
+.atlas .atest-mark {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.atlas .atest-opt[data-state='correct'] .atest-mark {
+  color: #4ade80;
+}
+
+.atlas .atest-opt[data-state='wrong'] .atest-mark {
+  color: #ff6b61;
+}
+
+:root[data-theme='light'] .atlas .atest-opt[data-state='correct'] .atest-mark {
+  color: #166534;
+}
+
+:root[data-theme='light'] .atlas .atest-opt[data-state='wrong'] .atest-mark {
+  color: #c4261d;
+}
+
 .atlas .atest-letter {
   display: inline-flex;
   align-items: center;

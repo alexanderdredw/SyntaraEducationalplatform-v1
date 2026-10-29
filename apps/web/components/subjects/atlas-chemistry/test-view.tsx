@@ -323,6 +323,16 @@ function Question({ run, intro, accent }: { run: TestRun; intro?: string; accent
                 )}
                 <span className="atest-opt-text">{o.text}</span>
                 {removed ? <span className="atlas-sr-only"> ({t('removed')})</span> : null}
+                {/* Верно / неверно — не только цветом (свечение семейства может быть красноватым). */}
+                {state === 'correct' ? (
+                  <span className="atest-mark" aria-hidden="true">
+                    ✓
+                  </span>
+                ) : state === 'wrong' ? (
+                  <span className="atest-mark" aria-hidden="true">
+                    ✗
+                  </span>
+                ) : null}
               </button>
             );
           })}

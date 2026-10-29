@@ -191,12 +191,13 @@ export default function ElementWindow({
               topicId={e.topicId}
               quizId={lesson.data?.quizId ?? null}
               assignmentId={assignment}
-              // «Открыть урок», «К уроку» и «× Завершить» — это окно без теста; свечение — цветом элемента.
+              // «Открыть урок», «К уроку» и «× Завершить» — это окно без теста.
               place={{
                 lessonHref: lessonHref,
                 backHref: lessonHref,
                 onExit: () => router.replace(lessonHref, { scroll: false }),
-                accent: color,
+                // REQ-TST-01.3: свечение верного ответа — цветом семейства элемента.
+                accent: groupColor,
               }}
             />
           </AssistantBlock>

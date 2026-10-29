@@ -542,13 +542,19 @@ CREATE INDEX ix_submissions_status ON submissions (assignment_id, status);
 CREATE TABLE quiz_attempts (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
   quiz_id uuid NOT NULL REFERENCES quizzes, topic_version_id uuid REFERENCES topic_versions,
   assignment_id uuid REFERENCES assignments, status attempt_status NOT NULL DEFAULT 'in_progress',
-  score_percent numeric(5,2), started_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz);
+  score_percent numeric(5,2), started_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz,
+  xp_percent numeric(5,2)); -- BR-TST-01 (миграция 0017): процент для XP, верный с «50/50» весит 0,5; до 0017 — NULL
 CREATE INDEX ix_attempts_student ON quiz_attempts (student_id, finished_at);
 CREATE INDEX ix_attempts_quiz ON quiz_attempts (quiz_id);
 
 CREATE TABLE attempt_answers (attempt_id uuid REFERENCES quiz_attempts, question_id uuid REFERENCES questions,
   option_id uuid REFERENCES answer_options, text_answer text, is_correct boolean NOT NULL,
   answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
+-- REQ-TST-04, BR-TST-01 (миграция 0017): подсказка «50/50» — какие варианты убрал сервер; одна на вопрос (PK),
+-- не больше трёх на попытку (сервис).
+CREATE TABLE attempt_hints (attempt_id uuid NOT NULL REFERENCES quiz_attempts, question_id uuid NOT NULL REFERENCES questions,
+  removed_option_ids uuid[] NOT NULL CHECK (cardinality(removed_option_ids) = 2),
+  created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (attempt_id, question_id));
 
 CREATE TABLE learning_events (id uuid PRIMARY KEY, student_id uuid NOT NULL REFERENCES users,
   type text NOT NULL CHECK (type IN ('lesson_opened','quiz_finished','topic_mastered','ai_question','atlas_quiz_finished')),
@@ -908,6 +914,8 @@ CREATE TABLE known_devices (
 | API-S-25 | POST /api/student/atlas-quiz/:sid/answers | `{ optionId }` → `{ correct, correctOptionId, next }` — проверка сразу; следующий вопрос — по адаптивной сложности оригинала (packages/shared/src/atlas.ts); вариант не из текущего вопроса → 400; сессия завершена → 409 `quizFinished`; чужая → 404 (BR-ACL-03) |
 | API-S-26 | GET /api/student/atlas-quiz/:sid | Состояние своей сессии на языке запроса (обновление страницы, смена языка); чужая → 404 |
 | API-S-27 | POST /api/student/atlas-quiz/:sid/finish | После ответа на все вопросы: событие `atlas_quiz_finished` (ключ `atlas-quiz:{sid}`), XP по BR-XP-05, день серии (BR-ST-02); ответ — сессия с `result`; есть неотвеченные → 409 `quizNotComplete`; повтор → 409 `quizFinished` |
+| API-S-28 | POST /api/student/attempts/:id/hint | `{ questionId }` → `{ questionId, removedOptionIds: [2 uuid], hintsLeft }` — подсказка «50/50» (REQ-TST-04, BR-TST-01): два случайных неверных варианта выбирает и записывает сервер (`attempt_hints`); повтор к тому же вопросу — та же подсказка; не больше 3 на попытку → 409 `hintLimit`; «Верно/Неверно», ввод, < 4 вариантов или вопрос уже отвечен → 409 `hintUnavailable`; попытка завершена → 409 INVALID_TRANSITION; чужая → 404. API-S-07 дополнительно возвращает `hints` (убранные варианты по id вопроса) и `hintsLeft`; API-S-08 — `hinted`; API-S-09 — `bestPercent` и `previousPercent` (прошлые попытки темы, REQ-TST-05.2) |
+| API-S-29 | POST /api/student/atlas-quiz/:sid/hint | → `{ removedOptionIds, hintsLeft }` — «50/50» к текущему вопросу квиза или игры атласа (как API-S-28, хранится в `state` сессии); убранный вариант в API-S-25 → 400. Сессия (API-S-24…27) дополнительно: `answers: [{ correct, hinted }]`, `hintsLeft`, `question.removed`; API-S-25 — `hinted` и `answer: { code, title, description, symbol, number, family }` (объяснение REQ-TST-09.3 собирает клиент); `result` — `hinted`, `bestPercent`, `previousPercent` (по виду квиза), `families` (REQ-TST-05.5), ошибки с текстом вопроса и выбранным ответом. API-S-24 принимает `retry: uuid` — «Повторить ошибки» (своя завершённая сессия того же вида; ошибок нет → 409 `quizEmpty`) |
 | API-S-21 | POST /api/student/nav-seen | `{ section: 'class'|'achievements' }` → 204; отметка «раздел открыт сейчас» (upsert). Иной section → 400. |
 
 ## 6.6 Служебная поддержка
@@ -1147,6 +1155,17 @@ BR-BDG-01 Бейджи и правила (rule jsonb):
 BR-BDG-02 Бейдж выдаётся один раз (PK student_id, badge_id).
 BR-XP-04  Начисление XP, пересчёт уровня и серии и выдача бейджей — синхронно, в транзакции события (finish, lesson_opened);
           отдельной очереди пересчёта нет (решение по Q-17). Серия в хедере учитывает дату последней активности (API-S-16).
+BR-TST-01 Подсказка «50/50» (docs/TESTS_TZ.md, REQ-TST-04): какие два неверных варианта убрать, решает и записывает
+          сервер (API-S-28, API-S-29); одна на вопрос, не больше 3 на попытку; только выбор из 4+ вариантов. Верный ответ с
+          подсказкой — верный для результата, освоения и заданий, но для XP весит 0,5: тест темы — XP = round(20 ×
+          (верные_без + 0,5 × верные_с) / всего) с правилом «только прирост к лучшему» по этому проценту (xp_percent);
+          квиз и игра атласа — floor(сумма весов) × 1 XP, лимит 20 XP в день (BR-XP-05). Учитель — без записи.
+BR-TST-02 Неверные варианты квиза и игры атласа (REQ-TST-07): всегда 4 варианта; лёгкий — из других семейств; средний —
+          1–2 из того же семейства или ±2 по номеру, остальные из других; сложный — того же семейства или того же
+          периода/группы; не хватает — ближайшие по номеру; учёные на сложном — эпоха ±50 лет (год по ленте урока).
+BR-TST-03 Маскировка загадки (REQ-TST-08): название во всех формах слова (основа ≥ 4 букв — любое слово с ней; короче —
+          с окончаниями RU/KK/EN), символ отдельным словом; факт, который не удаётся замаскировать, заменяется
+          описанием, иначе элемент на этом уровне не спрашивается. Проверка — 60 × 3 уровня × 3 языка (AC-TST-08).
 BR-XP-05  Квиз «Проверь знания» и игра «Кто этот учёный?» атласа (решение владельца А-11, 2026-10-27): событие
           atlas_quiz_finished → xp.atlas_quiz_per_correct (1) XP за каждый правильный ответ, всего не больше
           xp.atlas_quiz_daily_cap (20) XP в день в PLATFORM_TZ — общий лимит обоих (reason = 'atlas_quiz'; блокировка
@@ -1864,6 +1883,7 @@ answered: ссылка «Перейти к предмету». Баллы не �
 |---|-----------------------------|
 | REQ-ST-QZ-01 | Маркеры прогресса, сложность («Лёгкий»/«Средний»/«Сложный»), «Вопрос {i} из {n}», текст, варианты A–D (radio-группа). Клавиатура: стрелки только перемещают выбор, ответ — Enter, пробел или кнопка «Ответить»; клик мышью по варианту сразу отправляет ответ. Логика — SM-ATTEMPT и BR-QZ-*. |
 | REQ-ST-QZ-02 | После выбора — сразу результат: «Верно»/«Неверно», правильный вариант, объяснение; кнопка «Далее». В конце — «Результат: {score} %» (целые проценты), «{N} из {M} правильно», при результате ≥ 80 % — «Тема освоена!», иначе — «Тема освоена при 80 % — попробуй ещё раз» (порог — PH-38); начисленные XP и бейджи, «Пройти ещё раз». |
+| REQ-TST-01…08 | Тестирование (docs/TESTS_TZ.md, этап T1) во всех тестах платформы и атласа — общая логика (`learn/test-run.ts`), вид платформы (packages/ui) и атласа (стиль атласа): после ответа «Верно»/«Неверно», правильный вариант, объяснение, «Открыть урок →», переход по «Далее»/Enter, свечение/«вздрагивание» (без анимаций в «Экономии трафика» и reduced motion); «Ход попытки» — полоса из N делений, «Вопрос k из N», серия от 2, сложность тремя точками, в атласе — «Сложность меняется по вашим ответам» и сообщения о смене уровня; клавиши 1–4/A–D, Enter; «Верно/Неверно» и ввод — и в тесте атласа; «50/50» (BR-TST-01); результат — диаграмма, «+N XP», с подсказкой, лучший и разница с прошлой, ошибки, «Повторить ошибки», «Пройти ещё раз», «К уроку»/«К атласу», по семействам; компьютер — две колонки до ~1100 px, телефон — «Ход попытки» сверху; «× Завершить» с подтверждением (тест темы — «Ответы сохранены — тест можно продолжить позже», т. к. попытка продолжается; квиз атласа и учитель — «Прогресс этой попытки не сохранится»); неверные варианты — BR-TST-02, маскировка — BR-TST-03. Новые тексты — `test.*` (needs_confirmation по списку). Объяснения 312 вопросов химии — docs/TEST_EXPLANATIONS.md, ждут утверждения (REQ-TST-09) |
 | REQ-ST-QZ-03 | Единый тест для учителя и ученика (решение владельца 2026-10-28) — во всех тестах предметов: тест темы любого предмета, в атласе — «Пройти тест» у элемента и учёных, квиз «Проверь знания», игра «Кто этот учёный?». Вопросы по одному, после ответа — «Верно»/«Неверно» и правильный ответ, в конце — экран результата; вид — как у ученика (в атласе — стиль атласа). Учитель проходит так же, сверху — «Предпросмотр учителя: результаты не записываются»; для учителя ничего не записывается и XP не начисляются (API-T-32, API-T-34). Списка всех вопросов на одной странице нет. На экране результата у ученика — «+N XP» по фактически начисленному (BR-XP-01, BR-XP-05; за повтор без улучшения — «+0 XP») |
 
 ### 8.4.5 Учебный ИИ (?tab=ai, /learn/assistant; U06, U07, U02)
@@ -2323,6 +2343,8 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | AC-ATL-10 | «Экономия трафика», prefers-reduced-motion | Экраны атласа | Без анимаций; JS ≤ 500 КБ; axe без serious/critical; клавиатура |
 | AC-ATL-11 | Гость, учитель | Тест, квиз, ИИ | Гостю — вход; учителю — предпросмотр без записи |
 | AC-ATL-12 | Коммиты задачи | Поиск по истории | Секретов и кода ИИ атласа нет |
+| AC-TST-01…08 | Тесты платформы и атласа (docs/TESTS_TZ.md, раздел 8) | e2e `tests-t1.spec.ts`, `atlas.spec.ts`; api `learning.int`, `atlas.int`; shared `test-run.spec`, `atlas-options.spec`; db `atlas-mask.spec` | Обратная связь, полоса, сложность, клавиши и три типа в атласе, «50/50» и XP 0,5, результат, 1000 вопросов на варианты, маскировка 60 × 3 × 3 |
+| AC-TST-09 | docs/TEST_EXPLANATIONS.md | Сверка с quiz.yaml | 312 объяснений (299 элементов + 13 учёных); после утверждения — в content/ |
 | AC-BTL-01 | Учитель | Создаёт тест из 5 вопросов, 2 импортирует из темы | Тест сохранён; импортированные вопросы — копии |
 | AC-BTL-02 | Тест с вопросами | Запуск игры (без выбора класса) | Код вида `^[A-Z]{3}[1-9]{3}$`, уникален среди активных |
 | AC-BTL-03 | Любой вошедший ученик (в том числе без класса) | Вводит код в нижнем регистре с пробелом | Попадает в лобби; учитель видит его без перезагрузки ≤ 1 с |
@@ -2522,3 +2544,4 @@ SM-BTL          lobby --start--> question(0) --(дедлайн + 500 мс | вс
 | 2026-10-27 | Перенос атласа химии, C6: docs/CONTENT_GUIDE.md — разделы «Главы», «Глоссарий», «Таблица Менделеева», «Лента времени», «Как перенести готовый сайт-предмет» (AC-CHEM-13); снимки docs/media/chem/ | docs/CHEM_TZ.md 8, 9 |
 | 2026-10-27 | «Mendeleev Atlas» (docs/CHEM_TZ_2.md, A0–A7): исключение из правила «только packages/ui» для модуля атласа (3.2); маршруты атласа (4); 5.4 `subjects.module`, 5.5 `atlas_quiz_sessions` и событие `atlas_quiz_finished` (миграция 0016); 6.2 API-PUB-15; 6.4 API-T-32, API-T-33; 6.5 API-S-23…27, API-S-18 `module`, API-S-06 `sections[].code`; 7.3 BR-XP-05 (STREAK_EVENTS — серия и «Активность»); 7.11 REQ-ATL-01…06; 8.4.11; 13 AC-ATL-01…12. Тексты интерфейса — из переводов атласа (решение владельца), новые — needs_confirmation (`atlas.view.label`, `atlas.glossary.top`, `atlas.preview.*`) | docs/CHEM_TZ_2.md, решения владельца по A0 (docs/ATLAS_MAP.md, раздел 12) |
 | 2026-10-28 | Тестирование и XP в предметах (решение владельца): 7.3 BR-XP-01 — XP теста темы = round(xp.topic_quiz_max × правильные / всего), xp.topic_quiz_max = 20 (новый ключ, needs_confirmation = false), за повтор — только прирост к лучшему прошлому результату, прежние начисления не пересчитываются; раздел 11 PH-39; 8.4.4 REQ-ST-QZ-03 — единый тест для учителя и ученика; 6.4 API-T-32 — с правильными ответами, API-T-33 удалена, новая API-T-34. Квиз «Проверь знания» не использует элементы с неуникальными описаниями (предложение новых описаний — docs/ATLAS_DESCRIPTIONS.md); «другой металл» → «постпереходный металл». Новый текст «Предпросмотр учителя: результаты не записываются» (`student.quiz.teacherPreview`, `atlas.preview.note`) — дословно от владельца | Решение владельца 2026-10-28 |
+| 2026-10-29 | Тестирование, этап T1 (docs/TESTS_TZ.md): 5.6 `attempt_hints`, `quiz_attempts.xp_percent` (миграция 0017); 6.5 API-S-28, API-S-29, расширения API-S-07/08/09 и API-S-24…27; 7.3 BR-TST-01…03; 8.4.4 REQ-TST-01…08; 13 AC-TST-01…09. Квиз и игра атласа — всегда 4 варианта (было 2 на лёгком). Объяснения — docs/TEST_EXPLANATIONS.md (на утверждении) | Команда владельца 2026-10-29: этапы T1a–T1c |
