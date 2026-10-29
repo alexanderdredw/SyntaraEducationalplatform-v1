@@ -45,6 +45,8 @@ export default function AtlasExplore({ code, test }: { code?: string; test?: boo
   const atlas = useAtlasData();
   const { group, view, query } = useExploreQuery();
   const router = useRouter();
+  const params = useSearchParams();
+  const cell = Number(params.get('cell')) || undefined;
   const [drawer, setDrawer] = useState(false);
   const elements = useMemo(() => atlas.data?.elements ?? [], [atlas.data]);
   const groups = useMemo(() => ['all', ...groupsOf(elements)], [elements]);
@@ -114,7 +116,7 @@ export default function AtlasExplore({ code, test }: { code?: string; test?: boo
       </div>
 
       {view === 'table' ? (
-        <AtlasTable elements={elements} group={group} query={query({})} />
+        <AtlasTable elements={elements} group={group} query={query({})} target={cell} />
       ) : (
         <div className="anatomy-grid" data-testid="atlas-grid">
           {filtered.length === 0 ? (

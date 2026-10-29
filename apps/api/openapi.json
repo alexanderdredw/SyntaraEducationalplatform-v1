@@ -8006,6 +8006,142 @@
           "lived"
         ]
       },
+      "ScientistElementDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "number"
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "discovered",
+              "predicted",
+              "named",
+              "structure",
+              "transmuted",
+              "electronegativity",
+              "named_after"
+            ],
+            "description": "Вид связи (REQ-SCI-08, BR-SCI-02)"
+          }
+        },
+        "required": [
+          "number",
+          "relation"
+        ]
+      },
+      "ScientistSourceDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "url"
+        ]
+      },
+      "ScientistPromptsDto": {
+        "type": "object",
+        "properties": {
+          "biography": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "discovery": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "legacy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "biography",
+          "discovery",
+          "legacy",
+          "facts"
+        ]
+      },
+      "ScientistDataDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Раздел урока (учёный)"
+          },
+          "born": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "awards": {
+            "type": "string",
+            "nullable": true,
+            "description": "Нет наград — null, поле не показывается"
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScientistElementDto"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScientistSourceDto"
+            }
+          },
+          "prompts": {
+            "nullable": true,
+            "description": "Подсказки AI по вкладкам (REQ-SCI-09)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScientistPromptsDto"
+              }
+            ]
+          },
+          "needsReview": {
+            "type": "boolean",
+            "description": "Перевод ждёт вычитки (BR-CNT-05)"
+          }
+        },
+        "required": [
+          "sectionId",
+          "born",
+          "country",
+          "field",
+          "awards",
+          "elements",
+          "sources",
+          "prompts",
+          "needsReview"
+        ]
+      },
       "LessonMaterialDto": {
         "type": "object",
         "properties": {
@@ -8105,6 +8241,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TimelineEventDto"
+            }
+          },
+          "scientists": {
+            "description": "Данные окна учёного (docs/SCIENTISTS_TZ.md, S1b): только у темы с scientists.yaml",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScientistDataDto"
             }
           },
           "materials": {

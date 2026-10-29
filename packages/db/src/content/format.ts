@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { ELEMENT_FAMILIES, type Locale, SUBJECT_MODULES, type SubjectModule } from '@syntara/shared';
+import {
+  ELEMENT_FAMILIES,
+  type Locale,
+  SUBJECT_MODULES,
+  type SubjectModule,
+  type TopicSnapshot,
+} from '@syntara/shared';
 
 /**
  * Формат базовой программы (BR-CNT-02, docs/CONTENT_GUIDE.md):
@@ -109,6 +115,69 @@ export const TimelineFile = z.strictObject({
     .min(1, 'хотя бы одно событие'),
 });
 export type TimelineFile = z.infer<typeof TimelineFile>;
+
+/** Вид связи учёного с элементом (REQ-SCI-08, BR-SCI-02; подписи — в i18n `atlas.sci.rel.*`). */
+export const SCIENTIST_RELATIONS = [
+  'discovered',
+  'predicted',
+  'named',
+  'structure',
+  'transmuted',
+  'electronegativity',
+  'named_after',
+] as const;
+export const SCIENTIST_TABS = ['biography', 'discovery', 'legacy', 'facts'] as const;
+
+/** Подсказки вкладки (REQ-SCI-09 ред. 2): ровно 3 на языке. */
+const prompts3 = z.array(text(200)).length(3, 'ровно 3 подсказки');
+
+/**
+ * scientists.yaml в папке темы (docs/SCIENTISTS_TZ.md, S1b): ключевые факты (REQ-SCI-07), связанные элементы
+ * (REQ-SCI-08), источники (REQ-SCI-13), подсказки AI по вкладкам (REQ-SCI-09). KK и EN без review — needs_review.
+ */
+export const ScientistsFile = z.strictObject({
+  review: z.strictObject({ kk: review.optional(), en: review.optional() }).optional(),
+  scientists: z
+    .array(
+      z.strictObject({
+        section: code,
+        born: localized(150),
+        country: localized(150),
+        field: localized(150),
+        /** Нет наград — поле не показывается (решение В-1). */
+        awards: localized(500).optional(),
+        elements: z
+          .array(
+            z.strictObject({
+              number: z.number().int('целое число').min(1, 'номер 1–118').max(118, 'номер 1–118'),
+              relation: z.enum(SCIENTIST_RELATIONS, `связь: ${SCIENTIST_RELATIONS.join(', ')}`),
+            }),
+          )
+          .optional(),
+        sources: z
+          .array(
+            z.strictObject({
+              title: text(100),
+              url: z
+                .string()
+                .regex(/^https:\/\/[^\s]+$/, 'адрес https://…')
+                .max(500),
+            }),
+          )
+          .optional(),
+        prompts: z
+          .strictObject({
+            biography: z.strictObject({ ru: prompts3, kk: prompts3.optional(), en: prompts3.optional() }),
+            discovery: z.strictObject({ ru: prompts3, kk: prompts3.optional(), en: prompts3.optional() }),
+            legacy: z.strictObject({ ru: prompts3, kk: prompts3.optional(), en: prompts3.optional() }),
+            facts: z.strictObject({ ru: prompts3, kk: prompts3.optional(), en: prompts3.optional() }),
+          })
+          .optional(),
+      }),
+    )
+    .min(1, 'хотя бы один учёный'),
+});
+export type ScientistsFile = z.infer<typeof ScientistsFile>;
 
 export const MediaEntry = z.strictObject({
   file: z.string().regex(/^media\/[A-Za-z0-9._-]+$/, 'путь вида media/<имя файла>'),
@@ -292,6 +361,8 @@ export interface TopicModel {
     lived?: { from: number; to: number };
     translations: Partial<Record<Locale, { title: string }>>;
   }>;
+  /** Данные окна учёного (scientists.yaml, S1b): раздел — полный код, тексты — по языкам. */
+  scientists?: NonNullable<TopicSnapshot['scientists']>;
   questions: QuestionModel[];
   media: Record<string, MediaModel>;
 }

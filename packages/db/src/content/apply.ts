@@ -506,6 +506,7 @@ export async function applyCatalog(
       materialIds: [],
       ...(t.elementColor ? { element: { color: t.elementColor } } : {}),
       ...(t.timeline ? { timeline: t.timeline } : {}),
+      ...(t.scientists ? { scientists: t.scientists } : {}),
     };
     // Хеш содержимого: снимок, квиз и картинки — изменённый файл любой из частей даёт новую версию (BR-CNT-04).
     snapshot.contentHash = createHash('sha256')

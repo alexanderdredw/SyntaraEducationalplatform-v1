@@ -15,17 +15,23 @@ _The man who weighed the invisible_
 
 > “Nothing is lost, nothing is created, everything is transformed.” _(attributed)_
 
-### Father of Modern Chemistry
+### Biography {#biography}
+
+Antoine-Laurent Lavoisier was born in Paris in 1743. He graduated in law in Paris but turned to the natural sciences and was elected to the Paris Academy of Sciences in 1768. From 1775 he directed the Royal Gunpowder Administration and worked in his laboratory at the Paris Arsenal.
 
 Antoine Lavoisier turned chemistry from a collection of alchemical mysteries into a precise science. He was the first to implement strict measurements and scales in every experiment.
 
-### Conservation of Mass
+### Discovery {#discovery}
 
 Lavoisier proved that the total mass of substances does not change during chemical reactions. He also debunked the myth of "phlogiston" and explained that combustion is a reaction with oxygen.
 
 **Nomenclature Revolution:** He created the system for naming chemical elements that we still use today, including Hydrogen and Oxygen.
 
-### Interesting Facts
+### Legacy {#legacy}
+
+Lavoisier made precise weighing a rule of chemistry, and together with colleagues he created a system of names for substances (1787) that chemists still use today. The law of conservation of mass underlies every calculation based on reaction equations.
+
+### Facts {#facts}
 
 - **Water Revealed:** He was the first to prove that water is a compound made of hydrogen and oxygen, not a simple element.
 - **Precision First:** Lavoisier believed that without mathematics, chemistry was just a collection of random observations.
@@ -42,17 +48,21 @@ _Father of the Modern Atomic Theory_
 
 > “Matter, though divisible in an extreme degree, is nevertheless not infinitely divisible.”
 
-### The Atom Reborn
+### Biography {#biography}
 
 John Dalton brought back the idea that everything in the world is made of tiny, indivisible particles called atoms. He was the first to propose using atomic mass as the defining characteristic of elements.
 
-### The Alphabet of Chemistry
+### Discovery {#discovery}
 
 Dalton created a system of symbols for elements and showed that chemical reactions are simply the rearrangement of atoms, which are neither created nor destroyed.
 
+### Legacy {#legacy}
+
 **Foundation:** Without Dalton's "building blocks," Mendeleev could not have constructed his great table sixty years later.
 
-### Interesting Facts
+Dalton's atomic theory became the foundation of 19th-century chemistry: atomic masses, chemical formulas and, later, the periodic table were built on it. In his honour the unit of atomic mass is called the dalton (Da), and colour blindness is called daltonism.
+
+### Facts {#facts}
 
 - **Color Blindness:** He was the first to scientifically describe the vision defect where people cannot distinguish colors—now called Daltonism.
 - **Humble Teacher:** Dalton worked his whole life as a modest mathematics teacher while making world-changing discoveries.
@@ -69,24 +79,24 @@ _The inventor of dynamite and founder of the Nobel Prize_
 
 > “My dynamite will sooner lead to peace than a thousand world conventions.” _(attributed)_
 
-### Who is Alfred Nobel?
+### Biography {#biography}
 
 Alfred Nobel was a Swedish chemist, engineer, and industrialist. Born in 1833 in Stockholm, he came from a family of engineers. Despite his later association with peace, his primary scientific contributions were in the field of explosives.
 
-### The Invention of Dynamite
+### Discovery {#discovery}
 
 In 1867, Nobel made his most famous discovery. By mixing nitroglycerin with kieselguhr (a porous siliceous earth), he created a safer, more stable explosive. This invention revolutionized construction, mining, and demolition worldwide.
 
+### Legacy {#legacy}
+
+Today, Alfred Nobel is remembered not just as the inventor of dynamite, but as the visionary behind the world's most prestigious intellectual awards in Physics, Chemistry, Medicine, Literature, and Peace.
+
 **The Nobel Legacy:** Deeply affected by a premature obituary that condemned him as the "merchant of death," Nobel left 94% of his massive fortune to establish the Nobel Prizes, honoring those who confer the "greatest benefit to humankind."
 
-### Fascinating Facts
+### Facts {#facts}
 
 - **Prolific Inventor:** He held 355 different patents during his lifetime, ranging from explosives to synthetic materials.
 - **Multilingual:** Nobel was fluent in Swedish, Russian, English, French, and German by the age of 17.
-
-### Legacy
-
-Today, Alfred Nobel is remembered not just as the inventor of dynamite, but as the visionary behind the world's most prestigious intellectual awards in Physics, Chemistry, Medicine, Literature, and Peace.
 
 **Fun fact:** According to a popular story, Nobel created the Nobel Prizes after reading a premature obituary of himself titled "The merchant of death is dead".
 
@@ -98,24 +108,24 @@ Today, Alfred Nobel is remembered not just as the inventor of dynamite, but as t
 
 _The man who saw order in chaos_
 
-### Who is Dmitri Mendeleev?
+### Biography {#biography}
 
 Dmitri Mendeleev was a brilliant Russian chemist and creator of the Periodic System. Born in 1834 in Tobolsk, Siberia, he was the youngest of 17 children. It was his mother who believed in his education, helping him reach Saint Petersburg.
 
-### The Periodic Law
+### Discovery {#discovery}
 
 In 1869, Mendeleev revolutionized science by arranging elements by atomic mass and noticing that properties repeat at regular intervals. He turned chemical chaos into a coherent system.
 
 **The Power of Prediction:** Mendeleev left empty spaces for undiscovered elements and accurately predicted their properties (Gallium, Scandium, Germanium) decades before they were found.
 
-### Fascinating Facts
+### Legacy {#legacy}
+
+Without Mendeleev's system, modern medicine, pharmaceuticals and space research would be impossible. He showed that a pattern can be found in any chaos.
+
+### Facts {#facts}
 
 - **Beyond Chemistry:** He studied oil, meteorology, and even designed his own high-altitude balloons.
 - **The Dream Legend:** While often told he saw the table in a dream, he famously said: "I thought about it for twenty years."
-
-### Legacy
-
-Without Mendeleev's system, modern medicine, pharmaceuticals and space research would be impossible. He showed that a pattern can be found in any chaos.
 
 ## Marie Curie {#curie}
 
@@ -127,17 +137,21 @@ _The woman who conquered radiation_
 
 > “Nothing in life is to be feared, it is only to be understood.” _(attributed)_
 
-### Researcher of Radioactivity
+### Biography {#biography}
 
 Marie Curie was the first woman to win a Nobel Prize and the only person to receive it in two different scientific fields (Physics and Chemistry). She discovered the elements Polonium and Radium.
 
-### Scientific Courage
+### Discovery {#discovery}
 
 Marie worked under harsh conditions to isolate radioactive isotopes. She coined the term "radioactivity" and proved that atoms could be a source of immense internal energy.
 
+### Legacy {#legacy}
+
 **Legacy:** Her research paved the way for modern cancer treatments, nuclear power, and our understanding of the fundamental structure of matter.
 
-### Interesting Facts
+Marie Curie's work laid the foundations of radiochemistry and radiation therapy for cancer. The Radium Institute she founded in Paris still operates today as the Curie Institute, and the element curium is named after Marie and Pierre Curie.
+
+### Facts {#facts}
 
 - **Mobile X-Rays:** During WWI, she developed mobile radiography units to help surgeons treat wounded soldiers.
 - **Radioactive Notebooks:** Her laboratory notebooks are still radioactive today and are stored in lead-lined boxes.
@@ -154,17 +168,23 @@ _Explorer of the Atomic Nucleus_
 
 > “All science is either physics or stamp collecting.” _(attributed)_
 
-### Discovery of the Nucleus
+### Biography {#biography}
+
+Ernest Rutherford was born in 1871 in Brightwater, New Zealand. He graduated from Canterbury College in Christchurch and in 1895 won a scholarship to work at the Cavendish Laboratory of the University of Cambridge. He then was a professor at McGill University in Montreal and at the University of Manchester, and from 1919 he directed the Cavendish Laboratory.
 
 Ernest Rutherford was the man who discovered the "heart" of the atom. Through his famous gold foil experiment, he proved that almost all the mass of an atom is concentrated in a tiny, dense nucleus.
 
-### Inside Matter
+### Discovery {#discovery}
 
 Before him, the atom was thought to be a solid sphere. Rutherford showed that the atom is 99% empty space, with a positively charged nucleus at its center.
 
+### Legacy {#legacy}
+
 **Father of Nuclear Physics:** His discoveries allowed humanity to understand the nature of radiation and begin utilizing atomic energy.
 
-### Interesting Facts
+Rutherford's nuclear model became the basis of atomic physics: Bohr's model was built on it. Future Nobel laureates worked in his laboratory (for example, James Chadwick, who discovered the neutron), and element 104 is named rutherfordium.
+
+### Facts {#facts}
 
 - **Alpha and Beta:** He discovered and named alpha and beta radiation.
 - **Modern Alchemy:** He was the first in the world to successfully transform one chemical element into another.
@@ -181,17 +201,21 @@ _Architect of the Atom_
 
 > “An expert is a person who has made all the mistakes that can be made in a very narrow field.” _(attributed)_
 
-### Quantum Breakthrough
+### Biography {#biography}
 
 Niels Bohr developed the first "planetary" model of the atom that explained how electron shells are organized. He realized that electrons move in strictly defined orbits.
 
-### Energy Levels
+### Discovery {#discovery}
 
 Bohr proved that when electrons jump from one orbit to another, they emit or absorb discrete amounts of energy. This became the foundation of all modern physics and chemistry.
 
 **Why it Matters:** His model explained why elements are positioned in specific groups in the Mendeleev table.
 
-### Interesting Facts
+### Legacy {#legacy}
+
+Bohr's model explained the line spectra of atoms and the link between electron shells and the periodic table. His institute in Copenhagen became a centre of quantum physics, and element 107 is named bohrium.
+
+### Facts {#facts}
 
 - **Complementarity Principle:** He believed that complex things can only be understood by looking at them from different perspectives.
 - **Nobel Legacy:** His son, Aage Bohr, also became a Nobel Prize winner in Physics.
@@ -208,17 +232,21 @@ _Master of Chemical Bonds_
 
 > “The best way to have a good idea is to have a lot of ideas.” _(attributed)_
 
-### The Nature of the Bond
+### Biography {#biography}
 
 Linus Pauling explained to the world how atoms connect to each other. He combined quantum physics with chemistry to create the theory of the chemical bond.
 
-### Electronegativity Scale
+### Discovery {#discovery}
 
 Pauling introduced the scale that shows how strongly an atom attracts electrons. This allowed chemists to predict which substances would be strong and which would be brittle.
 
-**Two Prizes:** Pauling is the only person in history to win two unshared Nobel Prizes (Chemistry and Peace).
+### Legacy {#legacy}
 
-### Interesting Facts
+Pauling's ideas about the chemical bond and electronegativity are in every chemistry textbook. His description of the alpha helix of proteins was an important step in molecular biology.
+
+### Facts {#facts}
+
+**Two Prizes:** Pauling is the only person in history to win two unshared Nobel Prizes (Chemistry and Peace).
 
 - **The Structure of Life:** He was the first to describe protein structures (alpha-helix), which later helped in the discovery of DNA.
 - **Vitamin C:** Later in life, he became a famous advocate for the health benefits of Vitamin C.
@@ -233,24 +261,24 @@ _Pioneer of X-ray Crystallography_
 
 > “I was captured for life by chemistry and by crystals.” _(attributed)_
 
-### Who is Dorothy Hodgkin?
+### Biography {#biography}
 
 Dorothy Hodgkin was a British chemist who revolutionized our understanding of complex biochemical substances. Born in 1910, she developed a deep fascination with crystals from a young age and went on to become one of the most influential scientists of the 20th century.
 
-### Seeing the Invisible
+### Discovery {#discovery}
 
 Hodgkin advanced the technique of X-ray crystallography to determine the 3D structures of biomolecules. Before her work, scientists could only guess how complex molecules were arranged. By shining X-rays through crystals and analyzing the diffraction patterns, she mapped the exact positions of atoms.
 
 **Major Breakthroughs:** She confirmed the structure of penicillin (essential for mass production during WWII), discovered the structure of vitamin B12 (earning her the Nobel Prize in 1964), and spent 35 years deciphering the structure of insulin.
 
-### Fascinating Facts
+### Legacy {#legacy}
+
+Dorothy Hodgkin's work laid the foundation for structural biology. Her determination of molecular structures has allowed modern medicine to synthesize and improve life-saving drugs like insulin and antibiotics.
+
+### Facts {#facts}
 
 - **Nobel Laureate:** She remains the only British woman to have won a Nobel Prize in science.
 - **Perseverance:** She made her greatest discoveries while suffering from severe rheumatoid arthritis, often using modified equipment to accommodate her swollen hands.
-
-### Legacy
-
-Dorothy Hodgkin's work laid the foundation for structural biology. Her determination of molecular structures has allowed modern medicine to synthesize and improve life-saving drugs like insulin and antibiotics.
 
 **Fun fact:** She was the third woman to win the Nobel Prize in Chemistry, after Marie Curie and Irène Joliot-Curie.
 

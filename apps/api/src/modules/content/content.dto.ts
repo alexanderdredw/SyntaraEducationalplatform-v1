@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SUBJECT_MODULES, type SubjectModule } from '@syntara/shared';
+import { type ScientistRelation, SUBJECT_MODULES, type SubjectModule } from '@syntara/shared';
 
 /** OpenAPI-описание тел и ответов модуля content (6.4, 6.5). Валидация — Zod-схемами packages/shared. */
 
@@ -196,6 +196,46 @@ class TimelineEventDto {
   @ApiProperty({ type: TimelineLivedDto, nullable: true }) lived: TimelineLivedDto | null;
 }
 
+class ScientistElementDto {
+  @ApiProperty() number: number;
+  @ApiProperty({
+    enum: ['discovered', 'predicted', 'named', 'structure', 'transmuted', 'electronegativity', 'named_after'],
+    description: 'Вид связи (REQ-SCI-08, BR-SCI-02)',
+  })
+  relation: ScientistRelation;
+}
+
+class ScientistSourceDto {
+  @ApiProperty() title: string;
+  @ApiProperty() url: string;
+}
+
+class ScientistPromptsDto {
+  @ApiProperty({ type: String, isArray: true }) biography: string[];
+  @ApiProperty({ type: String, isArray: true }) discovery: string[];
+  @ApiProperty({ type: String, isArray: true }) legacy: string[];
+  @ApiProperty({ type: String, isArray: true }) facts: string[];
+}
+
+/** Окно учёного (S1b): ключевые факты (REQ-SCI-07), элементы (REQ-SCI-08), источники (REQ-SCI-13), подсказки. */
+class ScientistDataDto {
+  @ApiProperty({ format: 'uuid', description: 'Раздел урока (учёный)' }) sectionId: string;
+  @ApiProperty() born: string;
+  @ApiProperty() country: string;
+  @ApiProperty() field: string;
+  @ApiProperty({ type: String, nullable: true, description: 'Нет наград — null, поле не показывается' })
+  awards: string | null;
+  @ApiProperty({ type: ScientistElementDto, isArray: true }) elements: ScientistElementDto[];
+  @ApiProperty({ type: ScientistSourceDto, isArray: true }) sources: ScientistSourceDto[];
+  @ApiProperty({
+    type: ScientistPromptsDto,
+    nullable: true,
+    description: 'Подсказки AI по вкладкам (REQ-SCI-09)',
+  })
+  prompts: ScientistPromptsDto | null;
+  @ApiProperty({ description: 'Перевод ждёт вычитки (BR-CNT-05)' }) needsReview: boolean;
+}
+
 class LessonNextDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() title: string;
@@ -238,6 +278,12 @@ export class LessonDto {
     description: 'Лента времени над разделами (REQ-TL-01…05): только у темы с timeline.yaml, по году',
   })
   timeline?: TimelineEventDto[];
+  @ApiPropertyOptional({
+    type: ScientistDataDto,
+    isArray: true,
+    description: 'Данные окна учёного (docs/SCIENTISTS_TZ.md, S1b): только у темы с scientists.yaml',
+  })
+  scientists?: ScientistDataDto[];
   @ApiProperty({
     type: LessonMaterialDto,
     isArray: true,

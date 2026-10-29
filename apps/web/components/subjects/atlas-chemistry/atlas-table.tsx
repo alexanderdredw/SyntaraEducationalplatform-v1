@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { PERIODIC_ELEMENTS, type PeriodicElement } from '@syntara/shared';
 import { AppLink } from '../../app-link';
@@ -27,16 +27,25 @@ export default function AtlasTable({
   elements,
   group,
   query,
+  target,
 }: {
   elements: AtlasElement[];
   group: string;
   query: string;
+  /** Ячейка, к которой ведёт чип «Скоро» окна учёного (REQ-SCI-08.2, ?cell=): в фокусе и подсвечена. */
+  target?: number;
 }) {
   const t = useTranslations('student.periodicTable');
   const ta = useTranslations('atlas');
   const subjectId = useAtlasSubject();
-  const [focused, setFocused] = useState(1);
+  const [focused, setFocused] = useState(target && target >= 1 && target <= 118 ? target : 1);
   const cells = useRef(new Map<number, HTMLElement>());
+  useEffect(() => {
+    if (!target) return;
+    const node = cells.current.get(target);
+    node?.scrollIntoView({ block: 'center', inline: 'center' });
+    node?.focus({ preventScroll: true });
+  }, [target]);
   const lessons = useMemo(() => new Map(elements.map((e) => [e.number, e])), [elements]);
   const matrix = useMemo(() => {
     const m: Array<Array<number | null>> = Array.from({ length: ROWS }, () =>
@@ -109,6 +118,7 @@ export default function AtlasTable({
       'data-number': p.number,
       'data-family': p.family,
       'data-status': lesson ? (lesson.status ?? 'none') : 'soon',
+      'data-target': p.number === target || undefined,
     };
     const content = (
       <>

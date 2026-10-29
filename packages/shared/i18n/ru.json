@@ -2310,10 +2310,34 @@
       "prev": "Предыдущий учёный",
       "next": "Следующий учёный",
       "quoteBy": "— {name}",
-      "quoteLabel": "Цитата"
+      "quoteLabel": "Цитата",
+      "facts": {
+        "title": "Ключевые факты",
+        "lived": "Годы жизни",
+        "born": "Место рождения",
+        "country": "Страна",
+        "field": "Область науки",
+        "discovery": "Главное открытие",
+        "awards": "Награды"
+      },
+      "elements": {
+        "title": "Связанные элементы",
+        "soonLabel": "{rel} {name} — скоро; показать в таблице",
+        "soonHint": "Скоро — показать ячейку в таблице"
+      },
+      "rel": {
+        "discovered": "открыла",
+        "predicted": "предсказал",
+        "named": "назвал",
+        "structure": "определила структуру соединения с",
+        "transmuted": "превратил азот в кислород",
+        "electronegativity": "самая высокая электроотрицательность",
+        "named_after": "назван в честь"
+      },
+      "source": "{source} — {name}"
     },
     "ai": {
-      "cardTitle": "✦ Syntara AI · Спросите: {name}",
+      "cardTitle": "✦ Syntara AI · Спросите об учёном: {name}",
       "custom": "Свой вопрос…",
       "send": "Отправить",
       "panelTitle": "Syntara AI · {name}",
@@ -2323,7 +2347,7 @@
       "element": {
         "brief": "Объясни кратко",
         "detail": "Расскажи подробнее",
-        "uses": "Где применяется {name}?"
+        "uses": "Где применяется элемент «{name}»?"
       },
       "sci": {
         "biography": {
@@ -2347,7 +2371,8 @@
           "p3": "Чем ещё известен учёный {name}?"
         }
       },
-      "messageTab": "{question} (раздел «{tab}»)"
+      "messageTab": "{question} (раздел «{tab}»)",
+      "cardTitleElement": "✦ Syntara AI · Спросите об элементе «{name}»"
     }
   },
   "test": {

@@ -11,6 +11,7 @@ import { type AiAsk, AiCard, AiPanel } from './ai-card';
 import { DetailWindow } from './detail-window';
 import { AtlasQuiz } from './quiz';
 import { SCIENTIST_TABS, ScientistBlocks, scientistParts, splitSources } from './lesson-text';
+import { KeyFacts, RelatedElements } from './scientist-data';
 import { atlasHref, scientistHref } from './routes';
 import {
   CheckPanel,
@@ -34,10 +35,12 @@ function scientistsOf(lesson: Lesson | undefined): Scientist[] {
   if (!lesson) return [];
   const { text } = splitSources(lesson.sections);
   const events = new Map((lesson.timeline ?? []).map((e) => [e.sectionId, e]));
+  const data = new Map((lesson.scientists ?? []).map((d) => [d.sectionId, d]));
   return text
     .map((s) => {
       const ev = events.get(s.id);
       return {
+        data: data.get(s.id) ?? null,
         code: s.code ?? s.id,
         name: s.title,
         description: scientistDescription(s.body),
@@ -418,8 +421,14 @@ function ScientistWindow({
   const subjectId = useAtlasSubject();
   const topicId = useAtlasData().data?.scientists?.topicId;
   const { links } = splitSources(lesson.sections);
-  // «Внешние ресурсы» учёного — его ссылки из раздела «Источники» урока.
-  const resources = links.filter((l) => l.text.includes(s.name.split(' ').at(-1) ?? s.name));
+  // «Внешние ресурсы» учёного — его ссылки из раздела «Источники» урока и источники scientists.yaml (REQ-SCI-13).
+  const resources = [
+    ...links.filter((l) => l.text.includes(s.name.split(' ').at(-1) ?? s.name)),
+    ...(s.data?.sources ?? []).map((x) => ({
+      text: t('sci.source', { source: x.title, name: s.name }),
+      url: x.url,
+    })),
+  ];
   const parts = scientistParts(s.body);
   const index = all.findIndex((o) => o.code === s.code);
   const label = (code: string | null, title: string) =>
@@ -430,9 +439,11 @@ function ScientistWindow({
   const [tab, setTab] = useState(0);
   const [ask, setAsk] = useState<{ ask: AiAsk; trigger: HTMLElement | null } | null>(null);
   const current = parts.sections[tab];
-  // REQ-SCI-09.2: подсказки вкладки — общие формулировки с именем, пока нет утверждённых по учёному (S1b).
+  // REQ-SCI-09.2: подсказки вкладки — утверждённые по учёному (scientists.yaml), без них — общие с именем.
   const kind = tabKind(current, tab);
-  const prompts = (['p1', 'p2', 'p3'] as const).map((p) => t(`ai.sci.${kind}.${p}`, { name: s.name }));
+  const prompts =
+    s.data?.prompts?.[kind] ??
+    (['p1', 'p2', 'p3'] as const).map((p) => t(`ai.sci.${kind}.${p}`, { name: s.name }));
   return (
     <DetailWindow
       testId="atlas-scientist-window"
@@ -530,6 +541,8 @@ function ScientistWindow({
       }
       aside={
         <>
+          <KeyFacts scientist={s} />
+          <RelatedElements scientist={s} />
           {parts.tagline ? <div className="scientist-tagline">{parts.tagline}</div> : null}
           {parts.quote ? (
             <div className="atlas-desktop-only">
@@ -554,7 +567,7 @@ function ScientistWindow({
       extra={
         <>
           <AiCard
-            name={s.name}
+            title={t('ai.cardTitle', { name: s.name })}
             tone="gold"
             prompts={prompts}
             onAsk={(question, trigger) =>

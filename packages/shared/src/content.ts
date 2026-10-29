@@ -230,4 +230,32 @@ export interface TopicSnapshot {
     lived?: { from: number; to: number };
     translations: Partial<Record<LocaleType, { title: string }>>;
   }>;
+  /**
+   * Окно учёного (docs/SCIENTISTS_TZ.md, S1b): ключевые факты (REQ-SCI-07), связанные элементы (REQ-SCI-08),
+   * источники (REQ-SCI-13), подсказки AI по вкладкам (REQ-SCI-09). Раздел — полный код раздела урока.
+   */
+  scientists?: Array<{
+    section: string;
+    elements: Array<{ number: number; relation: ScientistRelation }>;
+    sources: Array<{ title: string; url: string }>;
+    translations: Partial<
+      Record<
+        LocaleType,
+        {
+          born: string;
+          country: string;
+          field: string;
+          awards?: string;
+          prompts?: Record<ScientistTab, string[]>;
+          needsReview: boolean;
+        }
+      >
+    >;
+  }>;
 }
+
+/** Вид связи учёного с элементом (REQ-SCI-08, BR-SCI-02). */
+export type ScientistRelation =
+  'discovered' | 'predicted' | 'named' | 'structure' | 'transmuted' | 'electronegativity' | 'named_after';
+/** Вкладки окна учёного после нормализации подразделов (REQ-SCI-05). */
+export type ScientistTab = 'biography' | 'discovery' | 'legacy' | 'facts';

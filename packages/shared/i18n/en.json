@@ -2310,10 +2310,34 @@
       "prev": "Previous scientist",
       "next": "Next scientist",
       "quoteBy": "— {name}",
-      "quoteLabel": "Quote"
+      "quoteLabel": "Quote",
+      "facts": {
+        "title": "Key facts",
+        "lived": "Lived",
+        "born": "Place of birth",
+        "country": "Country",
+        "field": "Field",
+        "discovery": "Main discovery",
+        "awards": "Awards"
+      },
+      "elements": {
+        "title": "Related elements",
+        "soonLabel": "{rel} {name} — coming soon; show in the table",
+        "soonHint": "Coming soon — show the cell in the table"
+      },
+      "rel": {
+        "discovered": "discovered",
+        "predicted": "predicted",
+        "named": "named",
+        "structure": "determined the structure of a compound with",
+        "transmuted": "turned nitrogen into oxygen",
+        "electronegativity": "highest electronegativity",
+        "named_after": "named in honour"
+      },
+      "source": "{source} — {name}"
     },
     "ai": {
-      "cardTitle": "✦ Syntara AI · Ask about {name}",
+      "cardTitle": "✦ Syntara AI · Ask about the scientist: {name}",
       "custom": "Your question…",
       "send": "Send",
       "panelTitle": "Syntara AI · {name}",
@@ -2323,7 +2347,7 @@
       "element": {
         "brief": "Explain briefly",
         "detail": "Tell me more",
-        "uses": "Where is {name} used?"
+        "uses": "Where is the element “{name}” used?"
       },
       "sci": {
         "biography": {
@@ -2347,7 +2371,8 @@
           "p3": "What else is {name} known for?"
         }
       },
-      "messageTab": "{question} (section “{tab}”)"
+      "messageTab": "{question} (section “{tab}”)",
+      "cardTitleElement": "✦ Syntara AI · Ask about the element “{name}”"
     }
   },
   "test": {

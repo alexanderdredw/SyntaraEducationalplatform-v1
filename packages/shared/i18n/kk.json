@@ -2310,10 +2310,34 @@
       "prev": "Алдыңғы ғалым",
       "next": "Келесі ғалым",
       "quoteBy": "— {name}",
-      "quoteLabel": "Дәйексөз"
+      "quoteLabel": "Дәйексөз",
+      "facts": {
+        "title": "Негізгі деректер",
+        "lived": "Өмір сүрген жылдары",
+        "born": "Туған жері",
+        "country": "Ел",
+        "field": "Ғылым саласы",
+        "discovery": "Басты жаңалығы",
+        "awards": "Марапаттары"
+      },
+      "elements": {
+        "title": "Байланысты элементтер",
+        "soonLabel": "{name}: {rel} — жақында; кестеде көрсету",
+        "soonHint": "Жақында — кестедегі ұяшықты көрсету"
+      },
+      "rel": {
+        "discovered": "ашты",
+        "predicted": "болжады",
+        "named": "атау берді",
+        "structure": "қосылысының құрылымын анықтады",
+        "transmuted": "азотты оттегіге айналдырды",
+        "electronegativity": "ең жоғары электртерістілік",
+        "named_after": "құрметіне аталған"
+      },
+      "source": "{source} — {name}"
     },
     "ai": {
-      "cardTitle": "✦ Syntara AI · Сұраңыз: {name}",
+      "cardTitle": "✦ Syntara AI · Ғалым туралы сұраңыз: {name}",
       "custom": "Өз сұрағыңыз…",
       "send": "Жіберу",
       "panelTitle": "Syntara AI · {name}",
@@ -2323,7 +2347,7 @@
       "element": {
         "brief": "Қысқаша түсіндір",
         "detail": "Толығырақ айтып бер",
-        "uses": "{name} қайда қолданылады?"
+        "uses": "«{name}» элементі қайда қолданылады?"
       },
       "sci": {
         "biography": {
@@ -2347,7 +2371,8 @@
           "p3": "{name} тағы немен белгілі?"
         }
       },
-      "messageTab": "{question} («{tab}» бөлімі)"
+      "messageTab": "{question} («{tab}» бөлімі)",
+      "cardTitleElement": "✦ Syntara AI · «{name}» элементі туралы сұраңыз"
     }
   },
   "test": {

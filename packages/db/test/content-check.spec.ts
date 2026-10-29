@@ -179,6 +179,53 @@ describe('content check', () => {
     );
   });
 
+  it('REQ-SCI-07 REQ-SCI-08 REQ-SCI-09 REQ-SCI-13 scientists.yaml: facts, elements, sources and prompts of 9 scientists on 3 languages', () => {
+    const ok = checkContent(dir);
+    const data = ok.catalog.topics.find((t) => t.code === 'chemistry/chemists')!.scientists!;
+    expect(data).toHaveLength(9);
+    for (const s of data) {
+      for (const l of ['ru', 'kk', 'en'] as const) {
+        expect(s.translations[l]?.prompts?.biography).toHaveLength(3);
+        expect(s.translations[l]?.needsReview).toBe(l !== 'ru');
+      }
+      expect(s.sources.every((x) => x.url.startsWith('https://'))).toBe(true);
+    }
+    const by = (code: string) => data.find((s) => s.section === `chemistry/chemists#${code}`)!;
+    // В-1: у Лавуазье и Нобеля поля «Награды» нет; В-2: у Ходжкин — только кобальт.
+    expect(by('lavoisier').translations.ru!.awards).toBeUndefined();
+    expect(by('nobel').translations.ru!.awards).toBeUndefined();
+    expect(by('hodgkin').elements).toEqual([{ number: 27, relation: 'structure' }]);
+    expect(by('rutherford').elements.map((e) => e.relation)).toEqual([
+      'transmuted',
+      'transmuted',
+      'named_after',
+    ]);
+  });
+
+  it('REQ-SCI-08 scientists.yaml: the section must exist in the lesson; elements without repeats', () => {
+    const file = 'natural-sciences/01-chemistry/61-chemists/scientists.yaml';
+    edit(file, 'section: dalton', 'section: avogadro');
+    edit(file, '{ number: 21, relation: predicted }', '{ number: 31, relation: predicted }');
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/scientists.yaml: scientists.1.section — нет раздела {#avogadro} в уроке/),
+        expect.stringMatching(/scientists.yaml: scientists.3.elements — элемент повторяется/),
+      ]),
+    );
+  });
+
+  it('REQ-SCI-08 REQ-SCI-09 scientists.yaml: element numbers 1–118, exactly 3 prompts per tab', () => {
+    const file = 'natural-sciences/01-chemistry/61-chemists/scientists.yaml';
+    edit(file, '{ number: 102, relation: named_after }', '{ number: 119, relation: named_after }');
+    edit(file, '          - Как Лавуазье объяснил горение?\n', '');
+    expect(messages()).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/scientists.yaml: scientists.2.elements.0.number — номер 1–118/),
+        expect.stringMatching(/scientists.yaml: scientists.0.prompts.discovery.ru — ровно 3 подсказки/),
+      ]),
+    );
+  });
+
   it('REQ-GLOS-01 glossary.yaml: term codes unique in the subject; every language has both the term and the definition', () => {
     const file = 'natural-sciences/01-chemistry/glossary.yaml';
     edit(file, '      - code: molecule\n', '      - code: atom\n');

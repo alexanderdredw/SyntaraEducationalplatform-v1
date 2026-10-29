@@ -27,6 +27,8 @@ import {
   SectionFile,
   type SectionModel,
   SubjectFile,
+  ScientistsFile,
+  SCIENTIST_TABS,
   TimelineFile,
   type SubjectModel,
   type TopicModel,
@@ -476,7 +478,15 @@ function readTopic(
   validate: Validate,
 ): TopicModel | null {
   const dirRel = rel(topicPath);
-  const known = new Set(['ru.md', 'kk.md', 'en.md', 'quiz.yaml', 'timeline.yaml', 'media']);
+  const known = new Set([
+    'ru.md',
+    'kk.md',
+    'en.md',
+    'quiz.yaml',
+    'timeline.yaml',
+    'scientists.yaml',
+    'media',
+  ]);
   for (const name of readdirSync(topicPath).filter((n) => !n.startsWith('.'))) {
     if (!known.has(name)) errors.push({ file: `${dirRel}/${name}`, message: 'лишний файл в папке темы' });
   }
@@ -601,6 +611,74 @@ function readTopic(
             CONTENT_LOCALES.flatMap((l) => (e.title[l] ? [[l, { title: e.title[l]! }]] : [])),
           ),
         }));
+    }
+  }
+
+  // Окно учёного (S1b, REQ-SCI-07/08/09/13): данные — к существующим разделам урока, элементы без повторов.
+  const scientistsPath = join(topicPath, 'scientists.yaml');
+  if (existsSync(scientistsPath)) {
+    const file = rel(scientistsPath);
+    let data: unknown;
+    try {
+      data = parseYaml(readFileSync(scientistsPath, 'utf8'));
+    } catch (err) {
+      errors.push({ file, message: `YAML не читается: ${(err as Error).message.split('\n')[0]}` });
+    }
+    const parsed = data === undefined ? null : validate(file, data, ScientistsFile);
+    if (parsed) {
+      const seen = new Set<string>();
+      parsed.scientists.forEach((s, i) => {
+        if (!byCode.has(s.section))
+          errors.push({
+            file,
+            field: `scientists.${i}.section`,
+            message: `нет раздела {#${s.section}} в уроке`,
+          });
+        if (seen.has(s.section))
+          errors.push({
+            file,
+            field: `scientists.${i}.section`,
+            message: `раздел {#${s.section}} повторяется`,
+          });
+        seen.add(s.section);
+        const numbers = (s.elements ?? []).map((e) => e.number);
+        if (new Set(numbers).size !== numbers.length)
+          errors.push({ file, field: `scientists.${i}.elements`, message: 'элемент повторяется' });
+      });
+      const reviewOf = (l: Locale) =>
+        l !== 'ru' && (parsed.review?.[l as 'kk' | 'en'] ?? 'needs_review') !== 'reviewed';
+      topic.scientists = parsed.scientists.map((s) => ({
+        section: `${code}#${s.section}`,
+        elements: s.elements ?? [],
+        sources: s.sources ?? [],
+        translations: Object.fromEntries(
+          CONTENT_LOCALES.flatMap((l) => {
+            const born = s.born[l];
+            const country = s.country[l];
+            const field = s.field[l];
+            if (!born || !country || !field) return [];
+            const awards = s.awards?.[l];
+            const prompts = s.prompts
+              ? SCIENTIST_TABS.every((tab) => s.prompts![tab][l])
+                ? Object.fromEntries(SCIENTIST_TABS.map((tab) => [tab, s.prompts![tab][l]!]))
+                : undefined
+              : undefined;
+            return [
+              [
+                l,
+                {
+                  born,
+                  country,
+                  field,
+                  ...(awards ? { awards } : {}),
+                  ...(prompts ? { prompts } : {}),
+                  needsReview: reviewOf(l),
+                },
+              ],
+            ];
+          }),
+        ),
+      }));
     }
   }
 

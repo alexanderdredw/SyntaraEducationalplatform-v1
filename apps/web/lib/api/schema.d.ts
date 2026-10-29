@@ -2606,6 +2606,42 @@ export interface components {
             title: string;
             lived: components["schemas"]["TimelineLivedDto"] | null;
         };
+        ScientistElementDto: {
+            number: number;
+            /**
+             * @description Вид связи (REQ-SCI-08, BR-SCI-02)
+             * @enum {string}
+             */
+            relation: "discovered" | "predicted" | "named" | "structure" | "transmuted" | "electronegativity" | "named_after";
+        };
+        ScientistSourceDto: {
+            title: string;
+            url: string;
+        };
+        ScientistPromptsDto: {
+            biography: string[];
+            discovery: string[];
+            legacy: string[];
+            facts: string[];
+        };
+        ScientistDataDto: {
+            /**
+             * Format: uuid
+             * @description Раздел урока (учёный)
+             */
+            sectionId: string;
+            born: string;
+            country: string;
+            field: string;
+            /** @description Нет наград — null, поле не показывается */
+            awards: string | null;
+            elements: components["schemas"]["ScientistElementDto"][];
+            sources: components["schemas"]["ScientistSourceDto"][];
+            /** @description Подсказки AI по вкладкам (REQ-SCI-09) */
+            prompts: components["schemas"]["ScientistPromptsDto"] | null;
+            /** @description Перевод ждёт вычитки (BR-CNT-05) */
+            needsReview: boolean;
+        };
         LessonMaterialDto: {
             /** Format: uuid */
             id: string;
@@ -2642,6 +2678,8 @@ export interface components {
             sections: components["schemas"]["LessonSectionDto"][];
             /** @description Лента времени над разделами (REQ-TL-01…05): только у темы с timeline.yaml, по году */
             timeline?: components["schemas"]["TimelineEventDto"][];
+            /** @description Данные окна учёного (docs/SCIENTISTS_TZ.md, S1b): только у темы с scientists.yaml */
+            scientists?: components["schemas"]["ScientistDataDto"][];
             /** @description Материалы урока — только прошедшие проверку (BR-FILE-04) */
             materials: components["schemas"]["LessonMaterialDto"][];
             next: components["schemas"]["LessonNextDto"] | null;

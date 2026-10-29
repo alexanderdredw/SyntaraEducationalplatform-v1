@@ -148,12 +148,15 @@ test.describe('«Учёные» — лента, панель, изучено, о
     await expect(tabs.nth(1)).toBeFocused();
     await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
     await expect(win.getByRole('tabpanel')).toContainText('В 1869 году Менделеев совершил прорыв');
-    await page.keyboard.press('End');
-    await expect(tabs.nth(3)).toHaveAttribute('aria-selected', 'true');
-    // Текст полностью — без обрезки.
+    // REQ-SCI-05 (S1b): вкладки — «Биография · Открытие · Наследие · Факты»; текст полностью — без обрезки.
+    await expect(tabs).toHaveText([S.tabs.biography, S.tabs.discovery, S.tabs.legacy, S.tabs.facts]);
+    await page.keyboard.press('ArrowRight');
     await expect(win.getByRole('tabpanel')).toContainText(
       'Он показал, что в любом хаосе можно найти закономерность.',
     );
+    await page.keyboard.press('End');
+    await expect(tabs.nth(3)).toHaveAttribute('aria-selected', 'true');
+    await expect(win.getByRole('tabpanel')).toContainText('думал над таблицей 20 лет');
     await page.keyboard.press('Home');
     await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
     // Окно не уходит «назад» по стрелкам во вкладках.
@@ -193,6 +196,70 @@ test.describe('«Учёные» — лента, панель, изучено, о
     await expect(win.getByTestId('atlas-take-test')).toBeVisible();
     await expect(win.getByTestId('atlas-ai-card')).toBeVisible();
     await expectNoSeriousA11yViolations(page);
+  });
+
+  test('AC-SCI-07 (S1b) key facts, related elements (with a lesson → element window, «Скоро» → table cell), sources, prompts', async ({
+    page,
+    baseURL,
+  }) => {
+    const chem = await chemistry(await request.newContext({ baseURL }));
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(`${chem.base}/scientists/rutherford`);
+    const facts = page.getByTestId('atlas-sci-facts');
+    await expect(facts.locator('dt')).toHaveText([
+      S.facts.lived,
+      S.facts.born,
+      S.facts.country,
+      S.facts.field,
+      S.facts.discovery,
+      S.facts.awards,
+    ]);
+    await expect(facts).toContainText('Брайтуотер');
+    await expect(facts).toContainText('1871–1937');
+    // В-3: «Биография» дополнена (рождение, образование, где работал).
+    await expect(page.getByRole('tabpanel')).toContainText(
+      'Эрнест Резерфорд родился в 1871 году в Брайтуотере',
+    );
+    // REQ-SCI-13: к Википедии — Britannica и NobelPrize.org.
+    const resources = page.locator('.resource-link');
+    await expect(resources).toContainText([
+      'Википедия — Эрнест Резерфорд',
+      'Britannica — Эрнест Резерфорд',
+      'NobelPrize.org — Эрнест Резерфорд',
+    ]);
+    // REQ-SCI-09.2: подсказки — утверждённые по учёному.
+    await expect(page.getByTestId('atlas-ai-prompt').first()).toContainText(
+      'Как Резерфорд из Новой Зеландии попал в Кембридж?',
+    );
+    // REQ-SCI-08: подписи связей; азот с уроком — окно элемента, резерфордий без урока — ячейка таблицы.
+    const chips = page.getByTestId('atlas-sci-element');
+    await expect(chips).toHaveCount(3);
+    await expect(chips.first()).toContainText(S.rel.transmuted);
+    await expect(chips.last()).toContainText(S.rel.named_after);
+    await expect(chips.last()).toHaveAttribute('data-soon', 'true');
+    await expectNoSeriousA11yViolations(page);
+    await chips.last().click();
+    await expect(page).toHaveURL(/\/explore\?view=table&cell=104$/);
+    await expect(page.locator('[data-testid="atlas-ptable-cell"][data-number="104"]')).toBeFocused();
+    await page.goto(`${chem.base}/scientists/rutherford`);
+    await chips.first().click();
+    await expect(page).toHaveURL(/\/explore\/nitrogen$/);
+    await expect(page.getByTestId('atlas-element-window')).toBeVisible();
+
+    // В-1: у Лавуазье «Наград» нет; у Дальтона нет связанных элементов — блок не показывается.
+    await page.goto(`${chem.base}/scientists/lavoisier`);
+    await expect(page.getByTestId('atlas-sci-facts').locator('dt')).not.toContainText([S.facts.awards]);
+    await page.goto(`${chem.base}/scientists/dalton`);
+    await expect(page.getByTestId('atlas-sci-facts')).toBeVisible();
+    await expect(page.getByTestId('atlas-sci-elements')).toHaveCount(0);
+
+    // Телефон: без горизонтального переполнения.
+    for (const width of [390, 320]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`${chem.base}/scientists/curie`);
+      await expect(page.getByTestId('atlas-sci-elements')).toBeVisible();
+      expect(await hasHorizontalScroll(page)).toBe(false);
+    }
   });
 
   test('AC-SCI-08 (REQ-SCI-09 ред. 2) the «AI-помощник» card: tab prompts, the answer panel on the page; a guest is asked to sign in', async ({

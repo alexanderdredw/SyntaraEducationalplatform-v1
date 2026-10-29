@@ -153,7 +153,30 @@ export class LessonService {
       next,
       locale: actualLocale,
       ...(snapshot.timeline?.length ? { timeline: this.timeline(snapshot, actualLocale) } : {}),
+      ...(snapshot.scientists?.length ? { scientists: this.scientists(snapshot, actualLocale) } : {}),
     };
+  }
+
+  /** S1b (REQ-SCI-07/08/09/13): данные учёных — к разделам на фактическом языке урока, иначе ru. */
+  private scientists(snapshot: TopicSnapshot, locale: Locale): NonNullable<LessonDto['scientists']> {
+    return (snapshot.scientists ?? []).flatMap((s) => {
+      const section = snapshot.sections.find((x) => x.code === s.section);
+      const tr = s.translations[locale] ?? s.translations.ru;
+      if (!section || !tr) return [];
+      return [
+        {
+          sectionId: section.id,
+          born: tr.born,
+          country: tr.country,
+          field: tr.field,
+          awards: tr.awards ?? null,
+          elements: s.elements,
+          sources: s.sources,
+          prompts: tr.prompts ?? null,
+          needsReview: tr.needsReview,
+        },
+      ];
+    });
   }
 
   /** REQ-TL-01, REQ-TL-04: события ленты — к разделам на фактическом языке урока; нет раздела — нет точки. */

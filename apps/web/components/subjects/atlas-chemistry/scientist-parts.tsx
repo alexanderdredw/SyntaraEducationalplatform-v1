@@ -26,7 +26,11 @@ export interface Scientist {
   lived: { from: number; to: number } | null;
   /** Открытие — название события ленты. */
   discovery: string;
+  /** Ключевые факты, элементы, источники и подсказки (scientists.yaml, S1b); нет — блоки не показываются. */
+  data: ScientistData | null;
 }
+
+export type ScientistData = components['schemas']['ScientistDataDto'];
 
 type Progress = components['schemas']['AtlasScientistsProgressDto'];
 

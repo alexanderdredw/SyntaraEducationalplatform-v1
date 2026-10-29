@@ -1,0 +1,633 @@
+# Данные окна учёного (docs/SCIENTISTS_TZ.md, S1b; утверждено владельцем 2026-10-29, docs/SCIENTISTS_DATA.md):
+# ключевые факты (REQ-SCI-07), связанные элементы (REQ-SCI-08, BR-SCI-02), источники (REQ-SCI-13) и подсказки
+# «AI-помощника» по вкладкам (REQ-SCI-09 ред. 2). Годы жизни и главное открытие — в timeline.yaml.
+# section — код раздела урока; awards нет — поле не показывается (решение В-1).
+# relation: discovered | predicted | named | structure | transmuted | electronegativity | named_after.
+review:
+  kk: needs_review
+  en: needs_review
+scientists:
+  - section: lavoisier
+    born: { ru: Париж, kk: Париж, en: Paris }
+    country: { ru: Франция, kk: Франция, en: France }
+    field: { ru: Химия, kk: Химия, en: Chemistry }
+    elements:
+      - { number: 8, relation: named }
+      - { number: 1, relation: named }
+      - { number: 7, relation: named }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Antoine-Lavoisier' }
+    prompts:
+      biography:
+        ru:
+          - Где учился Лавуазье и чем он занимался, кроме химии?
+          - Почему Лавуазье называют отцом современной химии?
+          - Как сложилась судьба Лавуазье во время Французской революции?
+        kk:
+          - Лавуазье қайда оқыды және химиядан басқа немен айналысты?
+          - Неліктен Лавуазьені қазіргі химияның атасы деп атайды?
+          - Француз революциясы кезінде Лавуазьенің тағдыры қалай болды?
+        en:
+          - Where did Lavoisier study, and what did he do besides chemistry?
+          - Why is Lavoisier called the father of modern chemistry?
+          - What happened to Lavoisier during the French Revolution?
+      discovery:
+        ru:
+          - Как Лавуазье доказал закон сохранения массы?
+          - Что такое теория флогистона и как Лавуазье её опроверг?
+          - Как Лавуазье объяснил горение?
+        kk:
+          - Лавуазье массаның сақталу заңын қалай дәлелдеді?
+          - Флогистон теориясы деген не және Лавуазье оны қалай жоққа шығарды?
+          - Лавуазье жануды қалай түсіндірді?
+        en:
+          - How did Lavoisier prove the law of conservation of mass?
+          - What is the phlogiston theory, and how did Lavoisier disprove it?
+          - How did Lavoisier explain combustion?
+      legacy:
+        ru:
+          - Какие названия веществ придумал Лавуазье?
+          - Где сегодня применяют закон сохранения массы?
+          - Почему точное взвешивание стало правилом химии?
+        kk:
+          - Лавуазье заттардың қандай атауларын ойлап тапты?
+          - Массаның сақталу заңы бүгін қайда қолданылады?
+          - Неліктен дәл өлшеу химияның ережесіне айналды?
+        en:
+          - Which names of substances did Lavoisier invent?
+          - Where is the law of conservation of mass used today?
+          - Why did precise weighing become a rule of chemistry?
+      facts:
+        ru:
+          - Как Лавуазье доказал, что вода — это соединение?
+          - Какую роль в его работе играла Мари-Анн Лавуазье?
+          - Почему Лавуазье считал математику важной для химии?
+        kk:
+          - Лавуазье судың қосылыс екенін қалай дәлелдеді?
+          - Оның жұмысында Мари-Анн Лавуазье қандай рөл атқарды?
+          - Неліктен Лавуазье математиканы химия үшін маңызды деп санады?
+        en:
+          - How did Lavoisier prove that water is a compound?
+          - What role did Marie-Anne Lavoisier play in his work?
+          - Why did Lavoisier consider mathematics important for chemistry?
+
+  - section: dalton
+    born: { ru: Иглсфилд (Камберленд), kk: Иглсфилд (Камберленд), en: 'Eaglesfield, Cumberland' }
+    country: { ru: Великобритания, kk: Ұлыбритания, en: United Kingdom }
+    field:
+      {
+        ru: 'Химия, физика, метеорология',
+        kk: 'Химия, физика, метеорология',
+        en: 'Chemistry, physics, meteorology',
+      }
+    awards:
+      ru: Королевская медаль Лондонского королевского общества (1826)
+      kk: Лондон корольдік қоғамының Корольдік медалі (1826)
+      en: Royal Medal of the Royal Society (1826)
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/John-Dalton' }
+    prompts:
+      biography:
+        ru:
+          - Где и чему учил Дальтон?
+          - Как Дальтон пришёл от метеорологии к химии?
+          - Почему Дальтон всю жизнь оставался учителем?
+        kk:
+          - Дальтон қайда және нені оқытты?
+          - Дальтон метеорологиядан химияға қалай келді?
+          - Неліктен Дальтон өмір бойы мұғалім болып қалды?
+        en:
+          - Where did Dalton teach, and what did he teach?
+          - How did Dalton move from meteorology to chemistry?
+          - Why did Dalton remain a teacher all his life?
+      discovery:
+        ru:
+          - Что говорит атомная теория Дальтона?
+          - Как Дальтон определял атомные массы?
+          - Чем атомы Дальтона отличаются от современных представлений?
+        kk:
+          - Дальтонның атомдық теориясы не дейді?
+          - Дальтон атомдық массаларды қалай анықтады?
+          - Дальтонның атомдары қазіргі түсініктерден немен ерекшеленеді?
+        en:
+          - What does Dalton's atomic theory say?
+          - How did Dalton determine atomic masses?
+          - How do Dalton's atoms differ from today's ideas?
+      legacy:
+        ru:
+          - Как атомная теория Дальтона помогла Менделееву?
+          - Почему единица атомной массы называется дальтоном?
+          - Что из теории Дальтона верно до сих пор?
+        kk:
+          - Дальтонның атомдық теориясы Менделеевке қалай көмектесті?
+          - Неліктен атомдық масса бірлігі дальтон деп аталады?
+          - Дальтон теориясының қай бөлігі әлі күнге дейін дұрыс?
+        en:
+          - How did Dalton's atomic theory help Mendeleev?
+          - Why is the unit of atomic mass called the dalton?
+          - Which parts of Dalton's theory are still true?
+      facts:
+        ru:
+          - Как Дальтон изучал собственную цветовую слепоту?
+          - Какие символы элементов придумал Дальтон?
+          - Почему дальтонизм назван в его честь?
+        kk:
+          - Дальтон өзінің түстерді ажырата алмауын қалай зерттеді?
+          - Дальтон элементтердің қандай таңбаларын ойлап тапты?
+          - Неліктен дальтонизм оның құрметіне аталған?
+        en:
+          - How did Dalton study his own colour blindness?
+          - Which element symbols did Dalton invent?
+          - Why is colour blindness named after him?
+
+  - section: nobel
+    born: { ru: Стокгольм, kk: Стокгольм, en: Stockholm }
+    country: { ru: Швеция, kk: Швеция, en: Sweden }
+    field: { ru: 'Химия, инженерное дело', kk: 'Химия, инженерия', en: 'Chemistry, engineering' }
+    elements:
+      - { number: 102, relation: named_after }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Alfred-Nobel' }
+      - { title: NobelPrize.org, url: 'https://www.nobelprize.org/alfred-nobel/' }
+    prompts:
+      biography:
+        ru:
+          - В какой семье вырос Альфред Нобель?
+          - Почему Нобель жил в разных странах?
+          - Какие языки знал Нобель и зачем?
+        kk:
+          - Альфред Нобель қандай отбасында өсті?
+          - Неліктен Нобель әртүрлі елдерде тұрды?
+          - Нобель қандай тілдерді білді және не үшін?
+        en:
+          - What kind of family did Alfred Nobel grow up in?
+          - Why did Nobel live in different countries?
+          - Which languages did Nobel know, and why?
+      discovery:
+        ru:
+          - Как Нобель сделал нитроглицерин безопаснее?
+          - Что такое кизельгур и зачем он в динамите?
+          - Где использовали динамит после изобретения?
+        kk:
+          - Нобель нитроглицеринді қалай қауіпсіз етті?
+          - Кизельгур деген не және ол динамитте не үшін керек?
+          - Динамит ойлап табылғаннан кейін қайда қолданылды?
+        en:
+          - How did Nobel make nitroglycerin safer?
+          - What is kieselguhr, and why is it in dynamite?
+          - Where was dynamite used after its invention?
+      legacy:
+        ru:
+          - Как появились Нобелевские премии?
+          - За что вручают Нобелевские премии сегодня?
+          - Почему Нобель изменил своё завещание?
+        kk:
+          - Нобель сыйлықтары қалай пайда болды?
+          - Бүгін Нобель сыйлықтары не үшін беріледі?
+          - Неліктен Нобель өсиетін өзгертті?
+        en:
+          - How did the Nobel Prizes come about?
+          - What are the Nobel Prizes awarded for today?
+          - Why did Nobel change his will?
+      facts:
+        ru:
+          - Какие ещё изобретения запатентовал Нобель?
+          - Правда ли, что о Нобеле написали преждевременный некролог?
+          - Какой элемент назван в честь Нобеля?
+        kk:
+          - Нобель тағы қандай өнертабыстарға патент алды?
+          - Нобель туралы мезгілсіз қазанама жазылғаны рас па?
+          - Қай элемент Нобельдің құрметіне аталған?
+        en:
+          - What other inventions did Nobel patent?
+          - Is it true that a premature obituary of Nobel was published?
+          - Which element is named after Nobel?
+
+  - section: mendeleev
+    born: { ru: Тобольск, kk: Тобыл, en: Tobolsk }
+    country: { ru: Российская империя, kk: Ресей империясы, en: Russian Empire }
+    field: { ru: Химия, kk: Химия, en: Chemistry }
+    awards:
+      ru: Медаль Дэви (1882, вместе с Лотаром Мейером), медаль Копли (1905)
+      kk: Дэви медалі (1882, Лотар Мейермен бірге), Копли медалі (1905)
+      en: Davy Medal (1882, with Lothar Meyer), Copley Medal (1905)
+    elements:
+      - { number: 31, relation: predicted }
+      - { number: 21, relation: predicted }
+      - { number: 32, relation: predicted }
+      - { number: 101, relation: named_after }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Dmitri-Mendeleev' }
+    prompts:
+      biography:
+        ru:
+          - Как Менделеев получил образование?
+          - Чем Менделеев занимался, кроме таблицы?
+          - Где жил и работал Менделеев?
+        kk:
+          - Менделеев білімді қалай алды?
+          - Менделеев кестеден басқа немен айналысты?
+          - Менделеев қайда тұрып, жұмыс істеді?
+        en:
+          - How did Mendeleev get his education?
+          - What did Mendeleev work on besides the table?
+          - Where did Mendeleev live and work?
+      discovery:
+        ru:
+          - Как Менделеев расположил элементы в 1869 году?
+          - Почему Менделеев оставил пустые клетки в таблице?
+          - Какие элементы предсказал Менделеев?
+        kk:
+          - Менделеев 1869 жылы элементтерді қалай орналастырды?
+          - Неліктен Менделеев кестеде бос ұяшықтар қалдырды?
+          - Менделеев қандай элементтерді болжады?
+        en:
+          - How did Mendeleev arrange the elements in 1869?
+          - Why did Mendeleev leave empty cells in the table?
+          - Which elements did Mendeleev predict?
+      legacy:
+        ru:
+          - Почему периодический закон важен для современной химии?
+          - Как изменилась таблица со времён Менделеева?
+          - Какой элемент назван в честь Менделеева?
+        kk:
+          - Неліктен периодтық заң қазіргі химия үшін маңызды?
+          - Менделеев заманынан бері кесте қалай өзгерді?
+          - Қай элемент Менделеевтің құрметіне аталған?
+        en:
+          - Why is the periodic law important for modern chemistry?
+          - How has the table changed since Mendeleev's time?
+          - Which element is named after Mendeleev?
+      facts:
+        ru:
+          - Правда ли, что Менделеев увидел таблицу во сне?
+          - Чем Менделеев занимался в воздухоплавании?
+          - Что Менделеев изучал о нефти?
+        kk:
+          - Менделеев кестені түсінде көрді деген рас па?
+          - Менделеев әуеде ұшу саласында немен айналысты?
+          - Менделеев мұнай туралы нені зерттеді?
+        en:
+          - Is it true that Mendeleev saw the table in a dream?
+          - What did Mendeleev do in aeronautics?
+          - What did Mendeleev study about oil?
+
+  - section: curie
+    born: { ru: Варшава, kk: Варшава, en: Warsaw }
+    country: { ru: 'Польша, Франция', kk: 'Польша, Франция', en: 'Poland, France' }
+    field: { ru: 'Физика, химия', kk: 'Физика, химия', en: 'Physics, chemistry' }
+    awards:
+      ru: Нобелевская премия по физике (1903), Нобелевская премия по химии (1911), медаль Дэви (1903)
+      kk: Физика бойынша Нобель сыйлығы (1903), химия бойынша Нобель сыйлығы (1911), Дэви медалі (1903)
+      en: Nobel Prize in Physics (1903), Nobel Prize in Chemistry (1911), Davy Medal (1903)
+    elements:
+      - { number: 84, relation: discovered }
+      - { number: 88, relation: discovered }
+      - { number: 96, relation: named_after }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Marie-Curie' }
+      - {
+          title: NobelPrize.org,
+          url: 'https://www.nobelprize.org/prizes/physics/1903/marie-curie/biographical/',
+        }
+    prompts:
+      biography:
+        ru:
+          - Как Мария Склодовская попала в Париж?
+          - Кем работала Кюри в Сорбонне?
+          - Как Мария и Пьер Кюри работали вместе?
+        kk:
+          - Мария Склодовская Парижге қалай келді?
+          - Кюри Сорбоннада кім болып жұмыс істеді?
+          - Мари мен Пьер Кюри бірге қалай жұмыс істеді?
+        en:
+          - How did Maria Skłodowska come to Paris?
+          - What was Curie's position at the Sorbonne?
+          - How did Marie and Pierre Curie work together?
+      discovery:
+        ru:
+          - Как Кюри открыла полоний и радий?
+          - Что такое радиоактивность простыми словами?
+          - Почему полоний назван в честь Польши?
+        kk:
+          - Кюри полоний мен радийді қалай ашты?
+          - Радиоактивтілік деген не, қарапайым сөзбен?
+          - Неліктен полоний Польшаның құрметіне аталған?
+        en:
+          - How did Curie discover polonium and radium?
+          - What is radioactivity, in simple words?
+          - Why is polonium named after Poland?
+      legacy:
+        ru:
+          - Как работы Кюри помогают лечить рак?
+          - Что такое Институт Кюри?
+          - Какой элемент назван в честь Кюри?
+        kk:
+          - Кюри еңбектері қатерлі ісікті емдеуге қалай көмектеседі?
+          - Кюри институты деген не?
+          - Қай элемент Кюридің құрметіне аталған?
+        en:
+          - How does Curie's work help treat cancer?
+          - What is the Curie Institute?
+          - Which element is named after Curie?
+      facts:
+        ru:
+          - Как Кюри помогала раненым во время войны?
+          - Почему тетради Кюри до сих пор радиоактивны?
+          - За что Кюри получила две Нобелевские премии?
+        kk:
+          - Соғыс кезінде Кюри жаралыларға қалай көмектесті?
+          - Неліктен Кюридің дәптерлері әлі күнге дейін радиоактивті?
+          - Кюри екі Нобель сыйлығын не үшін алды?
+        en:
+          - How did Curie help the wounded during the war?
+          - Why are Curie's notebooks still radioactive?
+          - What did Curie receive her two Nobel Prizes for?
+
+  - section: rutherford
+    born: { ru: Брайтуотер, kk: Брайтуотер, en: Brightwater }
+    country:
+      {
+        ru: 'Новая Зеландия, Великобритания',
+        kk: 'Жаңа Зеландия, Ұлыбритания',
+        en: 'New Zealand, United Kingdom',
+      }
+    field: { ru: 'Физика, химия', kk: 'Физика, химия', en: 'Physics, chemistry' }
+    awards:
+      ru: Нобелевская премия по химии (1908), медаль Копли (1922)
+      kk: Химия бойынша Нобель сыйлығы (1908), Копли медалі (1922)
+      en: Nobel Prize in Chemistry (1908), Copley Medal (1922)
+    elements:
+      - { number: 7, relation: transmuted }
+      - { number: 8, relation: transmuted }
+      - { number: 104, relation: named_after }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Ernest-Rutherford' }
+      - {
+          title: NobelPrize.org,
+          url: 'https://www.nobelprize.org/prizes/chemistry/1908/rutherford/biographical/',
+        }
+    prompts:
+      biography:
+        ru:
+          - Как Резерфорд из Новой Зеландии попал в Кембридж?
+          - В каких университетах работал Резерфорд?
+          - Кого из учёных учил Резерфорд?
+        kk:
+          - Резерфорд Жаңа Зеландиядан Кембриджге қалай келді?
+          - Резерфорд қандай университеттерде жұмыс істеді?
+          - Резерфорд қандай ғалымдарды оқытты?
+        en:
+          - How did Rutherford get from New Zealand to Cambridge?
+          - Which universities did Rutherford work at?
+          - Which scientists did Rutherford teach?
+      discovery:
+        ru:
+          - Как проходил опыт с золотой фольгой?
+          - Почему отскок альфа-частиц удивил Резерфорда?
+          - Чем модель Резерфорда отличается от модели Томсона?
+        kk:
+          - Алтын фольгамен тәжірибе қалай өтті?
+          - Неліктен альфа-бөлшектердің кері серпілуі Резерфордты таң қалдырды?
+          - Резерфорд моделі Томсон моделінен немен ерекшеленеді?
+        en:
+          - How was the gold foil experiment carried out?
+          - Why did the rebound of alpha particles surprise Rutherford?
+          - How does Rutherford's model differ from Thomson's?
+      legacy:
+        ru:
+          - Почему Резерфорда называют отцом ядерной физики?
+          - Как опыт Резерфорда помог Бору?
+          - Какой элемент назван в честь Резерфорда?
+        kk:
+          - Неліктен Резерфордты ядролық физиканың атасы деп атайды?
+          - Резерфорд тәжірибесі Борға қалай көмектесті?
+          - Қай элемент Резерфордтың құрметіне аталған?
+        en:
+          - Why is Rutherford called the father of nuclear physics?
+          - How did Rutherford's experiment help Bohr?
+          - Which element is named after Rutherford?
+      facts:
+        ru:
+          - Как Резерфорд превратил один элемент в другой?
+          - Что такое альфа- и бета-лучи?
+          - За что Резерфорд получил Нобелевскую премию по химии?
+        kk:
+          - Резерфорд бір элементті екіншісіне қалай айналдырды?
+          - Альфа- және бета-сәулелер деген не?
+          - Резерфорд химия бойынша Нобель сыйлығын не үшін алды?
+        en:
+          - How did Rutherford turn one element into another?
+          - What are alpha and beta rays?
+          - What did Rutherford receive the Nobel Prize in Chemistry for?
+
+  - section: bohr
+    born: { ru: Копенгаген, kk: Копенгаген, en: Copenhagen }
+    country: { ru: Дания, kk: Дания, en: Denmark }
+    field: { ru: Физика, kk: Физика, en: Physics }
+    awards:
+      ru: Нобелевская премия по физике (1922)
+      kk: Физика бойынша Нобель сыйлығы (1922)
+      en: Nobel Prize in Physics (1922)
+    elements:
+      - { number: 72, relation: predicted }
+      - { number: 107, relation: named_after }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Niels-Bohr' }
+      - { title: NobelPrize.org, url: 'https://www.nobelprize.org/prizes/physics/1922/bohr/biographical/' }
+    prompts:
+      biography:
+        ru:
+          - Где учился и работал Нильс Бор?
+          - Чем был знаменит институт Бора в Копенгагене?
+          - Как Бор работал вместе с Резерфордом?
+        kk:
+          - Нильс Бор қайда оқып, жұмыс істеді?
+          - Копенгагендегі Бор институты немен танымал болды?
+          - Бор Резерфордпен бірге қалай жұмыс істеді?
+        en:
+          - Where did Niels Bohr study and work?
+          - What was Bohr's institute in Copenhagen famous for?
+          - How did Bohr work with Rutherford?
+      discovery:
+        ru:
+          - Как устроена модель атома Бора?
+          - Почему электрон излучает свет при переходе между орбитами?
+          - Что модель Бора объяснила в спектре водорода?
+        kk:
+          - Бордың атом моделі қалай құрылған?
+          - Неліктен электрон орбиталар арасында ауысқанда жарық шығарады?
+          - Бор моделі сутегі спектрінде нені түсіндірді?
+        en:
+          - How is Bohr's model of the atom built?
+          - Why does an electron emit light when it moves between orbits?
+          - What did Bohr's model explain about the hydrogen spectrum?
+      legacy:
+        ru:
+          - Как модель Бора связана с периодичностью свойств элементов?
+          - Что в модели Бора устарело?
+          - Какой элемент назван в честь Бора?
+        kk:
+          - Бор моделі элементтер қасиеттерінің периодтылығымен қалай байланысты?
+          - Бор моделінің қай бөлігі ескірді?
+          - Қай элемент Бордың құрметіне аталған?
+        en:
+          - How is Bohr's model linked to the periodicity of element properties?
+          - What in Bohr's model is outdated?
+          - Which element is named after Bohr?
+      facts:
+        ru:
+          - Что такое принцип дополнительности?
+          - За что Бор получил Нобелевскую премию?
+          - Кто ещё в семье Бора стал нобелевским лауреатом?
+        kk:
+          - Толықтырушылық принципі деген не?
+          - Бор Нобель сыйлығын не үшін алды?
+          - Бордың отбасында тағы кім Нобель сыйлығының лауреаты болды?
+        en:
+          - What is the principle of complementarity?
+          - What did Bohr receive the Nobel Prize for?
+          - Who else in Bohr's family became a Nobel laureate?
+
+  - section: pauling
+    born: { ru: Портленд (Орегон), kk: Портленд (Орегон), en: 'Portland, Oregon' }
+    country: { ru: США, kk: АҚШ, en: United States }
+    field: { ru: Химия, kk: Химия, en: Chemistry }
+    awards:
+      ru: Нобелевская премия по химии (1954), Нобелевская премия мира (1962)
+      kk: Химия бойынша Нобель сыйлығы (1954), Нобель бейбітшілік сыйлығы (1962)
+      en: Nobel Prize in Chemistry (1954), Nobel Peace Prize (1962)
+    elements:
+      - { number: 9, relation: electronegativity }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Linus-Pauling' }
+      - {
+          title: NobelPrize.org,
+          url: 'https://www.nobelprize.org/prizes/chemistry/1954/pauling/biographical/',
+        }
+    prompts:
+      biography:
+        ru:
+          - Где учился Лайнус Полинг?
+          - Как Полинг соединил квантовую физику и химию?
+          - Чем Полинг занимался, кроме химии?
+        kk:
+          - Лайнус Полинг қайда оқыды?
+          - Полинг кванттық физика мен химияны қалай біріктірді?
+          - Полинг химиядан басқа немен айналысты?
+        en:
+          - Where did Linus Pauling study?
+          - How did Pauling combine quantum physics and chemistry?
+          - What did Pauling do besides chemistry?
+      discovery:
+        ru:
+          - Что Полинг объяснил о химической связи?
+          - Что показывает шкала электроотрицательности?
+          - Почему у фтора самая высокая электроотрицательность?
+        kk:
+          - Полинг химиялық байланыс туралы нені түсіндірді?
+          - Электртерістілік шкаласы нені көрсетеді?
+          - Неліктен фтордың электртерістілігі ең жоғары?
+        en:
+          - What did Pauling explain about the chemical bond?
+          - What does the electronegativity scale show?
+          - Why does fluorine have the highest electronegativity?
+      legacy:
+        ru:
+          - Как идеи Полинга используют в учебниках химии?
+          - Что такое альфа-спираль белка?
+          - Как работа Полинга повлияла на открытие ДНК?
+        kk:
+          - Полингтің идеялары химия оқулықтарында қалай қолданылады?
+          - Ақуыздың альфа-спиралі деген не?
+          - Полингтің жұмысы ДНҚ-ның ашылуына қалай әсер етті?
+        en:
+          - How are Pauling's ideas used in chemistry textbooks?
+          - What is the alpha helix of a protein?
+          - How did Pauling's work influence the discovery of DNA?
+      facts:
+        ru:
+          - За что Полинг получил Нобелевскую премию мира?
+          - Почему у Полинга две персональные Нобелевские премии?
+          - Что Полинг говорил о витамине C и что об этом известно сейчас?
+        kk:
+          - Полинг Нобель бейбітшілік сыйлығын не үшін алды?
+          - Неліктен Полингтің екі жеке Нобель сыйлығы бар?
+          - Полинг С витамині туралы не айтты және бұл туралы қазір не белгілі?
+        en:
+          - What did Pauling receive the Nobel Peace Prize for?
+          - Why does Pauling have two unshared Nobel Prizes?
+          - What did Pauling say about vitamin C, and what is known about it now?
+
+  - section: hodgkin
+    born: { ru: Каир, kk: Каир, en: Cairo }
+    country: { ru: Великобритания, kk: Ұлыбритания, en: United Kingdom }
+    field:
+      ru: Химия, рентгеноструктурный анализ
+      kk: Химия, рентгендік құрылымдық талдау
+      en: Chemistry, X-ray crystallography
+    awards:
+      ru: Нобелевская премия по химии (1964), орден Заслуг (1965), медаль Копли (1976)
+      kk: Химия бойынша Нобель сыйлығы (1964), «Еңбегі үшін» ордені (1965), Копли медалі (1976)
+      en: Nobel Prize in Chemistry (1964), Order of Merit (1965), Copley Medal (1976)
+    elements:
+      - { number: 27, relation: structure }
+    sources:
+      - { title: Britannica, url: 'https://www.britannica.com/biography/Dorothy-Hodgkin' }
+      - {
+          title: NobelPrize.org,
+          url: 'https://www.nobelprize.org/prizes/chemistry/1964/hodgkin/biographical/',
+        }
+    prompts:
+      biography:
+        ru:
+          - Как Дороти Ходжкин увлеклась кристаллами?
+          - Где училась и работала Ходжкин?
+          - Как Ходжкин работала, несмотря на артрит?
+        kk:
+          - Дороти Ходжкин кристалдарға қалай қызықты?
+          - Ходжкин қайда оқып, жұмыс істеді?
+          - Ходжкин артритке қарамастан қалай жұмыс істеді?
+        en:
+          - How did Dorothy Hodgkin become interested in crystals?
+          - Where did Hodgkin study and work?
+          - How did Hodgkin keep working despite arthritis?
+      discovery:
+        ru:
+          - Что такое рентгеноструктурный анализ простыми словами?
+          - Как Ходжкин определила структуру пенициллина?
+          - Почему структуру витамина B12 было так трудно определить?
+        kk:
+          - Рентгендік құрылымдық талдау деген не, қарапайым сөзбен?
+          - Ходжкин пенициллиннің құрылымын қалай анықтады?
+          - Неліктен B12 витаминінің құрылымын анықтау соншалық қиын болды?
+        en:
+          - What is X-ray crystallography, in simple words?
+          - How did Hodgkin determine the structure of penicillin?
+          - Why was the structure of vitamin B12 so hard to determine?
+      legacy:
+        ru:
+          - Как работы Ходжкин помогают создавать лекарства?
+          - Сколько лет Ходжкин расшифровывала инсулин?
+          - Что такое структурная биология?
+        kk:
+          - Ходжкин еңбектері дәрі-дәрмек жасауға қалай көмектеседі?
+          - Ходжкин инсулинді неше жыл бойы зерттеді?
+          - Құрылымдық биология деген не?
+        en:
+          - How does Hodgkin's work help create medicines?
+          - How many years did Hodgkin spend deciphering insulin?
+          - What is structural biology?
+      facts:
+        ru:
+          - Почему Ходжкин — единственная британская женщина с Нобелевской премией по науке?
+          - Какой металл находится в центре молекулы витамина B12?
+          - Каких женщин-химиков награждали Нобелевской премией до Ходжкин?
+        kk:
+          - Неліктен Ходжкин — ғылым бойынша Нобель сыйлығын алған жалғыз британ әйелі?
+          - B12 витамині молекуласының ортасында қандай металл бар?
+          - Ходжкинге дейін қандай әйел-химиктер Нобель сыйлығын алды?
+        en:
+          - Why is Hodgkin the only British woman with a Nobel Prize in science?
+          - Which metal is at the centre of the vitamin B12 molecule?
+          - Which women chemists received the Nobel Prize before Hodgkin?

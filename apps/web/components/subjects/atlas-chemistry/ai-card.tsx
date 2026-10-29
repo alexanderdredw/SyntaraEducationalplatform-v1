@@ -18,17 +18,18 @@ export interface AiAsk {
 }
 
 /**
- * Карточка «AI-помощник» (docs/SCIENTISTS_TZ.md, REQ-SCI-09 ред. 2): «✦ Syntara AI · Спросите: {имя}», три подсказки
- * текущей вкладки — список строк во всю ширину со стрелкой, поле «Свой вопрос…» с отправкой. Стиль атласа: у учёного
- * — золотая рамка, у элемента — синяя (`tone`). Ответ — в панели на этой же странице (AiPanel).
+ * Карточка «AI-помощник» (docs/SCIENTISTS_TZ.md, REQ-SCI-09 ред. 2): заголовок — «Спросите об учёном: {имя}» или
+ * «Спросите об элементе «{название}»» (решение В-6), три подсказки текущей вкладки — список строк во всю ширину со
+ * стрелкой, поле «Свой вопрос…» с отправкой. Стиль атласа: у учёного — золотая рамка, у элемента — синяя (`tone`).
+ * Ответ — в панели на этой же странице (AiPanel).
  */
 export function AiCard({
-  name,
+  title,
   prompts,
   tone,
   onAsk,
 }: {
-  name: string;
+  title: string;
   prompts: string[];
   tone: 'gold' | 'blue';
   onAsk: (question: string, trigger: HTMLElement | null) => void;
@@ -41,7 +42,7 @@ export function AiCard({
         <span className="ai-icon animated-logo ai-card-logo" aria-hidden="true">
           <span className="neural-node" />
         </span>
-        <span>{t('cardTitle', { name })}</span>
+        <span>{title}</span>
       </h4>
       <ul className="ai-card-prompts">
         {prompts.map((p) => (

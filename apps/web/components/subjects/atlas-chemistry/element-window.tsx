@@ -187,7 +187,7 @@ export default function ElementWindow({
       phone="accordion"
       extra={
         <AiCard
-          name={e.title}
+          title={t('ai.cardTitleElement', { name: e.title })}
           tone="blue"
           prompts={[t('ai.element.brief'), t('ai.element.detail'), t('ai.element.uses', { name: e.title })]}
           onAsk={(question, trigger) =>
