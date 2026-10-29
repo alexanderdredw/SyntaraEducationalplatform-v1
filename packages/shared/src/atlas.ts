@@ -77,23 +77,279 @@ export function nextScientistLevel(
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const WORD = 'a-zA-Zа-яА-ЯёЁәіңғүұқөһӘІҢҒҮҰҚӨҺ0-9';
 
+type MaskLocale = 'ru' | 'kk' | 'en';
+
+/** Основа длиннее этого — скрываются все слова, где она встречается (BR-TST-03, проверка AC-TST-08). */
+export const STEM_MIN = 4;
+
 /**
- * Загадка квиза элементов (Quiz.js): название (без учёта регистра) и символ (с учётом регистра) заменяются на «___»,
- * вступление «___ — это элемент №N…» убирается, первая буква — заглавная, точка в конце — убирается.
+ * BR-TST-03: основа названия элемента для поиска форм слова. RU — без окончания (-ий, -ь, -й, гласная): «Литий» →
+ * «лит», «Медь» → «мед», «Кислород» → «кислород»; KK — без конечной гласной или -й: «Оттегі» → «оттег»; EN — без
+ * -ium, -um, -ine, если остаётся не меньше 4 букв: «Chlorine» → «chlor» (chloride), иначе всё слово.
  */
-export function maskElementText(text: string, title: string, symbol: string): string {
+export function elementStem(title: string, locale: MaskLocale): string {
+  const s = title.trim().toLocaleLowerCase(locale);
+  if (locale === 'en') {
+    const cut = s.replace(/(ium|um|ine)$/, '');
+    return cut.length >= STEM_MIN ? cut : s;
+  }
+  return locale === 'ru' ? s.replace(/(ий|ь|й|[аяоеиыуюё])$/, '') : s.replace(/[аәеиіоөуұүыэй]$/, '');
+}
+
+/** Окончания падежей и производных для короткой основы (< 4 букв): «бор» → «бора», «борный»; «мыс» → «мыстың». */
+const ENDINGS: Record<MaskLocale, string[]> = {
+  ru: [
+    ...[
+      'а',
+      'я',
+      'у',
+      'ю',
+      'ом',
+      'ем',
+      'ём',
+      'ой',
+      'ей',
+      'е',
+      'и',
+      'ы',
+      'ь',
+      'ью',
+      'ий',
+      'ия',
+      'ию',
+      'ием',
+      'ии',
+    ],
+    ...[
+      'ный',
+      'ная',
+      'ное',
+      'ные',
+      'ного',
+      'ной',
+      'ному',
+      'ным',
+      'ных',
+      'ную',
+      'ными',
+      'ов',
+      'ам',
+      'ами',
+      'ах',
+    ],
+    ...['иевый', 'иевая', 'иевое', 'иевые', 'иевого', 'иевой', 'иевую', 'иевых', 'иевым'],
+    ...['ат', 'аты', 'атов', 'ид', 'иды', 'идов', 'ит', 'иты'],
+  ],
+  kk: [
+    ...[
+      'ы',
+      'і',
+      'ға',
+      'ге',
+      'қа',
+      'ке',
+      'на',
+      'не',
+      'да',
+      'де',
+      'та',
+      'те',
+      'нда',
+      'нде',
+      'дан',
+      'ден',
+      'тан',
+    ],
+    ...[
+      'тен',
+      'нан',
+      'нен',
+      'мен',
+      'бен',
+      'пен',
+      'ның',
+      'нің',
+      'дың',
+      'дің',
+      'тың',
+      'тің',
+      'н',
+      'ны',
+      'ні',
+      'ды',
+    ],
+    ...['ді', 'ты', 'ті', 'лар', 'лер', 'дар', 'дер', 'тар', 'тер', 'лы', 'лі', 'ды', 'ді'],
+  ],
+  en: ['s', 'es'],
+};
+
+/**
+ * Загадка квиза элементов (Quiz.js; BR-TST-03): скрываются на «___» название во всех формах слова (основа ≥ 4 букв —
+ * любое слово, где она встречается: «кислорода», «кислородный», «углекислый»; короче — основа с окончаниями
+ * падежей), само название и символ отдельным словом (с учётом регистра). Вступление «___ — это элемент №N…»
+ * убирается, первая буква — заглавная, точка в конце — убирается.
+ */
+export function maskElementText(
+  text: string,
+  title: string,
+  symbol: string,
+  locale: MaskLocale = 'ru',
+): string {
   let out = text;
+  const word = (body: string, flags: string) => new RegExp(`(^|[^${WORD}])(${body})(?=[^${WORD}]|$)`, flags);
   if (title) {
-    out = out.replace(new RegExp(`(^|[^${WORD}])(${escape(title)})([^${WORD}]|$)`, 'gi'), '$1___$3');
+    const stem = elementStem(title, locale);
+    out = out.replace(word(escape(title), 'giu'), '$1___');
+    out =
+      stem.length >= STEM_MIN
+        ? out.replace(new RegExp(`[${WORD}]*${escape(stem)}[${WORD}]*`, 'giu'), '___')
+        : out.replace(word(`${escape(stem)}(?:${ENDINGS[locale].join('|')})?`, 'giu'), '$1___');
   }
-  if (symbol) {
-    out = out.replace(new RegExp(`(^|[^${WORD}])(${escape(symbol)})([^${WORD}]|$)`, 'g'), '$1___$3');
-  }
+  if (symbol) out = out.replace(word(escape(symbol), 'gu'), '$1___');
   out = out.replace(/^___\s*[-—–]?\s*(is|это)?\s*(element|элемент)\s*(#|№)?\s*\d+,?\s*(a\s+|an\s+)?/i, '');
   out = out.replace(/^___\s*[-—–]?\s*(is|это)?\s*(a\s+|an\s+)?/i, '');
   out = out.trim();
   if (out) out = out.charAt(0).toLocaleUpperCase() + out.slice(1);
   return out.endsWith('.') ? out.slice(0, -1) : out;
+}
+
+/**
+ * AC-TST-08: что в тексте вопроса выдаёт ответ — основа названия (≥ 4 букв) где угодно, название или символ
+ * отдельным словом. Пусто — утечек нет.
+ */
+export function maskLeaks(masked: string, title: string, symbol: string, locale: MaskLocale): string[] {
+  const leaks: string[] = [];
+  const lower = masked.toLocaleLowerCase(locale);
+  const stem = elementStem(title, locale);
+  if (stem.length >= STEM_MIN && lower.includes(stem)) leaks.push(stem);
+  const word = (body: string, flags: string) =>
+    new RegExp(`(^|[^${WORD}])${body}([^${WORD}]|$)`, flags).test(masked);
+  if (title && word(escape(title), 'iu')) leaks.push(title);
+  if (symbol && word(escape(symbol), 'u')) leaks.push(symbol);
+  return leaks;
+}
+
+/**
+ * Текст вопроса квиза «Проверь знания» на уровне 1–3 (BR-TST-03): сложный — интересный факт, иначе описание; если
+ * факт не удаётся надёжно замаскировать — описание; не удаётся и его — null (элемент на этом уровне не спрашивается).
+ */
+export function elementQuizText(
+  level: number,
+  texts: { title: string; description?: string | null; funFact?: string | null },
+  symbol: string,
+  locale: MaskLocale,
+): string | null {
+  const sources = level >= 3 ? [texts.funFact, texts.description] : [texts.description];
+  for (const source of sources) {
+    if (!source) continue;
+    const masked = maskElementText(source, texts.title, symbol, locale);
+    if (masked && maskLeaks(masked, texts.title, symbol, locale).length === 0) return masked;
+  }
+  return null;
+}
+
+/* ---------- Неверные варианты (REQ-TST-07, BR-TST-02) ---------- */
+
+/** Вариантов в вопросе квиза и игры атласа — всегда 4 на всех уровнях (REQ-TST-07.1). */
+export const ATLAS_OPTIONS = 4;
+
+export interface ElementCandidate {
+  id: string;
+  number: number;
+  family: string;
+  period: number;
+  group: number | null;
+}
+
+/** Случайные `n` из списка без повторов; `random(k)` — целое из [0, k). */
+function sample<T>(list: T[], n: number, random: (k: number) => number): T[] {
+  const rest = [...list];
+  const out: T[] = [];
+  while (out.length < n && rest.length) out.push(rest.splice(random(rest.length), 1)[0]!);
+  return out;
+}
+
+/** Добрать недостающие ближайшими по номеру (по году у учёных). */
+function fillNearest<T extends { id: string }>(
+  chosen: T[],
+  pool: T[],
+  need: number,
+  distance: (c: T) => number,
+): T[] {
+  const ids = new Set(chosen.map((c) => c.id));
+  const rest = pool.filter((c) => !ids.has(c.id)).sort((a, b) => distance(a) - distance(b));
+  return [...chosen, ...rest.slice(0, Math.max(0, need - chosen.length))];
+}
+
+/**
+ * BR-TST-02: три неверных варианта к элементу по уровню. Лёгкий — из других семейств; средний — 1–2 из того же
+ * семейства или соседние по номеру (±2), остальные — из других семейств; сложный — все из того же семейства или
+ * соседние по периоду/группе. Не хватает — добираются ближайшими по номеру. Без повторов и без верного.
+ */
+export function pickElementDistractors(
+  item: ElementCandidate,
+  pool: ElementCandidate[],
+  difficulty: AtlasDifficulty,
+  random: (k: number) => number,
+): string[] {
+  const need = ATLAS_OPTIONS - 1;
+  const others = pool.filter((c) => c.id !== item.id);
+  const sameFamily = (c: ElementCandidate) => c.family === item.family;
+  const near = (c: ElementCandidate) => sameFamily(c) || Math.abs(c.number - item.number) <= 2;
+  const related = (c: ElementCandidate) =>
+    sameFamily(c) || c.period === item.period || (item.group !== null && c.group === item.group);
+  let chosen: ElementCandidate[];
+  if (difficulty === 'easy')
+    chosen = sample(
+      others.filter((c) => !sameFamily(c)),
+      need,
+      random,
+    );
+  else if (difficulty === 'hard') chosen = sample(others.filter(related), need, random);
+  else {
+    const close = sample(others.filter(near), 1 + random(2), random);
+    chosen = [
+      ...close,
+      ...sample(
+        others.filter((c) => !near(c)),
+        need - close.length,
+        random,
+      ),
+    ];
+  }
+  return fillNearest(chosen, others, need, (c) => Math.abs(c.number - item.number)).map((c) => c.id);
+}
+
+/** Учёные близкой эпохи — ±50 лет (REQ-TST-07.4). */
+export const SCIENTIST_EPOCH_YEARS = 50;
+
+/**
+ * REQ-TST-07.4: неверные варианты игры про учёных — на сложном уровне учёные близких эпох (±50 лет от года открытия),
+ * не хватает — ближайшие по году; на остальных — случайные.
+ */
+export function pickScientistDistractors(
+  item: { id: string; year: number | null },
+  pool: Array<{ id: string; year: number | null }>,
+  difficulty: AtlasDifficulty,
+  random: (k: number) => number,
+): string[] {
+  const need = ATLAS_OPTIONS - 1;
+  const others = pool.filter((c) => c.id !== item.id);
+  if (difficulty !== 'hard' || item.year === null) return sample(others, need, random).map((c) => c.id);
+  const gap = (c: { year: number | null }) => (c.year === null ? Infinity : Math.abs(c.year - item.year!));
+  const close = sample(
+    others.filter((c) => gap(c) <= SCIENTIST_EPOCH_YEARS),
+    need,
+    random,
+  );
+  return fillNearest(close, others, need, gap).map((c) => c.id);
+}
+
+/** Варианты вопроса: верный на случайной позиции среди неверных (REQ-TST-07.3). */
+export function withAnswer(item: string, distractors: string[], random: (k: number) => number): string[] {
+  const out = [...distractors];
+  out.splice(random(out.length + 1), 0, item);
+  return out;
 }
 
 /**

@@ -351,14 +351,15 @@ describe('atlas (integration)', () => {
     expect(sciResult.families).toEqual([]);
   });
 
-  it('decision А-5 the game «Кто этот учёный?»: 9 questions about the scientists, 2 or 4 options', async () => {
+  it('decision А-5, REQ-TST-07.1 the game «Кто этот учёный?»: 9 questions about the scientists, always 4 options', async () => {
     const start = await as(student)
       .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'scientists' })
       .expect(201);
     expect(start.body.total).toBe(9);
     expect(start.body.question.text.length).toBeGreaterThan(10);
     const titles = start.body.question.options.map((o: { title: string }) => o.title);
-    expect(titles.length === 2 || titles.length === 4).toBe(true);
+    // REQ-TST-07.1 (docs/TESTS_TZ.md): всегда 4 варианта на всех уровнях.
+    expect(titles).toHaveLength(4);
     expect(titles.every((t: string) => /\s/.test(t))).toBe(true);
   });
 

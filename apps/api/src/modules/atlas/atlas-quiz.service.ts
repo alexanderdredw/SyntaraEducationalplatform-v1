@@ -8,18 +8,21 @@ import {
   ELEMENT_QUIZ,
   type ElementFamily,
   elementDifficulty,
+  elementQuizText,
   HINT_LIMIT,
   hintAllowed,
   type Locale,
-  maskElementText,
   nextElementLevel,
   nextScientistLevel,
   nonUniqueDescriptions,
   periodicElement,
+  pickElementDistractors,
   pickHintRemovals,
+  pickScientistDistractors,
   SCIENTIST_QUIZ,
   scientistDescription,
   scientistDifficulty,
+  withAnswer,
 } from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
@@ -69,9 +72,15 @@ interface PoolItem {
   code: string;
   title: string;
   description: string;
-  text: (level: number) => string;
-  /** Элемент: данные для объяснения после ответа (REQ-TST-09.3) и разбивки по семействам (REQ-TST-05.5). */
-  element?: { number: number; symbol: string; family: ElementFamily };
+  /** Текст вопроса на уровне; null — не удаётся надёжно замаскировать (BR-TST-03), на этом уровне не спрашивается. */
+  text: (level: number) => string | null;
+  /**
+   * Элемент: объяснение после ответа (REQ-TST-09.3), разбивка по семействам (REQ-TST-05.5) и подбор неверных
+   * вариантов (BR-TST-02).
+   */
+  element?: { number: number; symbol: string; family: ElementFamily; period: number; group: number | null };
+  /** Учёный: год открытия по ленте урока — эпоха для сложного уровня (REQ-TST-07.4). */
+  year?: number | null;
 }
 
 const conflict = (field: string, code: string) =>
@@ -138,10 +147,11 @@ export class AtlasQuizService {
       level,
       history: [],
       streak: { correct: 0, wrong: 0 },
-      current: this.makeCurrent(kind, items[0]!, level, pool),
+      current: null,
       answers: [],
       hintsUsed: 0,
     };
+    state.current = this.current(kind, state, pool);
     const [session] = await this.db
       .insert(sessions)
       .values({ studentId, subjectId, kind, state, total: items.length })
@@ -222,10 +232,7 @@ export class AtlasQuizService {
         state.streak = next.streak;
       }
       state.index += 1;
-      state.current =
-        state.index < state.items.length
-          ? this.makeCurrent(kind, state.items[state.index]!, state.level, pool)
-          : null;
+      state.current = state.index < state.items.length ? this.current(kind, state, pool) : null;
       const [saved] = await tx
         .update(sessions)
         .set({ state, correctCount: session.correctCount + (correct ? 1 : 0) })
@@ -293,14 +300,14 @@ export class AtlasQuizService {
     await this.atlas.assertAtlas(null, subjectId);
     const pool = this.pool(kind, await this.atlas.topics(subjectId), locale);
     const level = kind === 'elements' ? ELEMENT_QUIZ.start : SCIENTIST_QUIZ.start;
-    const items = shuffle(pool.map((p) => p.id)).slice(0, Math.min(ATLAS_QUIZ_LENGTH, pool.length));
+    const items = shuffle(pool.filter((p) => p.text(level)).map((p) => p.id)).slice(0, ATLAS_QUIZ_LENGTH);
     const byId = new Map(pool.map((p) => [p.id, p]));
     return {
       questions: items.map((item) => {
         const current = this.makeCurrent(kind, item, level, pool);
         const p = byId.get(item)!;
         return {
-          text: p.text(level),
+          text: p.text(level) ?? '',
           options: current.options.map((id) => byId.get(id)?.title ?? ''),
           difficulty: kind === 'elements' ? elementDifficulty(level) : scientistDifficulty(level),
           correct: current.options.indexOf(item),
@@ -325,8 +332,8 @@ export class AtlasQuizService {
       );
       return elements.flatMap((e) => {
         if (skip.has(e.id)) return [];
-        const tr = pick(e.snapshot.translations, locale)?.[1];
-        if (!tr?.title) return [];
+        const [actual, tr] = pick(e.snapshot.translations, locale) ?? [];
+        if (!actual || !tr?.title) return [];
         const known = periodicElement(e.elementNumber);
         const symbol = known?.symbol ?? '';
         const description = tr.description ?? '';
@@ -336,10 +343,19 @@ export class AtlasQuizService {
             code: e.code,
             title: tr.title,
             description,
-            // Сложный уровень — интересный факт вместо описания (если факта нет — описание, как в оригинале).
-            text: (level: number) =>
-              maskElementText(level >= 3 && tr.funFact ? tr.funFact : description, tr.title, symbol),
-            ...(known ? { element: { number: known.number, symbol, family: known.family } } : {}),
+            // Сложный уровень — интересный факт вместо описания; маскировка всех форм названия (BR-TST-03).
+            text: (level: number) => elementQuizText(level, tr, symbol, actual),
+            ...(known
+              ? {
+                  element: {
+                    number: known.number,
+                    symbol,
+                    family: known.family,
+                    period: known.period,
+                    group: known.group,
+                  },
+                }
+              : {}),
           },
         ];
       });
@@ -347,6 +363,10 @@ export class AtlasQuizService {
     const topic = AtlasService.scientists(rows);
     if (!topic) return [];
     const [actual] = pick(topic.snapshot.translations, locale) ?? [locale];
+    // REQ-TST-07.4: год открытия учёного — из ленты урока (раздел — полный код `<тема>#<учёный>`).
+    const years = new Map(
+      (topic.snapshot.timeline ?? []).map((ev) => [ev.section.split('#').pop(), ev.year]),
+    );
     return topic.snapshot.sections
       .sort((a, b) => a.position - b.position)
       .flatMap((s) => {
@@ -361,16 +381,49 @@ export class AtlasQuizService {
             title: tr.title,
             description,
             text: () => description,
+            year: years.get(code) ?? null,
           },
         ];
       });
   }
 
-  /** Варианты: верный + отвлекающие из пула; лёгкий уровень — 2 варианта, остальные — 4. */
+  /**
+   * Текущий вопрос сессии: элемент, текст которого на этом уровне не удаётся надёжно замаскировать (BR-TST-03),
+   * заменяется другим ещё не заданным элементом.
+   */
+  private current(kind: AtlasQuizKind, state: QuizState, pool: PoolItem[]): Current {
+    const item = state.items[state.index]!;
+    if (kind === 'elements' && !pool.find((p) => p.id === item)?.text(state.level)) {
+      const used = new Set(state.items);
+      const [swap] = shuffle(pool.filter((p) => !used.has(p.id) && p.text(state.level)));
+      if (swap) state.items[state.index] = swap.id;
+    }
+    return this.makeCurrent(kind, state.items[state.index]!, state.level, pool);
+  }
+
+  /** Варианты (REQ-TST-07, BR-TST-02): всегда 4, неверные — по уровню, верный — на случайной позиции. */
   private makeCurrent(kind: AtlasQuizKind, item: string, level: number, pool: PoolItem[]): Current {
-    const easy = kind === 'elements' ? level <= 1 : level <= 0;
-    const distractors = shuffle(pool.filter((p) => p.id !== item).map((p) => p.id)).slice(0, easy ? 1 : 3);
-    return { item, level, options: shuffle([item, ...distractors]) };
+    const p = pool.find((x) => x.id === item);
+    let distractors: string[];
+    if (kind === 'elements') {
+      const cand = (x: PoolItem) => ({
+        id: x.id,
+        number: 0,
+        family: '',
+        period: 0,
+        group: null,
+        ...x.element,
+      });
+      distractors = pickElementDistractors(cand(p!), pool.map(cand), elementDifficulty(level), randomInt);
+    } else {
+      distractors = pickScientistDistractors(
+        { id: item, year: p?.year ?? null },
+        pool.map((x) => ({ id: x.id, year: x.year ?? null })),
+        scientistDifficulty(level),
+        randomInt,
+      );
+    }
+    return { item, level, options: withAnswer(item, distractors, randomInt) };
   }
 
   /** Правильный ответ для объяснения и ссылки «Открыть урок» (REQ-TST-01, REQ-TST-09.3). */
@@ -470,7 +523,7 @@ export class AtlasQuizService {
                 return [
                   {
                     ...this.info(p),
-                    question: p.text(a.level ?? state.level),
+                    question: p.text(a.level ?? state.level) ?? '',
                     selected: byId.get(a.selected)?.title ?? '',
                   },
                 ];
