@@ -91,7 +91,14 @@ test('S1 screenshots: scientists list, scientist window, element window with tab
     await page.goto(`${base}/scientists/mendeleev`, { waitUntil: 'networkidle' });
     await page.getByTestId('atlas-scientist-window').waitFor();
     await shot(page, `scientist-window-${width}-dark`);
-    await page.getByTestId('atlas-tabs').scrollIntoViewIfNeeded();
+    await page
+      .locator(
+        width > 600
+          ? '[data-testid="atlas-tabs"]'
+          : '[data-testid="atlas-toc"], [data-testid="atlas-accordion"]',
+      )
+      .first()
+      .scrollIntoViewIfNeeded();
     await shot(page, `scientist-window-tabs-${width}-dark`);
     // Карточка «AI-помощник» и ответ в панели (компьютер) или шторке (телефон) — REQ-SCI-09 ред. 2.
     await page.getByTestId('atlas-ai-card').scrollIntoViewIfNeeded();
@@ -108,12 +115,37 @@ test('S1 screenshots: scientists list, scientist window, element window with tab
     await page.getByTestId('atlas-sci-studied').scrollIntoViewIfNeeded();
     await shot(page, `scientist-window-footer-${width}-dark`);
     await page.goto(`${base}/scientists/curie`, { waitUntil: 'networkidle' });
-    await page.getByTestId('atlas-sci-quote').scrollIntoViewIfNeeded();
+    await page.locator('[data-testid="atlas-sci-quote"]:visible').scrollIntoViewIfNeeded();
     await shot(page, `scientist-window-quote-${width}-dark`);
+    // Телефон: статья учёного с закреплённым оглавлением (начало и середина прокрутки), аккордеон элемента.
+    if (width < 600) {
+      await page.goto(`${base}/scientists/mendeleev`, { waitUntil: 'networkidle' });
+      await page.getByTestId('atlas-scientist-window').waitFor();
+      await shot(page, `scientist-phone-start-${width}-dark`);
+      await page
+        .getByTestId('atlas-article-section')
+        .nth(2)
+        .evaluate((el) => el.scrollIntoView({ block: 'start' }));
+      await page.waitForTimeout(400);
+      await shot(page, `scientist-phone-scrolled-${width}-dark`);
+      await page.goto(`${base}/explore/oxygen`, { waitUntil: 'networkidle' });
+      await page.getByTestId('atlas-accordion').scrollIntoViewIfNeeded();
+      await shot(page, `element-phone-accordion-${width}-dark`);
+      await page.getByTestId('atlas-acc-next').first().click();
+      await page.waitForTimeout(400);
+      await shot(page, `element-phone-accordion-next-${width}-dark`);
+    }
     // Окно элемента: вкладки по разделам урока.
     await page.goto(`${base}/explore/oxygen`, { waitUntil: 'networkidle' });
     await page.getByTestId('atlas-element-window').waitFor();
-    await page.getByTestId('atlas-tabs').scrollIntoViewIfNeeded();
+    await page
+      .locator(
+        width > 600
+          ? '[data-testid="atlas-tabs"]'
+          : '[data-testid="atlas-toc"], [data-testid="atlas-accordion"]',
+      )
+      .first()
+      .scrollIntoViewIfNeeded();
     await shot(page, `element-window-tabs-${width}-dark`);
     await page.getByTestId('atlas-ai-card').scrollIntoViewIfNeeded();
     await shot(page, `element-ai-card-${width}-dark`);

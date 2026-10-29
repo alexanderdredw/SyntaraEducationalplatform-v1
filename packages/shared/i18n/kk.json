@@ -2139,7 +2139,8 @@
       "resources": "Сыртқы ресурстар",
       "explore": "Зерттеу",
       "takeTest": "Тест тапсыру",
-      "tabs": "Сабақ бөлімдері"
+      "tabs": "Сабақ бөлімдері",
+      "nextSection": "Келесі: {title} →"
     },
     "layer": {
       "atomic_structure": "Атом құрылысы",

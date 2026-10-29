@@ -531,7 +531,11 @@ function ScientistWindow({
       aside={
         <>
           {parts.tagline ? <div className="scientist-tagline">{parts.tagline}</div> : null}
-          {parts.quote ? <QuoteCard quote={parts.quote} name={s.name} /> : null}
+          {parts.quote ? (
+            <div className="atlas-desktop-only">
+              <QuoteCard quote={parts.quote} name={s.name} />
+            </div>
+          ) : null}
         </>
       }
       tabs={parts.sections.map((p, i) => ({
@@ -543,6 +547,10 @@ function ScientistWindow({
       activeTab={tab}
       onTabChange={setTab}
       tabsEqual={normalized}
+      // Телефон: разделы статьёй с закреплённым оглавлением, цитата — после них (уточнение REQ-SCI-05).
+      phone="article"
+      shortLabels={parts.sections.map((p, i) => t(`sci.tabs.${tabKind(p, i)}`))}
+      afterSections={parts.quote ? <QuoteCard quote={parts.quote} name={s.name} /> : null}
       extra={
         <>
           <AiCard

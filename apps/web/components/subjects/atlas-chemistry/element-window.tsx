@@ -183,6 +183,8 @@ export default function ElementWindow({
       tabsLabel={t('detail.tabs')}
       activeTab={tab}
       onTabChange={setTab}
+      // Телефон: разделы урока — аккордеон (уточнение REQ-SCI-06).
+      phone="accordion"
       extra={
         <AiCard
           name={e.title}

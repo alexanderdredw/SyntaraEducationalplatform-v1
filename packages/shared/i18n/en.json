@@ -2139,7 +2139,8 @@
       "resources": "External Resources",
       "explore": "Explore",
       "takeTest": "Take the test",
-      "tabs": "Lesson sections"
+      "tabs": "Lesson sections",
+      "nextSection": "Next: {title} →"
     },
     "layer": {
       "atomic_structure": "Atomic Structure",

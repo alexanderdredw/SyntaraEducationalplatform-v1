@@ -133,6 +133,8 @@ test.describe('«Учёные» — лента, панель, изучено, о
     baseURL,
   }) => {
     const chem = await chemistry(await request.newContext({ baseURL }));
+    // Вкладки — компьютер и планшет (телефон — статья, отдельный тест).
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${chem.base}/scientists/mendeleev`);
     const win = page.getByTestId('atlas-scientist-window');
     // «Слоёв» и «Подробнее» нет; вкладки — роль tablist.
@@ -166,7 +168,7 @@ test.describe('«Учёные» — лента, панель, изучено, о
     await expect(page).toHaveURL(/\/scientists\/mendeleev$/);
     // Цитата — карточкой с подписью и пометкой «приписывается».
     await page.goto(`${chem.base}/scientists/curie`);
-    const quote = page.getByTestId('atlas-sci-quote');
+    const quote = page.locator('[data-testid="atlas-sci-quote"]:visible');
     await expect(quote).toContainText('— Мария Кюри');
     await expect(quote).toContainText('(приписывается)');
     await expectNoSeriousA11yViolations(page);
@@ -177,6 +179,7 @@ test.describe('«Учёные» — лента, панель, изучено, о
     baseURL,
   }) => {
     const chem = await chemistry(await request.newContext({ baseURL }));
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${chem.base}/explore/oxygen`);
     const win = page.getByTestId('atlas-element-window');
     await expect(win.locator('.layers-control')).toHaveCount(0);
@@ -198,6 +201,8 @@ test.describe('«Учёные» — лента, панель, изучено, о
   }) => {
     const chem = await chemistry(await request.newContext({ baseURL }));
     const A = ru.atlas.ai;
+    // Вкладки и боковая панель — компьютер (шторка телефона — следующий тест).
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${chem.base}/scientists/curie`);
     const card = page.getByTestId('atlas-ai-card');
     await expect(card).toContainText(fill(A.cardTitle, { name: 'Мария Кюри' }));
@@ -260,12 +265,9 @@ test.describe('«Учёные» — лента, панель, изучено, о
       await expect(page.getByTestId('atlas-take-test')).toBeVisible();
       await expect(page.locator('.ai-actions')).toHaveCount(0);
       expect(await hasHorizontalScroll(page)).toBe(false);
-      // Вкладки элемента прокручиваются внутри полосы, активная видна целиком.
-      const list = page.getByTestId('atlas-element-window').getByRole('tablist');
-      const box = (await list.boundingBox())!;
-      const active = (await list.getByRole('tab', { selected: true }).boundingBox())!;
-      expect(active.x).toBeGreaterThanOrEqual(box.x);
-      expect(active.x + active.width).toBeLessThanOrEqual(box.x + box.width + 1);
+      // На телефоне разделы элемента — аккордеон (вкладок нет).
+      await expect(page.getByTestId('atlas-accordion')).toBeVisible();
+      await expect(page.getByTestId('atlas-element-window').getByRole('tab')).toHaveCount(0);
       // Шторка ~85 % высоты, прижата к низу; закрывается крестиком.
       await card.getByTestId('atlas-ai-prompt').first().click();
       const sheet = page.getByTestId('atlas-ai-panel');
@@ -282,6 +284,65 @@ test.describe('«Учёные» — лента, панель, изучено, о
       await expect(page.getByTestId('atlas-ai-card')).toBeVisible();
       expect(await hasHorizontalScroll(page)).toBe(false);
     }
+  });
+
+  test('REQ-SCI-05, REQ-SCI-06 (phone) the scientist article with a sticky table of contents; the element accordion; 320/390/430 px', async ({
+    page,
+    baseURL,
+  }) => {
+    test.setTimeout(120_000);
+    const chem = await chemistry(await request.newContext({ baseURL }));
+    for (const width of [320, 390, 430]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto(`${chem.base}/scientists/mendeleev`);
+      const win = page.getByTestId('atlas-scientist-window');
+      // Вкладок нет — статья: все разделы подряд с заголовками h3, оглавление — список ссылок равной ширины.
+      await expect(win.getByRole('tab')).toHaveCount(0);
+      const sections = win.getByTestId('atlas-article-section');
+      await expect(sections).toHaveCount(4);
+      await expect(sections.locator('h3')).toHaveCount(4);
+      const links = win.getByTestId('atlas-toc-link');
+      await expect(links).toHaveCount(4);
+      const toc = (await win.getByTestId('atlas-toc').boundingBox())!;
+      for (let i = 0; i < 4; i++) {
+        const box = (await links.nth(i).boundingBox())!;
+        expect(box.x).toBeGreaterThanOrEqual(toc.x - 1);
+        expect(box.x + box.width).toBeLessThanOrEqual(toc.x + toc.width + 1);
+      }
+      await expect(links.first()).toHaveAttribute('aria-current', 'true');
+      expect(await hasHorizontalScroll(page)).toBe(false);
+      // Нажатие — к разделу, он подсвечен; закреплённое оглавление не закрывает его заголовок.
+      await links.nth(2).click();
+      await expect(links.nth(2)).toHaveAttribute('aria-current', 'true');
+      await expect
+        .poll(async () => {
+          const head = (await sections.nth(2).locator('h3').boundingBox())!;
+          const bar = (await win.getByTestId('atlas-toc').boundingBox())!;
+          return head.y >= bar.y + bar.height - 1;
+        })
+        .toBe(true);
+      // Порядок блоков: разделы → цитата → AI-помощник → современники → «Изучено» и навигация.
+      const y = async (testId: string) =>
+        (await win.locator(`[data-testid="${testId}"]:visible`).first().boundingBox())!.y;
+      const order = [
+        await y('atlas-article'),
+        await y('atlas-ai-card'),
+        await y('atlas-contemporaries'),
+        await y('atlas-sci-prev'),
+      ];
+      expect([...order].sort((a, b) => a - b)).toEqual(order);
+
+      // Окно элемента — аккордеон: первый раздел открыт, «Следующий» открывает следующий (один открыт).
+      await page.goto(`${chem.base}/explore/oxygen`);
+      const heads = page.getByTestId('atlas-acc-head');
+      await expect(heads.first()).toHaveAttribute('aria-expanded', 'true');
+      await expect(page.getByTestId('atlas-acc-panel').and(page.locator(':visible'))).toHaveCount(1);
+      await page.getByTestId('atlas-acc-next').first().click();
+      await expect(heads.nth(1)).toHaveAttribute('aria-expanded', 'true');
+      await expect(heads.first()).toHaveAttribute('aria-expanded', 'false');
+      expect(await hasHorizontalScroll(page)).toBe(false);
+    }
+    await expectNoSeriousA11yViolations(page);
   });
 
   test('AC-SCI-10 light theme and «Экономия трафика»: axe passes, the lifelines are drawn without animation', async ({

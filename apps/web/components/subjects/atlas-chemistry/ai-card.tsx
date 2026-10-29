@@ -113,7 +113,11 @@ function onKey(e: globalThis.KeyboardEvent, root: HTMLElement, onClose: () => vo
   if (!list.length) return;
   const first = list[0]!;
   const last = list.at(-1)!;
-  if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) {
+  // Фокус вне панели (только что открыта) — в панель.
+  if (!root.contains(document.activeElement)) {
+    e.preventDefault();
+    first.focus();
+  } else if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) {
     e.preventDefault();
     last.focus();
   } else if (!e.shiftKey && document.activeElement === last) {
@@ -160,14 +164,14 @@ export function AiPanel({
     };
   }, [returnFocus]);
 
-  // Esc закрывает только панель; Tab не уходит за неё (окно элемента или учёного под ней — своё): обработчик на
-  // самой панели срабатывает раньше обработчика окна на document и останавливает событие.
+  // Esc закрывает только панель; Tab не уходит за неё (окно элемента или учёного под ней — своё): перехват на window
+  // в фазе захвата — раньше обработчика окна на document, даже если фокус ещё не перешёл в панель.
   useEffect(() => {
     const node = root.current;
     if (!node) return;
     const listener = (e: globalThis.KeyboardEvent) => onKey(e, node, onClose);
-    node.addEventListener('keydown', listener);
-    return () => node.removeEventListener('keydown', listener);
+    window.addEventListener('keydown', listener, true);
+    return () => window.removeEventListener('keydown', listener, true);
   }, [onClose]);
   // Смахивание вниз за «ручку» (шторка на телефоне): больше 80 px — закрыть.
   const touch = {

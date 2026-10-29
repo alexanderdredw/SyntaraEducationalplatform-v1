@@ -1111,7 +1111,8 @@
     "atlas.ai.sci.facts.p1": "REQ-SCI-09.2 общая подсказка вкладки (пока нет утверждённых по учёному) — docs/SCIENTISTS_TZ.md (S1)",
     "atlas.ai.sci.facts.p2": "REQ-SCI-09.2 общая подсказка вкладки (пока нет утверждённых по учёному) — docs/SCIENTISTS_TZ.md (S1)",
     "atlas.ai.sci.facts.p3": "REQ-SCI-09.2 общая подсказка вкладки (пока нет утверждённых по учёному) — docs/SCIENTISTS_TZ.md (S1)",
-    "atlas.ai.messageTab": "REQ-SCI-09 вопрос в чат с контекстом вкладки (имя уже в вопросе) — формат не задан — docs/SCIENTISTS_TZ.md (S1)"
+    "atlas.ai.messageTab": "REQ-SCI-09 вопрос в чат с контекстом вкладки (имя уже в вопросе) — формат не задан — docs/SCIENTISTS_TZ.md (S1)",
+    "atlas.detail.nextSection": "Уточнение REQ-SCI-06 (телефон) — по решению владельца 2026-10-29 — docs/SCIENTISTS_TZ.md (S1)"
   },
   "proposed": {
     "_comment": "Тексты референсов docs/UX_TZ.md (пункты ⚠): предлагаемые формулировки, на сайте пока текущие (docs/UX_AI_TZ.md, раздел 6). Публикуются только после утверждения владельцем.",

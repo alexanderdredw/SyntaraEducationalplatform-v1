@@ -1709,6 +1709,7 @@
     "atlas.detail.explore": "needs_review",
     "atlas.detail.takeTest": "needs_review",
     "atlas.detail.tabs": "needs_review",
+    "atlas.detail.nextSection": "needs_review",
     "atlas.layer.atomic_structure": "needs_review",
     "atlas.layer.electron_shells": "needs_review",
     "atlas.layer.physical_properties": "needs_review",

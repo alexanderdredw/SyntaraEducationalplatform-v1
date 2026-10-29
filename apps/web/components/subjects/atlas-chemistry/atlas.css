@@ -6539,3 +6539,167 @@
 :root[data-theme='light'] .atlas .ai-panel-full {
   color: #0058c7;
 }
+
+/* ===== Окна на телефоне (< 768 px): статья учёного и аккордеон элемента (уточнение REQ-SCI-05, REQ-SCI-06) ===== */
+
+.atlas .atlas-phone-only {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .atlas .atlas-phone-only {
+    display: block;
+  }
+
+  .atlas .atlas-desktop-only {
+    display: none;
+  }
+
+  /* Портрет учёного — не выше ~35 % экрана. */
+  .atlas [data-testid='atlas-scientist-window'] .large-visual {
+    height: 35vh;
+    max-height: 35vh;
+  }
+
+  .atlas [data-testid='atlas-scientist-window'] .detail-visual {
+    max-height: none;
+  }
+}
+
+/* Закреплённое оглавление: пункты равной ширины без прокрутки, текущий — золотом. */
+.atlas .atlas-toc {
+  position: sticky;
+  top: -12px;
+  z-index: 5;
+  margin: 0 -12px 8px;
+  padding: 8px 12px;
+  background: rgba(5, 5, 5, 0.96);
+  border-bottom: 1px solid rgba(253, 224, 71, 0.2);
+}
+
+.atlas .atlas-toc ul {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.atlas .atlas-toc a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 4px 2px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font: 600 0.78rem var(--font-ui);
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  border-bottom: 2px solid transparent;
+}
+
+.atlas .atlas-toc a[aria-current='true'] {
+  color: var(--text-primary);
+  border-bottom-color: #fde047;
+  background: rgba(253, 224, 71, 0.1);
+}
+
+.atlas .atlas-toc a:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .atlas-article-section {
+  scroll-margin-top: 72px;
+  padding: 12px 0 8px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.atlas .atlas-article-section h3 {
+  margin: 8px 0 8px;
+  font: 700 1.1rem var(--font-display);
+  color: var(--text-primary);
+}
+
+.atlas .atlas-phone-only .sci-quote {
+  margin-top: 16px;
+}
+
+/* Аккордеон разделов элемента: все заголовки видны, открыт один. */
+.atlas .atlas-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.atlas .atlas-acc-item {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.atlas .atlas-acc-item[data-open] {
+  border-color: rgba(var(--accent-rgb), 0.45);
+}
+
+.atlas .atlas-acc-heading {
+  margin: 0;
+}
+
+.atlas .atlas-acc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font: 700 0.95rem var(--font-ui);
+  text-align: left;
+  scroll-margin-top: 12px;
+}
+
+.atlas .atlas-acc-head:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .atlas-acc-icon {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  color: var(--accent-blue);
+}
+
+.atlas .atlas-acc-panel {
+  padding: 0 14px 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.atlas .atlas-acc-next {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  color: var(--text-primary);
+  font: 600 0.88rem var(--font-ui);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+:root[data-theme='light'] .atlas .atlas-toc {
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom-color: rgba(138, 97, 0, 0.3);
+}
+
+:root[data-theme='light'] .atlas .atlas-toc a[aria-current='true'] {
+  border-bottom-color: #8a6100;
+}

@@ -8,7 +8,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: '.',
   testMatch: /scientists-shots\.ts$/,
-  timeout: 600_000,
+  timeout: 300_000,
   workers: 1,
   reporter: 'line',
   use: {

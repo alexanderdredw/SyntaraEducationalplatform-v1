@@ -2139,7 +2139,8 @@
       "resources": "Внешние ресурсы",
       "explore": "Исследовать",
       "takeTest": "Пройти тест",
-      "tabs": "Разделы урока"
+      "tabs": "Разделы урока",
+      "nextSection": "Следующий: {title} →"
     },
     "layer": {
       "atomic_structure": "Атомная структура",
