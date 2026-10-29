@@ -18,6 +18,7 @@ import { type AuthRequest } from '../auth/auth.types';
 import { AtlasQuizService } from './atlas-quiz.service';
 import {
   AtlasDto,
+  AtlasHintResultDto,
   AtlasPreviewDto,
   AtlasQuizAnswerBody,
   AtlasQuizAnswerResultDto,
@@ -55,13 +56,13 @@ export class StudentAtlasController {
   @ApiBody({ type: AtlasQuizStartBody })
   @ApiOkResponse({ type: AtlasQuizSessionDto })
   @ApiNotFoundResponse()
-  @ApiConflictResponse({ description: 'quizEmpty: нет вопросов' })
+  @ApiConflictResponse({ description: 'quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»)' })
   start(
     @Param('id', new UuidParamPipe()) id: string,
     @Body(new ZodValidationPipe(AtlasQuizStartDto)) dto: Dto<typeof AtlasQuizStartDto>,
     @Req() req: AuthRequest,
   ): Promise<AtlasQuizSessionDto> {
-    return this.quiz.start(req.user!.id, id, dto.kind, locale(req));
+    return this.quiz.start(req.user!.id, id, dto.kind, locale(req), dto.retry);
   }
 
   /** API-S-26: состояние своей сессии. */
@@ -87,6 +88,16 @@ export class StudentAtlasController {
     @Req() req: AuthRequest,
   ): Promise<AtlasQuizAnswerResultDto> {
     return this.quiz.answer(req.user!.id, sid, body, locale(req));
+  }
+
+  /** API-S-29: подсказка «50/50» к текущему вопросу (REQ-TST-04, BR-TST-01). */
+  @Post('atlas-quiz/:sid/hint')
+  @HttpCode(200)
+  @ApiOkResponse({ type: AtlasHintResultDto })
+  @ApiNotFoundResponse()
+  @ApiConflictResponse({ description: 'quizFinished | hintLimit (3 взяты) | hintUnavailable' })
+  hint(@Param('sid', new UuidParamPipe()) sid: string, @Req() req: AuthRequest): Promise<AtlasHintResultDto> {
+    return this.quiz.hint(req.user!.id, sid);
   }
 
   /** API-S-27: завершить — XP (BR-XP-05) и день серии. */

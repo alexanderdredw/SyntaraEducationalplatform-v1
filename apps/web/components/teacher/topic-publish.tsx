@@ -178,7 +178,11 @@ export function PublishPanel({
               <h3 id="preview-quiz" className="mb-3 text-lg font-bold">
                 {tl('quiz')}
               </h3>
-              <TeacherQuiz topicId={topic.id} />
+              {/* Урок — выше в этом же окне: «Открыть урок» не нужен; «Завершить» и «К уроку» закрывают окно. */}
+              <TeacherQuiz
+                topicId={topic.id}
+                placement={{ lessonHref: null, onExit: () => setPreview(null) }}
+              />
             </section>
           ) : null}
         </div>

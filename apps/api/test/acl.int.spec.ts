@@ -154,6 +154,9 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
         'POST /api/teacher/battle-sessions/{sid}/start',
         'POST /api/student/battles/join',
         'POST /api/student/battle-sessions/{sid}/answers',
+        // docs/TESTS_TZ.md, REQ-TST-04: подсказка «50/50» теста темы (API-S-28) и квиза атласа (API-S-29).
+        'POST /api/student/attempts/{id}/hint',
+        'POST /api/student/atlas-quiz/{sid}/hint',
       ]),
     );
   });

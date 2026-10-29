@@ -1044,6 +1044,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/attempts/{id}/hint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StudentQuizController_hint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/attempts/{id}/finish": {
         parameters: {
             query?: never;
@@ -2116,6 +2132,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/atlas-quiz/{sid}/hint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StudentAtlasController_hint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/atlas-quiz/{sid}/finish": {
         parameters: {
             query?: never;
@@ -3030,6 +3062,8 @@ export interface components {
         };
         AnsweredDto: {
             correct: boolean;
+            /** @description К вопросу взята подсказка «50/50» (REQ-TST-04): верный ответ весит для XP 0,5 */
+            hinted: boolean;
             /** Format: uuid */
             correctOptionId: string | null;
             /** @description Правильный ответ для «Вписать ответ» */
@@ -3062,6 +3096,12 @@ export interface components {
             answered: {
                 [key: string]: components["schemas"]["AnsweredDto"];
             };
+            /** @description REQ-TST-04: взятые подсказки «50/50» — убранные варианты по id вопроса */
+            hints: {
+                [key: string]: string[];
+            };
+            /** @description Сколько подсказок «50/50» осталось в попытке (из 3) */
+            hintsLeft: number;
         };
         AnswerBody: {
             /** Format: uuid */
@@ -3072,11 +3112,24 @@ export interface components {
         };
         AnswerResultDto: {
             correct: boolean;
+            /** @description К вопросу взята подсказка «50/50» (REQ-TST-04): верный ответ весит для XP 0,5 */
+            hinted: boolean;
             /** Format: uuid */
             correctOptionId: string | null;
             /** @description Правильный ответ для «Вписать ответ» */
             correctAnswer: string | null;
             explanation: string | null;
+        };
+        HintBody: {
+            /** Format: uuid */
+            questionId: string;
+        };
+        HintResultDto: {
+            /** Format: uuid */
+            questionId: string;
+            /** @description Два неверных варианта */
+            removedOptionIds: string[];
+            hintsLeft: number;
         };
         AwardedBadgeDto: {
             code: string;
@@ -3086,6 +3139,10 @@ export interface components {
             scorePercent: number;
             xpAwarded: number;
             badgesAwarded: components["schemas"]["AwardedBadgeDto"][];
+            /** @description REQ-TST-05.2: лучший результат по теме с этой попыткой, % */
+            bestPercent: number;
+            /** @description REQ-TST-05.2: результат прошлой завершённой попытки темы, %; null — это первая */
+            previousPercent: number | null;
         };
         AssignmentBody: {
             /** Format: uuid */
@@ -4085,6 +4142,15 @@ export interface components {
         AtlasQuizStartBody: {
             /** @enum {string} */
             kind: "elements" | "scientists";
+            /**
+             * Format: uuid
+             * @description REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — вопросы только по её ошибкам
+             */
+            retry?: string;
+        };
+        AtlasAnswerMarkDto: {
+            correct: boolean;
+            hinted: boolean;
         };
         AtlasQuizOptionDto: {
             id: string;
@@ -4098,21 +4164,45 @@ export interface components {
             text: string;
             /** @description Без признака правильного (BR-QZ-01) */
             options: components["schemas"]["AtlasQuizOptionDto"][];
+            /** @description REQ-TST-04: варианты, убранные подсказкой «50/50» (пусто — подсказки нет) */
+            removed: string[];
+        };
+        AtlasFamilyScoreDto: {
+            /** @enum {string} */
+            family: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide";
+            correct: number;
+            total: number;
         };
         AtlasQuizMistakeDto: {
             /** @description Код элемента или учёного */
             code: string;
             title: string;
             description: string;
+            symbol: string | null;
+            number: number | null;
+            /** @enum {string|null} */
+            family: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide" | null;
+            /** @description Текст вопроса, как он был показан */
+            question: string;
+            /** @description Выбранный ответ */
+            selected: string;
         };
         AtlasQuizResultDto: {
             correct: number;
             total: number;
             /** @description Целые проценты */
             percent: number;
-            /** @description BR-XP-05: 1 XP за верный ответ, не больше дневного лимита */
+            /** @description REQ-TST-05.1: сколько верных — с подсказкой «50/50» */
+            hinted: number;
+            /** @description BR-XP-05: 1 XP за верный ответ (с подсказкой — 0,5), не больше дневного лимита */
             xpAwarded: number;
-            /** @description «Рекомендуется повторить» */
+            /** @description REQ-TST-05.2: лучший результат этого вида квиза, % */
+            bestPercent: number;
+            /** @description REQ-TST-05.2: прошлая сессия, %; null — первая */
+            previousPercent: number | null;
+            /** @description REQ-TST-05.5: верно/всего по семействам (только квиз элементов) */
+            families: components["schemas"]["AtlasFamilyScoreDto"][];
+            /** @description Ошибки (REQ-TST-05.3) */
             mistakes: components["schemas"]["AtlasQuizMistakeDto"][];
         };
         AtlasQuizSessionDto: {
@@ -4126,6 +4216,10 @@ export interface components {
             /** @description Сколько вопросов уже отвечено */
             answered: number;
             correct: number;
+            /** @description REQ-TST-02: полоса прогресса */
+            answers: components["schemas"]["AtlasAnswerMarkDto"][];
+            /** @description REQ-TST-04: сколько подсказок «50/50» осталось (из 3) */
+            hintsLeft: number;
             /** @description Текущий вопрос; null — все отвечены */
             question: components["schemas"]["AtlasQuizQuestionDto"] | null;
             /** @description Только у завершённой сессии */
@@ -4135,11 +4229,29 @@ export interface components {
             /** @description ID варианта из вопроса */
             optionId: string;
         };
+        AtlasAnswerInfoDto: {
+            /** @description Код элемента или учёного */
+            code: string;
+            title: string;
+            description: string;
+            symbol: string | null;
+            number: number | null;
+            /** @enum {string|null} */
+            family: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide" | null;
+        };
         AtlasQuizAnswerResultDto: {
             correct: boolean;
+            /** @description REQ-TST-04: ответ дан с подсказкой «50/50» */
+            hinted: boolean;
             correctOptionId: string;
+            answer: components["schemas"]["AtlasAnswerInfoDto"] | null;
             /** @description Следующий вопрос; null — квиз пройден */
             next: components["schemas"]["AtlasQuizQuestionDto"] | null;
+        };
+        AtlasHintResultDto: {
+            /** @description Два неверных варианта */
+            removedOptionIds: string[];
+            hintsLeft: number;
         };
         PreviewQuestionDto: {
             text: string;
@@ -4148,8 +4260,8 @@ export interface components {
             difficulty: "easy" | "medium" | "hard";
             /** @description Номер правильного варианта в options — проверка в браузере учителя */
             correct: number;
-            /** @description Правильный ответ — для «Рекомендуется повторить» */
-            answer: components["schemas"]["AtlasQuizMistakeDto"];
+            /** @description Правильный ответ — объяснение и «Открыть урок» */
+            answer: components["schemas"]["AtlasAnswerInfoDto"];
         };
         AtlasPreviewDto: {
             questions: components["schemas"]["PreviewQuestionDto"][];
@@ -7126,6 +7238,59 @@ export interface operations {
             };
         };
     };
+    StudentQuizController_hint: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HintBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HintResultDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Объект не найден или принадлежит другому учителю */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description INVALID_TRANSITION: попытка завершена; hintLimit — 3 подсказки взяты; hintUnavailable — нельзя */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     StudentQuizController_finish: {
         parameters: {
             query?: never;
@@ -10024,7 +10189,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description quizEmpty: нет вопросов */
+            /** @description quizEmpty: нет вопросов (или ошибок для «Повторить ошибки») */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -10125,6 +10290,54 @@ export interface operations {
                 content?: never;
             };
             /** @description quizFinished: сессия завершена */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_hint: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasHintResultDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description quizFinished | hintLimit (3 взяты) | hintUnavailable */
             409: {
                 headers: {
                     [name: string]: unknown;

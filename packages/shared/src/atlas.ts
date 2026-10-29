@@ -13,7 +13,11 @@ export type AtlasQuizKind = (typeof ATLAS_QUIZ_KINDS)[number];
 export const ATLAS_QUIZ_LENGTH = 10;
 
 /** Без kind — квиз «Проверь знания» (так неизвестный предмет даёт 404, а не ошибку проверки — API-GEN-08). */
-export const AtlasQuizStartDto = z.object({ kind: z.enum(ATLAS_QUIZ_KINDS, 'required').default('elements') });
+export const AtlasQuizStartDto = z.object({
+  kind: z.enum(ATLAS_QUIZ_KINDS, 'required').default('elements'),
+  /** REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — новая только по её ошибкам. */
+  retry: z.uuid('required').optional(),
+});
 export type AtlasQuizStartDto = z.infer<typeof AtlasQuizStartDto>;
 
 export const AtlasQuizAnswerDto = z.object({

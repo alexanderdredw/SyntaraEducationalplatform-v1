@@ -91,21 +91,66 @@ class AtlasQuizQuestionDto {
     description: 'Без признака правильного (BR-QZ-01)',
   })
   options: AtlasQuizOptionDto[];
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    description: 'REQ-TST-04: варианты, убранные подсказкой «50/50» (пусто — подсказки нет)',
+  })
+  removed: string[];
 }
 
-class AtlasQuizMistakeDto {
+/**
+ * Правильный ответ (REQ-TST-01, REQ-TST-09.3): ссылка «Открыть урок» и объяснение «Это {название} ({символ}, № {N},
+ * {семейство}). {описание}» — текст собирает клиент из i18n; у учёного символа, номера и семейства нет.
+ */
+export class AtlasAnswerInfoDto {
   @ApiProperty({ description: 'Код элемента или учёного' }) code: string;
   @ApiProperty() title: string;
   @ApiProperty() description: string;
+  @ApiProperty({ type: String, nullable: true }) symbol: string | null;
+  @ApiProperty({ type: Number, nullable: true }) number: number | null;
+  @ApiProperty({ type: String, nullable: true, enum: ELEMENT_FAMILIES }) family: string | null;
+}
+
+class AtlasQuizMistakeDto extends AtlasAnswerInfoDto {
+  @ApiProperty({ description: 'Текст вопроса, как он был показан' }) question: string;
+  @ApiProperty({ description: 'Выбранный ответ' }) selected: string;
+}
+
+class AtlasFamilyScoreDto {
+  @ApiProperty({ enum: ELEMENT_FAMILIES }) family: string;
+  @ApiProperty() correct: number;
+  @ApiProperty() total: number;
+}
+
+class AtlasAnswerMarkDto {
+  @ApiProperty() correct: boolean;
+  @ApiProperty() hinted: boolean;
 }
 
 class AtlasQuizResultDto {
   @ApiProperty() correct: number;
   @ApiProperty() total: number;
   @ApiProperty({ description: 'Целые проценты' }) percent: number;
-  @ApiProperty({ description: 'BR-XP-05: 1 XP за верный ответ, не больше дневного лимита' })
+  @ApiProperty({ description: 'REQ-TST-05.1: сколько верных — с подсказкой «50/50»' }) hinted: number;
+  @ApiProperty({
+    description: 'BR-XP-05: 1 XP за верный ответ (с подсказкой — 0,5), не больше дневного лимита',
+  })
   xpAwarded: number;
-  @ApiProperty({ type: AtlasQuizMistakeDto, isArray: true, description: '«Рекомендуется повторить»' })
+  @ApiProperty({ description: 'REQ-TST-05.2: лучший результат этого вида квиза, %' }) bestPercent: number;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'REQ-TST-05.2: прошлая сессия, %; null — первая',
+  })
+  previousPercent: number | null;
+  @ApiProperty({
+    type: AtlasFamilyScoreDto,
+    isArray: true,
+    description: 'REQ-TST-05.5: верно/всего по семействам (только квиз элементов)',
+  })
+  families: AtlasFamilyScoreDto[];
+  @ApiProperty({ type: AtlasQuizMistakeDto, isArray: true, description: 'Ошибки (REQ-TST-05.3)' })
   mistakes: AtlasQuizMistakeDto[];
 }
 
@@ -117,6 +162,9 @@ export class AtlasQuizSessionDto {
   @ApiProperty() total: number;
   @ApiProperty({ description: 'Сколько вопросов уже отвечено' }) answered: number;
   @ApiProperty() correct: number;
+  @ApiProperty({ type: AtlasAnswerMarkDto, isArray: true, description: 'REQ-TST-02: полоса прогресса' })
+  answers: AtlasAnswerMarkDto[];
+  @ApiProperty({ description: 'REQ-TST-04: сколько подсказок «50/50» осталось (из 3)' }) hintsLeft: number;
   @ApiProperty({
     type: AtlasQuizQuestionDto,
     nullable: true,
@@ -130,7 +178,9 @@ export class AtlasQuizSessionDto {
 /** API-S-25: проверка ответа сразу (как BR-QZ-04). */
 export class AtlasQuizAnswerResultDto {
   @ApiProperty() correct: boolean;
+  @ApiProperty({ description: 'REQ-TST-04: ответ дан с подсказкой «50/50»' }) hinted: boolean;
   @ApiProperty() correctOptionId: string;
+  @ApiProperty({ type: AtlasAnswerInfoDto, nullable: true }) answer: AtlasAnswerInfoDto | null;
   @ApiProperty({
     type: AtlasQuizQuestionDto,
     nullable: true,
@@ -139,8 +189,20 @@ export class AtlasQuizAnswerResultDto {
   next: AtlasQuizQuestionDto | null;
 }
 
+/** API-S-29: подсказка «50/50» (REQ-TST-04, BR-TST-01). */
+export class AtlasHintResultDto {
+  @ApiProperty({ type: String, isArray: true, description: 'Два неверных варианта' })
+  removedOptionIds: string[];
+  @ApiProperty() hintsLeft: number;
+}
+
 export class AtlasQuizStartBody {
   @ApiProperty({ enum: ATLAS_QUIZ_KINDS }) kind: AtlasQuizKind;
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description: 'REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — вопросы только по её ошибкам',
+  })
+  retry?: string;
 }
 
 export class AtlasQuizAnswerBody {
@@ -153,8 +215,8 @@ class PreviewQuestionDto {
   @ApiProperty({ enum: ['easy', 'medium', 'hard'] }) difficulty: AtlasDifficulty;
   @ApiProperty({ description: 'Номер правильного варианта в options — проверка в браузере учителя' })
   correct: number;
-  @ApiProperty({ type: AtlasQuizMistakeDto, description: 'Правильный ответ — для «Рекомендуется повторить»' })
-  answer: AtlasQuizMistakeDto;
+  @ApiProperty({ type: AtlasAnswerInfoDto, description: 'Правильный ответ — объяснение и «Открыть урок»' })
+  answer: AtlasAnswerInfoDto;
 }
 
 /**

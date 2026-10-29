@@ -78,6 +78,7 @@ export default function ElementWindow({
   }, [test]);
 
   const testHref = `${elementHref(subjectId, e.code, true)}${query({})}`;
+  const lessonHref = `${elementHref(subjectId, e.code)}${query({})}`;
   const onMode = (mode: AssistantMode) => {
     if (mode === 'quiz') router.replace(testHref, { scroll: false });
     else
@@ -186,7 +187,18 @@ export default function ElementWindow({
       assistant={
         <div ref={assistant}>
           <AssistantBlock mode={test ? 'quiz' : null} onMode={onMode}>
-            <TopicTest topicId={e.topicId} quizId={lesson.data?.quizId ?? null} assignmentId={assignment} />
+            <TopicTest
+              topicId={e.topicId}
+              quizId={lesson.data?.quizId ?? null}
+              assignmentId={assignment}
+              // «Открыть урок», «К уроку» и «× Завершить» — это окно без теста; свечение — цветом элемента.
+              place={{
+                lessonHref: lessonHref,
+                backHref: lessonHref,
+                onExit: () => router.replace(lessonHref, { scroll: false }),
+                accent: color,
+              }}
+            />
           </AssistantBlock>
         </div>
       }

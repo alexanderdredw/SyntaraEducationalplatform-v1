@@ -35,6 +35,8 @@ export const quizAttempts = pgTable(
     assignmentId: uuid('assignment_id').references(() => assignments.id),
     status: attemptStatusEnum('status').notNull().default('in_progress'),
     scorePercent: numeric('score_percent', { precision: 5, scale: 2 }),
+    /** BR-TST-01 (docs/TESTS_TZ.md): процент для XP — верный с подсказкой «50/50» весит 0,5; до 0017 — null. */
+    xpPercent: numeric('xp_percent', { precision: 5, scale: 2 }),
     startedAt: tstz('started_at').notNull().defaultNow(),
     finishedAt: tstz('finished_at'),
     ...timestamps,
@@ -53,6 +55,28 @@ export const attemptAnswers = pgTable(
     answeredAt: tstz('answered_at').notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.attemptId, t.questionId] })],
+);
+
+/**
+ * REQ-TST-04, BR-TST-01 (docs/TESTS_TZ.md): подсказка «50/50» к вопросу попытки — какие варианты убрал сервер. Не
+ * больше одной на вопрос (PK) и трёх на попытку (сервис). Верный ответ на вопрос с подсказкой весит для XP 0,5.
+ */
+export const attemptHints = pgTable(
+  'attempt_hints',
+  {
+    attemptId: uuid('attempt_id')
+      .notNull()
+      .references(() => quizAttempts.id),
+    questionId: uuid('question_id')
+      .notNull()
+      .references(() => questions.id),
+    removedOptionIds: uuid('removed_option_ids').array().notNull(),
+    createdAt: tstz('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.attemptId, t.questionId] }),
+    check('attempt_hints_removed', sql`cardinality(${t.removedOptionIds}) = 2`),
+  ],
 );
 
 export const learningEvents = pgTable(

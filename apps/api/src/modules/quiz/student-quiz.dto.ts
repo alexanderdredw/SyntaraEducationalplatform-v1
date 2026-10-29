@@ -23,6 +23,10 @@ export class AttemptStartBody {
 /** API-S-08: результат ответа (BR-QZ-04). */
 export class AnswerResultDto {
   @ApiProperty() correct: boolean;
+  @ApiProperty({
+    description: 'К вопросу взята подсказка «50/50» (REQ-TST-04): верный ответ весит для XP 0,5',
+  })
+  hinted: boolean;
   @ApiProperty({ type: String, format: 'uuid', nullable: true }) correctOptionId: string | null;
   @ApiProperty({ type: String, nullable: true, description: 'Правильный ответ для «Вписать ответ»' })
   correctAnswer: string | null;
@@ -44,6 +48,25 @@ export class AttemptDto {
     description: 'Уже данные ответы незавершённой попытки (BR-QZ-06) по id вопроса',
   })
   answered: Record<string, AnsweredDto>;
+  @ApiProperty({
+    type: 'object',
+    additionalProperties: { type: 'array', items: { type: 'string', format: 'uuid' } },
+    description: 'REQ-TST-04: взятые подсказки «50/50» — убранные варианты по id вопроса',
+  })
+  hints: Record<string, string[]>;
+  @ApiProperty({ description: 'Сколько подсказок «50/50» осталось в попытке (из 3)' }) hintsLeft: number;
+}
+
+export class HintBody {
+  @ApiProperty({ format: 'uuid' }) questionId: string;
+}
+
+/** API-S-28: подсказка «50/50» (REQ-TST-04, BR-TST-01). */
+export class HintResultDto {
+  @ApiProperty({ format: 'uuid' }) questionId: string;
+  @ApiProperty({ type: String, format: 'uuid', isArray: true, description: 'Два неверных варианта' })
+  removedOptionIds: string[];
+  @ApiProperty() hintsLeft: number;
 }
 
 export class AnswerBody {
@@ -62,6 +85,14 @@ export class FinishResultDto {
   @ApiProperty() scorePercent: number;
   @ApiProperty() xpAwarded: number;
   @ApiProperty({ type: AwardedBadgeDto, isArray: true }) badgesAwarded: AwardedBadgeDto[];
+  @ApiProperty({ description: 'REQ-TST-05.2: лучший результат по теме с этой попыткой, %' })
+  bestPercent: number;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'REQ-TST-05.2: результат прошлой завершённой попытки темы, %; null — это первая',
+  })
+  previousPercent: number | null;
 }
 
 /** Вопрос теста учителя (API-T-34): вместе с правильным ответом — проверка в браузере учителя, без записи. */

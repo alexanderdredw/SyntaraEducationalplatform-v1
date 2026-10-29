@@ -4502,3 +4502,698 @@
     opacity: 0.95;
   }
 }
+
+/* ===== Тесты в стиле атласа (docs/TESTS_TZ.md, T1; test-view.tsx) =====
+ * Решение владельца 5: тёмный фон, стекло и свечение, цвета семейств, шрифты атласа. Компьютер — две колонки
+ * (вопрос и «Ход попытки»), узкий контейнер (телефон, блок помощника) — одна колонка, «Ход попытки» строкой сверху.
+ * Верный ответ — свечение цветом семейства (--atest-accent), неверный — «вздрагивание»; без анимаций при
+ * prefers-reduced-motion и в «Экономии трафика» (правила в конце файла). */
+.atlas .atest {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  text-align: left;
+}
+
+.atlas .atest-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--spacing-sm);
+}
+
+.atlas .atest-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-secondary);
+  font: 600 0.9rem var(--font-ui);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.atlas .atest-exit:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.atlas .atest-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@container (min-width: 820px) {
+  .atlas .atest-grid {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+
+  .atlas .atest-panel {
+    order: 2;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: start;
+  }
+
+  .atlas .atest-panel-title {
+    display: block;
+  }
+}
+
+.atlas .atest-main {
+  min-width: 0;
+}
+
+.atlas .atest-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--font-ui);
+}
+
+.atlas .atest-panel-title {
+  display: none;
+  font: 600 0.8rem var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.atlas .atest-segments {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  list-style: none;
+}
+
+.atlas .atest-segments li {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.12);
+  transition: var(--transition);
+}
+
+.atlas .atest-segments li[data-state='correct'] {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(52, 199, 89, 0.6);
+}
+
+.atlas .atest-segments li[data-state='hinted'] {
+  background: #b5d334;
+  box-shadow: 0 0 8px rgba(181, 211, 52, 0.5);
+}
+
+.atlas .atest-segments li[data-state='wrong'] {
+  background: var(--accent-red);
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.5);
+}
+
+.atlas .atest-segments li[data-state='current'] {
+  height: 12px;
+  background: var(--accent-blue);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.7);
+}
+
+.atlas .atest-progress {
+  font: 600 1rem var(--font-display);
+  color: var(--accent-blue);
+}
+
+.atlas .atest-streak {
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.atlas .atest-difficulty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.atlas .atest-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.atlas .atest-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.atlas .atest-difficulty[data-level='easy'] .atest-dots span[data-on] {
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+.atlas .atest-difficulty[data-level='medium'] .atest-dots span[data-on] {
+  background: var(--accent-gold);
+  box-shadow: 0 0 6px var(--accent-gold);
+}
+
+.atlas .atest-difficulty[data-level='hard'] .atest-dots span[data-on] {
+  background: var(--accent-red);
+  box-shadow: 0 0 6px var(--accent-red);
+}
+
+.atlas .atest-note {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.atlas .atest-level:empty {
+  display: none;
+}
+
+.atlas .atest-level {
+  font-weight: 600;
+  color: var(--accent-gold);
+  animation: atest-pop 0.4s ease-out;
+}
+
+.atlas .atest-hint {
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 99px;
+  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  background: rgba(var(--accent-rgb), 0.12);
+  color: var(--text-primary);
+  font: 700 0.95rem var(--font-display);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.atlas .atest-hint:hover:not(:disabled) {
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.5);
+}
+
+.atlas .atest-hint:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.atlas .atest-question {
+  padding: 32px;
+  border-radius: 20px;
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.atlas .atest-text {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 12px 0 24px;
+}
+
+.atlas .atest-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@container (min-width: 620px) {
+  .atlas .atest-options {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.atlas .atest-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: 500 1.05rem var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.atlas .atest-opt:hover:not([aria-disabled]) {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.atlas .atest-opt:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+}
+
+.atlas .atest-opt[data-state='selected'] {
+  border-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.16);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.45);
+}
+
+.atlas .atest-opt[data-state='correct'] {
+  border-color: var(--atest-accent);
+  background: color-mix(in srgb, var(--atest-accent) 22%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--atest-accent) 60%, transparent);
+  animation: atest-glow 0.9s ease-out;
+}
+
+.atlas .atest-opt[data-state='wrong'] {
+  border-color: var(--accent-red);
+  background: rgba(255, 59, 48, 0.18);
+  animation: atest-shake 0.36s ease-in-out;
+}
+
+.atlas .atest-opt[data-state='removed'] {
+  opacity: 0.3;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.atlas .atest-opt[data-state='removed'] .atest-opt-text {
+  text-decoration: line-through;
+}
+
+.atlas .atest-opt[aria-disabled][data-state='idle'] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.atlas .atest-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  font: 700 0.8rem var(--font-display);
+  color: var(--text-secondary);
+}
+
+.atlas .atest-tf {
+  grid-template-columns: 1fr 1fr;
+}
+
+.atlas .atest-tf .atest-opt {
+  min-height: 84px;
+  justify-content: center;
+  font: 700 1.25rem var(--font-display);
+}
+
+.atlas .atest-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.atlas .atest-input {
+  flex: 1 1 220px;
+  min-height: 56px;
+  padding: 0 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: 500 1.1rem var(--font-ui);
+}
+
+.atlas .atest-input:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .atest-input[data-state='correct'] {
+  border-color: var(--atest-accent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--atest-accent) 50%, transparent);
+}
+
+.atlas .atest-input[data-state='wrong'] {
+  border-color: var(--accent-red);
+  animation: atest-shake 0.36s ease-in-out;
+}
+
+.atlas .atest-feedback:empty {
+  display: none;
+}
+
+.atlas .atest-verdict {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-primary);
+}
+
+.atlas .atest-verdict[data-state='correct'] {
+  border-color: color-mix(in srgb, var(--atest-accent) 60%, transparent);
+}
+
+.atlas .atest-verdict[data-state='wrong'] {
+  border-color: rgba(255, 59, 48, 0.6);
+}
+
+.atlas .atest-verdict-title {
+  font: 700 1.1rem var(--font-display);
+}
+
+.atlas .atest-verdict[data-state='correct'] .atest-verdict-title {
+  color: #4ade80;
+}
+
+.atlas .atest-verdict[data-state='wrong'] .atest-verdict-title {
+  color: #ff6b61;
+}
+
+.atlas .atest-explanation {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.atlas .atest-link {
+  align-self: flex-start;
+  font-weight: 600;
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.atlas .atest-link:hover {
+  text-decoration: underline;
+}
+
+.atlas .atest-next {
+  margin-top: 20px;
+}
+
+.atlas .atest-confirm {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 60px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+}
+
+.atlas .atest-confirm-card {
+  max-width: 420px;
+  width: calc(100% - 32px);
+  padding: 28px;
+  border-radius: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  color: var(--text-primary);
+}
+
+.atlas .atest-confirm-card h3 {
+  font: 700 1.3rem var(--font-display);
+  margin-bottom: 8px;
+}
+
+.atlas .atest-confirm-card p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.atlas .atest-confirm-actions,
+.atlas .atest-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.atlas .atest-confirm-actions .btn {
+  padding: 12px 22px;
+}
+
+.atlas .atest-result {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.atlas .atest-result-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.atlas .atest-ring {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 18px var(--ring));
+}
+
+.atlas .atest-ring-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 10;
+}
+
+.atlas .atest-ring-value {
+  fill: none;
+  stroke: var(--ring);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.atlas .atest-ring text {
+  fill: var(--text-primary);
+  font: 700 26px var(--font-display);
+}
+
+.atlas .atest-result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.atlas .atest-result .atest-result-title {
+  font-size: 2.4rem;
+  margin: 0;
+}
+
+.atlas .atest-result .hero-subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.atlas .atest-muted {
+  color: var(--text-secondary);
+}
+
+.atlas .atest-result .atlas-xp {
+  margin-top: 4px;
+}
+
+.atlas .atest-compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-weight: 600;
+}
+
+.atlas .atest-compare [data-sign='up'] {
+  color: #4ade80;
+}
+
+.atlas .atest-compare [data-sign='down'] {
+  color: #ff6b61;
+}
+
+.atlas .atest-families h3,
+.atlas .atest-mistakes h3 {
+  font: 600 1.1rem var(--font-display);
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.atlas .atest-families ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.atlas .atest-families li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--fam) 45%, transparent);
+  background: color-mix(in srgb, var(--fam) 10%, transparent);
+  font-size: 0.9rem;
+}
+
+.atlas .atest-fam-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fam);
+  box-shadow: 0 0 8px var(--fam);
+}
+
+.atlas .atest-mistakes ul {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+}
+
+.atlas .atest-mistakes li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.atlas .atest-mistake-q {
+  line-height: 1.5;
+}
+
+.atlas .atest-wrong {
+  color: #ff6b61;
+  font-size: 0.95rem;
+}
+
+.atlas .atest-right {
+  color: #4ade80;
+  font-size: 0.95rem;
+}
+
+.atlas .atest-mistakes summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.atlas .atest-mistakes details p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@keyframes atest-glow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--atest-accent) 80%, transparent);
+  }
+  60% {
+    box-shadow: 0 0 36px 6px color-mix(in srgb, var(--atest-accent) 70%, transparent);
+  }
+}
+
+@keyframes atest-shake {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes atest-pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* Светлая тема атласа: стекло — светлое, контраст текста ≥ 4,5:1. */
+:root[data-theme='light'] .atlas .atest-panel,
+:root[data-theme='light'] .atlas .atest-question {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .atlas .atest-opt,
+:root[data-theme='light'] .atlas .atest-input,
+:root[data-theme='light'] .atlas .atest-verdict,
+:root[data-theme='light'] .atlas .atest-mistakes li {
+  border-color: rgba(0, 0, 0, 0.14);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:root[data-theme='light'] .atlas .atest-segments li,
+:root[data-theme='light'] .atlas .atest-dots span,
+:root[data-theme='light'] .atlas .atest-letter {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .atlas .atest-exit {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme='light'] .atlas .atest-progress,
+:root[data-theme='light'] .atlas .atest-link {
+  color: #0058c7;
+}
+
+:root[data-theme='light'] .atlas .atest-streak,
+:root[data-theme='light'] .atlas .atest-level {
+  color: #8a6100;
+}
+
+:root[data-theme='light'] .atlas .atest-verdict[data-state='correct'] .atest-verdict-title,
+:root[data-theme='light'] .atlas .atest-right,
+:root[data-theme='light'] .atlas .atest-compare [data-sign='up'] {
+  color: #166534;
+}
+
+:root[data-theme='light'] .atlas .atest-verdict[data-state='wrong'] .atest-verdict-title,
+:root[data-theme='light'] .atlas .atest-wrong,
+:root[data-theme='light'] .atlas .atest-compare [data-sign='down'] {
+  color: #c4261d;
+}
+
+:root[data-theme='light'] .atlas .atest-confirm-card {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme='light'] .atlas .atest-ring-track {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+/* «+N XP» в светлой теме атласа: жёлтый на светлом фоне < 4,5:1 — тёмно-золотой. */
+:root[data-theme='light'] .atlas .atlas-xp {
+  color: #8a6100;
+}

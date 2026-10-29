@@ -7,7 +7,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AnswerDto, AttemptStartDto } from '@syntara/shared';
+import { AnswerDto, AttemptStartDto, HintDto } from '@syntara/shared';
 import { type Dto } from '../../common/dto';
 import { resolveLocale } from '../../common/locale';
 import { UuidParamPipe } from '../../common/uuid-param.pipe';
@@ -22,6 +22,8 @@ import {
   AnswerResultDto,
   AttemptDto,
   FinishResultDto,
+  HintBody,
+  HintResultDto,
 } from './student-quiz.dto';
 import { StudentQuizService } from './student-quiz.service';
 
@@ -64,6 +66,25 @@ export class StudentQuizController {
     @Req() req: AuthRequest,
   ): Promise<AnswerResultDto> {
     return this.quiz.answer(req.user!.id, id, dto, locale(req));
+  }
+
+  /** API-S-28: подсказка «50/50» (REQ-TST-04, BR-TST-01) — какие варианты убрать, решает сервер. */
+  @Post('attempts/:id/hint')
+  @Owns('attempt')
+  @HttpCode(200)
+  @ApiBody({ type: HintBody })
+  @ApiOkResponse({ type: HintResultDto })
+  @ApiNotFoundResponse()
+  @ApiConflictResponse({
+    description:
+      'INVALID_TRANSITION: попытка завершена; hintLimit — 3 подсказки взяты; hintUnavailable — нельзя',
+  })
+  hint(
+    @Param('id', new UuidParamPipe()) id: string,
+    @Body(new ZodValidationPipe(HintDto)) dto: Dto<typeof HintDto>,
+    @Req() req: AuthRequest,
+  ): Promise<HintResultDto> {
+    return this.quiz.hint(req.user!.id, id, dto);
   }
 
   /** API-S-09 */

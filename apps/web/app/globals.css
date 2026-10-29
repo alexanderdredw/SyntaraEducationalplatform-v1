@@ -274,3 +274,38 @@ h3 {
     display: none;
   }
 }
+
+/*
+ * Тесты (docs/TESTS_TZ.md, REQ-TST-01.3): верный ответ — короткое свечение, неверный — «вздрагивание». В «Экономии
+ * трафика» и при prefers-reduced-motion анимаций нет (tokens.css).
+ */
+@keyframes test-glow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--test-accent, var(--success)) 60%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+@keyframes test-shake {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+.test-glow {
+  animation: test-glow 700ms var(--ease-standard);
+}
+.test-shake {
+  animation: test-shake 360ms var(--ease-standard);
+}
+@media (prefers-reduced-motion: reduce) {
+  .test-glow,
+  .test-shake {
+    animation: none;
+  }
+}

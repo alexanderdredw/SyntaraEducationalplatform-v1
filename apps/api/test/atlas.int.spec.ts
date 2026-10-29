@@ -55,6 +55,20 @@ describe('atlas (integration)', () => {
     }
   }
 
+  /** Ответы сессии задаются напрямую: вопросы случайные, правильные варианты заранее неизвестны. */
+  async function setAnswers(sessionId: string, marks: Array<{ correct: boolean; hinted: boolean }>) {
+    const [row] = await stack.db
+      .select({ state: schema.atlasQuizSessions.state })
+      .from(schema.atlasQuizSessions)
+      .where(eq(schema.atlasQuizSessions.id, sessionId));
+    const state = row!.state as { answers: Array<{ correct: boolean; hinted?: boolean }> };
+    state.answers = state.answers.map((a, i) => ({ ...a, ...marks[i] }));
+    await stack.db
+      .update(schema.atlasQuizSessions)
+      .set({ state, correctCount: marks.filter((m) => m.correct).length })
+      .where(eq(schema.atlasQuizSessions.id, sessionId));
+  }
+
   beforeAll(async () => {
     stack = await startStack('demo');
     B = await baseIds(stack.db);
@@ -195,11 +209,10 @@ describe('atlas (integration)', () => {
     const finishWith = async (kind: 'elements' | 'scientists', correct: number) => {
       const start = await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind }).expect(201);
       await answerAll(s, start.body);
-      // Число верных ответов задаётся напрямую: вопросы случайные, правильные варианты заранее неизвестны.
-      await stack.db
-        .update(schema.atlasQuizSessions)
-        .set({ correctCount: correct })
-        .where(eq(schema.atlasQuizSessions.id, start.body.id));
+      await setAnswers(
+        start.body.id,
+        Array.from({ length: start.body.total }, (_, i) => ({ correct: i < correct, hinted: false })),
+      );
       const res = await as(s).post(`/api/student/atlas-quiz/${start.body.id}/finish`).expect(200);
       return res.body.result.xpAwarded as number;
     };
@@ -209,6 +222,133 @@ describe('atlas (integration)', () => {
     expect(await finishWith('scientists', 9)).toBe(0);
     const stats = await as(s).get('/api/me/stats').expect(200);
     expect(stats.body).toMatchObject({ xpTotal: 20, streakDays: 1 });
+  });
+
+  it('API-S-29, REQ-TST-04, BR-TST-01 «50/50» in the atlas quiz: two wrong options removed by the server, recorded, ≤ 3', async () => {
+    const s = await register('atlas-hint');
+    const start = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+    ).body;
+    expect(start).toMatchObject({ hintsLeft: 3, answers: [] });
+    expect(start.question.removed).toEqual([]);
+    const hint = () => as(s).post(`/api/student/atlas-quiz/${start.id}/hint`);
+    const first = (await hint().expect(200)).body;
+    expect(first.hintsLeft).toBe(2);
+    expect(first.removedOptionIds).toHaveLength(2);
+    // Повтор — та же подсказка; состояние сессии хранит убранные варианты.
+    expect((await hint().expect(200)).body).toEqual(first);
+    expect(
+      (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question.removed,
+    ).toEqual(first.removedOptionIds);
+    // Убранный вариант выбрать нельзя.
+    await as(s)
+      .post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: first.removedOptionIds[0] })
+      .expect(400);
+    const left = start.question.options
+      .map((o: { id: string }) => o.id)
+      .filter((id: string) => !first.removedOptionIds.includes(id));
+    const answer = (
+      await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: left[0] }).expect(200)
+    ).body;
+    // Правильный вариант не был убран; ответ помечен подсказкой; данные для объяснения (REQ-TST-09.3).
+    expect(left).toContain(answer.correctOptionId);
+    expect(answer.hinted).toBe(true);
+    expect(answer.answer).toMatchObject({
+      code: expect.any(String),
+      symbol: expect.any(String),
+      number: expect.any(Number),
+      family: expect.any(String),
+    });
+    // Ещё две подсказки — и лимит исчерпан.
+    let next = answer.next;
+    for (let i = 0; i < 2; i++) {
+      const removed = (await hint().expect(200)).body.removedOptionIds as string[];
+      const option = next.options.find((o: { id: string }) => !removed.includes(o.id));
+      next = (
+        await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: option.id }).expect(200)
+      ).body.next;
+    }
+    const limit = await hint().expect(409);
+    expect(limit.body.fieldErrors).toEqual({ hint: 'hintLimit' });
+    const state = (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body;
+    expect(state.hintsLeft).toBe(0);
+    expect(state.answers.map((a: { hinted: boolean }) => a.hinted)).toEqual([true, true, true]);
+    // Чужая сессия — 404.
+    await as(other).post(`/api/student/atlas-quiz/${start.id}/hint`).expect(404);
+  });
+
+  it('AC-TST-05, BR-TST-01, BR-XP-05 atlas XP = floor(sum of weights): a correct answer with a hint weighs 0.5', async () => {
+    const s = await register('atlas-hintxp');
+    const start = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+    ).body;
+    await answerAll(s, start);
+    // 7 верно без подсказки, 3 верно с подсказкой → 7 + 1,5 = 8,5 → 8 XP; в результате — 10 из 10 и «с подсказкой: 3».
+    await setAnswers(start.id, [
+      ...Array(7).fill({ correct: true, hinted: false }),
+      ...Array(3).fill({ correct: true, hinted: true }),
+    ]);
+    const result = (await as(s).post(`/api/student/atlas-quiz/${start.id}/finish`).expect(200)).body.result;
+    expect(result).toMatchObject({ correct: 10, percent: 100, hinted: 3, xpAwarded: 8, mistakes: [] });
+  });
+
+  it('REQ-TST-05 the atlas result: best and previous result of the mode, families, mistakes with the answer; «Повторить ошибки»', async () => {
+    const s = await register('atlas-result');
+    const play = async (marks: boolean[], retry?: string) => {
+      const start = (
+        await as(s)
+          .post(`/api/student/subjects/${chemistry}/atlas-quiz`, {
+            kind: 'elements',
+            ...(retry ? { retry } : {}),
+          })
+          .expect(201)
+      ).body;
+      await answerAll(s, start);
+      await setAnswers(
+        start.id,
+        marks.map((correct) => ({ correct, hinted: false })),
+      );
+      return {
+        id: start.id as string,
+        total: start.total as number,
+        result: (await as(s).post(`/api/student/atlas-quiz/${start.id}/finish`).expect(200)).body.result,
+      };
+    };
+    const first = await play([true, true, true, true, true, true, false, false, false, false]);
+    expect(first.result).toMatchObject({ percent: 60, bestPercent: 60, previousPercent: null });
+    expect(first.result.mistakes).toHaveLength(4);
+    for (const m of first.result.mistakes) {
+      expect(m.question.length).toBeGreaterThan(5);
+      expect(m.selected).toBeTruthy();
+      expect(m).toMatchObject({
+        code: expect.any(String),
+        symbol: expect.any(String),
+        family: expect.any(String),
+      });
+    }
+    const families = first.result.families as Array<{ correct: number; total: number }>;
+    expect(families.reduce((n, f) => n + f.total, 0)).toBe(10);
+    expect(families.reduce((n, f) => n + f.correct, 0)).toBe(6);
+
+    // «Повторить ошибки» — новая сессия только из 4 ошибочных элементов.
+    const retry = await play([true, true, true, true], first.id);
+    expect(retry.total).toBe(4);
+    expect(retry.result).toMatchObject({ percent: 100, bestPercent: 100, previousPercent: 60 });
+    // Ошибок нет — повторять нечего; чужая сессия — 404.
+    await as(s)
+      .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements', retry: retry.id })
+      .expect(409);
+    await as(other)
+      .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements', retry: first.id })
+      .expect(404);
+    // Сравнение — по режиму: игра про учёных считается отдельно.
+    const sci = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'scientists' }).expect(201)
+    ).body;
+    await answerAll(s, sci);
+    const sciResult = (await as(s).post(`/api/student/atlas-quiz/${sci.id}/finish`).expect(200)).body.result;
+    expect(sciResult.previousPercent).toBeNull();
+    expect(sciResult.families).toEqual([]);
   });
 
   it('decision А-5 the game «Кто этот учёный?»: 9 questions about the scientists, 2 or 4 options', async () => {

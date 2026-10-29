@@ -1,6 +1,17 @@
+import { randomInt } from 'node:crypto';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { and, asc, count, eq, inArray, isNull } from 'drizzle-orm';
-import { type AnswerDto, type Locale, normalizeAnswer, scorePercent } from '@syntara/shared';
+import { and, asc, desc, eq, inArray, isNull, ne } from 'drizzle-orm';
+import {
+  type AnswerDto,
+  HINT_LIMIT,
+  hintAllowed,
+  type HintDto,
+  type Locale,
+  normalizeAnswer,
+  pickHintRemovals,
+  scorePercent,
+  xpPercent,
+} from '@syntara/shared';
 import { type Database, schema } from '@syntara/db';
 import { ApiException } from '../../common/api-exception';
 import { pickTranslation } from '../../common/locale';
@@ -9,14 +20,21 @@ import { DB } from '../../infra/tokens';
 import { AssignmentsService } from '../assignments/assignments.service';
 import { VisibilityService } from '../content/visibility.service';
 import { GamificationService, quizEventKey } from '../gamification/gamification.service';
-import { type AnswerResultDto, type AttemptDto, type FinishResultDto } from './student-quiz.dto';
+import {
+  type AnswerResultDto,
+  type AttemptDto,
+  type FinishResultDto,
+  type HintResultDto,
+} from './student-quiz.dto';
 
 const { quizzes, questions, questionTranslations: qt, answerOptions, answerOptionTranslations: aot } = schema;
-const { quizAttempts: attempts, attemptAnswers, topics, topicMastery, learningEvents } = schema;
+const { quizAttempts: attempts, attemptAnswers, attemptHints, topics, topicMastery, learningEvents } = schema;
 
 const notFound = () => new ApiException(HttpStatus.NOT_FOUND, 'NOT_FOUND', 'Not found');
 const invalidTransition = () =>
   new ApiException(HttpStatus.CONFLICT, 'INVALID_TRANSITION', 'Attempt is not in progress');
+const hintConflict = (code: 'hintLimit' | 'hintUnavailable') =>
+  new ApiException(HttpStatus.CONFLICT, 'CONFLICT', 'Hint is not available', { hint: code });
 
 type Question = typeof questions.$inferSelect;
 type Attempt = typeof attempts.$inferSelect;
@@ -88,7 +106,7 @@ export class StudentQuizService {
     });
 
     const ids = list.map((q) => q.id);
-    const [translations, options, optionTr, answers] = await Promise.all([
+    const [translations, options, optionTr, answers, hints] = await Promise.all([
       this.db.select().from(qt).where(inArray(qt.questionId, ids)),
       this.db
         .select()
@@ -101,7 +119,9 @@ export class StudentQuizService {
         .innerJoin(answerOptions, eq(answerOptions.id, aot.optionId))
         .where(inArray(answerOptions.questionId, ids)),
       this.db.select().from(attemptAnswers).where(eq(attemptAnswers.attemptId, attempt.id)),
+      this.db.select().from(attemptHints).where(eq(attemptHints.attemptId, attempt.id)),
     ]);
+    const hinted = new Map(hints.map((h) => [h.questionId, h.removedOptionIds]));
 
     const answered: AttemptDto['answered'] = {};
     for (const a of answers) {
@@ -110,7 +130,7 @@ export class StudentQuizService {
       answered[a.questionId!] = {
         optionId: a.optionId,
         textAnswer: a.textAnswer,
-        ...this.result(q, a.isCorrect, options, translations, locale),
+        ...this.result(q, a.isCorrect, hinted.has(q.id), options, translations, locale),
       };
     }
     return {
@@ -137,7 +157,64 @@ export class StudentQuizService {
           })),
       })),
       answered,
+      // REQ-TST-04: подсказки «50/50» этой попытки — убранные варианты по id вопроса и сколько осталось.
+      hints: Object.fromEntries(hinted),
+      hintsLeft: Math.max(0, HINT_LIMIT - hints.length),
     };
+  }
+
+  /**
+   * API-S-28 (REQ-TST-04, BR-TST-01): подсказка «50/50» — сервер убирает два случайных неверных варианта и записывает
+   * это в попытку. Одна на вопрос (повторный запрос возвращает ту же), не больше трёх на попытку; только до ответа и
+   * только у выбора из 4 и более вариантов.
+   */
+  async hint(studentId: string, attemptId: string, dto: HintDto): Promise<HintResultDto> {
+    const attempt = await this.ownAttempt(studentId, attemptId);
+    if (attempt.status !== 'in_progress') throw invalidTransition();
+    await this.visibleQuiz(studentId, attempt.quizId);
+    const [question] = await this.db
+      .select()
+      .from(questions)
+      .where(
+        and(
+          eq(questions.id, dto.questionId),
+          eq(questions.quizId, attempt.quizId),
+          isNull(questions.archivedAt),
+        ),
+      );
+    if (!question) throw notFound();
+    return this.db.transaction(async (tx) => {
+      // Блокировка попытки: два одновременных запроса не превысят лимит.
+      await tx.select({ id: attempts.id }).from(attempts).where(eq(attempts.id, attemptId)).for('update');
+      const used = await tx.select().from(attemptHints).where(eq(attemptHints.attemptId, attemptId));
+      const existing = used.find((h) => h.questionId === question.id);
+      if (existing)
+        return {
+          questionId: question.id,
+          removedOptionIds: existing.removedOptionIds,
+          hintsLeft: Math.max(0, HINT_LIMIT - used.length),
+        };
+      const [answered] = await tx
+        .select({ id: attemptAnswers.questionId })
+        .from(attemptAnswers)
+        .where(and(eq(attemptAnswers.attemptId, attemptId), eq(attemptAnswers.questionId, question.id)));
+      if (answered) throw hintConflict('hintUnavailable');
+      if (used.length >= HINT_LIMIT) throw hintConflict('hintLimit');
+      const options = await tx
+        .select({ id: answerOptions.id, isCorrect: answerOptions.isCorrect })
+        .from(answerOptions)
+        .where(eq(answerOptions.questionId, question.id));
+      const correct = options.find((o) => o.isCorrect);
+      if (!correct || !hintAllowed(question.type, options.length, used.length))
+        throw hintConflict('hintUnavailable');
+      const removedOptionIds = pickHintRemovals(
+        options.map((o) => o.id),
+        correct.id,
+        randomInt,
+      );
+      await tx.insert(attemptHints).values({ attemptId, questionId: question.id, removedOptionIds });
+      return { questionId: question.id, removedOptionIds, hintsLeft: HINT_LIMIT - used.length - 1 };
+    });
   }
 
   /** API-S-08: проверка сразу после ответа; повторный ответ на тот же вопрос возвращает прежний результат. */
@@ -161,16 +238,21 @@ export class StudentQuizService {
         ),
       );
     if (!question) throw notFound();
-    const [options, translations] = await Promise.all([
+    const [options, translations, [hint]] = await Promise.all([
       this.db.select().from(answerOptions).where(eq(answerOptions.questionId, question.id)),
       this.db.select().from(qt).where(eq(qt.questionId, question.id)),
+      this.db
+        .select({ id: attemptHints.questionId })
+        .from(attemptHints)
+        .where(and(eq(attemptHints.attemptId, attemptId), eq(attemptHints.questionId, question.id))),
     ]);
+    const hinted = Boolean(hint);
 
     const [previous] = await this.db
       .select()
       .from(attemptAnswers)
       .where(and(eq(attemptAnswers.attemptId, attemptId), eq(attemptAnswers.questionId, question.id)));
-    if (previous) return this.result(question, previous.isCorrect, options, translations, locale);
+    if (previous) return this.result(question, previous.isCorrect, hinted, options, translations, locale);
 
     let correct: boolean;
     if (question.type === 'text_input') {
@@ -191,7 +273,7 @@ export class StudentQuizService {
         isCorrect: correct,
       })
       .onConflictDoNothing();
-    return this.result(question, correct, options, translations, locale);
+    return this.result(question, correct, hinted, options, translations, locale);
   }
 
   /**
@@ -218,25 +300,49 @@ export class StudentQuizService {
         .where(eq(attempts.id, attemptId))
         .for('update');
       if (locked?.status !== 'in_progress') throw invalidTransition();
-      const [correctRow] = current.length
-        ? await tx
-            .select({ n: count() })
-            .from(attemptAnswers)
-            .where(
-              and(
-                eq(attemptAnswers.attemptId, attemptId),
-                eq(attemptAnswers.isCorrect, true),
-                inArray(
-                  attemptAnswers.questionId,
-                  current.map((q) => q.id),
+      const [given, hints] = current.length
+        ? await Promise.all([
+            tx
+              .select({ questionId: attemptAnswers.questionId, correct: attemptAnswers.isCorrect })
+              .from(attemptAnswers)
+              .where(
+                and(
+                  eq(attemptAnswers.attemptId, attemptId),
+                  inArray(
+                    attemptAnswers.questionId,
+                    current.map((q) => q.id),
+                  ),
                 ),
               ),
-            )
-        : [{ n: 0 }];
-      const score = scorePercent(Number(correctRow?.n ?? 0), current.length);
+            tx
+              .select({ questionId: attemptHints.questionId })
+              .from(attemptHints)
+              .where(eq(attemptHints.attemptId, attemptId)),
+          ])
+        : [[], []];
+      const hinted = new Set(hints.map((h) => h.questionId));
+      const marked = given.map((a) => ({ correct: a.correct, hinted: hinted.has(a.questionId!) }));
+      // BR-QZ-05: верный с подсказкой — верный (освоение, задания); BR-TST-01: для XP он весит 0,5.
+      const score = scorePercent(marked.filter((a) => a.correct).length, current.length);
+      const forXp = xpPercent(marked, current.length);
+      // REQ-TST-05.2: прошлые завершённые попытки этой темы — лучший результат и разница с прошлой.
+      const prior = await tx
+        .select({ score: attempts.scorePercent })
+        .from(attempts)
+        .innerJoin(quizzes, eq(quizzes.id, attempts.quizId))
+        .where(
+          and(
+            eq(attempts.studentId, studentId),
+            eq(quizzes.topicId, quiz.topicId),
+            eq(attempts.status, 'finished'),
+            ne(attempts.id, attemptId),
+          ),
+        )
+        .orderBy(desc(attempts.finishedAt));
+      const priorScores = prior.map((p) => Number(p.score ?? 0));
       await tx
         .update(attempts)
-        .set({ status: 'finished', scorePercent: String(score), finishedAt: now })
+        .set({ status: 'finished', scorePercent: String(score), xpPercent: String(forXp), finishedAt: now })
         .where(eq(attempts.id, attemptId));
 
       const [before] = await tx
@@ -300,19 +406,27 @@ export class StudentQuizService {
         score,
         finishedAt: now,
       });
-      return { scorePercent: score, xpAwarded, badgesAwarded };
+      return {
+        scorePercent: score,
+        xpAwarded,
+        badgesAwarded,
+        bestPercent: Math.max(score, ...priorScores),
+        previousPercent: priorScores[0] ?? null,
+      };
     });
   }
 
   private result(
     question: Question,
     correct: boolean,
+    hinted: boolean,
     options: Array<typeof answerOptions.$inferSelect>,
     translations: Array<typeof qt.$inferSelect>,
     locale: Locale,
   ): AnswerResultDto {
     return {
       correct,
+      hinted,
       correctOptionId: options.find((o) => o.questionId === question.id && o.isCorrect)?.id ?? null,
       correctAnswer: question.type === 'text_input' ? question.textAnswer : null,
       explanation:

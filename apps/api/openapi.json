@@ -2982,6 +2982,63 @@
         ]
       }
     },
+    "/api/student/attempts/{id}/hint": {
+      "post": {
+        "operationId": "StudentQuizController_hint",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HintBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HintResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": "Объект не найден или принадлежит другому учителю"
+          },
+          "409": {
+            "description": "INVALID_TRANSITION: попытка завершена; hintLimit — 3 подсказки взяты; hintUnavailable — нельзя"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/api/student/attempts/{id}/finish": {
       "post": {
         "operationId": "StudentQuizController_finish",
@@ -6216,7 +6273,7 @@
             "description": ""
           },
           "409": {
-            "description": "quizEmpty: нет вопросов"
+            "description": "quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»)"
           }
         },
         "security": [
@@ -6321,6 +6378,53 @@
           },
           "409": {
             "description": "quizFinished: сессия завершена"
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/atlas-quiz/{sid}/hint": {
+      "post": {
+        "operationId": "StudentAtlasController_hint",
+        "parameters": [
+          {
+            "name": "sid",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasHintResultDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          },
+          "409": {
+            "description": "quizFinished | hintLimit (3 взяты) | hintUnavailable"
           }
         },
         "security": [
@@ -9454,6 +9558,10 @@
           "correct": {
             "type": "boolean"
           },
+          "hinted": {
+            "type": "boolean",
+            "description": "К вопросу взята подсказка «50/50» (REQ-TST-04): верный ответ весит для XP 0,5"
+          },
           "correctOptionId": {
             "type": "string",
             "format": "uuid",
@@ -9480,6 +9588,7 @@
         },
         "required": [
           "correct",
+          "hinted",
           "correctOptionId",
           "correctAnswer",
           "explanation",
@@ -9557,12 +9666,29 @@
               "$ref": "#/components/schemas/AnsweredDto"
             },
             "description": "Уже данные ответы незавершённой попытки (BR-QZ-06) по id вопроса"
+          },
+          "hints": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "description": "REQ-TST-04: взятые подсказки «50/50» — убранные варианты по id вопроса"
+          },
+          "hintsLeft": {
+            "type": "number",
+            "description": "Сколько подсказок «50/50» осталось в попытке (из 3)"
           }
         },
         "required": [
           "attemptId",
           "questions",
-          "answered"
+          "answered",
+          "hints",
+          "hintsLeft"
         ]
       },
       "AnswerBody": {
@@ -9591,6 +9717,10 @@
           "correct": {
             "type": "boolean"
           },
+          "hinted": {
+            "type": "boolean",
+            "description": "К вопросу взята подсказка «50/50» (REQ-TST-04): верный ответ весит для XP 0,5"
+          },
           "correctOptionId": {
             "type": "string",
             "format": "uuid",
@@ -9608,9 +9738,47 @@
         },
         "required": [
           "correct",
+          "hinted",
           "correctOptionId",
           "correctAnswer",
           "explanation"
+        ]
+      },
+      "HintBody": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "questionId"
+        ]
+      },
+      "HintResultDto": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "removedOptionIds": {
+            "description": "Два неверных варианта",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "hintsLeft": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "questionId",
+          "removedOptionIds",
+          "hintsLeft"
         ]
       },
       "AwardedBadgeDto": {
@@ -9642,12 +9810,23 @@
             "items": {
               "$ref": "#/components/schemas/AwardedBadgeDto"
             }
+          },
+          "bestPercent": {
+            "type": "number",
+            "description": "REQ-TST-05.2: лучший результат по теме с этой попыткой, %"
+          },
+          "previousPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "REQ-TST-05.2: результат прошлой завершённой попытки темы, %; null — это первая"
           }
         },
         "required": [
           "scorePercent",
           "xpAwarded",
-          "badgesAwarded"
+          "badgesAwarded",
+          "bestPercent",
+          "previousPercent"
         ]
       },
       "AssignmentBody": {
@@ -13167,10 +13346,30 @@
               "elements",
               "scientists"
             ]
+          },
+          "retry": {
+            "type": "string",
+            "format": "uuid",
+            "description": "REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — вопросы только по её ошибкам"
           }
         },
         "required": [
           "kind"
+        ]
+      },
+      "AtlasAnswerMarkDto": {
+        "type": "object",
+        "properties": {
+          "correct": {
+            "type": "boolean"
+          },
+          "hinted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "correct",
+          "hinted"
         ]
       },
       "AtlasQuizOptionDto": {
@@ -13212,13 +13411,52 @@
             "items": {
               "$ref": "#/components/schemas/AtlasQuizOptionDto"
             }
+          },
+          "removed": {
+            "description": "REQ-TST-04: варианты, убранные подсказкой «50/50» (пусто — подсказки нет)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "index",
           "difficulty",
           "text",
-          "options"
+          "options",
+          "removed"
+        ]
+      },
+      "AtlasFamilyScoreDto": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "type": "string",
+            "enum": [
+              "alkali_metal",
+              "alkaline_earth",
+              "transition_metal",
+              "post_transition",
+              "metalloid",
+              "nonmetal",
+              "halogen",
+              "noble_gas",
+              "lanthanide",
+              "actinide"
+            ]
+          },
+          "correct": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "family",
+          "correct",
+          "total"
         ]
       },
       "AtlasQuizMistakeDto": {
@@ -13233,12 +13471,49 @@
           },
           "description": {
             "type": "string"
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "number",
+            "nullable": true
+          },
+          "family": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "alkali_metal",
+              "alkaline_earth",
+              "transition_metal",
+              "post_transition",
+              "metalloid",
+              "nonmetal",
+              "halogen",
+              "noble_gas",
+              "lanthanide",
+              "actinide"
+            ]
+          },
+          "question": {
+            "type": "string",
+            "description": "Текст вопроса, как он был показан"
+          },
+          "selected": {
+            "type": "string",
+            "description": "Выбранный ответ"
           }
         },
         "required": [
           "code",
           "title",
-          "description"
+          "description",
+          "symbol",
+          "number",
+          "family",
+          "question",
+          "selected"
         ]
       },
       "AtlasQuizResultDto": {
@@ -13254,12 +13529,32 @@
             "type": "number",
             "description": "Целые проценты"
           },
+          "hinted": {
+            "type": "number",
+            "description": "REQ-TST-05.1: сколько верных — с подсказкой «50/50»"
+          },
           "xpAwarded": {
             "type": "number",
-            "description": "BR-XP-05: 1 XP за верный ответ, не больше дневного лимита"
+            "description": "BR-XP-05: 1 XP за верный ответ (с подсказкой — 0,5), не больше дневного лимита"
+          },
+          "bestPercent": {
+            "type": "number",
+            "description": "REQ-TST-05.2: лучший результат этого вида квиза, %"
+          },
+          "previousPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "REQ-TST-05.2: прошлая сессия, %; null — первая"
+          },
+          "families": {
+            "description": "REQ-TST-05.5: верно/всего по семействам (только квиз элементов)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtlasFamilyScoreDto"
+            }
           },
           "mistakes": {
-            "description": "«Рекомендуется повторить»",
+            "description": "Ошибки (REQ-TST-05.3)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AtlasQuizMistakeDto"
@@ -13270,7 +13565,11 @@
           "correct",
           "total",
           "percent",
+          "hinted",
           "xpAwarded",
+          "bestPercent",
+          "previousPercent",
+          "families",
           "mistakes"
         ]
       },
@@ -13305,6 +13604,17 @@
           "correct": {
             "type": "number"
           },
+          "answers": {
+            "description": "REQ-TST-02: полоса прогресса",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtlasAnswerMarkDto"
+            }
+          },
+          "hintsLeft": {
+            "type": "number",
+            "description": "REQ-TST-04: сколько подсказок «50/50» осталось (из 3)"
+          },
           "question": {
             "nullable": true,
             "description": "Текущий вопрос; null — все отвечены",
@@ -13333,6 +13643,8 @@
           "total",
           "answered",
           "correct",
+          "answers",
+          "hintsLeft",
           "question",
           "result"
         ]
@@ -13349,14 +13661,74 @@
           "optionId"
         ]
       },
+      "AtlasAnswerInfoDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Код элемента или учёного"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "number",
+            "nullable": true
+          },
+          "family": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "alkali_metal",
+              "alkaline_earth",
+              "transition_metal",
+              "post_transition",
+              "metalloid",
+              "nonmetal",
+              "halogen",
+              "noble_gas",
+              "lanthanide",
+              "actinide"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "description",
+          "symbol",
+          "number",
+          "family"
+        ]
+      },
       "AtlasQuizAnswerResultDto": {
         "type": "object",
         "properties": {
           "correct": {
             "type": "boolean"
           },
+          "hinted": {
+            "type": "boolean",
+            "description": "REQ-TST-04: ответ дан с подсказкой «50/50»"
+          },
           "correctOptionId": {
             "type": "string"
+          },
+          "answer": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AtlasAnswerInfoDto"
+              }
+            ]
           },
           "next": {
             "nullable": true,
@@ -13371,8 +13743,29 @@
         },
         "required": [
           "correct",
+          "hinted",
           "correctOptionId",
+          "answer",
           "next"
+        ]
+      },
+      "AtlasHintResultDto": {
+        "type": "object",
+        "properties": {
+          "removedOptionIds": {
+            "description": "Два неверных варианта",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "hintsLeft": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "removedOptionIds",
+          "hintsLeft"
         ]
       },
       "PreviewQuestionDto": {
@@ -13400,10 +13793,10 @@
             "description": "Номер правильного варианта в options — проверка в браузере учителя"
           },
           "answer": {
-            "description": "Правильный ответ — для «Рекомендуется повторить»",
+            "description": "Правильный ответ — объяснение и «Открыть урок»",
             "allOf": [
               {
-                "$ref": "#/components/schemas/AtlasQuizMistakeDto"
+                "$ref": "#/components/schemas/AtlasAnswerInfoDto"
               }
             ]
           }

@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { MASTERY_THRESHOLD } from '@syntara/shared';
+import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import {
@@ -11,40 +10,73 @@ import {
   type TeacherTest as TeacherTestDto,
   teacherAttempt,
   teacherEngine,
-  type TestEngine,
+  topicSource,
 } from '../../learn/test-engine';
 import { GuestInvite, PreviewNote, useAtlasViewer } from './gate';
+import { AtlasTestRun, type AtlasTestPlacement } from './test-view';
 
 type Attempt = components['schemas']['AttemptDto'];
-type Result = components['schemas']['AnswerResultDto'];
-type Finish = components['schemas']['FinishResultDto'];
 
-/** Автопереход к следующему вопросу — как в помощнике атласа (LearningAssistant.js). */
-const NEXT_MS = 1500;
+/** Где идёт тест темы атласа: «Открыть урок →» — окно элемента или раздел учёного; цвет свечения — цвет элемента. */
+export interface TopicTestPlace {
+  lessonHref: string;
+  /** «× Завершить» и «К уроку»: окно элемента (или экран «Учёные») без теста. */
+  backHref: string;
+  onExit: () => void;
+  accent?: string;
+}
 
 /**
- * Тест темы в стиле режима «Тест» помощника атласа (решения 4, А-3, А-5): «Вопрос 1 / 5», «Счёт», варианты-кнопки,
- * «Верно! / Неверно.», автопереход, итог «Тест завершен!». Движок — квиз платформы: попытки, XP (BR-XP-01),
- * прогресс и освоение (BR-QZ-06/07), задание учителя (assignmentId, Q-18); правильный ответ приходит только после
- * ответа (BR-QZ-01). Гостю — вход; учитель проходит тот же тест в режиме предпросмотра (API-T-34, решение владельца
- * 2026-10-28): проверка в браузере, ничего не записывается.
+ * Тест темы в стиле атласа (решения 4, А-3, А-5; docs/TESTS_TZ.md, REQ-TST-03.5): все три типа вопросов платформы —
+ * выбор варианта, «Верно/Неверно», ввод ответа. Движок — квиз платформы: попытки, XP (BR-XP-01, вес подсказки 0,5 —
+ * BR-TST-01), прогресс и освоение (BR-QZ-06/07), задание учителя (assignmentId, Q-18); правильный ответ приходит
+ * только после ответа (BR-QZ-01). Гостю — вход; учитель проходит тот же тест в режиме предпросмотра (API-T-34):
+ * проверка в браузере, ничего не записывается.
  */
 export function TopicTest({
   topicId,
   quizId,
   assignmentId,
+  place,
 }: {
   topicId: string;
   quizId: string | null;
   assignmentId?: string;
+  place: TopicTestPlace;
 }) {
   const viewer = useAtlasViewer();
   if (viewer === 'guest') return <GuestInvite />;
-  if (viewer === 'teacher') return <TeacherTest topicId={topicId} />;
-  return quizId ? <StudentTest quizId={quizId} assignmentId={assignmentId} /> : null;
+  if (viewer === 'teacher') return <TeacherTest topicId={topicId} place={place} />;
+  return quizId ? <StudentTest quizId={quizId} assignmentId={assignmentId} place={place} /> : null;
 }
 
-function StudentTest({ quizId, assignmentId }: { quizId: string; assignmentId?: string }) {
+const placement = (place: TopicTestPlace, exitSaved: boolean): AtlasTestPlacement => ({
+  back: 'toLesson',
+  backHref: place.backHref,
+  onExit: place.onExit,
+  exitSaved,
+});
+
+function Loading() {
+  const tq = useTranslations('student.quiz');
+  return (
+    <div className="typing-indicator" role="status" aria-label={tq('loading')}>
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
+function StudentTest({
+  quizId,
+  assignmentId,
+  place,
+}: {
+  quizId: string;
+  assignmentId?: string;
+  place: TopicTestPlace;
+}) {
   const tf = useTranslations('forms');
   const tq = useTranslations('student.quiz');
   const locale = useLocale();
@@ -66,33 +98,35 @@ function StudentTest({ quizId, assignmentId }: { quizId: string; assignmentId?: 
     gcTime: 0,
     refetchOnWindowFocus: false,
   });
-  if (attempt.isPending)
-    return (
-      <div className="typing-indicator" role="status" aria-label={tq('loading')}>
-        <span />
-        <span />
-        <span />
-      </div>
-    );
+  const data = attempt.data?.kind === 'ok' ? attempt.data.attempt : null;
+  const source = useMemo(
+    () => (data ? topicSource(data, studentEngine(data.attemptId, locale), place.lessonHref) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- источник — на попытку
+    [data],
+  );
+  if (attempt.isPending) return <Loading />;
   if (attempt.data?.kind === 'empty') return <p className="ai-placeholder">{tq('empty')}</p>;
-  if (!attempt.data)
+  if (!source)
     return (
       <p role="alert" className="ai-placeholder">
         {tf('serverError')}
       </p>
     );
   return (
-    <Run
-      key={attempt.data.attempt.attemptId}
-      attempt={attempt.data.attempt}
-      engine={studentEngine(attempt.data.attempt.attemptId, locale)}
+    <AtlasTestRun
+      key={data!.attemptId}
+      source={source}
+      // Незавершённая попытка продолжается при повторном входе (BR-QZ-06).
+      placement={placement(place, true)}
+      accent={place.accent}
       onRetry={() => setRound((r) => r + 1)}
+      testId="atlas-test"
     />
   );
 }
 
 /** Учитель: тот же тест с пометкой предпросмотра; вопросы с ответами — API-T-34. */
-function TeacherTest({ topicId }: { topicId: string }) {
+function TeacherTest({ topicId, place }: { topicId: string; place: TopicTestPlace }) {
   const t = useTranslations('atlas');
   const tf = useTranslations('forms');
   const tq = useTranslations('student.quiz');
@@ -108,183 +142,33 @@ function TeacherTest({ topicId }: { topicId: string }) {
     retry: false,
     refetchOnWindowFocus: false,
   });
+  const source = useMemo(
+    () =>
+      test.data ? topicSource(teacherAttempt(test.data), teacherEngine(test.data), place.lessonHref) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- новый раунд — новый источник
+    [test.data, round],
+  );
   return (
     <div data-testid="atlas-test-preview">
       <PreviewNote>{t('preview.note')}</PreviewNote>
       {test.isPending ? (
-        <div className="typing-indicator" role="status" aria-label={tq('loading')}>
-          <span />
-          <span />
-          <span />
-        </div>
-      ) : !test.data ? (
+        <Loading />
+      ) : !test.data || !source ? (
         <p role="alert" className="ai-placeholder">
           {tf('serverError')}
         </p>
       ) : test.data.questions.length === 0 ? (
         <p className="ai-placeholder">{tq('empty')}</p>
       ) : (
-        <Run
+        <AtlasTestRun
           key={round}
-          attempt={teacherAttempt(test.data)}
-          engine={teacherEngine(test.data)}
+          source={source}
+          placement={placement(place, false)}
+          accent={place.accent}
           onRetry={() => setRound((r) => r + 1)}
+          testId="atlas-test"
         />
       )}
-    </div>
-  );
-}
-
-function Run({ attempt, engine, onRetry }: { attempt: Attempt; engine: TestEngine; onRetry: () => void }) {
-  const t = useTranslations('atlas.assistant');
-  const tq = useTranslations('student.quiz');
-  const tf = useTranslations('forms');
-  const queryClient = useQueryClient();
-  const questions = attempt.questions;
-  const [answered, setAnswered] = useState(
-    attempt.answered as Record<string, Result & { optionId: string | null }>,
-  );
-  const [index, setIndex] = useState(() => {
-    const first = questions.findIndex((q) => !attempt.answered[q.id]);
-    return first === -1 ? questions.length - 1 : first;
-  });
-  const [finish, setFinish] = useState<Finish | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const timer = useRef(0);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  const score = questions.filter((q) => answered[q.id]?.correct).length;
-  const question = questions[index]!;
-  const result = answered[question.id];
-
-  async function complete() {
-    setBusy(true);
-    const res = await engine.finish(questions.filter((q) => answered[q.id]?.correct).length);
-    setBusy(false);
-    if (!res) return setFailed(true);
-    setFinish(res);
-    if (engine.preview) return;
-    // Хедер: XP и серия (API-S-16); статусы тем атласа.
-    await queryClient.invalidateQueries({ queryKey: ['me', 'stats'] });
-    await queryClient.invalidateQueries({ queryKey: ['atlas'] });
-  }
-
-  async function choose(optionId: string) {
-    if (busy || result) return;
-    setBusy(true);
-    const res = await engine.answer(question.id, { optionId });
-    setBusy(false);
-    if (!res) return setFailed(true);
-    setAnswered((prev) => ({ ...prev, [question.id]: { ...res, optionId } }));
-    timer.current = window.setTimeout(() => {
-      if (index < questions.length - 1) setIndex(index + 1);
-      else void complete();
-    }, NEXT_MS);
-  }
-
-  if (failed)
-    return (
-      <p role="alert" className="ai-placeholder">
-        {tf('serverError')}
-      </p>
-    );
-
-  if (finish) {
-    const total = questions.length;
-    return (
-      <div className="ai-quiz-results fade-in text-center" data-testid="atlas-test-result">
-        <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{t('finish')}</h3>
-        <div
-          className="score-circle"
-          style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--primary)', margin: '1rem 0' }}
-        >
-          {score}/{total}
-        </div>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          {Math.round(finish.scorePercent)}% {t('correctPct')}
-        </p>
-        {/* Учителю — без освоения и XP: ничего не записывается. */}
-        {engine.preview ? null : (
-          <>
-            <p
-              style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}
-              data-testid="atlas-test-mastery"
-            >
-              {finish.scorePercent >= MASTERY_THRESHOLD
-                ? tq('masteredYes')
-                : tq('masteredNo', { threshold: MASTERY_THRESHOLD })}
-            </p>
-            {/* BR-XP-01: «+N XP» — фактически начисленное (повтор без улучшения — +0 XP). */}
-            <p className="atlas-xp" data-testid="atlas-test-xp">
-              {tq('xp', { xp: finish.xpAwarded })}
-            </p>
-          </>
-        )}
-        {finish.badgesAwarded.length ? (
-          <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-            {tq('badges')}: {finish.badgesAwarded.map((b) => b.title).join(', ')}
-          </p>
-        ) : null}
-        <button
-          type="button"
-          className="ai-btn"
-          onClick={onRetry}
-          style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}
-        >
-          {t('tryAgain')}
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="ai-quiz fade-in" data-testid="atlas-test">
-      <div
-        className="ai-quiz-header"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-          fontSize: '0.9rem',
-          color: 'var(--text-secondary)',
-        }}
-      >
-        <span data-testid="atlas-test-progress">
-          {t('question')} {index + 1} / {questions.length}
-        </span>
-        <span>
-          {t('score')}: {score}
-        </span>
-      </div>
-      <p className="ai-quiz-question" id={`aq-${question.id}`}>
-        {question.text}
-      </p>
-      <div className="ai-quiz-options" role="group" aria-labelledby={`aq-${question.id}`}>
-        {question.options.map((o) => {
-          const chosen = result?.optionId === o.id;
-          const correct = result?.correctOptionId === o.id;
-          return (
-            <button
-              key={o.id}
-              type="button"
-              className={`ai-quiz-opt${result && correct ? ' correct' : ''}${result && chosen && !correct ? ' incorrect' : ''}`}
-              disabled={Boolean(result) || busy}
-              onClick={() => void choose(o.id)}
-              data-testid="atlas-test-option"
-            >
-              {o.text}
-            </button>
-          );
-        })}
-      </div>
-      <div
-        className="ai-quiz-feedback"
-        aria-live="polite"
-        style={{ color: result ? (result.correct ? 'var(--success)' : 'var(--accent-red)') : undefined }}
-      >
-        {result ? (result.correct ? t('correct') : t('incorrect')) : ''}
-      </div>
     </div>
   );
 }

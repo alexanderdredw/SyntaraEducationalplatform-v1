@@ -2241,5 +2241,65 @@
       "note": "Мұғалімнің алдын ала қарауы: нәтижелер жазылмайды",
       "ai": "Syntara AI оқушыларға кіргеннен кейін қолжетімді."
     }
+  },
+  "test": {
+    "progress": "{count} сұрақтың {index}-сі",
+    "panel": "Әрекет барысы",
+    "segments": "Әрекеттің жауаптары",
+    "segment": {
+      "correct": "{index}-сұрақ: дұрыс",
+      "hinted": "{index}-сұрақ: кеңеспен дұрыс",
+      "wrong": "{index}-сұрақ: қате",
+      "current": "{index}-сұрақ: ағымдағы",
+      "todo": "{index}-сұрақ: жауапсыз"
+    },
+    "streak": "Қатарынан: {count}",
+    "difficulty": {
+      "label": "Күрделілік",
+      "easy": "Жеңіл",
+      "medium": "Орташа",
+      "hard": "Күрделі",
+      "adaptive": "Күрделілік сіздің жауаптарыңызға қарай өзгереді"
+    },
+    "levelUp": "Керемет! Сұрақтар күрделене түседі",
+    "levelDown": "Сәл жеңілдетейік",
+    "hint": "50/50",
+    "hintLeft": "50/50 · {count} қалды",
+    "hintLabel": "50/50 кеңесі: екі қате нұсқаны алып тастау",
+    "hintUsed": "Кеңес: екі қате нұсқа алынып тасталды",
+    "removed": "кеңеспен алынып тасталды",
+    "correct": "Дұрыс",
+    "incorrect": "Қате",
+    "correctAnswer": "Дұрыс жауап: {answer}",
+    "openLesson": "Сабақты ашу →",
+    "next": "Әрі қарай",
+    "answer": "Жауап беру",
+    "answerLabel": "Сіздің жауабыңыз",
+    "keyboardHint": "1–4 немесе A–D пернелері — нұсқаны таңдау, Enter — жауап беру немесе «Әрі қарай»",
+    "trueFalseHint": "1 және 2 пернелері — таңдау, Enter — жауап беру",
+    "exit": "Аяқтау",
+    "exitTitle": "Тестті аяқтау керек пе?",
+    "exitLost": "Бұл әрекеттің барысы сақталмайды",
+    "exitSaved": "Жауаптар сақталды — тестті кейін жалғастыруға болады",
+    "exitCancel": "Тестті жалғастыру",
+    "explanation": "Бұл — {title} ({symbol}, № {number}, {family}). {description}",
+    "result": {
+      "title": "Нәтиже",
+      "chart": "Нәтиже: {percent}%",
+      "score": "{total} сұрақтың {correct}-і",
+      "hinted": "Кеңеспен: {count}",
+      "best": "Үздік нәтиже: {percent}%",
+      "delta": "Алдыңғы әрекетке {delta}",
+      "families": "Топтар бойынша",
+      "family": "{family}: {total} сұрақтың {correct}-і",
+      "mistakes": "Қателер",
+      "yours": "Сіздің жауабыңыз: {answer}",
+      "right": "Дұрыс жауап: {answer}",
+      "explanation": "Түсіндірме",
+      "retryMistakes": "Қателерді қайталау",
+      "retry": "Қайта өту",
+      "toLesson": "Сабаққа",
+      "toAtlas": "Атласқа"
+    }
   }
 }

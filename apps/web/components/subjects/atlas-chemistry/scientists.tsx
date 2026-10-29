@@ -6,7 +6,7 @@ import { initials, scientistDescription } from '@syntara/shared';
 import { useRouter } from '@/i18n/navigation';
 import { AppLink } from '../../app-link';
 import type { Lesson } from '../../lesson/lesson-view';
-import { SCIENTIST_LAYERS, useAtlasData, useAtlasLesson, useAtlasSubject } from './atlas-data';
+import { GROUP_COLORS, SCIENTIST_LAYERS, useAtlasData, useAtlasLesson, useAtlasSubject } from './atlas-data';
 import { AssistantBlock, type AssistantMode, DetailWindow } from './detail-window';
 import { AtlasQuiz } from './quiz';
 import { ScientistArticle, splitSources } from './lesson-text';
@@ -126,6 +126,13 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
                 topicId={topicId}
                 quizId={lesson.data?.quizId ?? null}
                 assignmentId={params.get('assignment') ?? undefined}
+                // «Открыть урок», «К уроку» и «× Завершить» — экран «Учёные» без теста.
+                place={{
+                  lessonHref: atlasHref(subjectId, 'scientists'),
+                  backHref: atlasHref(subjectId, 'scientists'),
+                  onExit: () => router.push(atlasHref(subjectId, 'scientists'), { scroll: false }),
+                  accent: GROUP_COLORS.scientist,
+                }}
               />
             </div>
           </div>

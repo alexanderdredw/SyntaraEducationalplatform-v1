@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { and, count, eq, inArray, isNotNull, isNull, sql, sum } from 'drizzle-orm';
 import {
+  atlasCredit,
   atlasQuizXp,
   badgeEarned,
   type Locale,
@@ -116,13 +117,15 @@ export class GamificationService {
       sql`SELECT pg_advisory_xact_lock(hashtext(${`quiz-xp:${event.studentId}:${event.topicId}`}))`,
     );
     const attemptId = event.idempotencyKey.replace(/^quiz:/, '');
+    // BR-TST-01: процент для XP (верный с подсказкой «50/50» весит 0,5); у попыток до 0017 — score_percent.
+    const forXp = sql<string | null>`coalesce(${quizAttempts.xpPercent}, ${quizAttempts.scorePercent})`;
     const [attempt] = await tx
-      .select({ score: quizAttempts.scorePercent })
+      .select({ score: forXp })
       .from(quizAttempts)
       .where(and(eq(quizAttempts.id, attemptId), eq(quizAttempts.studentId, event.studentId)));
     if (attempt?.score === null || attempt?.score === undefined) return 0;
     const [before] = await tx
-      .select({ best: sql<string | null>`max(${quizAttempts.scorePercent})` })
+      .select({ best: sql<string | null>`max(${forXp})` })
       .from(quizAttempts)
       .innerJoin(quizzes, eq(quizzes.id, quizAttempts.quizId))
       .where(
@@ -145,13 +148,14 @@ export class GamificationService {
   /**
    * BR-XP-05 (решение владельца А-11): за каждый правильный ответ квиза атласа (квиз «Проверь знания» и игра про
    * учёных) — atlas_quiz_per_correct XP, всего не больше atlas_quiz_daily_cap XP за день в PLATFORM_TZ. Блокировка
-   * по ученику: два одновременных завершения не превысят лимит.
+   * по ученику: два одновременных завершения не превысят лимит. BR-TST-01: верный ответ с подсказкой «50/50» весит
+   * 0,5 — засчитывается floor(сумма весов) ответов сессии.
    */
   private async atlasQuizAward(tx: Tx, event: LearningEvent, xp: XpConfig): Promise<number> {
     await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${`atlas-xp:${event.studentId}`}))`);
     const sessionId = event.idempotencyKey.replace(/^atlas-quiz:/, '');
     const [session] = await tx
-      .select({ correct: atlasQuizSessions.correctCount })
+      .select({ state: atlasQuizSessions.state })
       .from(atlasQuizSessions)
       .where(and(eq(atlasQuizSessions.id, sessionId), eq(atlasQuizSessions.studentId, event.studentId)));
     if (!session) return 0;
@@ -167,8 +171,10 @@ export class GamificationService {
           sql`(${xpLedger.createdAt} AT TIME ZONE ${tz})::date = ${today}::date`,
         ),
       );
+    const answers =
+      (session.state as { answers?: Array<{ correct: boolean; hinted?: boolean }> }).answers ?? [];
     return atlasQuizXp(
-      session.correct,
+      atlasCredit(answers.map((a) => ({ correct: a.correct, hinted: Boolean(a.hinted) }))),
       xp.atlas_quiz_per_correct ?? 1,
       xp.atlas_quiz_daily_cap ?? 20,
       Number(used?.total ?? 0),

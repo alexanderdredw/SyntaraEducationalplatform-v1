@@ -18,3 +18,4 @@ export * from './profile';
 export * from './format';
 export * from './periodic-table';
 export * from './atlas';
+export * from './test-run';

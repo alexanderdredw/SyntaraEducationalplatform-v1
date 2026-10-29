@@ -2241,5 +2241,65 @@
       "note": "Teacher preview: results are not saved",
       "ai": "Syntara AI is available to students after signing in."
     }
+  },
+  "test": {
+    "progress": "Question {index} of {count}",
+    "panel": "Attempt progress",
+    "segments": "Answers in this attempt",
+    "segment": {
+      "correct": "Question {index}: correct",
+      "hinted": "Question {index}: correct with a hint",
+      "wrong": "Question {index}: incorrect",
+      "current": "Question {index}: current",
+      "todo": "Question {index}: not answered"
+    },
+    "streak": "Streak: {count}",
+    "difficulty": {
+      "label": "Difficulty",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "adaptive": "Difficulty changes with your answers"
+    },
+    "levelUp": "Great! The questions are getting harder",
+    "levelDown": "Let's make it a bit easier",
+    "hint": "50/50",
+    "hintLeft": "50/50 · {count} left",
+    "hintLabel": "50/50 hint: remove two wrong options",
+    "hintUsed": "Hint: two wrong options removed",
+    "removed": "removed by the hint",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "correctAnswer": "Correct answer: {answer}",
+    "openLesson": "Open the lesson →",
+    "next": "Next",
+    "answer": "Answer",
+    "answerLabel": "Your answer",
+    "keyboardHint": "Keys 1–4 or A–D choose an option, Enter answers or goes «Next»",
+    "trueFalseHint": "Keys 1 and 2 choose, Enter answers",
+    "exit": "Finish",
+    "exitTitle": "Finish the test?",
+    "exitLost": "The progress of this attempt will not be saved",
+    "exitSaved": "Your answers are saved — you can continue the test later",
+    "exitCancel": "Continue the test",
+    "explanation": "This is {title} ({symbol}, No. {number}, {family}). {description}",
+    "result": {
+      "title": "Result",
+      "chart": "Result: {percent}%",
+      "score": "{correct} of {total}",
+      "hinted": "With a hint: {count}",
+      "best": "Best result: {percent}%",
+      "delta": "{delta} vs the previous attempt",
+      "families": "By family",
+      "family": "{family}: {correct} of {total}",
+      "mistakes": "Mistakes",
+      "yours": "Your answer: {answer}",
+      "right": "Correct answer: {answer}",
+      "explanation": "Explanation",
+      "retryMistakes": "Repeat mistakes",
+      "retry": "Try again",
+      "toLesson": "To the lesson",
+      "toAtlas": "To the atlas"
+    }
   }
 }

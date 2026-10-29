@@ -183,6 +183,7 @@ describe('student learning (integration)', () => {
       .expect(200);
     expect(res.body).toEqual({
       correct: false,
+      hinted: false,
       correctOptionId: q.options[0].id,
       correctAnswer: null,
       explanation: 'Объяснение 1',
@@ -447,6 +448,113 @@ describe('student learning (integration)', () => {
       lastActivityDate: '2020-01-01',
     });
     expect(await stats(fresh)).toEqual({ xpTotal: 30, streakDays: 0, continueTopicId: null });
+  });
+
+  /** Новый ученик в классе предмета (без кода — напрямую в базе). */
+  async function classmate(name: string): Promise<Session> {
+    const s = await newStudent(name);
+    await stack.db.insert(schema.classMemberships).values({ classId, studentId: s.userId });
+    return s;
+  }
+
+  it('API-S-28, REQ-TST-04, BR-TST-01 «50/50»: the server removes two wrong options, records it, one per question, 3 per attempt', async () => {
+    const { quizId: quiz } = await topicWithQuiz('Корни', 5, [
+      {
+        type: 'true_false',
+        difficulty: 'easy',
+        translations: { ru: { text: 'Корень — орган растения' } },
+        options: [
+          { translations: {}, isCorrect: true },
+          { translations: {}, isCorrect: false },
+        ],
+      },
+    ]);
+    const s = await classmate('learn.hint');
+    const attempt = (await as(s).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    expect(attempt.hintsLeft).toBe(3);
+    expect(attempt.hints).toEqual({});
+    const [q1, q2, q3, q4, q5, tf] = attempt.questions;
+    const hint = (q: { id: string }) =>
+      as(s).post(`/api/student/attempts/${attempt.attemptId}/hint`, { questionId: q.id });
+
+    const first = (await hint(q1).expect(200)).body;
+    expect(first).toMatchObject({ questionId: q1.id, hintsLeft: 2 });
+    expect(first.removedOptionIds).toHaveLength(2);
+    const removedTexts = q1.options
+      .filter((o: { id: string }) => first.removedOptionIds.includes(o.id))
+      .map((o: { text: string }) => o.text);
+    // Правильный вариант (….0) не убирается.
+    expect(removedTexts.some((t: string) => t.endsWith('.0'))).toBe(false);
+    // Повторный запрос к тому же вопросу — та же подсказка, лимит не тратится.
+    expect((await hint(q1).expect(200)).body).toEqual(first);
+    // «Верно/Неверно» — без подсказки (REQ-TST-04.4).
+    expect((await hint(tf).expect(409)).body.fieldErrors).toEqual({ hint: 'hintUnavailable' });
+    await hint(q2).expect(200);
+    // После ответа подсказку взять нельзя.
+    const right3 = q3.options.find((o: { text: string }) => o.text.endsWith('.0'))!;
+    await as(s)
+      .post(`/api/student/attempts/${attempt.attemptId}/answers`, { questionId: q3.id, optionId: right3.id })
+      .expect(200);
+    expect((await hint(q3).expect(409)).body.fieldErrors).toEqual({ hint: 'hintUnavailable' });
+    expect((await hint(q4).expect(200)).body.hintsLeft).toBe(0);
+    expect((await hint(q5).expect(409)).body.fieldErrors).toEqual({ hint: 'hintLimit' });
+
+    // Ответ на вопрос с подсказкой помечен; продолжение попытки возвращает подсказки (AC-ST-03).
+    const right1 = q1.options.find((o: { text: string }) => o.text.endsWith('.0'))!;
+    const answered = await as(s)
+      .post(`/api/student/attempts/${attempt.attemptId}/answers`, { questionId: q1.id, optionId: right1.id })
+      .expect(200);
+    expect(answered.body).toMatchObject({ correct: true, hinted: true });
+    const resumed = (await as(s).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    expect(resumed.attemptId).toBe(attempt.attemptId);
+    expect(resumed.hintsLeft).toBe(0);
+    expect(Object.keys(resumed.hints).sort()).toEqual([q1.id, q2.id, q4.id].sort());
+    expect(resumed.answered[q1.id]).toMatchObject({ correct: true, hinted: true });
+    expect(resumed.answered[q3.id]).toMatchObject({ correct: true, hinted: false });
+    // Убранный вариант нельзя «угадать» повторной подсказкой у чужой попытки: чужая → 404.
+    await as(outsider)
+      .post(`/api/student/attempts/${attempt.attemptId}/hint`, { questionId: q5.id })
+      .expect(404);
+  });
+
+  it('AC-TST-05, BR-TST-01, BR-XP-01 a correct answer with a hint counts as correct, but weighs 0.5 for XP; best and previous results', async () => {
+    const { id, quizId: quiz } = await topicWithQuiz('Стебли', 4);
+    const s = await classmate('learn.hintxp');
+    const attempt = (await as(s).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    // Два вопроса — с подсказкой, все четыре — верно.
+    for (const q of attempt.questions.slice(0, 2))
+      await as(s).post(`/api/student/attempts/${attempt.attemptId}/hint`, { questionId: q.id }).expect(200);
+    await answerAll(s, attempt, 4);
+    const first = (await as(s).post(`/api/student/attempts/${attempt.attemptId}/finish`).expect(200)).body;
+    // Результат и освоение — 100 % (верный с подсказкой — верный); XP = round(20 × (2 + 0,5 × 2) / 4) = 15.
+    expect(first).toMatchObject({
+      scorePercent: 100,
+      xpAwarded: 15,
+      bestPercent: 100,
+      previousPercent: null,
+    });
+    const [mastery] = await stack.db
+      .select()
+      .from(schema.topicMastery)
+      .where(and(eq(schema.topicMastery.studentId, s.userId), eq(schema.topicMastery.topicId, id)));
+    expect(mastery!.masteredAt).not.toBeNull();
+    const [row] = await stack.db
+      .select({ xp: schema.quizAttempts.xpPercent })
+      .from(schema.quizAttempts)
+      .where(eq(schema.quizAttempts.id, attempt.attemptId));
+    expect(row!.xp).toBe('75.00');
+
+    // Повтор без подсказок, 3 из 4 (75 %): прирост к лучшему XP-проценту (75 %) — 0; сравнение — с прошлой попыткой.
+    const again = (await as(s).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    await answerAll(s, again, 3);
+    const second = (await as(s).post(`/api/student/attempts/${again.attemptId}/finish`).expect(200)).body;
+    expect(second).toMatchObject({ scorePercent: 75, xpAwarded: 0, bestPercent: 100, previousPercent: 100 });
+    // Третья — 100 % без подсказок: +5 (20 − 15).
+    const third = (await as(s).post(`/api/student/quizzes/${quiz}/attempts`).expect(200)).body;
+    await answerAll(s, third, 4);
+    const done = (await as(s).post(`/api/student/attempts/${third.attemptId}/finish`).expect(200)).body;
+    expect(done).toMatchObject({ scorePercent: 100, xpAwarded: 5, bestPercent: 100, previousPercent: 75 });
+    expect((await stats(s)).xpTotal).toBe(20);
   });
 
   it('AC-AUTH-04, BR-CLS-03, REQ-TCH-PUB-05 unpublishing, revoking access or leaving the class hides the topic', async () => {

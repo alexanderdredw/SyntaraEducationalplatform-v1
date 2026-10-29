@@ -46,6 +46,29 @@ async function signInTeacher(page: Page, baseURL: string) {
   await page.context().addCookies(cookies.map(({ name, value }) => ({ name, value, url: baseURL })));
 }
 
+const progressText = (i: number, n: number) =>
+  ru.test.progress.replace('{index}', String(i)).replace('{count}', String(n));
+
+/**
+ * Пройти тест атласа (docs/TESTS_TZ.md, T1): «Вопрос k из N», первый доступный вариант, обратная связь, «Далее».
+ */
+async function passAtlasTest(page: Page, total: number): Promise<void> {
+  for (let i = 1; i <= total; i++) {
+    await expect(page.getByTestId('atest-progress')).toHaveText(progressText(i, total));
+    await page.locator('[data-testid="atest-option"]:not([aria-disabled])').first().click();
+    await expect(page.getByTestId('atest-feedback')).not.toBeEmpty();
+    // REQ-TST-01: правильный вариант подсвечен; переход — только по «Далее».
+    await expect(page.locator('[data-testid="atest-option"][data-state="correct"]')).toHaveCount(1);
+    await page.getByTestId('atest-next').click();
+  }
+}
+
+/** «{верные} из {всего}» на экране результата. */
+async function resultCorrect(page: Page, testId: string): Promise<number> {
+  const title = await page.getByTestId(testId).locator('.atest-result-title').textContent();
+  return Number(/(\d+)/.exec(title ?? '')![1]);
+}
+
 /** Модуль «Mendeleev Atlas» (docs/CHEM_TZ_2.md, docs/ATLAS_MAP.md). */
 test.describe('«Химия» — Mendeleev Atlas', () => {
   test.beforeEach(async ({ context, baseURL }) => acceptCookies(context, baseURL));
@@ -176,15 +199,11 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
       .toBe('started');
     await page.getByTestId('atlas-take-test').click();
     await expect(page).toHaveURL(/explore\/oxygen\/test$/);
-    for (let i = 1; i <= 5; i++) {
-      await expect(page.getByTestId('atlas-test-progress')).toContainText(`${i} / 5`);
-      await page.getByTestId('atlas-test-option').first().click();
-      await expect(page.locator('.ai-quiz-feedback')).not.toBeEmpty();
-    }
+    await passAtlasTest(page, 5);
     const result = page.getByTestId('atlas-test-result');
     await expect(result).toBeVisible({ timeout: 10_000 });
     // BR-XP-01: round(20 × правильные / 5) = 4 × правильные; +5 XP — первое открытие темы.
-    const correct = Number((await result.locator('.score-circle').textContent())!.split('/')[0]);
+    const correct = await resultCorrect(page, 'atlas-test-result');
     const xp = Number((await page.getByTestId('atlas-test-xp').textContent())!.replace(/\D/g, ''));
     expect(xp).toBe(4 * correct);
     const stats = await (await api.get('/api/me/stats')).json();
@@ -207,12 +226,7 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await page.goto(`${chem.base}/quiz`);
     await page.getByTestId('atlas-quiz-start').click();
     await expect(page).toHaveURL(/quiz\?session=/);
-    for (let i = 1; i <= 10; i++) {
-      await expect(page.getByTestId('atlas-quiz-progress')).toHaveText(
-        ru.atlas.quiz.progress.replace('{current}', String(i)).replace('{total}', '10'),
-      );
-      await page.getByTestId('atlas-quiz-option').first().click();
-    }
+    await passAtlasTest(page, 10);
     await expect(page.getByTestId('atlas-quiz-result')).toBeVisible({ timeout: 10_000 });
     const xp = Number((await page.getByTestId('atlas-quiz-xp').textContent())!.replace(/\D/g, ''));
     const stats = await (await api.get('/api/me/stats')).json();
@@ -297,24 +311,14 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await page.goto(`${chem.base}/quiz`);
     await page.getByTestId('atlas-quiz-start').click();
     await expect(page.getByTestId('atlas-quiz-preview')).toContainText(ru.atlas.preview.note);
-    for (let i = 1; i <= 10; i++) {
-      await expect(page.getByTestId('atlas-quiz-progress')).toHaveText(
-        ru.atlas.quiz.progress.replace('{current}', String(i)).replace('{total}', '10'),
-      );
-      await expect(page.getByTestId('atlas-quiz-question')).toHaveCount(1);
-      await page.getByTestId('atlas-quiz-option').first().click();
-    }
+    await expect(page.getByTestId('atest-question')).toHaveCount(1);
+    await passAtlasTest(page, 10);
     await expect(page.getByTestId('atlas-quiz-result')).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('atlas-quiz-xp')).toHaveCount(0);
 
     await page.goto(`${chem.base}/explore/oxygen/test`);
     await expect(page.getByTestId('atlas-test-preview')).toContainText(ru.atlas.preview.note);
-    for (let i = 1; i <= 5; i++) {
-      await expect(page.getByTestId('atlas-test-progress')).toContainText(`${i} / 5`);
-      await page.getByTestId('atlas-test-option').first().click();
-      await expect(page.locator('.ai-quiz-feedback')).not.toBeEmpty();
-      await expect(page.locator('.ai-quiz-opt.correct')).toHaveCount(1);
-    }
+    await passAtlasTest(page, 5);
     await expect(page.getByTestId('atlas-test-result')).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('atlas-test-xp')).toHaveCount(0);
     await expect(page.getByTestId('atlas-test-mastery')).toHaveCount(0);

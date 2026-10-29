@@ -6,14 +6,14 @@ import { useSearchParams } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { localDate } from '@syntara/shared';
 import { BookOpen, MessageCircle, PencilLine } from 'lucide-react';
-import { Pill, Skeleton, Tabs } from '@syntara/ui';
+import { cn, Pill, Skeleton, Tabs } from '@syntara/ui';
 import { apiRequest } from '@/lib/api/browser';
 import { loginEntryHref } from '@/lib/auth';
 import { LessonHeader, LessonOverview, type Lesson, NextTopicCard } from '../lesson/lesson-view';
 import type { LessonMarkdown } from '../markdown/lesson-markdown';
 import { lessonQueryKey } from './query-keys';
 import { LinkButton } from '../public/blocks';
-import { StudentQuiz, TeacherQuiz } from './quiz';
+import { type QuizPlacement, StudentQuiz, TeacherQuiz } from './quiz';
 import { TutorChatLoader } from './tutor-chat-loader';
 import { MY_CLASS_HREF } from '../cabinet/nav';
 import { useIsClassSubject, useReportSubject } from '../cabinet/nav-state';
@@ -122,10 +122,22 @@ export function LessonPage({
         </LinkButton>
       </div>
     );
+  // «Открыть урок →» и «К уроку» (REQ-TST-01, REQ-TST-05): вкладка «Обзор» этой темы; «× Завершить» — туда же.
+  const placement: QuizPlacement = {
+    lessonHref: `/learn/topics/${topicId}?tab=overview`,
+    onExit: () => {
+      select('overview');
+      window.scrollTo({ top: 0 });
+    },
+  };
   return (
     <article
       lang={data.locale}
-      className="mx-auto flex max-w-[1012px] flex-col gap-6 px-4 py-8"
+      // REQ-TST-06.1: на вкладке «Квиз» карточка теста шире (до ~1100 px).
+      className={cn(
+        'mx-auto flex flex-col gap-6 px-4 py-8',
+        tab === 'quiz' ? 'max-w-[1132px]' : 'max-w-[1012px]',
+      )}
       data-testid="lesson-page"
     >
       <LessonHeader
@@ -162,11 +174,15 @@ export function LessonPage({
             icon: <PencilLine />,
             // Учитель проходит тот же тест в режиме предпросмотра (решение владельца 2026-10-28).
             content: teacher ? (
-              <TeacherQuiz topicId={topicId} />
+              <TeacherQuiz topicId={topicId} placement={placement} />
             ) : guest ? (
               invite('quiz')
             ) : data.quizId ? (
-              <StudentQuiz quizId={data.quizId} assignmentId={params.get('assignment') ?? undefined} />
+              <StudentQuiz
+                quizId={data.quizId}
+                assignmentId={params.get('assignment') ?? undefined}
+                placement={placement}
+              />
             ) : null,
           },
           {

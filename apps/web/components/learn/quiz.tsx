@@ -1,36 +1,51 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Award, Check, X, Ellipsis } from 'lucide-react';
-import { Button, Card, cn, fieldClass, Pill, Skeleton } from '@syntara/ui';
-import { MASTERY_THRESHOLD } from '@syntara/shared';
+import { Award, Check, Flame, X } from 'lucide-react';
+import { Button, Card, cn, fieldClass, Modal, Pill, Skeleton } from '@syntara/ui';
+import { MASTERY_THRESHOLD, percentDelta, segmentState } from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
+import { AppLink } from '../app-link';
+import { studentEngine, type TeacherTest, teacherAttempt, teacherEngine, topicSource } from './test-engine';
 import {
-  studentEngine,
-  type TeacherTest,
-  teacherAttempt,
-  teacherEngine,
-  type TestEngine,
-} from './test-engine';
+  canHint,
+  type Difficulty,
+  type RunSource,
+  type RunSummary,
+  type TestRun,
+  useTestKeys,
+  useTestRun,
+} from './test-run';
 
 type Attempt = components['schemas']['AttemptDto'];
-type Result = components['schemas']['AnswerResultDto'];
-type Finish = components['schemas']['FinishResultDto'];
-type Answered = Result & { optionId: string | null; textAnswer: string | null };
 
 const LETTERS = 'ABCDEFGH';
 
+/** Встраивание теста темы в урок: «Открыть урок →», «К уроку» и «× Завершить» (REQ-TST-01, REQ-TST-05, REQ-TST-06). */
+export interface QuizPlacement {
+  lessonHref: string | null;
+  onExit: () => void;
+}
+
 /**
- * Квиз ученика (8.4.4, U05, SM-ATTEMPT): маркеры прогресса, сложность, «Вопрос {i} из {n}», варианты A–D
- * (radio-группа). После выбора — сразу «Верно»/«Неверно», правильный вариант и объяснение (BR-QZ-04);
- * правильный ответ приходит только после ответа (BR-QZ-01). Незавершённая попытка продолжается с первого
- * вопроса без ответа (AC-ST-03). В конце — «Результат: {score}%», XP и бейджи, «Пройти ещё раз». Учитель проходит
- * тот же тест (TeacherQuiz, решение владельца 2026-10-28).
+ * Квиз ученика (8.4.4, U05, SM-ATTEMPT; docs/TESTS_TZ.md, T1): «Ход попытки» — полоса из N делений, «Вопрос k из N»,
+ * серия, сложность, «50/50»; варианты A–D (radio-группа), клавиши 1–4 / A–D и Enter. После ответа — «Верно»/«Неверно»,
+ * правильный вариант, объяснение и «Открыть урок →»; дальше — «Далее» или Enter (BR-QZ-04); правильный ответ приходит
+ * только после ответа (BR-QZ-01). Незавершённая попытка продолжается (AC-ST-03). В конце — диаграмма, XP, лучший
+ * результат, ошибки, «Повторить ошибки», «Пройти ещё раз», «К уроку». Учитель проходит тот же тест (TeacherQuiz).
  */
-export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignmentId?: string }) {
+export function StudentQuiz({
+  quizId,
+  assignmentId,
+  placement,
+}: {
+  quizId: string;
+  assignmentId?: string;
+  placement: QuizPlacement;
+}) {
   const t = useTranslations('student.quiz');
   const tf = useTranslations('forms');
   const locale = useLocale();
@@ -55,25 +70,17 @@ export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignme
     gcTime: 0,
     refetchOnWindowFocus: false,
   });
+  const data = attempt.data?.kind === 'ok' ? attempt.data.attempt : null;
+  const source = useMemo(
+    () => (data ? topicSource(data, studentEngine(data.attemptId, locale), placement.lessonHref) : null),
+    // Источник — на попытку: смена языка перезапрашивает вопросы, ответы берутся с сервера.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data],
+  );
 
-  if (attempt.isPending) {
-    return (
-      // OPT-05 (О4-2а): форма и высота — как у вопроса (≈ 430 px: шапка, текст, 4 варианта, кнопка), футер не прыгает.
-      <div role="status" aria-busy="true" className="flex flex-col gap-5" data-testid="quiz-skeleton">
-        <span className="sr-only">{t('loading')}</span>
-        <Skeleton className="h-8 w-1/2" />
-        <Skeleton className="h-7 w-3/4" />
-        <div className="flex flex-col gap-3">
-          {[0, 1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-14" />
-          ))}
-        </div>
-        <Skeleton className="h-11 w-40" />
-      </div>
-    );
-  }
+  if (attempt.isPending) return <QuizSkeleton label={t('loading')} />;
   if (attempt.data?.kind === 'empty') return <p className="text-[var(--text-muted)]">{t('empty')}</p>;
-  if (!attempt.data) {
+  if (!source) {
     return (
       <p role="alert" className="text-[var(--danger-text)]">
         {tf('serverError')}
@@ -82,19 +89,38 @@ export function StudentQuiz({ quizId, assignmentId }: { quizId: string; assignme
   }
   return (
     <QuizRun
-      key={attempt.data.attempt.attemptId}
-      attempt={attempt.data.attempt}
-      engine={studentEngine(attempt.data.attempt.attemptId, locale)}
+      key={data!.attemptId}
+      source={source}
+      placement={placement}
+      // Незавершённая попытка продолжается при повторном входе (BR-QZ-06) — ответы не теряются.
+      exitSaved
       onRetry={() => setRound((r) => r + 1)}
     />
   );
 }
 
+function QuizSkeleton({ label }: { label: string }) {
+  return (
+    // OPT-05 (О4-2а): форма и высота — как у вопроса (≈ 430 px: шапка, текст, 4 варианта, кнопка), футер не прыгает.
+    <div role="status" aria-busy="true" className="flex flex-col gap-5" data-testid="quiz-skeleton">
+      <span className="sr-only">{label}</span>
+      <Skeleton className="h-8 w-1/2" />
+      <Skeleton className="h-7 w-3/4" />
+      <div className="flex flex-col gap-3">
+        {[0, 1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-14" />
+        ))}
+      </div>
+      <Skeleton className="h-11 w-40" />
+    </div>
+  );
+}
+
 /**
  * Тест темы для учителя (решение владельца 2026-10-28): тот же экран, что у ученика, с пометкой «Предпросмотр
- * учителя: результаты не записываются»; вопросы с ответами — API-T-34, проверка в браузере, без XP и записи.
+ * учителя: результаты не записываются»; вопросы с ответами — API-T-34, проверка и «50/50» в браузере, без XP и записи.
  */
-export function TeacherQuiz({ topicId }: { topicId: string }) {
+export function TeacherQuiz({ topicId, placement }: { topicId: string; placement: QuizPlacement }) {
   const t = useTranslations('student.quiz');
   const tf = useTranslations('forms');
   const locale = useLocale();
@@ -109,6 +135,15 @@ export function TeacherQuiz({ topicId }: { topicId: string }) {
     retry: false,
     refetchOnWindowFocus: false,
   });
+  const source = useMemo(
+    () =>
+      test.data
+        ? topicSource(teacherAttempt(test.data), teacherEngine(test.data), placement.lessonHref)
+        : null,
+    // Новый раунд — новый источник (новые подсказки и ответы).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [test.data, round],
+  );
   return (
     <div className="flex flex-col gap-3" data-testid="teacher-quiz">
       <p className="text-sm text-[var(--text-muted)]" data-testid="teacher-preview-note">
@@ -116,7 +151,7 @@ export function TeacherQuiz({ topicId }: { topicId: string }) {
       </p>
       {test.isPending ? (
         <Skeleton className="h-40" />
-      ) : !test.data ? (
+      ) : !test.data || !source ? (
         <p role="alert" className="text-[var(--danger-text)]">
           {tf('serverError')}
         </p>
@@ -125,8 +160,9 @@ export function TeacherQuiz({ topicId }: { topicId: string }) {
       ) : (
         <QuizRun
           key={round}
-          attempt={teacherAttempt(test.data)}
-          engine={teacherEngine(test.data)}
+          source={source}
+          placement={placement}
+          exitSaved={false}
           onRetry={() => setRound((r) => r + 1)}
         />
       )}
@@ -134,175 +170,197 @@ export function TeacherQuiz({ topicId }: { topicId: string }) {
   );
 }
 
-/** Прохождение одной попытки: состояние инициализируется из ответа API-S-07 (AC-ST-03). */
+/** Прохождение одной попытки — общий движок (test-run.ts) в оформлении платформы. */
 function QuizRun({
-  attempt,
-  engine,
+  source,
+  placement,
+  exitSaved,
   onRetry,
 }: {
-  attempt: Attempt;
-  engine: TestEngine;
+  source: RunSource;
+  placement: QuizPlacement;
+  exitSaved: boolean;
   onRetry: () => void;
 }) {
   const t = useTranslations('student.quiz');
+  const tt = useTranslations('test');
   const tf = useTranslations('forms');
+  const tc = useTranslations('common');
   const queryClient = useQueryClient();
-  const [answered, setAnswered] = useState(attempt.answered as Record<string, Answered>);
-  // Продолжаем с первого вопроса без ответа (если ответы даны на все — с последнего).
-  const [index, setIndex] = useState(() => {
-    const first = attempt.questions.findIndex((q) => !attempt.answered[q.id]);
-    return first === -1 ? attempt.questions.length - 1 : first;
-  });
-  const [state, setState] = useState<'ready' | 'failed' | 'finished'>('ready');
-  const [busy, setBusy] = useState(false);
-  const [text, setText] = useState('');
-  const [finish, setFinish] = useState<Finish | null>(null);
-  // Выбранный, но ещё не отправленный вариант (клавиатура); источник последнего действия — мышь или клавиши.
-  const [selected, setSelected] = useState<string | null>(null);
-  const pointer = useRef(false);
+  const run = useTestRun(source);
+  const [exit, setExit] = useState(false);
+  useTestKeys(run, run.phase === 'question' && !exit);
 
-  if (state === 'failed') {
+  // Хедер: XP и серия (API-S-16).
+  useEffect(() => {
+    if (run.phase === 'finished' && !run.preview)
+      void queryClient.invalidateQueries({ queryKey: ['me', 'stats'] });
+  }, [run.phase, run.preview, queryClient]);
+
+  if (run.phase === 'failed') {
     return (
       <p role="alert" className="text-[var(--danger-text)]">
         {tf('serverError')}
       </p>
     );
   }
+  if (run.phase === 'loading' || (run.phase === 'question' && !run.question))
+    return <QuizSkeleton label={t('loading')} />;
+  if (run.phase === 'finished' && run.summary)
+    return <QuizResult summary={run.summary} preview={run.preview} placement={placement} onRetry={onRetry} />;
 
-  if (state === 'finished' && finish) {
-    return (
-      <Card className="flex flex-col items-start gap-4 p-6" data-testid="quiz-result">
-        {/* Целые проценты, «N из M правильно» и порог освоения (решение владельца 2026-10-16, PH-38). */}
-        <h2 className="text-cabinet-title font-bold">
-          {t('result', { score: Math.round(finish.scorePercent) })}
-        </h2>
-        <p data-testid="quiz-correct-count">
-          {t('correctCount', {
-            correct: attempt.questions.filter((q) => answered[q.id]?.correct).length,
-            total: attempt.questions.length,
-          })}
-        </p>
-        {/* Учителю — без освоения и XP: ничего не записывается. */}
-        {engine.preview ? null : (
-          <>
-            <p
-              data-testid="quiz-mastery"
+  const question = run.question!;
+  return (
+    <section className="mx-auto flex w-full max-w-[1100px] flex-col gap-4" data-testid="student-quiz">
+      <div className="flex justify-end">
+        <Button variant="quiet" onClick={() => setExit(true)} data-testid="quiz-exit">
+          <X aria-hidden="true" className="size-4" />
+          {tt('exit')}
+        </Button>
+      </div>
+      <Modal
+        open={exit}
+        onOpenChange={setExit}
+        title={tt('exitTitle')}
+        description={exitSaved ? tt('exitSaved') : tt('exitLost')}
+        closeLabel={tc('close')}
+      >
+        <div className="flex flex-wrap justify-end gap-3">
+          <Button variant="secondary" onClick={() => setExit(false)}>
+            {tt('exitCancel')}
+          </Button>
+          <Button onClick={placement.onExit} data-testid="quiz-exit-confirm">
+            {tt('exit')}
+          </Button>
+        </div>
+      </Modal>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <RunPanel run={run} difficulty={question.difficulty} />
+        <div className="flex min-w-0 flex-col gap-5 lg:order-first">
+          <QuestionBody key={question.id} run={run} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * «Ход попытки» (REQ-TST-02, REQ-TST-06): на компьютере — колонка справа, на телефоне — компактная строка сверху.
+ * Полоса из N делений: зелёное — верно, жёлто-зелёное — верно с подсказкой, красное — неверно; текущее выделено.
+ */
+function RunPanel({ run, difficulty }: { run: TestRun; difficulty: Difficulty }) {
+  const t = useTranslations('student.quiz');
+  const tt = useTranslations('test');
+  const current = run.position;
+  return (
+    <aside
+      aria-label={tt('panel')}
+      className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 lg:flex-col lg:items-stretch lg:self-start"
+      data-testid="quiz-panel"
+    >
+      <h3 className="hidden text-sm font-semibold text-[var(--text-muted)] lg:block">{tt('panel')}</h3>
+      <ol aria-label={tt('segments')} className="flex w-full items-center gap-1" data-testid="quiz-segments">
+        {Array.from({ length: run.total }, (_, i) => {
+          const state = segmentState(run.marks[i], i === current);
+          return (
+            <li
+              key={i}
+              data-state={state}
+              aria-current={state === 'current' ? 'step' : undefined}
               className={cn(
-                'font-semibold',
-                finish.scorePercent >= MASTERY_THRESHOLD
-                  ? 'text-[var(--success-text)]'
-                  : 'text-[var(--text-muted)]',
+                'h-2 flex-1 rounded-full',
+                state === 'correct' && 'bg-[var(--success)]',
+                state === 'hinted' && 'bg-[var(--test-hinted)]',
+                state === 'wrong' && 'bg-[var(--danger)]',
+                state === 'current' && 'h-3 bg-[var(--accent)]',
+                state === 'todo' && 'bg-[var(--border-strong)]',
               )}
             >
-              {finish.scorePercent >= MASTERY_THRESHOLD
-                ? t('masteredYes')
-                : t('masteredNo', { threshold: MASTERY_THRESHOLD })}
-            </p>
-            {/* BR-XP-01: «+N XP» — фактически начисленное (повтор без улучшения — +0 XP). */}
-            <p className="text-lg font-semibold text-[var(--accent)]" data-testid="quiz-xp">
-              {t('xp', { xp: finish.xpAwarded })}
-            </p>
-          </>
-        )}
-        {finish.badgesAwarded.length ? (
-          <section className="flex flex-col gap-2" data-testid="quiz-badges">
-            <h3 className="font-semibold">{t('badges')}</h3>
-            <ul className="flex flex-wrap gap-2">
-              {finish.badgesAwarded.map((b) => (
-                <li key={b.code}>
-                  <Pill className="gap-2 border-[var(--warning)] py-2 text-sm">
-                    <Award aria-hidden="true" className="size-4 text-[var(--warning)]" />
-                    {b.title}
-                  </Pill>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-        <Button variant="primary-white" onClick={onRetry}>
-          {t('retry')}
-        </Button>
-      </Card>
-    );
-  }
-
-  const questions = attempt.questions;
-  const question = questions[index]!;
-  const result = answered[question.id];
-  const last = index === questions.length - 1;
-
-  async function submit(body: { optionId?: string; textAnswer?: string }) {
-    setBusy(true);
-    const res = await engine.answer(question.id, body);
-    setBusy(false);
-    if (res) {
-      setAnswered((prev) => ({
-        ...prev,
-        [question.id]: { ...res, optionId: body.optionId ?? null, textAnswer: body.textAnswer ?? null },
-      }));
-    } else setState('failed');
-  }
-
-  async function next() {
-    if (!last) {
-      setIndex(index + 1);
-      setText('');
-      setSelected(null);
-      return;
-    }
-    setBusy(true);
-    const res = await engine.finish(questions.filter((q) => answered[q.id]?.correct).length);
-    setBusy(false);
-    if (res) {
-      setFinish(res);
-      setState('finished');
-      // Хедер: XP и серия (API-S-16).
-      if (!engine.preview) await queryClient.invalidateQueries({ queryKey: ['me', 'stats'] });
-    } else setState('failed');
-  }
-
-  return (
-    <section className="flex flex-col gap-5" data-testid="student-quiz">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-6 pt-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <ol aria-label={t('progressLabel')} className="flex items-center gap-1.5">
-            {questions.map((q, i) => {
-              const a = answered[q.id];
-              return (
-                <li
-                  key={q.id}
-                  aria-current={i === index ? 'step' : undefined}
-                  className={cn(
-                    'h-2 rounded-full transition-all duration-200',
-                    i === index ? 'w-6' : 'w-2',
-                    a
-                      ? a.correct
-                        ? 'bg-[var(--success)]'
-                        : 'bg-[var(--danger)]'
-                      : i === index
-                        ? 'bg-[var(--accent)]'
-                        : 'bg-[var(--border-strong)]',
-                  )}
-                >
-                  <span className="sr-only">
-                    {i + 1}
-                    {a ? ` — ${a.correct ? t('correct') : t('incorrect')}` : ''}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-          <Pill data-testid="quiz-difficulty" className="text-[var(--text-muted)]">
-            <Ellipsis aria-hidden="true" className="size-3.5" />
-            {t(`difficulty.${question.difficulty}`)}
-          </Pill>
-        </div>
-        <Pill data-testid="quiz-progress" className="text-[var(--text-muted)]">
-          {t('progress', { index: index + 1, count: questions.length })}
+              <span className="sr-only">{tt(`segment.${state}`, { index: i + 1 })}</span>
+            </li>
+          );
+        })}
+      </ol>
+      <Pill data-testid="quiz-progress" className="text-[var(--text-muted)]">
+        {t('progress', { index: current + 1, count: run.total })}
+      </Pill>
+      {run.streak >= 2 ? (
+        <Pill data-testid="quiz-streak" className="gap-1.5 border-[var(--warning)]">
+          <Flame aria-hidden="true" className="size-3.5 text-[var(--warning)]" />
+          {tt('streak', { count: run.streak })}
         </Pill>
-      </div>
+      ) : null}
+      <DifficultyDots difficulty={difficulty} />
+      <HintButton run={run} />
+    </aside>
+  );
+}
 
-      <h2 className="pt-2 text-xl font-bold" id={`q-${question.id}`}>
+const DOTS: Record<Difficulty, number> = { easy: 1, medium: 2, hard: 3 };
+
+/** REQ-TST-02.4: сложность вопроса (easy/medium/hard из quiz.yaml) — три точки и подпись. */
+function DifficultyDots({ difficulty }: { difficulty: Difficulty }) {
+  const t = useTranslations('student.quiz');
+  const tt = useTranslations('test');
+  return (
+    <p className="flex items-center gap-2 text-sm" data-testid="quiz-difficulty-row">
+      <span className="flex gap-1" aria-hidden="true">
+        {[1, 2, 3].map((n) => (
+          <span
+            key={n}
+            className={cn(
+              'size-2 rounded-full',
+              n <= DOTS[difficulty] ? 'bg-[var(--accent)]' : 'bg-[var(--border-strong)]',
+            )}
+          />
+        ))}
+      </span>
+      <span className="sr-only">{tt('difficulty.label')}: </span>
+      <span data-testid="quiz-difficulty" className="text-[var(--text-muted)]">
+        {t(`difficulty.${difficulty}`)}
+      </span>
+    </p>
+  );
+}
+
+/** REQ-TST-04: «50/50 · осталось N»; какие варианты убрать, решает сервер (BR-TST-01). */
+function HintButton({ run }: { run: TestRun }) {
+  const tt = useTranslations('test');
+  const q = run.question;
+  if (!q || q.type !== 'single_choice' || q.options.length < 4) return null;
+  const enabled = canHint(q, run.hintsLeft, Boolean(run.result)) && !run.busy;
+  return (
+    <Button
+      variant="secondary"
+      className="lg:w-full"
+      disabled={!enabled}
+      aria-label={`${tt('hintLabel')}. ${tt('hintLeft', { count: run.hintsLeft })}`}
+      onClick={() => void run.hint()}
+      data-testid="quiz-hint"
+    >
+      {tt('hintLeft', { count: run.hintsLeft })}
+    </Button>
+  );
+}
+
+function QuestionBody({ run }: { run: TestRun }) {
+  const t = useTranslations('student.quiz');
+  const tt = useTranslations('test');
+  const question = run.question!;
+  const result = run.result;
+  const [text, setText] = useState('');
+  // Источник последнего действия — мышь (клик сразу отправляет ответ) или клавиатура (стрелки только выбирают).
+  const pointer = useRef(false);
+  const nextButton = useRef<HTMLButtonElement>(null);
+  // После ответа фокус — на «Далее»: Enter переходит к следующему вопросу.
+  useEffect(() => {
+    if (result) nextButton.current?.focus();
+  }, [result]);
+
+  const trueFalse = question.type === 'true_false';
+  return (
+    <>
+      <h2 className="pt-1 text-xl font-bold" id={`q-${question.id}`} data-testid="quiz-question-text">
         {question.text}
       </h2>
 
@@ -311,7 +369,7 @@ function QuizRun({
           className="flex flex-col gap-3 sm:flex-row"
           onSubmit={(e) => {
             e.preventDefault();
-            if (text.trim() && !result) void submit({ textAnswer: text });
+            if (text.trim() && !result) void run.submit({ textAnswer: text });
           }}
         >
           <label htmlFor={`answer-${question.id}`} className="sr-only">
@@ -321,14 +379,19 @@ function QuizRun({
             id={`answer-${question.id}`}
             value={result?.textAnswer ?? text}
             onChange={(e) => setText(e.target.value)}
-            disabled={Boolean(result) || busy}
+            disabled={Boolean(result) || run.busy}
             placeholder={t('answerLabel')}
             maxLength={300}
-            className={cn(fieldClass, 'sm:flex-1')}
+            className={cn(
+              fieldClass,
+              'sm:flex-1',
+              result && (result.correct ? 'border-[var(--success)]' : 'test-shake border-[var(--danger)]'),
+            )}
+            data-state={result ? (result.correct ? 'correct' : 'wrong') : 'idle'}
           />
           <Button
             type="submit"
-            disabled={Boolean(result) || busy || !text.trim()}
+            disabled={Boolean(result) || run.busy || !text.trim()}
             className="sm:min-h-[var(--field-h)]"
           >
             {t('answer')}
@@ -339,62 +402,80 @@ function QuizRun({
           role="radiogroup"
           aria-labelledby={`q-${question.id}`}
           aria-describedby={`hint-${question.id}`}
-          className="flex flex-col gap-2"
+          className={cn('grid gap-2', trueFalse && 'grid-cols-2 gap-3')}
         >
           <p id={`hint-${question.id}`} className="sr-only">
-            {t('keyboardHint')}
+            {t('keyboardHint')}. {trueFalse ? tt('trueFalseHint') : tt('keyboardHint')}
           </p>
           {question.options.map((o, i) => {
             const chosen = result?.optionId === o.id;
             const correct = result?.correctOptionId === o.id;
+            const removed = question.removed.includes(o.id);
+            const state = result
+              ? correct
+                ? 'correct'
+                : chosen
+                  ? 'wrong'
+                  : 'idle'
+              : removed
+                ? 'removed'
+                : 'idle';
             return (
               <label
                 key={o.id}
                 data-testid="quiz-option"
+                data-state={state}
                 // Мышь: клик по варианту сразу отправляет ответ (решение владельца 2026-10-16).
                 onPointerDown={() => {
                   pointer.current = true;
                 }}
-                data-state={result ? (correct ? 'correct' : chosen ? 'wrong' : 'idle') : 'idle'}
                 className={cn(
-                  'flex min-h-[46px] items-center gap-3 rounded-[14px] border bg-[var(--surface)] px-4 py-2 text-[15px] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--accent)]',
-                  result
-                    ? correct
-                      ? 'border-[var(--success)]'
-                      : chosen
-                        ? 'border-[var(--danger)]'
-                        : 'border-[var(--border)]'
-                    : 'cursor-pointer border-[var(--border)] hover:border-[var(--border-strong)]',
+                  'flex items-center gap-3 rounded-[14px] border bg-[var(--surface)] px-4 py-2 text-[15px] transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[var(--accent)]',
+                  trueFalse ? 'min-h-[72px] justify-center text-lg font-semibold' : 'min-h-[46px]',
+                  state === 'correct' && 'test-glow border-[var(--success)] bg-[var(--success)]/10',
+                  state === 'wrong' && 'test-shake border-[var(--danger)] bg-[var(--danger)]/10',
+                  state === 'removed' && 'cursor-not-allowed border-dashed border-[var(--border)] opacity-40',
+                  state === 'idle' &&
+                    (result
+                      ? 'border-[var(--border)] opacity-70'
+                      : run.selected === o.id
+                        ? 'cursor-pointer border-[var(--accent)] bg-[var(--accent)]/10'
+                        : 'cursor-pointer border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--field)]'),
                 )}
               >
                 <input
                   type="radio"
                   name={`answer-${question.id}`}
                   value={o.id}
-                  checked={result ? chosen : selected === o.id}
-                  disabled={Boolean(result) || busy}
+                  data-option-id={o.id}
+                  checked={result ? chosen : run.selected === o.id}
+                  disabled={Boolean(result) || run.busy || removed}
                   // Клавиатура: стрелки только перемещают выбор; Enter или пробел — ответ.
-                  onChange={() => setSelected(o.id)}
+                  onChange={() => run.setSelected(o.id)}
                   onClick={() => {
-                    if (pointer.current) void submit({ optionId: o.id });
+                    if (pointer.current) void run.submit({ optionId: o.id });
                     pointer.current = false;
                   }}
                   onKeyDown={(e) => {
                     pointer.current = false;
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      void submit({ optionId: o.id });
+                      void run.submit({ optionId: o.id });
                     }
                   }}
                   className="sr-only"
                 />
                 <span
                   aria-hidden="true"
-                  className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-[10px] text-[var(--text-muted)]"
+                  className={cn(
+                    'inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--field)] text-xs font-semibold text-[var(--text-muted)]',
+                    trueFalse && 'hidden',
+                  )}
                 >
                   {LETTERS[i]}
                 </span>
-                <span className="flex-1">{o.text}</span>
+                <span className={cn(!trueFalse && 'flex-1', removed && 'line-through')}>{o.text}</span>
+                {removed ? <span className="sr-only">({tt('removed')})</span> : null}
                 {result && correct ? (
                   <Check aria-hidden="true" className="size-4 text-[var(--success-text)]" />
                 ) : null}
@@ -411,8 +492,8 @@ function QuizRun({
         <div>
           <Button
             variant="secondary"
-            disabled={!selected || busy}
-            onClick={() => selected && void submit({ optionId: selected })}
+            disabled={!run.selected || run.busy}
+            onClick={() => run.selected && void run.submit({ optionId: run.selected })}
             data-testid="quiz-answer"
           >
             {t('answer')}
@@ -421,6 +502,7 @@ function QuizRun({
       ) : null}
 
       <div aria-live="polite" data-testid="quiz-feedback">
+        {question.removed.length && !result ? <p className="sr-only">{tt('hintUsed')}</p> : null}
         {result ? (
           <Card
             className={cn(
@@ -440,17 +522,193 @@ function QuizRun({
               <p>{t('correctAnswer', { answer: result.correctAnswer })}</p>
             ) : null}
             {result.explanation ? <p className="text-[var(--text-muted)]">{result.explanation}</p> : null}
+            {result.lessonHref ? (
+              <AppLink
+                href={result.lessonHref}
+                className="self-start text-sm font-semibold text-[var(--accent)] hover:underline"
+                data-testid="quiz-open-lesson"
+              >
+                {tt('openLesson')}
+              </AppLink>
+            ) : null}
           </Card>
         ) : null}
       </div>
 
       {result ? (
         <div>
-          <Button onClick={() => void next()} disabled={busy} data-testid="quiz-next">
+          <Button ref={nextButton} onClick={run.next} disabled={run.busy} data-testid="quiz-next">
             {t('next')}
           </Button>
         </div>
       ) : null}
-    </section>
+    </>
+  );
+}
+
+/** REQ-TST-05: круговая диаграмма, «+N XP», с подсказкой, сравнение с прошлым, ошибки и действия. */
+function QuizResult({
+  summary,
+  preview,
+  placement,
+  onRetry,
+}: {
+  summary: RunSummary;
+  preview: boolean;
+  placement: QuizPlacement;
+  onRetry: () => void;
+}) {
+  const t = useTranslations('student.quiz');
+  const tt = useTranslations('test');
+  const delta = percentDelta(summary.percent, summary.previousPercent);
+  return (
+    <Card className="mx-auto flex w-full max-w-[1100px] flex-col gap-6 p-6" data-testid="quiz-result">
+      <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+        <ScoreRing percent={summary.percent} label={tt('result.chart', { percent: summary.percent })} />
+        <div className="flex flex-col gap-2">
+          {/* Целые проценты, «N из M правильно» и порог освоения (решение владельца 2026-10-16, PH-38). */}
+          <h2 className="text-cabinet-title font-bold">{t('result', { score: summary.percent })}</h2>
+          <p data-testid="quiz-correct-count">
+            {t('correctCount', { correct: summary.correct, total: summary.total })}
+          </p>
+          {summary.hinted ? (
+            <p className="text-sm text-[var(--text-muted)]" data-testid="quiz-hinted">
+              {tt('result.hinted', { count: summary.hinted })}
+            </p>
+          ) : null}
+          {/* Учителю — без освоения, XP и сравнения: ничего не записывается. */}
+          {preview ? null : (
+            <>
+              <p
+                data-testid="quiz-mastery"
+                className={cn(
+                  'font-semibold',
+                  summary.mastered ? 'text-[var(--success-text)]' : 'text-[var(--text-muted)]',
+                )}
+              >
+                {summary.mastered ? t('masteredYes') : t('masteredNo', { threshold: MASTERY_THRESHOLD })}
+              </p>
+              {/* BR-XP-01: «+N XP» — фактически начисленное (повтор без улучшения — +0 XP). */}
+              <p className="text-lg font-semibold text-[var(--accent)]" data-testid="quiz-xp">
+                {t('xp', { xp: summary.xpAwarded })}
+              </p>
+              <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm" data-testid="quiz-compare">
+                {summary.bestPercent !== null ? (
+                  <span>{tt('result.best', { percent: summary.bestPercent })}</span>
+                ) : null}
+                {delta !== null ? (
+                  <span
+                    className={cn(
+                      delta > 0 && 'text-[var(--success-text)]',
+                      delta < 0 && 'text-[var(--danger-text)]',
+                    )}
+                  >
+                    {tt('result.delta', { delta: `${delta >= 0 ? '+' : ''}${delta}` })}
+                  </span>
+                ) : null}
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+      {summary.badges.length ? (
+        <section className="flex flex-col gap-2" data-testid="quiz-badges">
+          <h3 className="font-semibold">{t('badges')}</h3>
+          <ul className="flex flex-wrap gap-2">
+            {summary.badges.map((b) => (
+              <li key={b.code}>
+                <Pill className="gap-2 border-[var(--warning)] py-2 text-sm">
+                  <Award aria-hidden="true" className="size-4 text-[var(--warning)]" />
+                  {b.title}
+                </Pill>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {summary.mistakes.length ? (
+        <section className="flex flex-col gap-3" data-testid="quiz-mistakes">
+          <h3 className="font-semibold">{tt('result.mistakes')}</h3>
+          <ul className="flex flex-col gap-3">
+            {summary.mistakes.map((m, i) => (
+              <li key={i} className="flex flex-col gap-1 rounded-[14px] border border-[var(--border)] p-4">
+                <p className="font-medium">{m.question}</p>
+                <p className="text-sm text-[var(--danger-text)]">{tt('result.yours', { answer: m.yours })}</p>
+                <p className="text-sm text-[var(--success-text)]">
+                  {tt('result.right', { answer: m.correct })}
+                </p>
+                {m.explanation ? (
+                  <details className="text-sm">
+                    <summary className="cursor-pointer text-[var(--text-muted)]">
+                      {tt('result.explanation')}
+                    </summary>
+                    <p className="mt-1">{m.explanation}</p>
+                  </details>
+                ) : null}
+                {m.href ? (
+                  <AppLink
+                    href={m.href}
+                    className="self-start text-sm font-semibold text-[var(--accent)] hover:underline"
+                  >
+                    {tt('openLesson')}
+                  </AppLink>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      <div className="flex flex-wrap gap-3">
+        {/* REQ-TST-05.4: тест темы — «Повторить ошибки» начинает новую попытку той же темы. */}
+        {summary.mistakes.length ? (
+          <Button variant="primary-white" onClick={onRetry} data-testid="quiz-retry-mistakes">
+            {tt('result.retryMistakes')}
+          </Button>
+        ) : null}
+        <Button variant={summary.mistakes.length ? 'secondary' : 'primary-white'} onClick={onRetry}>
+          {t('retry')}
+        </Button>
+        <Button variant="quiet" onClick={placement.onExit} data-testid="quiz-to-lesson">
+          {tt('result.toLesson')}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
+/** Круговая диаграмма процента (REQ-TST-05.1). */
+function ScoreRing({ percent, label }: { percent: number; label: string }) {
+  const r = 52;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      className="size-32 shrink-0"
+      role="img"
+      aria-label={label}
+      data-testid="quiz-ring"
+    >
+      <circle cx="60" cy="60" r={r} fill="none" stroke="var(--border-strong)" strokeWidth="10" />
+      <circle
+        cx="60"
+        cy="60"
+        r={r}
+        fill="none"
+        stroke={percent >= 80 ? 'var(--success)' : percent >= 50 ? 'var(--warning)' : 'var(--danger)'}
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeDasharray={`${(c * percent) / 100} ${c}`}
+        transform="rotate(-90 60 60)"
+      />
+      <text
+        x="60"
+        y="60"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="fill-[var(--text)] text-[26px] font-bold"
+      >
+        {percent}%
+      </text>
+    </svg>
   );
 }

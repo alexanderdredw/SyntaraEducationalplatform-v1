@@ -2241,5 +2241,65 @@
       "note": "Предпросмотр учителя: результаты не записываются",
       "ai": "Syntara AI доступен ученикам после входа."
     }
+  },
+  "test": {
+    "progress": "Вопрос {index} из {count}",
+    "panel": "Ход попытки",
+    "segments": "Ответы попытки",
+    "segment": {
+      "correct": "Вопрос {index}: верно",
+      "hinted": "Вопрос {index}: верно с подсказкой",
+      "wrong": "Вопрос {index}: неверно",
+      "current": "Вопрос {index}: текущий",
+      "todo": "Вопрос {index}: без ответа"
+    },
+    "streak": "Серия: {count}",
+    "difficulty": {
+      "label": "Сложность",
+      "easy": "Лёгкий",
+      "medium": "Средний",
+      "hard": "Сложный",
+      "adaptive": "Сложность меняется по вашим ответам"
+    },
+    "levelUp": "Отлично! Вопросы становятся сложнее",
+    "levelDown": "Сделаем чуть проще",
+    "hint": "50/50",
+    "hintLeft": "50/50 · осталось {count}",
+    "hintLabel": "Подсказка 50/50: убрать два неверных варианта",
+    "hintUsed": "Подсказка: два неверных варианта убраны",
+    "removed": "убран подсказкой",
+    "correct": "Верно",
+    "incorrect": "Неверно",
+    "correctAnswer": "Правильный ответ: {answer}",
+    "openLesson": "Открыть урок →",
+    "next": "Далее",
+    "answer": "Ответить",
+    "answerLabel": "Ваш ответ",
+    "keyboardHint": "Клавиши 1–4 или A–D — выбор варианта, Enter — ответить или «Далее»",
+    "trueFalseHint": "Клавиши 1 и 2 — выбор, Enter — ответить",
+    "exit": "Завершить",
+    "exitTitle": "Завершить тест?",
+    "exitLost": "Прогресс этой попытки не сохранится",
+    "exitSaved": "Ответы сохранены — тест можно продолжить позже",
+    "exitCancel": "Продолжить тест",
+    "explanation": "Это {title} ({symbol}, № {number}, {family}). {description}",
+    "result": {
+      "title": "Результат",
+      "chart": "Результат: {percent}%",
+      "score": "{correct} из {total}",
+      "hinted": "С подсказкой: {count}",
+      "best": "Лучший результат: {percent}%",
+      "delta": "{delta} к прошлой попытке",
+      "families": "По семействам",
+      "family": "{family}: {correct} из {total}",
+      "mistakes": "Ошибки",
+      "yours": "Ваш ответ: {answer}",
+      "right": "Верный ответ: {answer}",
+      "explanation": "Объяснение",
+      "retryMistakes": "Повторить ошибки",
+      "retry": "Пройти ещё раз",
+      "toLesson": "К уроку",
+      "toAtlas": "К атласу"
+    }
   }
 }
