@@ -40,6 +40,13 @@ export const AtlasQuizAnswerDto = z
   });
 export type AtlasQuizAnswerDto = z.infer<typeof AtlasQuizAnswerDto>;
 
+/** BR-SCI-01 (docs/SCIENTISTS_TZ.md, REQ-SCI-04): отметка «Изучено» раздела урока (учёного). */
+export const SectionStudiedDto = z.object({ studied: z.boolean('required') });
+export type SectionStudiedDto = z.infer<typeof SectionStudiedDto>;
+
+/** REQ-SCI-04.3: приглашение «проверьте себя» — с этого числа изученных учёных. */
+export const SCIENTISTS_INVITE_FROM = 3;
+
 export type AtlasDifficulty = 'easy' | 'medium' | 'hard';
 
 /**

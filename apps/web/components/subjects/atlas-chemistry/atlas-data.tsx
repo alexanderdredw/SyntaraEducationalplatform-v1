@@ -98,13 +98,3 @@ export const GROUP_COLORS: Record<string, string> = {
   actinide: '#34D399',
   scientist: '#FDE047',
 };
-
-/** Слои элемента и учёного (одинаковые у всех, `layers` в данных атласа) — чипы окна. */
-export const ELEMENT_LAYERS = [
-  'atomic_structure',
-  'electron_shells',
-  'physical_properties',
-  'chemical_properties',
-  'applications',
-] as const;
-export const SCIENTIST_LAYERS = ['biography', 'discovery', 'impact', 'ai_bridge'] as const;

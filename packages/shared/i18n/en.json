@@ -2138,7 +2138,8 @@
       "layers": "Layers",
       "resources": "External Resources",
       "explore": "Explore",
-      "takeTest": "Take the test"
+      "takeTest": "Take the test",
+      "tabs": "Lesson sections"
     },
     "layer": {
       "atomic_structure": "Atomic Structure",
@@ -2270,6 +2271,52 @@
     "preview": {
       "note": "Teacher preview: results are not saved",
       "ai": "Syntara AI is available to students after signing in."
+    },
+    "sci": {
+      "lifelines": "Lifelines",
+      "century": {
+        "c18": "18th century",
+        "c19": "19th century",
+        "c20": "20th century"
+      },
+      "row": "{name}, {from}–{to}, {year} — {discovery}",
+      "lived": "{from}–{to}",
+      "open": "Open →",
+      "studiedMark": "Studied",
+      "studiedCount": "Studied {count} of {total}",
+      "markStudied": "Mark as studied",
+      "studiedDone": "Studied ✓",
+      "panel": {
+        "title": "Test yourself",
+        "gameTitle": "Game: Who is this scientist?",
+        "gameText": "Guess the scientist by the description",
+        "gameXp": "XP by the game rule: 1 XP per correct answer, up to 20 XP a day",
+        "testTitle": "Lesson test",
+        "testText": "13 questions about great chemists",
+        "best": "Best result: {percent}%",
+        "play": "Play"
+      },
+      "invite": "You have studied {count} of {total} — test yourself",
+      "inviteClose": "Close the invitation",
+      "tabs": {
+        "label": "Sections",
+        "biography": "Biography",
+        "discovery": "Discovery",
+        "legacy": "Legacy",
+        "facts": "Facts"
+      },
+      "ai": {
+        "ask": "Ask Syntara AI about the scientist",
+        "explain": "Explain the discovery in simple words",
+        "table": "How is this connected to the periodic table?",
+        "today": "Why does it matter today?",
+        "message": "{name}: {question}"
+      },
+      "contemporaries": "Contemporaries",
+      "prev": "Previous scientist",
+      "next": "Next scientist",
+      "quoteBy": "— {name}",
+      "quoteLabel": "Quote"
     }
   },
   "test": {

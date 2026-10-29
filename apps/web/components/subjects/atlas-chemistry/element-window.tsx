@@ -10,7 +10,6 @@ import { useRouter } from '@/i18n/navigation';
 import { AppLink } from '../../app-link';
 import {
   type AtlasElement,
-  ELEMENT_LAYERS,
   GROUP_COLORS,
   useAtlasLesson,
   useAtlasSubject,
@@ -19,12 +18,13 @@ import {
 import { AssistantBlock, type AssistantMode, DetailWindow } from './detail-window';
 import { useExploreQuery } from './explore';
 import { useAtlasViewer } from './gate';
-import { ElementDetails, splitSources } from './lesson-text';
+import { ElementSection, splitSources } from './lesson-text';
 import { atlasHref, elementHref } from './routes';
 import { TopicTest } from './topic-test';
 
 /**
- * Окно элемента (REQ-ATL-03): исправленные тексты урока (content/), картинка атласа, «Пройти тест» (решение 4).
+ * Окно элемента (REQ-ATL-03): исправленные тексты урока (content/) — вкладками по разделам урока (REQ-SCI-06), картинка
+ * атласа, «Пройти тест» (решение 4).
  * Открытие окна учеником — просмотр урока: событие lesson_opened (API-S-17, REQ-ST-LES-04, +5 XP при первом).
  * /explore/:code/test — тест в блоке помощника; задание учителя приходит параметром ?assignment=.
  */
@@ -181,8 +181,9 @@ export default function ElementWindow({
           ) : null}
         </div>
       }
-      overview={<ElementDetails sections={text} />}
-      layers={ELEMENT_LAYERS.map((l) => t(`layer.${l}`))}
+      // REQ-SCI-06: вкладки — разделы урока («Основные факты» — первая), текст полностью.
+      tabs={text.map((s, i) => ({ id: `${i}`, label: s.title, content: <ElementSection body={s.body} /> }))}
+      tabsLabel={t('detail.tabs')}
       resources={links}
       assistant={
         <div ref={assistant}>

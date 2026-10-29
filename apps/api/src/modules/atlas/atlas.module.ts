@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ContentModule } from '../content/content.module';
 import { FilesModule } from '../files/files.module';
 import { GamificationModule } from '../gamification/gamification.module';
+import { AtlasProgressService } from './atlas-progress.service';
 import { AtlasQuizService } from './atlas-quiz.service';
 import { PublicAtlasController, StudentAtlasController, TeacherAtlasController } from './atlas.controller';
 import { AtlasService } from './atlas.service';
@@ -13,6 +14,6 @@ import { AtlasService } from './atlas.service';
 @Module({
   imports: [ContentModule, FilesModule, GamificationModule],
   controllers: [StudentAtlasController, PublicAtlasController, TeacherAtlasController],
-  providers: [AtlasService, AtlasQuizService],
+  providers: [AtlasService, AtlasQuizService, AtlasProgressService],
 })
 export class AtlasModule {}

@@ -2068,6 +2068,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/student/subjects/{id}/atlas/scientists-progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StudentAtlasController_scientistsProgress"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/student/subjects/{id}/atlas/scientists/{code}/studied": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["StudentAtlasController_markScientist"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/subjects/{id}/atlas": {
         parameters: {
             query?: never;
@@ -4083,6 +4115,20 @@ export interface components {
             role: "student" | "teacher";
             student: components["schemas"]["StudentDashboardDto"] | null;
             teacher: components["schemas"]["TeacherDashboardDto"] | null;
+        };
+        AtlasScientistsProgressDto: {
+            /** @description Сколько учёных в разделе */
+            total: number;
+            /** @description Коды изученных учёных (BR-SCI-01) */
+            studied: string[];
+            /** @description Лучший результат теста урока «Учёные-химики», % */
+            testBestPercent: number | null;
+            /** @description Лучший результат игры «Кто этот учёный?», % */
+            gameBestPercent: number | null;
+        };
+        SectionStudiedBody: {
+            /** @description true — изучено, false — снять отметку */
+            studied: boolean;
         };
         AtlasSubjectDto: {
             /** Format: uuid */
@@ -10170,6 +10216,99 @@ export interface operations {
             };
             /** @description Нет роли или неверный X-CSRF-Token */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_scientistsProgress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasScientistsProgressDto"];
+                };
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StudentAtlasController_markScientist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SectionStudiedBody"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AtlasScientistsProgressDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет сессии */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Нет роли или неверный X-CSRF-Token */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

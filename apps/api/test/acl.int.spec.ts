@@ -157,6 +157,9 @@ describe('REQ-NFR-SEC-04 generated access checks (integration)', () => {
         // docs/TESTS_TZ.md, REQ-TST-04: подсказка «50/50» теста темы (API-S-28) и квиза атласа (API-S-29).
         'POST /api/student/attempts/{id}/hint',
         'POST /api/student/atlas-quiz/{sid}/hint',
+        // docs/SCIENTISTS_TZ.md, REQ-SCI-04: «Изучено» учёных (API-S-31, API-S-32).
+        'GET /api/student/subjects/{id}/atlas/scientists-progress',
+        'PUT /api/student/subjects/{id}/atlas/scientists/{code}/studied',
       ]),
     );
   });

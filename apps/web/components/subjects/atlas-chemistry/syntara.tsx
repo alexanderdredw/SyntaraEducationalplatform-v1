@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { type AiQuickAction } from '@syntara/shared';
 import { AssistantText } from '../../ai/assistant-text';
 import { type TutorMessage, useTutorChat } from '../../learn/use-tutor-chat';
-import { useAtlasData } from './atlas-data';
+import { useAtlasData, useAtlasLesson } from './atlas-data';
 import { GuestInvite, PreviewNote, useAtlasViewer } from './gate';
 
 const MODES: Array<{ icon: string; key: 'Simple' | 'Deep' | 'Test' | 'Challenge'; action: AiQuickAction }> = [
@@ -219,6 +219,25 @@ function Chat({
   );
   const body = useRef<HTMLDivElement>(null);
   const quick = (action: AiQuickAction) => void send(ts(`quickText.${action}`), action);
+
+  // «Спросить Syntara AI об учёном» (docs/SCIENTISTS_TZ.md, REQ-SCI-09): контекст — урок «Учёные-химики»; выбранный
+  // вопрос-чип отправляется один раз с именем учёного, без чипа — имя учёного в поле ввода.
+  const tsci = useTranslations('atlas.sci.ai');
+  const lesson = useAtlasLesson(params.get('scientist') ? topicId : undefined);
+  const scientist = lesson.data?.sections.find((x) => x.code === params.get('scientist'))?.title;
+  const asked = useRef(false);
+  useEffect(() => {
+    const ask = params.get('ask');
+    if (!ready || !scientist || asked.current) return;
+    asked.current = true;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('ask');
+    window.history.replaceState(null, '', url);
+    if (ask === 'explain' || ask === 'table' || ask === 'today')
+      void send(tsci('message', { name: scientist, question: tsci(ask) }));
+    else setInput(`${scientist}: `);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- один раз, когда диалог и урок загружены
+  }, [ready, scientist]);
 
   // «Кратко» / «Подробно» из окна элемента (решение А-3): быстрое действие отправляется один раз.
   const sent = useRef(false);

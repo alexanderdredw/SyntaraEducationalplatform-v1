@@ -6185,6 +6185,115 @@
         ]
       }
     },
+    "/api/student/subjects/{id}/atlas/scientists-progress": {
+      "get": {
+        "operationId": "StudentAtlasController_scientistsProgress",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasScientistsProgressDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
+    "/api/student/subjects/{id}/atlas/scientists/{code}/studied": {
+      "put": {
+        "operationId": "StudentAtlasController_markScientist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionStudiedBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtlasScientistsProgressDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": "Нет сессии"
+          },
+          "403": {
+            "description": "Нет роли или неверный X-CSRF-Token"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "sid": []
+          }
+        ],
+        "tags": [
+          "student"
+        ]
+      }
+    },
     "/api/student/subjects/{id}/atlas": {
       "get": {
         "operationId": "StudentAtlasController_data",
@@ -13176,6 +13285,50 @@
           "role",
           "student",
           "teacher"
+        ]
+      },
+      "AtlasScientistsProgressDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Сколько учёных в разделе"
+          },
+          "studied": {
+            "description": "Коды изученных учёных (BR-SCI-01)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "testBestPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Лучший результат теста урока «Учёные-химики», %"
+          },
+          "gameBestPercent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Лучший результат игры «Кто этот учёный?», %"
+          }
+        },
+        "required": [
+          "total",
+          "studied",
+          "testBestPercent",
+          "gameBestPercent"
+        ]
+      },
+      "SectionStudiedBody": {
+        "type": "object",
+        "properties": {
+          "studied": {
+            "type": "boolean",
+            "description": "true — изучено, false — снять отметку"
+          }
+        },
+        "required": [
+          "studied"
         ]
       },
       "AtlasSubjectDto": {

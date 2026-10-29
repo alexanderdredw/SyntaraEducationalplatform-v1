@@ -248,9 +248,9 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
   }) => {
     const chem = await chemistry(await request.newContext({ baseURL }));
     await page.goto(`${chem.base}/scientists`);
-    // Лента — на экранах шире 1024 px (на телефоне и планшете оригинал её скрывает).
-    if ((page.viewportSize()?.width ?? 1440) > 1024)
-      await expect(page.getByTestId('atlas-timeline').getByRole('link')).toHaveCount(9);
+    // Лента «Линии жизни» (≥ 768 px) или вертикальная (телефон) — docs/SCIENTISTS_TZ.md, REQ-SCI-01, REQ-SCI-02.
+    const wide = (page.viewportSize()?.width ?? 1440) >= 768;
+    await expect(page.getByTestId(wide ? 'atlas-lifeline' : 'atlas-timeline-vertical-row')).toHaveCount(9);
     await expect(page.getByTestId('atlas-scientist-card')).toHaveCount(9);
     await page.locator('[data-testid="atlas-scientist-card"][data-code="curie"]').click();
     await expect(page).toHaveURL(new RegExp(`${chem.base}/scientists/curie$`));
@@ -258,7 +258,9 @@ test.describe('«Химия» — Mendeleev Atlas', () => {
     await expect(win.getByRole('heading', { name: 'Мария Кюри' })).toBeVisible();
     await win.getByRole('button', { name: ru.common.close }).click();
     await expect(page).toHaveURL(new RegExp(`${chem.base}/scientists$`));
-    await page.getByTestId('atlas-scientists-take-test').click();
+    // Тест урока — карточка панели «Проверь себя» вверху (REQ-SCI-03); нижнего блока нет.
+    await expect(page.getByTestId('atlas-scientists-take-test')).toHaveCount(0);
+    await page.getByTestId('atlas-check-test-go').click();
     await expect(page).toHaveURL(/scientists\/test$/);
     await expect(page.getByTestId('atlas-guest-invite')).toBeVisible();
   });

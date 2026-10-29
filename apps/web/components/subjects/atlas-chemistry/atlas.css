@@ -2613,12 +2613,7 @@
   background: transparent !important;
 }
 
-@media (max-width: 1024px) {
-  .atlas #timeline-container,
-  .atlas .timeline-viz {
-    display: none !important;
-  }
-}
+/* Лента на узких экранах больше не скрывается — вертикальная версия (docs/SCIENTISTS_TZ.md, REQ-SCI-02). */
 
 /* ===== ai-assistant.css ===== */
 /* css/ai-assistant.css */
@@ -5508,4 +5503,726 @@
 
 :root[data-theme='light'] .atlas .atest-case {
   color: #8a6100;
+}
+
+/* ===== Раздел «Учёные», этап S1 (docs/SCIENTISTS_TZ.md) ===== */
+
+/* Лента и панель «Проверь себя» сразу под заголовком: компьютер — рядом, узкий экран — панель под лентой. */
+.atlas .sci-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (max-width: 1100px) {
+  .atlas .sci-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.atlas .sci-timeline {
+  margin-bottom: 0;
+  padding: 16px 20px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* «Линии жизни» (≥ 768 px, REQ-SCI-01): ось лет, полосы веков, строки учёных. */
+.atlas .sci-lifelines {
+  --who: 170px;
+  position: relative;
+  overflow: hidden;
+}
+
+.atlas .sci-axis {
+  position: relative;
+  height: 44px;
+  margin-left: var(--who);
+}
+
+.atlas .sci-century {
+  position: absolute;
+  top: 0;
+  bottom: -9999px;
+  border-left: 1px dashed rgba(253, 224, 71, 0.12);
+  background: linear-gradient(180deg, rgba(253, 224, 71, 0.05), transparent 120px);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(253, 224, 71, 0.75);
+  padding: 2px 8px;
+  pointer-events: none;
+}
+
+.atlas .sci-century:nth-child(2) {
+  background: linear-gradient(180deg, rgba(253, 224, 71, 0.09), transparent 120px);
+}
+
+.atlas .sci-tick {
+  position: absolute;
+  top: 22px;
+  transform: translateX(-50%);
+  font:
+    600 0.72rem var(--atlas-font-space),
+    sans-serif;
+  color: var(--text-secondary);
+}
+
+.atlas .sci-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.atlas .sci-row {
+  display: grid;
+  grid-template-columns: var(--who) minmax(0, 1fr);
+  align-items: center;
+  min-height: 40px;
+  border-radius: 10px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.atlas .sci-row:hover,
+.atlas .sci-row[data-active] {
+  background: rgba(253, 224, 71, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(253, 224, 71, 0.25);
+}
+
+.atlas .sci-row:focus-visible {
+  outline: 2px solid #fde047;
+  outline-offset: 2px;
+}
+
+.atlas .sci-row-who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 6px;
+  min-width: 0;
+}
+
+.atlas .sci-row-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.atlas .sci-studied-dot {
+  color: #4ade80;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.atlas .sci-row-track {
+  position: relative;
+  height: 40px;
+}
+
+.atlas .sci-life {
+  position: absolute;
+  top: 50%;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(253, 224, 71, 0.25), rgba(253, 224, 71, 0.6));
+  box-shadow: 0 0 10px rgba(253, 224, 71, 0.25);
+  transform-origin: left center;
+  animation: sci-draw 0.9s ease-out both;
+  animation-delay: var(--delay, 0s);
+}
+
+/* Полосы «прорисовываются» слева направо; reduced motion и «Экономия трафика» — общие правила атласа выше. */
+@keyframes sci-draw {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.atlas .sci-star {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transform: translate(-7px, -50%);
+  white-space: nowrap;
+}
+
+.atlas .sci-star-mark {
+  color: #fde047;
+  font-size: 1rem;
+  text-shadow: 0 0 8px rgba(253, 224, 71, 0.9);
+}
+
+.atlas .sci-star-year {
+  padding: 0 5px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  font:
+    700 0.72rem var(--atlas-font-space),
+    sans-serif;
+  color: #fde047;
+}
+
+/* Мини-карточка по наведению и фокусу (REQ-SCI-01.3). */
+.atlas .sci-card-pop {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  z-index: 5;
+  display: none;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(253, 224, 71, 0.35);
+  background: rgba(10, 10, 14, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  font-size: 0.8rem;
+  text-align: left;
+  white-space: normal;
+}
+
+.atlas .sci-row:hover .sci-card-pop,
+.atlas .sci-row:focus-visible .sci-card-pop {
+  display: flex;
+}
+
+.atlas .sci-rows li:first-child .sci-card-pop,
+.atlas .sci-rows li:nth-child(2) .sci-card-pop {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+
+.atlas .sci-card-pop > span,
+.atlas .sci-mini-card > span,
+.atlas .sci-v-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.atlas .sci-pop-meta {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.atlas .sci-pop-open {
+  color: #fde047;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.atlas .sci-mini-portrait {
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid rgba(253, 224, 71, 0.4);
+}
+
+.atlas .sci-mini-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0d0b00;
+  color: #fde047;
+  font:
+    800 0.7rem var(--atlas-font-space),
+    sans-serif;
+}
+
+/* Вертикальная лента — телефон (< 768 px, REQ-SCI-02). */
+.atlas .sci-vertical {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 767px) {
+  .atlas .sci-lifelines {
+    display: none;
+  }
+
+  .atlas .sci-vertical {
+    display: block;
+  }
+
+  .atlas .sci-top {
+    padding: 0 16px;
+  }
+
+  .atlas .sci-timeline {
+    padding: 12px;
+  }
+}
+
+.atlas .sci-v-row {
+  display: grid;
+  grid-template-columns: 52px 16px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  min-height: 64px;
+  color: var(--text-primary);
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+.atlas .sci-v-row:focus-visible {
+  outline: 2px solid #fde047;
+  outline-offset: 2px;
+}
+
+.atlas .sci-v-year {
+  align-self: center;
+  font:
+    800 1.05rem var(--atlas-font-space),
+    sans-serif;
+  color: #fde047;
+  text-align: right;
+}
+
+.atlas .sci-v-line {
+  position: relative;
+}
+
+.atlas .sci-v-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(253, 224, 71, 0.35);
+}
+
+.atlas .sci-v-line::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: #fde047;
+  box-shadow: 0 0 8px rgba(253, 224, 71, 0.8);
+}
+
+.atlas .sci-v-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  min-width: 0;
+}
+
+.atlas .sci-v-discovery {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Панель «Проверь себя» (REQ-SCI-03). */
+.atlas .sci-check {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.atlas .sci-check-title {
+  font: 700 1.1rem var(--font-display);
+  color: var(--text-primary);
+}
+
+.atlas .sci-check-cards {
+  display: grid;
+  gap: 12px;
+}
+
+@media (max-width: 1100px) and (min-width: 600px) {
+  .atlas .sci-check-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.atlas .sci-check-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(253, 224, 71, 0.25);
+  background: linear-gradient(160deg, rgba(253, 224, 71, 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: 0 0 20px rgba(253, 224, 71, 0.06);
+}
+
+.atlas .sci-check-card h3 {
+  font: 700 1rem var(--font-display);
+  color: var(--text-primary);
+}
+
+.atlas .sci-check-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.atlas .sci-check-card .sci-check-best {
+  color: #fde047;
+  font-weight: 700;
+}
+
+.atlas .sci-check-card .sci-check-note {
+  font-size: 0.78rem;
+}
+
+.atlas .sci-check-card .btn {
+  align-self: flex-start;
+  margin-top: 6px;
+}
+
+.atlas .sci-quiz-block {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 32px 20px 0;
+}
+
+/* Приглашение (REQ-SCI-04.3) и «Изучено». */
+.atlas .sci-invite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(253, 224, 71, 0.35);
+  background: rgba(253, 224, 71, 0.08);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.atlas .sci-invite-close {
+  margin-left: auto;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  font-size: 1.4rem;
+}
+
+.atlas .sci-invite-close:hover {
+  color: var(--text-primary);
+}
+
+.atlas .sci-studied-total {
+  max-width: 1200px;
+  margin: 0 auto 12px;
+}
+
+.atlas .sci-studied-count {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.atlas .sci-card-studied {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(22, 101, 52, 0.9);
+  color: #dcfce7;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.atlas .scientist-card[data-active] {
+  border-color: rgba(253, 224, 71, 0.7) !important;
+  box-shadow: 0 0 24px rgba(253, 224, 71, 0.25);
+}
+
+/* Вкладки окна (REQ-SCI-05, REQ-SCI-06): прокрутка по горизонтали; активная у учёного — золотом, у элемента — синим. */
+.atlas .atlas-tabs {
+  margin-top: 16px;
+}
+
+.atlas .atlas-tablist {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.atlas .atlas-tab {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 10px 10px 0 0;
+  color: var(--text-secondary);
+  font: 600 0.88rem var(--font-ui);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+
+.atlas .atlas-tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.atlas .atlas-tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.atlas [data-testid='atlas-scientist-window'] .atlas-tab.active {
+  border-bottom-color: #fde047;
+  background: rgba(253, 224, 71, 0.08);
+}
+
+.atlas .atlas-tab:focus-visible,
+.atlas .atlas-tabpanel:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .atlas-tabpanel {
+  padding: 16px 2px 4px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.atlas .atlas-tab-text {
+  margin: 0;
+}
+
+/* Цитата (REQ-SCI-12): крупные кавычки, курсив, золотая полоса слева. */
+.atlas .sci-quote {
+  position: relative;
+  margin: 0;
+  padding: 18px 18px 14px 26px;
+  border-left: 4px solid #fde047;
+  border-radius: 12px;
+  background: rgba(253, 224, 71, 0.06);
+}
+
+.atlas .sci-quote::before {
+  content: '\201C';
+  position: absolute;
+  top: -12px;
+  left: 10px;
+  font:
+    800 3.4rem/1 Georgia,
+    serif;
+  color: rgba(253, 224, 71, 0.6);
+}
+
+.atlas .sci-quote blockquote {
+  margin: 0;
+  font-style: italic;
+  font-size: 1.02rem;
+  color: var(--text-primary);
+}
+
+.atlas .sci-quote figcaption {
+  margin-top: 8px;
+  color: #fde047;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.atlas .sci-quote-note {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* «Спросить Syntara AI», современники, навигация и «Изучено» в окне. */
+.atlas .sci-ask {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.atlas .sci-ask-main {
+  align-self: flex-start;
+}
+
+.atlas .sci-ask-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.atlas .sci-ask-chips .filter-chip {
+  min-height: 44px;
+  text-decoration: none;
+  white-space: normal;
+}
+
+.atlas .sci-contemporaries {
+  margin-top: 20px;
+}
+
+.atlas .sci-contemporaries h4 {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.atlas .sci-contemporaries ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.atlas .sci-mini-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(253, 224, 71, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.atlas .sci-mini-card:hover,
+.atlas .sci-mini-card:focus-visible {
+  border-color: rgba(253, 224, 71, 0.6);
+}
+
+.atlas .sci-window-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.atlas .sci-studied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.atlas .sci-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.atlas .sci-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(253, 224, 71, 0.25);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.atlas .sci-nav-btn.next {
+  margin-left: auto;
+}
+
+.atlas .sci-nav-btn:hover,
+.atlas .sci-nav-btn:focus-visible {
+  border-color: #fde047;
+  background: rgba(253, 224, 71, 0.08);
+}
+
+/* Светлая тема: золотой текст на светлом фоне — тёмно-золотой (контраст ≥ 4,5:1). */
+:root[data-theme='light'] .atlas .sci-century,
+:root[data-theme='light'] .atlas .sci-star-year,
+:root[data-theme='light'] .atlas .sci-pop-open,
+:root[data-theme='light'] .atlas .sci-v-year,
+:root[data-theme='light'] .atlas .sci-check-card .sci-check-best,
+:root[data-theme='light'] .atlas .sci-quote figcaption,
+:root[data-theme='light'] .atlas .sci-mini-initials {
+  color: #8a6100;
+}
+
+:root[data-theme='light'] .atlas .sci-card-pop {
+  background: #ffffff;
+  border-color: rgba(138, 97, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme='light'] .atlas .sci-timeline {
+  border-color: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:root[data-theme='light'] .atlas .sci-star-year {
+  background: #ffffff;
+}
+
+:root[data-theme='light'] .atlas .sci-life {
+  background: linear-gradient(90deg, rgba(202, 138, 4, 0.3), rgba(202, 138, 4, 0.65));
+}
+
+:root[data-theme='light'] .atlas .sci-studied-dot {
+  color: #166534;
+}
+
+:root[data-theme='light'] .atlas .sci-mini-initials {
+  background: #fff8db;
+}
+
+/* «Линии жизни» без прорисовки — сразу статично (REQ-SCI-01.5): задержка анимации тоже убирается. */
+@media (prefers-reduced-motion: reduce) {
+  .atlas .sci-life {
+    animation: none;
+  }
+}
+
+:root[data-data-saver='true'] .atlas .sci-life {
+  animation: none;
 }

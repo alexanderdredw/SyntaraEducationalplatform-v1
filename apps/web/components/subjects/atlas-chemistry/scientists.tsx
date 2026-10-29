@@ -1,54 +1,63 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { initials, scientistDescription } from '@syntara/shared';
 import { useRouter } from '@/i18n/navigation';
 import { AppLink } from '../../app-link';
 import type { Lesson } from '../../lesson/lesson-view';
-import { GROUP_COLORS, SCIENTIST_LAYERS, useAtlasData, useAtlasLesson, useAtlasSubject } from './atlas-data';
+import { GROUP_COLORS, useAtlasData, useAtlasLesson, useAtlasSubject } from './atlas-data';
 import { AssistantBlock, type AssistantMode, DetailWindow } from './detail-window';
 import { AtlasQuiz } from './quiz';
-import { ScientistArticle, splitSources } from './lesson-text';
+import { SCIENTIST_TABS, ScientistBlocks, scientistParts, splitSources } from './lesson-text';
 import { atlasHref, scientistHref } from './routes';
+import {
+  AskAi,
+  CheckPanel,
+  Contemporaries,
+  contemporariesOf,
+  GOLD,
+  Invite,
+  Lifelines,
+  QuoteCard,
+  type Scientist,
+  ScientistNav,
+  StudiedToggle,
+  useScientistsProgress,
+  VerticalTimeline,
+} from './scientist-parts';
 import { TopicTest } from './topic-test';
 import { useSearchParams } from 'next/navigation';
-
-const GOLD = '#FDE047';
-
-interface Scientist {
-  code: string;
-  name: string;
-  description: string;
-  body: string | null;
-  portrait: string | null;
-  portraitAlt: string | null;
-  year: number | null;
-}
 
 /** Учёные урока «Учёные-химики» в порядке ленты (год ключевого открытия), как сортировал атлас. */
 function scientistsOf(lesson: Lesson | undefined): Scientist[] {
   if (!lesson) return [];
   const { text } = splitSources(lesson.sections);
-  const years = new Map((lesson.timeline ?? []).map((e) => [e.sectionId, e.year]));
+  const events = new Map((lesson.timeline ?? []).map((e) => [e.sectionId, e]));
   return text
-    .map((s) => ({
-      code: s.code ?? s.id,
-      name: s.title,
-      description: scientistDescription(s.body),
-      body: s.body,
-      portrait: s.illustrationUrl ?? null,
-      portraitAlt: s.illustrationAlt ?? null,
-      year: years.get(s.id) ?? null,
-    }))
+    .map((s) => {
+      const ev = events.get(s.id);
+      return {
+        code: s.code ?? s.id,
+        name: s.title,
+        description: scientistDescription(s.body),
+        body: s.body,
+        portrait: s.illustrationUrl ?? null,
+        portraitAlt: s.illustrationAlt ?? null,
+        year: ev?.year ?? null,
+        lived: ev?.lived ? { from: ev.lived.from, to: ev.lived.to } : null,
+        discovery: ev?.title ?? '',
+      };
+    })
     .sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
 }
 
 /**
- * «Учёные» (REQ-ATL-03; ScientistsTimeline.js, ScientistsQuiz.js атласа): «Хронология научных открытий», лента по
- * годам, карточки с портретами (решение 8; у Ходжкин — заглушка с инициалами из оригинала), окно учёного
- * (/scientists/:code). Внизу — игра «Кто этот учёный?» и «Пройти тест» урока «Учёные-химики» (решение А-5,
- * /scientists/test). Тексты — исправленный урок «Учёные-химики» (content/).
+ * «Учёные» (REQ-ATL-03; docs/SCIENTISTS_TZ.md, S1): заголовок, «Линии жизни» (компьютер — полосы жизни по оси лет,
+ * телефон — вертикальная лента) и панель «Проверь себя» с игрой «Кто этот учёный?» (?game=1) и тестом урока
+ * (/scientists/test) — сразу под заголовком; приглашение после 3 изученных; карточки с портретами (у Ходжкин —
+ * заглушка) и отметкой «Изучено», подсветка синхронна с лентой; окно учёного (/scientists/:code). Тексты —
+ * исправленный урок «Учёные-химики» (content/).
  */
 export default function AtlasScientists({ code, test }: { code?: string; test?: boolean }) {
   const t = useTranslations('atlas');
@@ -59,13 +68,17 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
   const topicId = atlas.data?.scientists?.topicId;
   const lesson = useAtlasLesson(topicId);
   const scientists = useMemo(() => scientistsOf(lesson.data), [lesson.data]);
+  const { progress } = useScientistsProgress();
+  const studied = progress?.studied ?? [];
+  const [active, setActive] = useState<string | null>(null);
   const open = code ? scientists.find((s) => s.code === code) : undefined;
+  const game = params.get('game') === '1' || params.has('session');
   const quizBlock = useRef<HTMLDivElement>(null);
   const testHref = atlasHref(subjectId, 'scientists', '/test');
 
   useEffect(() => {
-    if (test) quizBlock.current?.scrollIntoView({ block: 'start' });
-  }, [test]);
+    if (test || game) quizBlock.current?.scrollIntoView({ block: 'start' });
+  }, [test, game]);
 
   return (
     <section
@@ -74,7 +87,7 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
       style={{ display: 'flex', flexDirection: 'column' }}
       data-testid="atlas-scientists"
     >
-      <div className="section-header" style={{ textAlign: 'center', padding: '40px 20px' }}>
+      <div className="section-header" style={{ textAlign: 'center', padding: '40px 20px 20px' }}>
         <h1 className="section-title" style={{ fontSize: '2.5rem', marginBottom: 10 }}>
           {t('timeline.title')}
         </h1>
@@ -86,76 +99,67 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
         </p>
       </div>
 
-      <div id="timeline-container" className="timeline-viz" style={{ padding: 20, minHeight: 200 }}>
-        <Timeline scientists={scientists} />
+      <div className="sci-top">
+        <div id="timeline-container" className="timeline-viz sci-timeline">
+          <Lifelines scientists={scientists} studied={studied} active={active} onActive={setActive} />
+          <VerticalTimeline scientists={scientists} studied={studied} />
+        </div>
+        <CheckPanel progress={progress} />
       </div>
+
+      {test || game ? (
+        <div ref={quizBlock} className="sci-quiz-block">
+          {test && topicId ? (
+            <div
+              className="ai-assistant"
+              style={{ width: '100%', maxWidth: 800, textAlign: 'left' }}
+              data-testid="atlas-scientists-test"
+            >
+              <div className="ai-content">
+                <TopicTest
+                  topicId={topicId}
+                  quizId={lesson.data?.quizId ?? null}
+                  assignmentId={params.get('assignment') ?? undefined}
+                  // «Открыть урок», «К уроку» и «× Завершить» — экран «Учёные» без теста.
+                  place={{
+                    lessonHref: atlasHref(subjectId, 'scientists'),
+                    backHref: atlasHref(subjectId, 'scientists'),
+                    onExit: () => router.push(atlasHref(subjectId, 'scientists'), { scroll: false }),
+                    accent: GROUP_COLORS.scientist,
+                  }}
+                />
+              </div>
+            </div>
+          ) : (
+            <AtlasQuiz kind="scientists" />
+          )}
+        </div>
+      ) : null}
 
       <div id="scientists-grid-container" style={{ padding: 20 }}>
+        <Invite progress={progress} />
+        {progress ? (
+          <p className="sci-studied-count sci-studied-total" data-testid="atlas-sci-studied-total">
+            {t('sci.studiedCount', { count: progress.studied.length, total: progress.total })}
+          </p>
+        ) : null}
         <div id="scientists-grid" className="anatomy-grid">
           {scientists.map((s) => (
-            <ScientistCard key={s.code} scientist={s} />
+            <ScientistCard
+              key={s.code}
+              scientist={s}
+              studied={studied.includes(s.code)}
+              active={active === s.code}
+              onActive={setActive}
+            />
           ))}
         </div>
-      </div>
-
-      <div
-        id="scientists-quiz-container"
-        ref={quizBlock}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          alignSelf: 'center',
-          padding: '40px 20px',
-          width: '100%',
-          maxWidth: 1200,
-          margin: '40px auto 0',
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-        }}
-      >
-        {test && topicId ? (
-          <div
-            className="ai-assistant"
-            style={{ width: '100%', maxWidth: 800, textAlign: 'left' }}
-            data-testid="atlas-scientists-test"
-          >
-            <div className="ai-content">
-              <TopicTest
-                topicId={topicId}
-                quizId={lesson.data?.quizId ?? null}
-                assignmentId={params.get('assignment') ?? undefined}
-                // «Открыть урок», «К уроку» и «× Завершить» — экран «Учёные» без теста.
-                place={{
-                  lessonHref: atlasHref(subjectId, 'scientists'),
-                  backHref: atlasHref(subjectId, 'scientists'),
-                  onExit: () => router.push(atlasHref(subjectId, 'scientists'), { scroll: false }),
-                  accent: GROUP_COLORS.scientist,
-                }}
-              />
-            </div>
-          </div>
-        ) : (
-          <AtlasQuiz
-            kind="scientists"
-            extra={
-              <AppLink
-                href={testHref}
-                scroll={false}
-                className="btn btn-secondary"
-                data-testid="atlas-scientists-take-test"
-              >
-                {t('detail.takeTest')}
-              </AppLink>
-            }
-          />
-        )}
       </div>
 
       {open && lesson.data ? (
         <ScientistWindow
           scientist={open}
+          all={scientists}
           lesson={lesson.data}
           onClose={() => router.push(atlasHref(subjectId, 'scientists'), { scroll: false })}
           onMode={(mode: AssistantMode) => {
@@ -168,104 +172,6 @@ export default function AtlasScientists({ code, test }: { code?: string; test?: 
         />
       ) : null}
     </section>
-  );
-}
-
-/** Лента (ScientistsTimeline.js): золотая линия, точки через одну смещены вниз, фамилия под точкой. */
-function Timeline({ scientists }: { scientists: Scientist[] }) {
-  const subjectId = useAtlasSubject();
-  return (
-    <div
-      className="timeline-wrapper"
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
-        position: 'relative',
-        padding: '60px 40px',
-        margin: '20px 0',
-        overflowX: 'auto',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-        scrollBehavior: 'smooth',
-      }}
-      data-testid="atlas-timeline"
-    >
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          top: 85,
-          left: 0,
-          width: '100%',
-          height: 2,
-          background:
-            'linear-gradient(90deg, rgba(253, 224, 71, 0), rgba(253, 224, 71, 0.5) 20%, rgba(253, 224, 71, 0.5) 80%, rgba(253, 224, 71, 0))',
-          zIndex: 1,
-        }}
-      />
-      {scientists.map((s, index) => (
-        <AppLink
-          key={s.code}
-          href={scientistHref(subjectId, s.code)}
-          scroll={false}
-          className="atlas-timeline-point"
-          aria-label={`${s.year ?? ''} — ${s.name}`}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            zIndex: 2,
-            cursor: 'pointer',
-            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            minWidth: 160,
-            position: 'relative',
-            paddingTop: index % 2 === 0 ? 0 : 45,
-          }}
-        >
-          <span
-            aria-hidden="true"
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              color: GOLD,
-              marginBottom: 10,
-              fontFamily: 'var(--atlas-font-space), sans-serif',
-              letterSpacing: '0.05em',
-              opacity: 0.8,
-            }}
-          >
-            {s.year}
-          </span>
-          <span
-            aria-hidden="true"
-            className="atlas-timeline-dot"
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: '50%',
-              background: GOLD,
-              border: '3px solid var(--bg-primary)',
-              transition: 'all 0.3s ease',
-              marginBottom: 12,
-            }}
-          />
-          <span
-            aria-hidden="true"
-            className="atlas-timeline-name"
-            style={{
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            {s.name.split(' ').at(-1)}
-          </span>
-        </AppLink>
-      ))}
-    </div>
   );
 }
 
@@ -315,7 +221,18 @@ function PortraitPlaceholder({ code, name }: { code: string; name: string }) {
   );
 }
 
-function ScientistCard({ scientist: s }: { scientist: Scientist }) {
+/** Карточка учёного; подсветка синхронна с лентой (REQ-SCI-01.4), отметка «Изучено» (REQ-SCI-04.2). */
+function ScientistCard({
+  scientist: s,
+  studied,
+  active,
+  onActive,
+}: {
+  scientist: Scientist;
+  studied: boolean;
+  active: boolean;
+  onActive: (code: string | null) => void;
+}) {
   const t = useTranslations('atlas');
   const subjectId = useAtlasSubject();
   return (
@@ -324,7 +241,12 @@ function ScientistCard({ scientist: s }: { scientist: Scientist }) {
       scroll={false}
       className="anatomy-card scientist-card fade-in-up"
       style={{ borderColor: '#FDE04740' }}
-      aria-label={`${s.name}. ${s.description}`}
+      aria-label={`${s.name}. ${s.description}${studied ? `. ${t('sci.studiedMark')}` : ''}`}
+      data-active={active || undefined}
+      onMouseEnter={() => onActive(s.code)}
+      onMouseLeave={() => onActive(null)}
+      onFocus={() => onActive(s.code)}
+      onBlur={() => onActive(null)}
       data-testid="atlas-scientist-card"
       data-code={s.code}
     >
@@ -415,6 +337,11 @@ function ScientistCard({ scientist: s }: { scientist: Scientist }) {
         >
           {t('group.scientist')}
         </div>
+        {studied ? (
+          <div className="sci-card-studied" data-testid="atlas-sci-card-studied">
+            ✓ {t('sci.studiedMark')}
+          </div>
+        ) : null}
         <div
           className="visual-placeholder"
           style={{
@@ -478,14 +405,21 @@ function ScientistCard({ scientist: s }: { scientist: Scientist }) {
   );
 }
 
-/** Окно учёного — то же окно, что у элемента (openAnatomyDetail): бейдж с инициалами, портрет, статья. */
+/**
+ * Окно учёного — то же окно, что у элемента (openAnatomyDetail): бейдж с инициалами, портрет и цитата, вкладки по
+ * подразделам статьи (REQ-SCI-05: после нормализации content/ — «Биография · Открытие · Наследие · Факты», до неё —
+ * подразделы урока как есть, текст полностью), «Спросить Syntara AI» (REQ-SCI-09), «Современники» (REQ-SCI-10),
+ * «Отметить как изученное» (REQ-SCI-04) и «← Предыдущий · Следующий →» (REQ-SCI-11).
+ */
 function ScientistWindow({
   scientist: s,
+  all,
   lesson,
   onClose,
   onMode,
 }: {
   scientist: Scientist;
+  all: Scientist[];
   lesson: Lesson;
   onClose: () => void;
   onMode: (mode: AssistantMode) => void;
@@ -495,6 +429,10 @@ function ScientistWindow({
   const { links } = splitSources(lesson.sections);
   // «Внешние ресурсы» учёного — его ссылки из раздела «Источники» урока.
   const resources = links.filter((l) => l.text.includes(s.name.split(' ').at(-1) ?? s.name));
+  const parts = scientistParts(s.body);
+  const index = all.findIndex((o) => o.code === s.code);
+  const label = (code: string | null, title: string) =>
+    code && (SCIENTIST_TABS as readonly string[]).includes(code) ? t(`sci.tabs.${code}`) : title;
   return (
     <DetailWindow
       testId="atlas-scientist-window"
@@ -521,6 +459,11 @@ function ScientistWindow({
           </div>
           <div style={{ borderLeft: `1px solid ${GOLD}30`, paddingLeft: 12 }}>
             <div style={{ fontSize: '0.75rem', color: GOLD, fontWeight: 600 }}>{t('group.scientist')}</div>
+            {s.lived ? (
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                {t('sci.lived', { from: s.lived.from, to: s.lived.to })}
+              </div>
+            ) : null}
           </div>
         </div>
       }
@@ -585,8 +528,30 @@ function ScientistWindow({
           )}
         </div>
       }
-      overview={<ScientistArticle body={s.body} />}
-      layers={SCIENTIST_LAYERS.map((l) => t(`layer.${l}`))}
+      aside={
+        <>
+          {parts.tagline ? <div className="scientist-tagline">{parts.tagline}</div> : null}
+          {parts.quote ? <QuoteCard quote={parts.quote} name={s.name} /> : null}
+        </>
+      }
+      tabs={parts.sections.map((p, i) => ({
+        id: p.code ?? `${i}`,
+        label: label(p.code, p.title),
+        content: <ScientistBlocks blocks={p.blocks} />,
+      }))}
+      tabsLabel={t('sci.tabs.label')}
+      extra={
+        <>
+          <AskAi code={s.code} />
+          <Contemporaries list={contemporariesOf(s, all)} />
+        </>
+      }
+      footer={
+        <div className="sci-window-footer">
+          <StudiedToggle code={s.code} />
+          <ScientistNav prev={all[index - 1] ?? null} next={all[index + 1] ?? null} />
+        </div>
+      }
       resources={resources}
       assistant={
         <AssistantBlock mode={null} onMode={onMode}>

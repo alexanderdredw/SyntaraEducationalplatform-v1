@@ -115,6 +115,28 @@ export const topicMastery = pgTable(
   (t) => [primaryKey({ columns: [t.studentId, t.topicId] }), index('ix_mastery_topic').on(t.topicId)],
 );
 
+/**
+ * BR-SCI-01 (docs/SCIENTISTS_TZ.md, REQ-SCI-04): ученик отметил раздел урока как изученный — сейчас учёные урока
+ * «Учёные-химики», общая форма подойдёт и разделам элементов. Код раздела — короткий (после «#»). XP не начисляется.
+ */
+export const sectionProgress = pgTable(
+  'section_progress',
+  {
+    studentId: uuid('student_id')
+      .notNull()
+      .references(() => users.id),
+    topicId: uuid('topic_id')
+      .notNull()
+      .references(() => topics.id),
+    sectionCode: text('section_code').notNull(),
+    studiedAt: tstz('studied_at').notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.studentId, t.topicId, t.sectionCode] }),
+    check('section_progress_code', sql`char_length(${t.sectionCode}) BETWEEN 1 AND 120`),
+  ],
+);
+
 export const studentStats = pgTable('student_stats', {
   studentId: uuid('student_id')
     .primaryKey()

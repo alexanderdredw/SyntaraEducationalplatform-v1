@@ -257,6 +257,25 @@ export class AtlasHintResultDto {
   @ApiProperty() hintsLeft: number;
 }
 
+/** API-S-31, API-S-32 (REQ-SCI-03, REQ-SCI-04): «Изучено» учёных и лучшие результаты тестов экрана «Учёные». */
+export class AtlasScientistsProgressDto {
+  @ApiProperty({ description: 'Сколько учёных в разделе' }) total: number;
+  @ApiProperty({ type: String, isArray: true, description: 'Коды изученных учёных (BR-SCI-01)' })
+  studied: string[];
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description: 'Лучший результат теста урока «Учёные-химики», %',
+  })
+  testBestPercent: number | null;
+  @ApiProperty({ type: Number, nullable: true, description: 'Лучший результат игры «Кто этот учёный?», %' })
+  gameBestPercent: number | null;
+}
+
+export class SectionStudiedBody {
+  @ApiProperty({ description: 'true — изучено, false — снять отметку' }) studied: boolean;
+}
+
 export class AtlasQuizStartBody {
   @ApiProperty({ enum: ATLAS_QUIZ_KINDS }) kind: AtlasQuizKind;
   @ApiPropertyOptional({

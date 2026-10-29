@@ -432,9 +432,7 @@ describe('atlas (integration)', () => {
       .expect(201);
     await as(other).get(`/api/student/atlas-quiz/${start.body.id}`).expect(404);
     await as(other)
-      .post(`/api/student/atlas-quiz/${start.body.id}/answers`, {
-        optionId: start.body.question.options[0].id,
-      })
+      .post(`/api/student/atlas-quiz/${start.body.id}/answers`, anyAnswer(start.body.question))
       .expect(404);
     await as(other).post(`/api/student/atlas-quiz/${start.body.id}/finish`).expect(404);
     const [session] = await stack.db
@@ -792,5 +790,55 @@ describe('atlas (integration)', () => {
     expect(start.question.options).toHaveLength(4);
     const hint = (await as(s).post(`/api/student/atlas-quiz/${start.id}/hint`).expect(200)).body;
     expect(hint.removedOptionIds).toHaveLength(2);
+  });
+
+  /* ---------- docs/SCIENTISTS_TZ.md, S1: «Изучено» учёных ---------- */
+
+  it('AC-SCI-04, BR-SCI-01, REQ-SCI-04 «Изучено» is stored on the server per student; best results; no XP', async () => {
+    const s = await register('sci-studied');
+    const base = `/api/student/subjects/${chemistry}/atlas`;
+    const empty = (await as(s).get(`${base}/scientists-progress`).expect(200)).body;
+    expect(empty).toEqual({ total: 9, studied: [], testBestPercent: null, gameBestPercent: null });
+    const put = (code: string, studied: boolean) =>
+      http()
+        .put(`${base}/scientists/${code}/studied`)
+        .set('Cookie', s.cookie)
+        .set('X-CSRF-Token', s.csrf)
+        .set('X-Forwarded-For', freshIp())
+        .send({ studied });
+    expect((await put('mendeleev', true).expect(200)).body.studied).toEqual(['mendeleev']);
+    // Повтор — без изменений; ещё два — порядок по ленте.
+    await put('mendeleev', true).expect(200);
+    await put('curie', true).expect(200);
+    const three = (await put('lavoisier', true).expect(200)).body;
+    expect(three.studied).toEqual(['lavoisier', 'mendeleev', 'curie']);
+    // «Другой браузер» — та же отметка с сервера; снять отметку.
+    const again = await login(http, 'sci-studied', 'student-pass-1');
+    expect((await as(again).get(`${base}/scientists-progress`).expect(200)).body.studied).toHaveLength(3);
+    expect((await put('curie', false).expect(200)).body.studied).toEqual(['lavoisier', 'mendeleev']);
+    // Неизвестный учёный и раздел «Источники» — 404; не boolean — 400; XP не начислен.
+    await put('sources', true).expect(404);
+    await put('nobody', true).expect(404);
+    await http()
+      .put(`${base}/scientists/curie/studied`)
+      .set('Cookie', s.cookie)
+      .set('X-CSRF-Token', s.csrf)
+      .send({ studied: 'yes' })
+      .expect(400);
+    expect((await as(s).get('/api/me/stats').expect(200)).body.xpTotal).toBe(0);
+    // Свои отметки: у другого ученика пусто; учитель и гость — нет доступа; предмет без атласа — 404.
+    expect((await as(other).get(`${base}/scientists-progress`).expect(200)).body.studied).toEqual([]);
+    await as(teacher).get(`${base}/scientists-progress`).expect(403);
+    await http().get(`${base}/scientists-progress`).expect(401);
+    await as(s).get(`/api/student/subjects/${B.subjectAnatomy}/atlas/scientists-progress`).expect(404);
+    // Лучший результат игры — по завершённой сессии.
+    const game = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'scientists' }).expect(201)
+    ).body;
+    await answerAll(s, game);
+    const done = (await as(s).post(`/api/student/atlas-quiz/${game.id}/finish`).expect(200)).body.result;
+    expect((await as(s).get(`${base}/scientists-progress`).expect(200)).body.gameBestPercent).toBe(
+      done.percent,
+    );
   });
 });

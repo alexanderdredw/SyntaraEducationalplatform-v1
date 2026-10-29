@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Query, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -15,6 +15,7 @@ import { UuidParamPipe } from '../../common/uuid-param.pipe';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe';
 import { Roles } from '../auth/auth.guards';
 import { type AuthRequest } from '../auth/auth.types';
+import { AtlasProgressService } from './atlas-progress.service';
 import { AtlasQuizService } from './atlas-quiz.service';
 import {
   AtlasDto,
@@ -24,6 +25,8 @@ import {
   AtlasQuizAnswerResultDto,
   AtlasQuizSessionDto,
   AtlasQuizStartBody,
+  AtlasScientistsProgressDto,
+  SectionStudiedBody,
 } from './atlas.dto';
 import { AtlasService } from './atlas.service';
 
@@ -40,7 +43,35 @@ export class StudentAtlasController {
   constructor(
     private readonly atlas: AtlasService,
     private readonly quiz: AtlasQuizService,
+    private readonly progress: AtlasProgressService,
   ) {}
+
+  /** API-S-31 (REQ-SCI-03, REQ-SCI-04): изученные учёные, лучшие результаты теста урока и игры. */
+  @Get('subjects/:id/atlas/scientists-progress')
+  @ApiOkResponse({ type: AtlasScientistsProgressDto })
+  @ApiNotFoundResponse()
+  scientistsProgress(
+    @Param('id', new UuidParamPipe()) id: string,
+    @Req() req: AuthRequest,
+  ): Promise<AtlasScientistsProgressDto> {
+    return this.progress.scientists(req.user!.id, id);
+  }
+
+  /** API-S-32 (BR-SCI-01): «Отметить как изученное» / снять отметку; неизвестный учёный → 404. */
+  @Put('subjects/:id/atlas/scientists/:code/studied')
+  @ApiBody({ type: SectionStudiedBody })
+  @ApiOkResponse({ type: AtlasScientistsProgressDto })
+  @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
+  markScientist(
+    @Param('id', new UuidParamPipe()) id: string,
+    @Param('code') code: string,
+    // Тело проверяется после предмета и учёного: неизвестный ID → 404, а не 400 (API-GEN-08).
+    @Body() body: unknown,
+    @Req() req: AuthRequest,
+  ): Promise<AtlasScientistsProgressDto> {
+    return this.progress.mark(req.user!.id, id, code, body);
+  }
 
   /** API-S-23: данные экранов атласа со статусами тем ученика. */
   @Get('subjects/:id/atlas')

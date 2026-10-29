@@ -59,58 +59,70 @@ export function splitSources<T extends TextSection>(
   };
 }
 
-/** «Обзор» элемента: разделы — жирной строкой, пункты — «•» с новой строки, разделы через пустую строку. */
-export function ElementDetails({ sections }: { sections: TextSection[] }) {
-  return sections.map((s, i) => {
-    const lines = (s.body ?? '').split('\n').filter((l) => l.trim());
-    return (
-      <Fragment key={i}>
-        {i > 0 ? (
-          <>
-            <br />
-            <br />
-          </>
-        ) : null}
-        <b>{s.title}</b>
-        {lines.map((line, j) => (
-          <Fragment key={j}>
-            <br />
-            {line.trim().startsWith('- ') ? <>• {inlineMd(line.trim().slice(2))}</> : inlineMd(line.trim())}
-          </Fragment>
-        ))}
-      </Fragment>
-    );
-  });
+/** Раздел урока элемента без заголовка — содержимое вкладки окна (REQ-SCI-06): пункты «•» с новой строки. */
+export function ElementSection({ body }: { body: string | null }) {
+  const lines = (body ?? '').split('\n').filter((l) => l.trim());
+  return (
+    <p className="atlas-tab-text">
+      {lines.map((line, j) => (
+        <Fragment key={j}>
+          {j > 0 ? <br /> : null}
+          {line.trim().startsWith('- ') ? <>• {inlineMd(line.trim().slice(2))}</> : inlineMd(line.trim())}
+        </Fragment>
+      ))}
+    </p>
+  );
+}
+
+/** Подразделы учёного для вкладок (REQ-SCI-05): после нормализации — коды biography, discovery, legacy, facts. */
+export const SCIENTIST_TABS = ['biography', 'discovery', 'legacy', 'facts'] as const;
+
+export interface ScientistParts {
+  tagline: string | null;
+  /** Цитата и пометка в скобках («приписывается», решение В-12) — как в тексте урока. */
+  quote: { text: string; note: string | null } | null;
+  /** Подразделы «### Заголовок {#код}»: блоки текста до следующего подраздела. */
+  sections: Array<{ code: string | null; title: string; blocks: string[] }>;
 }
 
 /**
- * Статья учёного (как details учёного в атласе): строка курсивом — scientist-tagline, цитата — scientist-quote,
- * «### …» — h3, абзац «**Название:** …» — highlight-box (кроме последнего — «Интересный факт»), списки — ul.
- * Первая строка **жирным** — описание учёного: в окне оно уже под заголовком, в статье не повторяется.
+ * Статья учёного → части окна (REQ-SCI-05, REQ-SCI-12): строка курсивом — подзаголовок, цитата — отдельная карточка,
+ * подразделы — вкладки. Первая строка **жирным** — описание (оно уже под заголовком окна). Текст не теряется: всё
+ * после подзаголовка подраздела — в его вкладке.
  */
-export function ScientistArticle({ body }: { body: string | null }) {
+export function scientistParts(body: string | null): ScientistParts {
   const blocks = (body ?? '')
     .split(/\n{2,}/)
     .map((b) => b.trim())
     .filter(Boolean);
-  const firstBold = blocks.findIndex((b) => /^\*\*.+\*\*$/.test(b));
-  const content = blocks.filter((_, i) => i !== firstBold);
+  const parts: ScientistParts = { tagline: null, quote: null, sections: [] };
+  let firstBold = true;
+  for (const b of blocks) {
+    const heading = /^###\s+(.+?)(?:\s+\{#([a-z0-9-]+)\})?$/.exec(b);
+    if (heading) {
+      parts.sections.push({ code: heading[2] ?? null, title: heading[1]!, blocks: [] });
+      continue;
+    }
+    const current = parts.sections.at(-1);
+    if (current) {
+      current.blocks.push(b);
+      continue;
+    }
+    if (firstBold && /^\*\*.+\*\*$/.test(b)) firstBold = false;
+    else if (/^(\*[^*].*\*|_.+_)$/.test(b)) parts.tagline = b.slice(1, -1);
+    else if (b.startsWith('> ')) {
+      const m = /^>\s*(.+?)\s*(?:_\((.+)\)_)?$/.exec(b)!;
+      parts.quote = { text: m[1]!, note: m[2] ?? null };
+    }
+  }
+  return parts;
+}
+
+/** Содержимое подраздела учёного: списки, выделенные абзацы «**Название:** …», абзацы. */
+export function ScientistBlocks({ blocks }: { blocks: string[] }) {
   return (
     <div className="scientist-details">
-      {content.map((b, i) => {
-        if (/^(\*[^*].*\*|_.+_)$/.test(b))
-          return (
-            <div key={i} className="scientist-tagline">
-              {b.slice(1, -1)}
-            </div>
-          );
-        if (b.startsWith('> '))
-          return (
-            <blockquote key={i} className="scientist-quote">
-              {inlineMd(b.slice(2))}
-            </blockquote>
-          );
-        if (b.startsWith('### ')) return <h3 key={i}>{b.slice(4)}</h3>;
+      {blocks.map((b, i) => {
         if (b.startsWith('- '))
           return (
             <ul key={i}>
@@ -119,7 +131,7 @@ export function ScientistArticle({ body }: { body: string | null }) {
               ))}
             </ul>
           );
-        if (/^\*\*[^*]+:\*\*/.test(b) && i !== content.length - 1)
+        if (/^\*\*[^*]+:\*\*/.test(b))
           return (
             <div key={i} className="highlight-box">
               {inlineMd(b, 'strong')}
