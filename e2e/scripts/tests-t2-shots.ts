@@ -12,6 +12,7 @@ const root = `${resolve(__dirname, '../..')}/`;
 const sharp = createRequire(`${root}apps/worker/package.json`)('sharp');
 const out = `${root}docs/media/tests/`;
 const uid = () => randomUUID().slice(0, 8);
+const modesOnly = process.env.T2_SHOTS === 'modes';
 
 const LEVEL1 = ['symbol-to-name', 'name-to-symbol', 'bohr-count'];
 const TARGETS = [
@@ -108,8 +109,8 @@ test('T2 screenshots: every question type and the modes, 1440 and 390', async ({
     await page.getByTestId('atlas-quiz-no-mistakes').scrollIntoViewIfNeeded();
     await shot(page, `t2-mode-mistakes-empty-${width}-dark`);
 
-    /* Каждый тип вопроса. */
-    const seen = new Set<string>();
+    /* Каждый тип вопроса (T2_SHOTS=modes — только стартовый экран и режимы). */
+    const seen = new Set<string>(modesOnly ? TARGETS : []);
     for (let session = 0; session < 10 && seen.size < TARGETS.length; session++) {
       await page.goto(`${chem.base}/quiz`);
       await page.getByTestId('atlas-quiz-start').click();
@@ -155,18 +156,20 @@ test('T2 screenshots: every question type and the modes, 1440 and 390', async ({
     expect([...seen].sort()).toEqual([...TARGETS].sort());
 
     /* «Таблица-челлендж» с «50/50» (подсвечены два периода). */
-    await page.goto(`${chem.base}/quiz`);
-    await page.getByTestId('atlas-quiz-mode-table').check();
-    await page.getByTestId('atlas-quiz-start').click();
-    await page.getByTestId('atest-hint').click();
-    await page.locator('.atest-table-status').filter({ hasText: /\S/ }).waitFor();
-    await focus();
-    await shot(page, `t2-mode-table-hint-${width}-dark`);
+    if (!modesOnly) {
+      await page.goto(`${chem.base}/quiz`);
+      await page.getByTestId('atlas-quiz-mode-table').check();
+      await page.getByTestId('atlas-quiz-start').click();
+      await page.getByTestId('atest-hint').click();
+      await page.locator('.atest-table-status').filter({ hasText: /\S/ }).waitFor();
+      await focus();
+      await shot(page, `t2-mode-table-hint-${width}-dark`);
+    }
 
     /* «По семейству» — галогены. */
     await page.goto(`${chem.base}/quiz`);
     await page.getByTestId('atlas-quiz-mode-family').check();
-    await page.getByTestId('atlas-quiz-family').selectOption('halogen');
+    await page.getByTestId('atlas-quiz-family-halogen').check();
     await page.getByTestId('atlas-quiz-start').click();
     await answerAtlas(page, chem.elements);
     await page.getByTestId('atest-feedback').scrollIntoViewIfNeeded();

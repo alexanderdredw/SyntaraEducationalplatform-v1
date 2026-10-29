@@ -2176,7 +2176,7 @@
       "review": "Scientists to review:"
     },
     "quiz": {
-      "title": "Test Your <accent>Knowledge</accent>",
+      "title": "Test your <accent>knowledge</accent>",
       "subtitle": "Challenge yourself with chemistry questions.",
       "start": "Start Quiz",
       "progress": "Question {current} / {total}",

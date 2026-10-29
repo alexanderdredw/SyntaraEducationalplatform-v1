@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { type CSSProperties, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
@@ -538,20 +538,41 @@ function Modes({
         </label>
       ))}
       {value.mode === 'family' ? (
-        <label className="atlas-quiz-family">
-          <span>{t('familyPick')}</span>
-          <select
-            value={value.family ?? ''}
-            onChange={(e) => onChange({ mode: 'family', family: e.target.value as ElementFamily })}
-            data-testid="atlas-quiz-family"
-          >
-            {families.map((f) => (
-              <option key={f} value={f}>
-                {tg(f)}
-              </option>
-            ))}
-          </select>
-        </label>
+        // Семейства — чипы атласа с цветами семейств (как легенда таблицы); радиокнопки: стрелки и диктор.
+        <fieldset className="atlas-quiz-family" data-testid="atlas-quiz-family">
+          <legend>{t('familyPick')}</legend>
+          <div className="atlas-quiz-family-chips">
+            {families.map((f) => {
+              const color = GROUP_COLORS[f] ?? '#007aff';
+              const on = value.family === f;
+              return (
+                <label
+                  key={f}
+                  className={`filter-chip atlas-quiz-chip${on ? ' active' : ''}`}
+                  style={
+                    {
+                      '--chip-active-color': color,
+                      '--chip-active-bg': `${color}22`,
+                      '--chip-active-border': `${color}55`,
+                      '--chip-active-glow': `${color}1a`,
+                    } as CSSProperties
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="atlas-quiz-family"
+                    value={f}
+                    checked={on}
+                    onChange={() => onChange({ mode: 'family', family: f })}
+                    data-testid={`atlas-quiz-family-${f}`}
+                  />
+                  <span className="chip-dot" style={{ background: color }} aria-hidden="true" />
+                  {tg(f)}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
       ) : null}
     </fieldset>
   );

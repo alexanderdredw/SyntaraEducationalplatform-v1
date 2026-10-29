@@ -159,9 +159,16 @@ test.describe('Тестирование T2 — квиз атласа (docs/TESTS
     // «По семейству»: галогены — все объяснения про галогены, в итогах одно семейство.
     await page.getByTestId('atlas-quiz-mode-family').check();
     const family = page.getByTestId('atlas-quiz-family');
-    await expect(family.locator('option')).not.toHaveCount(0);
-    await expect(family.locator('option', { hasText: ru.atlas.group.actinide })).toHaveCount(0);
-    await family.selectOption('halogen');
+    // Чипы семейств — радиокнопки с подписями (диктор); актиноидов (нет уроков) нет; стрелки меняют выбор.
+    const radios = family.getByRole('radio');
+    await expect(radios).not.toHaveCount(0);
+    await expect(family.getByRole('radio', { name: ru.atlas.group.actinide })).toHaveCount(0);
+    await expect(radios.first()).toBeChecked();
+    await radios.first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(radios.nth(1)).toBeChecked();
+    await expectNoSeriousA11yViolations(page);
+    await family.getByRole('radio', { name: ru.atlas.group.halogen }).check();
     await page.getByTestId('atlas-quiz-start').click();
     for (let i = 1; i <= 10; i++) {
       await answerAtlas(page, chem.elements, i <= 2);
