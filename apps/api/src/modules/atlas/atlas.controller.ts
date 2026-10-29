@@ -8,7 +8,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { ATLAS_QUIZ_KINDS, AtlasQuizStartDto } from '@syntara/shared';
+import { ATLAS_QUIZ_KINDS, ATLAS_QUIZ_MODES, AtlasQuizStartDto, ELEMENT_FAMILIES } from '@syntara/shared';
 import { type Dto } from '../../common/dto';
 import { resolveLocale } from '../../common/locale';
 import { UuidParamPipe } from '../../common/uuid-param.pipe';
@@ -56,13 +56,16 @@ export class StudentAtlasController {
   @ApiBody({ type: AtlasQuizStartBody })
   @ApiOkResponse({ type: AtlasQuizSessionDto })
   @ApiNotFoundResponse()
-  @ApiConflictResponse({ description: 'quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»)' })
+  @ApiConflictResponse({
+    description:
+      'quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»); noMistakes: «Работа над ошибками» без ошибок',
+  })
   start(
     @Param('id', new UuidParamPipe()) id: string,
     @Body(new ZodValidationPipe(AtlasQuizStartDto)) dto: Dto<typeof AtlasQuizStartDto>,
     @Req() req: AuthRequest,
   ): Promise<AtlasQuizSessionDto> {
-    return this.quiz.start(req.user!.id, id, dto.kind, locale(req), dto.retry);
+    return this.quiz.start(req.user!.id, id, dto.kind, locale(req), dto.retry, dto.mode, dto.family);
   }
 
   /** API-S-26: состояние своей сессии. */
@@ -139,6 +142,8 @@ export class TeacherAtlasController {
   /** API-T-32: вопросы квиза «Проверь знания» (elements) или игры про учёных (scientists). */
   @Get(':subjectId/preview')
   @ApiQuery({ name: 'kind', enum: ATLAS_QUIZ_KINDS })
+  @ApiQuery({ name: 'mode', enum: ATLAS_QUIZ_MODES, required: false, description: 'REQ-TST-11' })
+  @ApiQuery({ name: 'family', enum: ELEMENT_FAMILIES, required: false })
   @ApiOkResponse({ type: AtlasPreviewDto })
   @ApiNotFoundResponse()
   preview(
@@ -146,6 +151,6 @@ export class TeacherAtlasController {
     @Query(new ZodValidationPipe(AtlasQuizStartDto)) query: Dto<typeof AtlasQuizStartDto>,
     @Req() req: AuthRequest,
   ): Promise<AtlasPreviewDto> {
-    return this.quiz.preview(subjectId, query.kind, locale(req));
+    return this.quiz.preview(subjectId, query.kind, locale(req), query.mode, query.family);
   }
 }

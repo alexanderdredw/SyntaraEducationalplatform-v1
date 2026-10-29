@@ -11,7 +11,8 @@ import { answerStreak, HINT_MIN_OPTIONS } from '@syntara/shared';
  * записывает сервер, BR-TST-01), учитель — предпросмотр без записи.
  */
 
-export type QuestionType = 'single_choice' | 'true_false' | 'text_input';
+/** `table_pick` — клик по ячейке таблицы Менделеева (квиз атласа, REQ-TST-10). */
+export type QuestionType = 'single_choice' | 'true_false' | 'text_input' | 'table_pick';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export interface RunQuestion {
@@ -22,6 +23,10 @@ export interface RunQuestion {
   options: Array<{ id: string; text: string }>;
   /** REQ-TST-04: варианты, убранные «50/50». */
   removed: string[];
+  /** Квиз атласа (REQ-TST-10): заголовок над текстом, схема Бора (электроны по оболочкам), «50/50» таблицы — периоды. */
+  intro?: string | null;
+  shells?: number[] | null;
+  rows?: number[];
 }
 
 export interface RunResult {
@@ -36,6 +41,8 @@ export interface RunResult {
   accent?: string | null;
   optionId: string | null;
   textAnswer: string | null;
+  /** «Впишите символ»: верные буквы, но не тот регистр — «Обратите внимание на заглавную букву» (REQ-TST-10). */
+  caseHint?: boolean;
 }
 
 export interface RunMark {
@@ -87,21 +94,19 @@ export interface RunSource {
     question: RunQuestion,
     body: { optionId?: string; textAnswer?: string },
   ): Promise<{ result: RunResult; next: RunQuestion | null } | null>;
-  hint(question: RunQuestion): Promise<{ removed: string[]; hintsLeft: number } | null>;
+  hint(question: RunQuestion): Promise<{ removed: string[]; rows?: number[]; hintsLeft: number } | null>;
   finish(): Promise<RunSummary | null>;
 }
 
 const LEVEL: Record<Difficulty, number> = { easy: 1, medium: 2, hard: 3 };
 
-/** «50/50» доступна (REQ-TST-04): выбор варианта, 4+ варианта, ещё не взята к этому вопросу и не исчерпана. */
+/** У вопроса есть «50/50»: выбор из 4+ вариантов или таблица (подсветка двух периодов, REQ-TST-10.3). */
+export const hasHint = (q: RunQuestion) =>
+  q.type === 'table_pick' || (q.type === 'single_choice' && q.options.length >= HINT_MIN_OPTIONS);
+
+/** «50/50» доступна (REQ-TST-04): у вопроса есть подсказка, она ещё не взята к нему и не исчерпана. */
 export function canHint(q: RunQuestion, hintsLeft: number, answered: boolean): boolean {
-  return (
-    !answered &&
-    q.type === 'single_choice' &&
-    q.options.length >= HINT_MIN_OPTIONS &&
-    q.removed.length === 0 &&
-    hintsLeft > 0
-  );
+  return !answered && hasHint(q) && q.removed.length === 0 && !q.rows?.length && hintsLeft > 0;
 }
 
 export type RunPhase = 'loading' | 'question' | 'finished' | 'failed';
@@ -192,7 +197,9 @@ export function useTestRun(source: RunSource) {
     lock.current = false;
     if (!res) return;
     setHintsLeft(res.hintsLeft);
-    setQuestions((prev) => prev.map((q) => (q.id === question.id ? { ...q, removed: res.removed } : q)));
+    setQuestions((prev) =>
+      prev.map((q) => (q.id === question.id ? { ...q, removed: res.removed, rows: res.rows ?? q.rows } : q)),
+    );
     if (selected && res.removed.includes(selected)) setSelected(null);
   }, [question, hintsLeft, result, source, selected]);
 
@@ -249,7 +256,7 @@ export function useTestKeys(run: TestRun, enabled: boolean) {
         else if (run.selected) void run.submit({ optionId: run.selected });
         return;
       }
-      if (run.result || q.type === 'text_input') return;
+      if (run.result || q.type === 'text_input' || q.type === 'table_pick') return;
       const key = e.key.toLowerCase();
       const i = /^[1-9]$/.test(key) ? Number(key) - 1 : KEYS.indexOf(key);
       if (i < 0 || i >= q.options.length) return;

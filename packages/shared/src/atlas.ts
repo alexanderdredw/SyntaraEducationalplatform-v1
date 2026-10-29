@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ELEMENT_FAMILIES } from './periodic-table';
 
 /**
  * Модуль «Mendeleev Atlas» (docs/CHEM_TZ_2.md, docs/ATLAS_MAP.md): чистые правила квиза «Проверь знания» и игры
@@ -12,17 +13,31 @@ export type AtlasQuizKind = (typeof ATLAS_QUIZ_KINDS)[number];
 /** Квиз «Проверь знания» — 10 вопросов; игра про учёных — по одному вопросу на учёного, не больше 10. */
 export const ATLAS_QUIZ_LENGTH = 10;
 
+/** REQ-TST-11: режимы квиза «Проверь знания» на стартовом экране (игра про учёных — только «Быстрый»). */
+export const ATLAS_QUIZ_MODES = ['quick', 'family', 'mistakes', 'table'] as const;
+export type AtlasQuizMode = (typeof ATLAS_QUIZ_MODES)[number];
+
 /** Без kind — квиз «Проверь знания» (так неизвестный предмет даёт 404, а не ошибку проверки — API-GEN-08). */
 export const AtlasQuizStartDto = z.object({
   kind: z.enum(ATLAS_QUIZ_KINDS, 'required').default('elements'),
   /** REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — новая только по её ошибкам. */
   retry: z.uuid('required').optional(),
+  /** REQ-TST-11: режим; «По семейству» — с семейством. */
+  mode: z.enum(ATLAS_QUIZ_MODES, 'required').default('quick'),
+  family: z.enum(ELEMENT_FAMILIES, 'required').optional(),
 });
 export type AtlasQuizStartDto = z.infer<typeof AtlasQuizStartDto>;
 
-export const AtlasQuizAnswerDto = z.object({
-  optionId: z.string().trim().min(1, 'required').max(200, 'tooLong'),
-});
+/** Ответ: вариант (выбор, «Верно/Неверно», ячейка таблицы) или текст («Впишите символ», REQ-TST-10). */
+export const AtlasQuizAnswerDto = z
+  .object({
+    optionId: z.string().trim().min(1, 'required').max(200, 'tooLong').optional(),
+    text: z.string().trim().min(1, 'required').max(20, 'tooLong').optional(),
+  })
+  .refine((v) => v.optionId !== undefined || v.text !== undefined, {
+    message: 'required',
+    path: ['optionId'],
+  });
 export type AtlasQuizAnswerDto = z.infer<typeof AtlasQuizAnswerDto>;
 
 export type AtlasDifficulty = 'easy' | 'medium' | 'hard';

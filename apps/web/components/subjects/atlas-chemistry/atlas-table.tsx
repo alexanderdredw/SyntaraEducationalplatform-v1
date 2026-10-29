@@ -8,14 +8,14 @@ import { type AtlasElement, GROUP_COLORS, useAtlasSubject } from './atlas-data';
 import { elementHref } from './routes';
 
 /** Ряд и столбец ячейки: периоды 1–7 — ряды 0–6, лантаноиды и актиноиды — ряды 7 и 8 со столбца 3 (как в C4). */
-function position(e: PeriodicElement): [number, number] {
+export function position(e: PeriodicElement): [number, number] {
   if (e.row === 'lanthanides') return [7, 2 + e.number - 57];
   if (e.row === 'actinides') return [8, 2 + e.number - 89];
   return [e.period - 1, e.group! - 1];
 }
 
-const ROWS = 9;
-const COLS = 18;
+export const ROWS = 9;
+export const COLS = 18;
 
 /**
  * Вид «Таблица» в Explore (решение 3, REQ-ATL-03): 118 элементов, 60 — с уроками (ячейка открывает окно элемента),

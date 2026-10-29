@@ -5270,3 +5270,235 @@
 :root[data-theme='light'] .atlas .atlas-xp {
   color: #8a6100;
 }
+
+/* ===== Квиз «Проверь знания», этап T2 (docs/TESTS_TZ.md, REQ-TST-10, REQ-TST-11) ===== */
+
+/* Режимы на стартовом экране: карточки-радиокнопки в стиле атласа; «По семейству» — с выбором семейства. */
+.atlas .atlas-quiz-modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto var(--spacing-lg);
+  padding: 0;
+  border: 0;
+  text-align: left;
+}
+
+.atlas .atlas-quiz-mode {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.atlas .atlas-quiz-mode:hover {
+  border-color: rgba(var(--accent-rgb), 0.5);
+}
+
+.atlas .atlas-quiz-mode[data-checked] {
+  border-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.14);
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.3);
+}
+
+/* Радиокнопка невидима и растянута на всю карточку: клик по карточке — выбор, клавиатура — стрелки. */
+.atlas .atlas-quiz-mode input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.atlas .atlas-quiz-mode:has(input:focus-visible) {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .atlas-quiz-mode-title {
+  font: 700 1rem var(--font-display);
+  color: var(--text-primary);
+}
+
+.atlas .atlas-quiz-mode-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.atlas .atlas-quiz-family {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.atlas .atlas-quiz-family select {
+  flex: 1;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.atlas .atlas-quiz-family option {
+  background: #12121d;
+  color: #fff;
+}
+
+.atlas .atlas-quiz-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: var(--spacing-md);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 600px) {
+  .atlas .atlas-quiz-modes {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Схема Бора: ядро и электроны по оболочкам, без надписей (REQ-TST-10.2). */
+.atlas .atest-bohr {
+  display: block;
+  width: min(240px, 70%);
+  height: auto;
+  margin: 4px auto 16px;
+}
+
+.atlas .atest-bohr-shell {
+  fill: none;
+  stroke: rgba(148, 163, 184, 0.55);
+  stroke-width: 1.2;
+}
+
+.atlas .atest-bohr-electron {
+  fill: #3b82f6;
+  stroke: #dbeafe;
+  stroke-width: 1;
+  filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.8));
+}
+
+.atlas .atest-bohr-nucleus {
+  fill: #f97316;
+  stroke: #fdba74;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.6));
+}
+
+/* «Найдите на таблице» (REQ-TST-10.3): компактная сетка атласа, на телефоне — прокрутка внутри блока. */
+.atlas .atest-table .atlas-ptable-scroll {
+  margin: 0 -4px;
+}
+
+.atlas .atest-table .atlas-ptable-grid {
+  min-width: 620px;
+  gap: 4px;
+}
+
+.atlas .atest-table .atlas-ptable-cell,
+.atlas .atest-table .atlas-ptable-marker {
+  min-height: 34px;
+  border-radius: 7px;
+}
+
+.atlas .atest-table .atlas-ptable-symbol {
+  font-size: 0.85rem;
+}
+
+.atlas .atest-cell {
+  width: 100%;
+  font: inherit;
+}
+
+.atlas .atest-cell:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+.atlas .atest-cell[data-state='selected'] {
+  border-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.3);
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.6);
+}
+
+.atlas .atest-cell[data-state='correct'] {
+  border-color: var(--success);
+  background: rgba(52, 199, 89, 0.3);
+  box-shadow: 0 0 16px rgba(52, 199, 89, 0.6);
+  opacity: 1 !important;
+}
+
+.atlas .atest-cell[data-state='wrong'] {
+  border-color: var(--accent-red);
+  background: rgba(255, 59, 48, 0.3);
+  opacity: 1 !important;
+}
+
+.atlas .atest-cell[aria-disabled='true'] {
+  cursor: default;
+}
+
+.atlas .atest-table-status {
+  min-height: 1.4em;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.atlas .atest-table-picked {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.atlas .atest-submit {
+  margin-top: 12px;
+}
+
+.atlas .atest-case {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+:root[data-theme='light'] .atlas .atlas-quiz-mode {
+  border-color: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+:root[data-theme='light'] .atlas .atlas-quiz-mode[data-checked] {
+  border-color: var(--accent-blue);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+:root[data-theme='light'] .atlas .atlas-quiz-family select {
+  border-color: rgba(0, 0, 0, 0.2);
+  background: #fff;
+}
+
+:root[data-theme='light'] .atlas .atlas-quiz-family option {
+  background: #fff;
+  color: #111;
+}
+
+:root[data-theme='light'] .atlas .atest-case {
+  color: #8a6100;
+}

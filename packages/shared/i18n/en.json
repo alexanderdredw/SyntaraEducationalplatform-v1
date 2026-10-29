@@ -2190,7 +2190,37 @@
       "greatJob": "Great job! No specific topics for review.",
       "easy": "Easy",
       "medium": "Medium",
-      "hard": "Hard"
+      "hard": "Hard",
+      "q": {
+        "symbolToName": "Which element has the symbol {symbol}?",
+        "nameToSymbol": "What is the symbol of {name}?",
+        "trueFalse": "True or false?",
+        "true": "True",
+        "false": "False",
+        "factFamily": "{name} belongs to the family “{family}”.",
+        "factPeriod": "{name} is in period {period}.",
+        "factGroup": "{name} is in group {group}.",
+        "factNumber": "The atomic number of {name} is greater than that of {other}.",
+        "bohrCount": "How many electrons does this atom have?",
+        "bohrElement": "Which element is shown in the atom diagram?",
+        "tableName": "Find {name} in the table.",
+        "tableCell": "Find in the table: period {period}, group {group}.",
+        "config": "{config} — which element is this?",
+        "typeSymbol": "Type the symbol of {name}."
+      },
+      "modes": {
+        "title": "Mode",
+        "quick": "Quick",
+        "quickText": "10 questions, mixed types",
+        "family": "By family",
+        "familyText": "Questions only about the elements of one family",
+        "familyPick": "Family",
+        "mistakes": "Work on mistakes",
+        "mistakesText": "Elements you got wrong in your last 5 attempts",
+        "table": "Table challenge",
+        "tableText": "Find elements in the periodic table",
+        "noMistakes": "No mistakes — great job!"
+      }
     },
     "search": {
       "title": "Search Atlas",
@@ -2300,6 +2330,18 @@
       "retry": "Try again",
       "toLesson": "To the lesson",
       "toAtlas": "To the atlas"
+    },
+    "caseHint": "Pay attention to the capital letter",
+    "table": {
+      "label": "Periodic table — choose a cell",
+      "cell": "{symbol}, period {period}, group {group}",
+      "cellRow": "{symbol}, period {period}",
+      "picked": "Selected: {symbol}",
+      "hint": "Two periods are highlighted — the answer is in one of them",
+      "correct": "Correct cell: {symbol}, period {period}"
+    },
+    "bohr": {
+      "label": "Atom diagram: {count} shells, electrons per shell — {list}"
     }
   }
 }

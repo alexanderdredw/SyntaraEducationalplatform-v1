@@ -39,21 +39,69 @@ describe('atlas (integration)', () => {
     return login(http, login_, 'student-pass-1');
   };
 
-  /** Ответить на все вопросы сессии первым вариантом. */
-  async function answerAll(
-    s: Session,
-    session: { id: string; question: { options: Array<{ id: string }> } | null },
-  ) {
+  interface Question {
+    type: string | null;
+    answerKind: 'choice' | 'boolean' | 'input' | 'table';
+    options: Array<{ id: string; title: string }>;
+  }
+  /** Элементы с уроками (ID темы — ответ на вопрос «Найдите на таблице»). */
+  let elements: Array<{ topicId: string; symbol: string; number: number; group: string; title: string }>;
+
+  /** Ответ «наугад» на вопрос любого вида: первый вариант, первая ячейка таблицы, символ «X». */
+  const anyAnswer = (q: Question) =>
+    q.answerKind === 'input'
+      ? { text: 'X' }
+      : q.answerKind === 'table'
+        ? { optionId: elements[0]!.topicId }
+        : { optionId: q.options[0]!.id };
+
+  /** Ответить на все вопросы сессии; типы заданных вопросов — по порядку. */
+  async function answerAll(s: Session, session: { id: string; question: Question | null }) {
     let question = session.question;
+    const types: Array<string | null> = [];
     while (question) {
+      types.push(question.type);
       const res = await as(s)
-        .post(`/api/student/atlas-quiz/${session.id}/answers`, { optionId: question.options[0]!.id })
+        .post(`/api/student/atlas-quiz/${session.id}/answers`, anyAnswer(question))
         .expect(200);
       expect(typeof res.body.correct).toBe('boolean');
-      expect(question.options.map((o) => o.id)).toContain(res.body.correctOptionId);
+      if (question.answerKind === 'choice' || question.answerKind === 'boolean')
+        expect(question.options.map((o) => o.id)).toContain(res.body.correctOptionId);
       question = res.body.next;
     }
+    return types;
   }
+
+  /** Состояние сессии напрямую (тип текущего вопроса выбирается случайно — для проверки конкретного типа). */
+  async function sessionState(sessionId: string) {
+    const [row] = await stack.db
+      .select({ state: schema.atlasQuizSessions.state })
+      .from(schema.atlasQuizSessions)
+      .where(eq(schema.atlasQuizSessions.id, sessionId));
+    return row!.state as { current: Record<string, unknown> & { item: string }; level: number };
+  }
+  async function setCurrent(sessionId: string, patch: (item: string) => Record<string, unknown>) {
+    const state = await sessionState(sessionId);
+    state.current = { item: state.current.item, level: state.level, ...patch(state.current.item) };
+    await stack.db
+      .update(schema.atlasQuizSessions)
+      .set({ state })
+      .where(eq(schema.atlasQuizSessions.id, sessionId));
+    return state.current;
+  }
+  /** Текущий вопрос — выбор элемента по описанию из 4 вариантов. */
+  const forceChoice = (sessionId: string) =>
+    setCurrent(sessionId, (item) => ({
+      type: 'description',
+      answer: item,
+      options: [
+        item,
+        ...elements
+          .filter((e) => e.topicId !== item)
+          .slice(0, 3)
+          .map((e) => e.topicId),
+      ],
+    }));
 
   /** Ответы сессии задаются напрямую: вопросы случайные, правильные варианты заранее неизвестны. */
   async function setAnswers(sessionId: string, marks: Array<{ correct: boolean; hinted: boolean }>) {
@@ -80,6 +128,7 @@ describe('atlas (integration)', () => {
       .from(schema.subjects)
       .where(eq(schema.subjects.code, 'chemistry'));
     chemistry = row!.id;
+    elements = (await guest(`/api/public/subjects/${chemistry}/atlas`).expect(200)).body.elements;
   });
 
   afterAll(async () => {
@@ -174,7 +223,9 @@ describe('atlas (integration)', () => {
     expect(start.body).toMatchObject({ kind: 'elements', status: 'in_progress', total: 10, answered: 0 });
     const q = start.body.question;
     expect(q).toMatchObject({ index: 1, difficulty: 'medium' });
-    expect(q.options).toHaveLength(4);
+    // Средний уровень (REQ-TST-10): «Верно/Неверно», описание, схема Бора, таблица.
+    expect(['fact-true-false', 'description', 'bohr', 'table-click']).toContain(q.type);
+    expect(q.options).toHaveLength({ choice: 4, boolean: 2, table: 0, input: 0 }[q.answerKind as string]!);
     expect(JSON.stringify(q)).not.toMatch(/correct/i);
     expect(q.text).not.toMatch(/^___/);
 
@@ -231,6 +282,8 @@ describe('atlas (integration)', () => {
     ).body;
     expect(start).toMatchObject({ hintsLeft: 3, answers: [] });
     expect(start.question.removed).toEqual([]);
+    await forceChoice(start.id);
+    start.question = (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question;
     const hint = () => as(s).post(`/api/student/atlas-quiz/${start.id}/hint`);
     const first = (await hint().expect(200)).body;
     expect(first.hintsLeft).toBe(2);
@@ -262,6 +315,8 @@ describe('atlas (integration)', () => {
     // Ещё две подсказки — и лимит исчерпан.
     let next = answer.next;
     for (let i = 0; i < 2; i++) {
+      await forceChoice(start.id);
+      next = (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question;
       const removed = (await hint().expect(200)).body.removedOptionIds as string[];
       const option = next.options.find((o: { id: string }) => !removed.includes(o.id));
       next = (
@@ -395,7 +450,10 @@ describe('atlas (integration)', () => {
       const preview = await as(teacher)
         .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
         .expect(200);
-      for (const q of preview.body.questions) for (const o of q.options) seen.add(o);
+      for (const q of preview.body.questions) {
+        seen.add(q.answer.title);
+        for (const o of q.options) seen.add(o.title);
+      }
     }
     const formerlySkipped = [
       'Углерод',
@@ -420,16 +478,19 @@ describe('atlas (integration)', () => {
       .expect(200);
     expect(preview.body.questions).toHaveLength(10);
     for (const q of preview.body.questions) {
-      expect(q.options).toHaveLength(4);
-      expect(q.options[q.correct]).toBe(q.answer.title);
+      if (q.answerKind === 'input') expect(q.correctText).toBe(q.answer.symbol);
+      else if (q.answerKind === 'table')
+        expect(q.correctOptionId).toBe(elements.find((e) => e.symbol === q.answer.symbol)!.topicId);
+      else expect(q.options.map((o: { id: string }) => o.id)).toContain(q.correctOptionId);
       expect(q.answer.code).toBeTruthy();
     }
     const scientists = await as(teacher)
       .get(`/api/teacher/atlas/${chemistry}/preview?kind=scientists`)
       .expect(200);
     expect(scientists.body.questions).toHaveLength(9);
-    expect(scientists.body.questions[0].options[scientists.body.questions[0].correct]).toBe(
-      scientists.body.questions[0].answer.title,
+    const first = scientists.body.questions[0];
+    expect(first.options.find((o: { id: string }) => o.id === first.correctOptionId).title).toBe(
+      first.answer.title,
     );
     await as(teacher).get(`/api/teacher/atlas/${chemistry}/preview?kind=x`).expect(400);
     await as(teacher).get(`/api/teacher/atlas/${B.subjectAnatomy}/preview?kind=elements`).expect(404);
@@ -448,5 +509,288 @@ describe('atlas (integration)', () => {
     for (const q of topic.body.questions)
       expect(q.options.map((o: { id: string }) => o.id)).toContain(q.correctOptionId);
     await as(student).get(`/api/teacher/topics/${oxygen}/test`).expect(403);
+  });
+
+  /* ---------- T2 (docs/TESTS_TZ.md): новые типы вопросов и режимы ---------- */
+
+  it('AC-TST-10, REQ-TST-10 all 9 question types occur; types alternate (never three of a kind in a row)', async () => {
+    const seen = new Set<string>();
+    const noTriple = (types: Array<string | null>) =>
+      types.every((t, i) => i < 2 || t !== types[i - 1] || t !== types[i - 2]);
+    for (let i = 0; i < 12; i++) {
+      const preview = await as(teacher)
+        .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
+        .expect(200);
+      const types = preview.body.questions.map((q: { type: string }) => q.type);
+      expect(noTriple(types)).toBe(true);
+      for (const t of types) seen.add(t);
+    }
+    expect([...seen].sort()).toEqual(
+      [
+        'bohr',
+        'config',
+        'description',
+        'fact-true-false',
+        'fun-fact',
+        'name-to-symbol',
+        'symbol-to-name',
+        'table-click',
+        'type-symbol',
+      ].sort(),
+    );
+    // Ученик: типы по уровню, тоже без трёх одинаковых подряд.
+    const s = await register('atlas-types');
+    for (let i = 0; i < 2; i++) {
+      const start = (
+        await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+      ).body;
+      expect(noTriple(await answerAll(s, start))).toBe(true);
+    }
+  });
+
+  it('REQ-TST-10.2 the Bohr diagram: shells without the symbol; «how many electrons» on the easy level', async () => {
+    let found = 0;
+    for (let i = 0; i < 12 && found < 3; i++) {
+      const preview = await as(teacher)
+        .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements`)
+        .expect(200);
+      for (const q of preview.body.questions) {
+        if (q.type !== 'bohr') continue;
+        found++;
+        const total = (q.shells as number[]).reduce((a, b) => a + b, 0);
+        expect(total).toBe(q.answer.number);
+        // Без надписей, выдающих ответ: ни символа, ни названия, ни номера в тексте.
+        expect(q.text).not.toContain(q.answer.title);
+        expect(q.text).not.toMatch(new RegExp(`\\b${q.answer.symbol}\\b`));
+        if (q.difficulty === 'easy') {
+          expect(q.text).toBe('Сколько электронов у этого атома?');
+          expect(q.options.map((o: { title: string }) => o.title)).toContain(String(total));
+        } else expect(q.options.map((o: { title: string }) => o.title)).toContain(q.answer.title);
+      }
+    }
+    expect(found).toBeGreaterThan(0);
+  });
+
+  it('REQ-TST-10 «Впишите символ»: case matters; «ca» is wrong with the capital-letter hint; the answer is shown', async () => {
+    const s = await register('atlas-symbol');
+    const calcium = elements.find((e) => e.symbol === 'Ca')!;
+    const start = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+    ).body;
+    const force = () =>
+      setCurrent(start.id, () => ({
+        item: calcium.topicId,
+        type: 'type-symbol',
+        options: [],
+        answer: 'Ca',
+        level: 3,
+      }));
+    await force();
+    const shown = (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question;
+    expect(shown).toMatchObject({
+      type: 'type-symbol',
+      answerKind: 'input',
+      options: [],
+      text: 'Впишите символ элемента «Кальций».',
+    });
+    // Подсказка «50/50» к вводу недоступна; вариант вместо текста — 400.
+    expect(
+      (await as(s).post(`/api/student/atlas-quiz/${start.id}/hint`).expect(409)).body.fieldErrors,
+    ).toEqual({
+      hint: 'hintUnavailable',
+    });
+    await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: 'Ca' }).expect(400);
+    const wrong = (
+      await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { text: 'ca' }).expect(200)
+    ).body;
+    expect(wrong).toMatchObject({
+      correct: false,
+      caseHint: true,
+      correctAnswer: 'Ca',
+      correctOptionId: null,
+    });
+    await force();
+    const right = (
+      await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { text: ' Ca ' }).expect(200)
+    ).body;
+    expect(right).toMatchObject({ correct: true, caseHint: false });
+  });
+
+  it('REQ-TST-10.3 table-click: a cell with a lesson answers; «50/50» highlights two periods; the answer is named', async () => {
+    const s = await register('atlas-table');
+    const sulfur = elements.find((e) => e.symbol === 'S')!;
+    const start = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+    ).body;
+    await setCurrent(start.id, () => ({
+      item: sulfur.topicId,
+      type: 'table-click',
+      options: [],
+      answer: sulfur.topicId,
+      variant: 'cell',
+      level: 3,
+    }));
+    const shown = (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question;
+    expect(shown).toMatchObject({
+      answerKind: 'table',
+      text: 'Найдите на таблице: период 3, группа 16.',
+      rows: [],
+    });
+    const hint = (await as(s).post(`/api/student/atlas-quiz/${start.id}/hint`).expect(200)).body;
+    expect(hint.removedOptionIds).toEqual([]);
+    expect(hint.rows).toHaveLength(2);
+    expect(hint.rows).toContain(3);
+    expect((await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question.rows).toEqual(
+      hint.rows,
+    );
+    // Не элемент с уроком — 400; ячейка серы — верно (с подсказкой).
+    await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: 'nope' }).expect(400);
+    const answer = (
+      await as(s)
+        .post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: sulfur.topicId })
+        .expect(200)
+    ).body;
+    expect(answer).toMatchObject({
+      correct: true,
+      hinted: true,
+      correctOptionId: sulfur.topicId,
+      correctAnswer: 'Сера (S)',
+    });
+  });
+
+  it('REQ-TST-10.4 true/false statements come from the data and are checked on the server', async () => {
+    const s = await register('atlas-fact');
+    const xenon = elements.find((e) => e.symbol === 'Xe')!;
+    const start = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+    ).body;
+    await setCurrent(start.id, () => ({
+      item: xenon.topicId,
+      type: 'fact-true-false',
+      options: ['true', 'false'],
+      answer: 'true',
+      fact: { kind: 'family', family: 'noble_gas' },
+      level: 1,
+    }));
+    const shown = (await as(s).get(`/api/student/atlas-quiz/${start.id}`).expect(200)).body.question;
+    expect(shown).toMatchObject({
+      answerKind: 'boolean',
+      intro: 'Верно или неверно?',
+      text: 'Ксенон относится к семейству «Благородный газ».',
+      options: [
+        { id: 'true', title: 'Верно' },
+        { id: 'false', title: 'Неверно' },
+      ],
+    });
+    await as(s).post(`/api/student/atlas-quiz/${start.id}/hint`).expect(409);
+    const answer = (
+      await as(s).post(`/api/student/atlas-quiz/${start.id}/answers`, { optionId: 'false' }).expect(200)
+    ).body;
+    expect(answer).toMatchObject({ correct: false, correctOptionId: 'true' });
+  });
+
+  it('AC-TST-11, REQ-TST-11 modes: «Таблица-челлендж» only table-click; «По семейству» only its elements; validation', async () => {
+    const s = await register('atlas-modes');
+    const table = (
+      await as(s)
+        .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements', mode: 'table' })
+        .expect(201)
+    ).body;
+    expect(table.mode).toBe('table');
+    expect(new Set(await answerAll(s, table))).toEqual(new Set(['table-click']));
+
+    const family = (
+      await as(s)
+        .post(`/api/student/subjects/${chemistry}/atlas-quiz`, {
+          kind: 'elements',
+          mode: 'family',
+          family: 'halogen',
+        })
+        .expect(201)
+    ).body;
+    expect(family).toMatchObject({ mode: 'family', total: 10 });
+    let q = family.question;
+    while (q) {
+      const res = await as(s).post(`/api/student/atlas-quiz/${family.id}/answers`, anyAnswer(q)).expect(200);
+      expect(res.body.answer.family).toBe('halogen');
+      q = res.body.next;
+    }
+    const done = (await as(s).post(`/api/student/atlas-quiz/${family.id}/finish`).expect(200)).body;
+    expect(done.result.families).toEqual([expect.objectContaining({ family: 'halogen', total: 10 })]);
+    // Нет семейства, семейство меньше 4 элементов с уроками, неизвестный режим — 400.
+    for (const body of [{ mode: 'family' }, { mode: 'family', family: 'actinide' }, { mode: 'speed' }])
+      await as(s)
+        .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements', ...body })
+        .expect(400);
+  });
+
+  it('AC-TST-11, REQ-TST-11 «Работа над ошибками»: elements with mistakes in the last 5 attempts; none → noMistakes', async () => {
+    const s = await register('atlas-mistakes');
+    const none = await as(s)
+      .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements', mode: 'mistakes' })
+      .expect(409);
+    expect(none.body.fieldErrors).toEqual({ quiz: 'noMistakes' });
+    const first = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements' }).expect(201)
+    ).body;
+    await answerAll(s, first);
+    await setAnswers(
+      first.id,
+      [true, false, true, false, true, true, true, true, true, true].map((correct) => ({
+        correct,
+        hinted: false,
+      })),
+    );
+    await as(s).post(`/api/student/atlas-quiz/${first.id}/finish`).expect(200);
+    const [row] = await stack.db
+      .select({ state: schema.atlasQuizSessions.state })
+      .from(schema.atlasQuizSessions)
+      .where(eq(schema.atlasQuizSessions.id, first.id));
+    const wrong = (row!.state as { answers: Array<{ item: string; correct: boolean }> }).answers
+      .filter((a) => !a.correct)
+      .map((a) => a.item);
+    const work = (
+      await as(s)
+        .post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'elements', mode: 'mistakes' })
+        .expect(201)
+    ).body;
+    expect(work).toMatchObject({ mode: 'mistakes', total: 2 });
+    const asked = (await sessionState(work.id)) as unknown as { items: string[] };
+    expect([...asked.items].sort()).toEqual([...wrong].sort());
+  });
+
+  it('AC-TST-12 a teacher previews every mode without records: table, family; «Работа над ошибками» → noMistakes', async () => {
+    const table = await as(teacher)
+      .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements&mode=table`)
+      .expect(200);
+    expect(
+      table.body.questions.every(
+        (q: { type: string; hintRows: number[] }) => q.type === 'table-click' && q.hintRows.length === 2,
+      ),
+    ).toBe(true);
+    const family = await as(teacher)
+      .get(`/api/teacher/atlas/${chemistry}/preview?kind=elements&mode=family&family=noble_gas`)
+      .expect(200);
+    expect(
+      family.body.questions.every((q: { answer: { family: string } }) => q.answer.family === 'noble_gas'),
+    ).toBe(true);
+    await as(teacher).get(`/api/teacher/atlas/${chemistry}/preview?kind=elements&mode=mistakes`).expect(409);
+    await as(teacher).get(`/api/teacher/atlas/${chemistry}/preview?kind=elements&mode=family`).expect(400);
+    const sessions = await stack.db
+      .select()
+      .from(schema.atlasQuizSessions)
+      .where(eq(schema.atlasQuizSessions.studentId, teacher.userId));
+    expect(sessions).toEqual([]);
+  });
+
+  it('REQ-TST-12 the scientists game keeps its questions (no new types), with T1 feedback and «50/50»', async () => {
+    const s = await register('atlas-sci-t2');
+    const start = (
+      await as(s).post(`/api/student/subjects/${chemistry}/atlas-quiz`, { kind: 'scientists' }).expect(201)
+    ).body;
+    expect(start.question).toMatchObject({ type: null, answerKind: 'choice', shells: null, rows: [] });
+    expect(start.question.options).toHaveLength(4);
+    const hint = (await as(s).post(`/api/student/atlas-quiz/${start.id}/hint`).expect(200)).body;
+    expect(hint.removedOptionIds).toHaveLength(2);
   });
 });

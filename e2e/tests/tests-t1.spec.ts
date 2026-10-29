@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
+import { answerAny, answerAtlas, type QuizElement } from './atlas-solver';
 import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
 
 const ru = bundles.ru;
@@ -272,7 +273,7 @@ async function chemistry(api: APIRequestContext) {
   return {
     id,
     base: `/ru/learn/subjects/${id}`,
-    elements: atlas.elements as Array<{ title: string; description: string | null; funFact: string | null }>,
+    elements: atlas.elements as QuizElement[],
   };
 }
 
@@ -284,20 +285,6 @@ async function atlasStudent(page: Page, baseURL: string) {
   );
   await signIn(page, api, baseURL);
   return api;
-}
-
-/** Правильный вариант по тексту загадки: «___» — любое слово, совпадение с описанием или фактом элемента. */
-function solve(
-  text: string,
-  options: string[],
-  elements: Array<{ title: string; description: string | null; funFact: string | null }>,
-) {
-  const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const pattern = new RegExp(text.split('___').map(escape).join('.+?'), 'i');
-  return options.find((title) => {
-    const e = elements.find((x) => x.title === title);
-    return e && [e.description, e.funFact].some((s) => s && pattern.test(s));
-  });
 }
 
 test.describe('Тестирование T1 в атласе (docs/TESTS_TZ.md)', () => {
@@ -315,25 +302,22 @@ test.describe('Тестирование T1 в атласе (docs/TESTS_TZ.md)', 
     await expect(page.getByTestId('atest-difficulty')).toContainText(T.difficulty.medium);
     await expect(page.getByTestId('atest-panel')).toContainText(T.difficulty.adaptive);
 
-    const options = async () =>
-      (
-        await page
-          .locator('[data-testid="atest-option"]:not([aria-disabled]) .atest-opt-text')
-          .allTextContents()
-      ).map((s) => s.trim());
-    const pick = (title: string) =>
-      page.locator('[data-testid="atest-option"]').filter({ has: page.getByText(title, { exact: true }) });
-
-    // Вопрос 1 — «50/50»: два варианта убраны; верный ответ — свечение и объяснение «Это …».
-    await page.getByTestId('atest-hint').click();
-    await expect(page.locator('[data-testid="atest-option"][data-state="removed"]')).toHaveCount(2);
+    // «50/50» — на первом из трёх вопросов, где она есть (у «Верно/Неверно» и ввода её нет): убраны 2 варианта
+    // или подсвечены 2 периода таблицы. Типы вопросов случайные (REQ-TST-10) — ответ ищет общий решатель.
+    let hinted = 0;
     for (let i = 1; i <= 3; i++) {
-      const text = (await page.getByTestId('atest-question').textContent())!;
-      const right = solve(text, await options(), chem.elements);
-      expect(right, text).toBeTruthy();
-      await pick(right!).click();
+      const hint = page.getByTestId('atest-hint');
+      if (!hinted && (await hint.isVisible()) && (await hint.isEnabled())) {
+        await hint.click();
+        if (await page.getByTestId('atest-table').isVisible())
+          await expect(page.locator('.atest-table-status')).toContainText(T.table.hint);
+        else await expect(page.locator('[data-testid="atest-option"][data-state="removed"]')).toHaveCount(2);
+        hinted = 1;
+      }
+      await answerAtlas(page, chem.elements);
+      // Верный ответ — свечение и объяснение «Это {название} (…)».
       await expect(page.getByTestId('atest-feedback')).toContainText(T.correct);
-      await expect(page.getByTestId('atest-explanation')).toContainText(`${right} (`);
+      await expect(page.getByTestId('atest-explanation')).toContainText(' (');
       await expect(page.getByTestId('atest-lesson')).toHaveAttribute('href', /\/explore\//);
       await page.getByTestId('atest-next').click();
     }
@@ -343,12 +327,9 @@ test.describe('Тестирование T1 в атласе (docs/TESTS_TZ.md)', 
     await expect(page.getByTestId('atest-streak')).toHaveText(`🔥 ${fill(T.streak, { count: 3 })}`);
     await expectNoSeriousA11yViolations(page);
 
-    // Остальные — заведомо неверно (вариант, не подходящий к загадке).
+    // Остальные — заведомо неверно (другой вариант, другая ячейка, другой символ).
     for (let i = 4; i <= 10; i++) {
-      const text = (await page.getByTestId('atest-question').textContent())!;
-      const all = await options();
-      const right = solve(text, all, chem.elements);
-      await pick(all.find((o) => o !== right)!).click();
+      await answerAtlas(page, chem.elements, true);
       await expect(page.getByTestId('atest-feedback')).toContainText(T.incorrect);
       await page.getByTestId('atest-next').click();
     }
@@ -357,9 +338,9 @@ test.describe('Тестирование T1 в атласе (docs/TESTS_TZ.md)', 
     await expect(result.locator('.atest-result-title')).toHaveText(
       fill(T.result.score, { correct: 3, total: 10 }),
     );
-    await expect(result).toContainText(fill(T.result.hinted, { count: 1 }));
-    // XP: 2 + 0,5 = 2,5 → 2 (BR-TST-01).
-    await expect(page.getByTestId('atlas-quiz-xp')).toHaveText(fill(st.quiz.xp, { xp: 2 }));
+    if (hinted) await expect(result).toContainText(fill(T.result.hinted, { count: 1 }));
+    // XP: с подсказкой 2 + 0,5 = 2,5 → 2, без неё — 3 (BR-TST-01).
+    await expect(page.getByTestId('atlas-quiz-xp')).toHaveText(fill(st.quiz.xp, { xp: hinted ? 2 : 3 }));
     await expect(page.getByTestId('atlas-quiz-families').locator('li').first()).toBeVisible();
     await expect(page.getByTestId('atlas-quiz-mistakes').locator('li')).toHaveCount(7);
     await expectNoSeriousA11yViolations(page);
@@ -468,8 +449,15 @@ test.describe('Тестирование T1 в атласе (docs/TESTS_TZ.md)', 
     await page.goto(`${chem.base}/quiz`);
     await page.getByTestId('atlas-quiz-start').click();
     await expect(page.getByTestId('atlas-quiz-preview')).toContainText(ru.atlas.preview.note);
+    // Первый вопрос с «50/50» (у «Верно/Неверно» и ввода её нет — REQ-TST-10): убраны 2 варианта или подсвечены 2 периода.
+    while (!(await page.getByTestId('atest-hint').isVisible())) {
+      await answerAny(page);
+      await page.getByTestId('atest-next').click();
+    }
     await page.getByTestId('atest-hint').click();
-    await expect(page.locator('[data-testid="atest-option"][data-state="removed"]')).toHaveCount(2);
+    if (await page.getByTestId('atest-table').isVisible())
+      await expect(page.locator('.atest-table-status')).toContainText(T.table.hint);
+    else await expect(page.locator('[data-testid="atest-option"][data-state="removed"]')).toHaveCount(2);
     await expect(page.getByTestId('atest-hint')).toHaveText(fill(T.hintLeft, { count: 2 }));
     expect(hintCalls).toBe(0);
     // «× Завершить» у учителя: прогресс не сохраняется — возврат на стартовый экран.

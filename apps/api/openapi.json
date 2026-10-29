@@ -6273,7 +6273,7 @@
             "description": ""
           },
           "409": {
-            "description": "quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»)"
+            "description": "quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»); noMistakes: «Работа над ошибками» без ошибок"
           }
         },
         "security": [
@@ -6526,6 +6526,41 @@
             "required": true,
             "in": "path",
             "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "family",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "alkali_metal",
+                "alkaline_earth",
+                "transition_metal",
+                "post_transition",
+                "metalloid",
+                "nonmetal",
+                "halogen",
+                "noble_gas",
+                "lanthanide",
+                "actinide"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "mode",
+            "required": false,
+            "in": "query",
+            "description": "REQ-TST-11",
+            "schema": {
+              "enum": [
+                "quick",
+                "family",
+                "mistakes",
+                "table"
+              ],
               "type": "string"
             }
           },
@@ -13351,6 +13386,32 @@
             "type": "string",
             "format": "uuid",
             "description": "REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — вопросы только по её ошибкам"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "quick",
+              "family",
+              "mistakes",
+              "table"
+            ],
+            "description": "REQ-TST-11: режим квиза элементов (по умолчанию quick)"
+          },
+          "family": {
+            "type": "string",
+            "enum": [
+              "alkali_metal",
+              "alkaline_earth",
+              "transition_metal",
+              "post_transition",
+              "metalloid",
+              "nonmetal",
+              "halogen",
+              "noble_gas",
+              "lanthanide",
+              "actinide"
+            ],
+            "description": "REQ-TST-11 «По семейству»: семейство (≥ 4 элементов с уроками)"
           }
         },
         "required": [
@@ -13394,6 +13455,32 @@
             "type": "number",
             "description": "Номер вопроса с 1"
           },
+          "type": {
+            "type": "string",
+            "enum": [
+              "symbol-to-name",
+              "name-to-symbol",
+              "fact-true-false",
+              "description",
+              "bohr",
+              "table-click",
+              "config",
+              "fun-fact",
+              "type-symbol"
+            ],
+            "nullable": true,
+            "description": "REQ-TST-10: тип вопроса квиза элементов; null — игра про учёных и сессии до T2"
+          },
+          "answerKind": {
+            "type": "string",
+            "enum": [
+              "choice",
+              "boolean",
+              "input",
+              "table"
+            ],
+            "description": "Как отвечать: выбор варианта, «Верно/Неверно», ввод символа, клик по ячейке таблицы"
+          },
           "difficulty": {
             "type": "string",
             "enum": [
@@ -13401,6 +13488,11 @@
               "medium",
               "hard"
             ]
+          },
+          "intro": {
+            "type": "string",
+            "nullable": true,
+            "description": "Заголовок над текстом («Какой это элемент?»)"
           },
           "text": {
             "type": "string"
@@ -13418,14 +13510,34 @@
             "items": {
               "type": "string"
             }
+          },
+          "shells": {
+            "nullable": true,
+            "description": "REQ-TST-10.2: схема Бора — электроны по оболочкам (без символа); null — не схема",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "rows": {
+            "description": "REQ-TST-10.3: «50/50» у таблицы — подсвеченные периоды (пусто — подсказки нет)",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           }
         },
         "required": [
           "index",
+          "type",
+          "answerKind",
           "difficulty",
+          "intro",
           "text",
           "options",
-          "removed"
+          "removed",
+          "shells",
+          "rows"
         ]
       },
       "AtlasFamilyScoreDto": {
@@ -13587,6 +13699,33 @@
               "scientists"
             ]
           },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "quick",
+              "family",
+              "mistakes",
+              "table"
+            ],
+            "description": "REQ-TST-11: режим квиза"
+          },
+          "family": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "alkali_metal",
+              "alkaline_earth",
+              "transition_metal",
+              "post_transition",
+              "metalloid",
+              "nonmetal",
+              "halogen",
+              "noble_gas",
+              "lanthanide",
+              "actinide"
+            ],
+            "description": "REQ-TST-11 «По семейству»: семейство (для «Пройти ещё раз»)"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -13639,6 +13778,8 @@
         "required": [
           "id",
           "kind",
+          "mode",
+          "family",
           "status",
           "total",
           "answered",
@@ -13654,12 +13795,13 @@
         "properties": {
           "optionId": {
             "type": "string",
-            "description": "ID варианта из вопроса"
+            "description": "ID варианта, «true»/«false» или ID элемента ячейки таблицы"
+          },
+          "text": {
+            "type": "string",
+            "description": "REQ-TST-10 «Впишите символ»: введённый символ"
           }
-        },
-        "required": [
-          "optionId"
-        ]
+        }
       },
       "AtlasAnswerInfoDto": {
         "type": "object",
@@ -13719,7 +13861,18 @@
             "description": "REQ-TST-04: ответ дан с подсказкой «50/50»"
           },
           "correctOptionId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный вариант (у таблицы — ID элемента); null — ответ вводом"
+          },
+          "correctAnswer": {
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный ответ словами — у ввода символа и таблицы (REQ-TST-10)"
+          },
+          "caseHint": {
+            "type": "boolean",
+            "description": "REQ-TST-10 «Впишите символ»: верные буквы, но не тот регистр («ca») — «Обратите внимание на заглавную букву»"
           },
           "answer": {
             "nullable": true,
@@ -13745,6 +13898,8 @@
           "correct",
           "hinted",
           "correctOptionId",
+          "correctAnswer",
+          "caseHint",
           "answer",
           "next"
         ]
@@ -13753,10 +13908,17 @@
         "type": "object",
         "properties": {
           "removedOptionIds": {
-            "description": "Два неверных варианта",
+            "description": "Два неверных варианта (у таблицы — пусто)",
             "type": "array",
             "items": {
               "type": "string"
+            }
+          },
+          "rows": {
+            "description": "REQ-TST-10.3: у таблицы — два подсвеченных периода (у выбора — пусто)",
+            "type": "array",
+            "items": {
+              "type": "number"
             }
           },
           "hintsLeft": {
@@ -13765,20 +13927,42 @@
         },
         "required": [
           "removedOptionIds",
+          "rows",
           "hintsLeft"
         ]
       },
       "PreviewQuestionDto": {
         "type": "object",
         "properties": {
-          "text": {
-            "type": "string"
+          "index": {
+            "type": "number",
+            "description": "Номер вопроса с 1"
           },
-          "options": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "type": {
+            "type": "string",
+            "enum": [
+              "symbol-to-name",
+              "name-to-symbol",
+              "fact-true-false",
+              "description",
+              "bohr",
+              "table-click",
+              "config",
+              "fun-fact",
+              "type-symbol"
+            ],
+            "nullable": true,
+            "description": "REQ-TST-10: тип вопроса квиза элементов; null — игра про учёных и сессии до T2"
+          },
+          "answerKind": {
+            "type": "string",
+            "enum": [
+              "choice",
+              "boolean",
+              "input",
+              "table"
+            ],
+            "description": "Как отвечать: выбор варианта, «Верно/Неверно», ввод символа, клик по ячейке таблицы"
           },
           "difficulty": {
             "type": "string",
@@ -13788,9 +13972,64 @@
               "hard"
             ]
           },
-          "correct": {
-            "type": "number",
-            "description": "Номер правильного варианта в options — проверка в браузере учителя"
+          "intro": {
+            "type": "string",
+            "nullable": true,
+            "description": "Заголовок над текстом («Какой это элемент?»)"
+          },
+          "text": {
+            "type": "string"
+          },
+          "options": {
+            "description": "Без признака правильного (BR-QZ-01)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtlasQuizOptionDto"
+            }
+          },
+          "removed": {
+            "description": "REQ-TST-04: варианты, убранные подсказкой «50/50» (пусто — подсказки нет)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "shells": {
+            "nullable": true,
+            "description": "REQ-TST-10.2: схема Бора — электроны по оболочкам (без символа); null — не схема",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "rows": {
+            "description": "REQ-TST-10.3: «50/50» у таблицы — подсвеченные периоды (пусто — подсказки нет)",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "correctOptionId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный вариант (у таблицы — ID элемента) — проверка в браузере учителя; null — ввод"
+          },
+          "correctText": {
+            "type": "string",
+            "nullable": true,
+            "description": "«Впишите символ»: правильный символ"
+          },
+          "correctAnswer": {
+            "type": "string",
+            "nullable": true,
+            "description": "Правильный ответ словами (ввод, таблица)"
+          },
+          "hintRows": {
+            "description": "«50/50» у таблицы — периоды для подсветки",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           "answer": {
             "description": "Правильный ответ — объяснение и «Открыть урок»",
@@ -13802,10 +14041,20 @@
           }
         },
         "required": [
+          "index",
+          "type",
+          "answerKind",
+          "difficulty",
+          "intro",
           "text",
           "options",
-          "difficulty",
-          "correct",
+          "removed",
+          "shells",
+          "rows",
+          "correctOptionId",
+          "correctText",
+          "correctAnswer",
+          "hintRows",
           "answer"
         ]
       },

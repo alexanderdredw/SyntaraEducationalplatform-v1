@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
+import { answerAny } from './atlas-solver';
 import { acceptCookies, bundles, expectNoSeriousA11yViolations, hasHorizontalScroll } from './support';
 
 const ru = bundles.ru;
@@ -50,15 +51,22 @@ const progressText = (i: number, n: number) =>
   ru.test.progress.replace('{index}', String(i)).replace('{count}', String(n));
 
 /**
- * Пройти тест атласа (docs/TESTS_TZ.md, T1): «Вопрос k из N», первый доступный вариант, обратная связь, «Далее».
+ * Пройти тест атласа (docs/TESTS_TZ.md, T1, T2): «Вопрос k из N», любой ответ (вариант, ячейка таблицы, символ),
+ * обратная связь, «Далее».
  */
 async function passAtlasTest(page: Page, total: number): Promise<void> {
   for (let i = 1; i <= total; i++) {
     await expect(page.getByTestId('atest-progress')).toHaveText(progressText(i, total));
-    await page.locator('[data-testid="atest-option"]:not([aria-disabled])').first().click();
+    const input = await page.locator('.atest-input').isVisible();
+    await answerAny(page);
     await expect(page.getByTestId('atest-feedback')).not.toBeEmpty();
-    // REQ-TST-01: правильный вариант подсвечен; переход — только по «Далее».
-    await expect(page.locator('[data-testid="atest-option"][data-state="correct"]')).toHaveCount(1);
+    // REQ-TST-01: правильный вариант (ячейка) подсвечен; у ввода — правильный ответ текстом; переход — по «Далее».
+    if (!input)
+      await expect(
+        page.locator(
+          '[data-testid="atest-option"][data-state="correct"], [data-testid="atest-cell"][data-state="correct"]',
+        ),
+      ).toHaveCount(1);
     await page.getByTestId('atest-next').click();
   }
 }

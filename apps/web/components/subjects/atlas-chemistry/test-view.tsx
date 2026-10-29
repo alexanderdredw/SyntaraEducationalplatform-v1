@@ -8,13 +8,15 @@ import { AppLink } from '../../app-link';
 import {
   canHint,
   type Difficulty,
+  hasHint,
   type RunSource,
   type RunSummary,
   type TestRun,
   useTestKeys,
   useTestRun,
 } from '../../learn/test-run';
-import { GROUP_COLORS } from './atlas-data';
+import { type AtlasElement, GROUP_COLORS } from './atlas-data';
+import { BohrDiagram, TablePick } from './table-pick';
 
 const LETTERS = 'ABCDEFGH';
 const DOTS: Record<Difficulty, number> = { easy: 1, medium: 2, hard: 3 };
@@ -33,7 +35,9 @@ export interface AtlasTestPlacement {
  * Тест в стиле атласа (docs/TESTS_TZ.md, T1; решение владельца 5 — тёмный фон, свечение, цвета семейств, шрифты
  * атласа): общий движок (learn/test-run.ts) — та же логика, что у теста платформы. Компьютер — две колонки (вопрос и
  * «Ход попытки»), узкий контейнер — одна колонка, «Ход попытки» сверху строкой (REQ-TST-06). `intro` — заголовок
- * вопроса («Какой это элемент?»), `accent` — цвет мягкого свечения верного ответа (цвет семейства элемента; рамка и галочка — зелёные).
+ * вопроса («Какой это элемент?»; у квиза атласа заголовок приходит с вопросом), `accent` — цвет мягкого свечения
+ * верного ответа (цвет семейства элемента; рамка и галочка — зелёные). `elements` — элементы с уроками для вопроса
+ * «Найдите на таблице» (REQ-TST-10.3).
  */
 export function AtlasTestRun({
   source,
@@ -43,11 +47,13 @@ export function AtlasTestRun({
   onRetry,
   onRetryMistakes,
   testId,
+  elements = [],
 }: {
   source: RunSource;
   placement: AtlasTestPlacement;
   intro?: string;
   accent?: string;
+  elements?: AtlasElement[];
   onRetry: () => void;
   /** «Повторить ошибки»: по умолчанию — как «Пройти ещё раз» (тест темы — новая попытка той же темы). */
   onRetryMistakes?: (summary: RunSummary) => void;
@@ -113,7 +119,13 @@ export function AtlasTestRun({
       <div className="atest-grid">
         <Panel run={run} />
         <div className="atest-main">
-          <Question key={run.question.id} run={run} intro={intro} accent={run.result?.accent ?? accent} />
+          <Question
+            key={run.question.id}
+            run={run}
+            intro={run.question.intro ?? intro}
+            accent={run.result?.accent ?? accent}
+            elements={elements}
+          />
         </div>
       </div>
     </div>
@@ -172,7 +184,7 @@ function ExitConfirm({
 function Panel({ run }: { run: TestRun }) {
   const t = useTranslations('test');
   const q = run.question!;
-  const showHint = q.type === 'single_choice' && q.options.length >= 4;
+  const showHint = hasHint(q);
   return (
     <aside className="atest-panel" aria-label={t('panel')} data-testid="atest-panel">
       <h4 className="atest-panel-title">{t('panel')}</h4>
@@ -228,7 +240,17 @@ function Panel({ run }: { run: TestRun }) {
   );
 }
 
-function Question({ run, intro, accent }: { run: TestRun; intro?: string; accent?: string | null }) {
+function Question({
+  run,
+  intro,
+  accent,
+  elements,
+}: {
+  run: TestRun;
+  intro?: string | null;
+  accent?: string | null;
+  elements: AtlasElement[];
+}) {
   const t = useTranslations('test');
   const q = run.question!;
   const result = run.result;
@@ -238,6 +260,7 @@ function Question({ run, intro, accent }: { run: TestRun; intro?: string; accent
     if (result) nextButton.current?.focus();
   }, [result]);
   const trueFalse = q.type === 'true_false';
+  const table = q.type === 'table_pick';
   const style = { '--atest-accent': accent ?? 'var(--success)' } as CSSProperties;
 
   return (
@@ -247,13 +270,38 @@ function Question({ run, intro, accent }: { run: TestRun; intro?: string; accent
           {intro}
         </h3>
       ) : null}
-      <p className="atest-text" id={intro ? undefined : `atq-${q.id}`} data-testid="atest-question">
+      <p className="atest-text" id={intro ? `atq-${q.id}-text` : `atq-${q.id}`} data-testid="atest-question">
         {q.text}
       </p>
+      {q.shells?.length ? <BohrDiagram shells={q.shells} /> : null}
       <p id={`atk-${q.id}`} className="atlas-sr-only">
-        {trueFalse ? t('trueFalseHint') : t('keyboardHint')}
+        {trueFalse ? t('trueFalseHint') : table ? null : t('keyboardHint')}
       </p>
-      {q.type === 'text_input' ? (
+      {table ? (
+        <>
+          <TablePick
+            elements={elements}
+            selected={run.selected}
+            onSelect={run.setSelected}
+            rows={q.rows ?? []}
+            correctId={result?.correctOptionId ?? null}
+            chosenId={result ? result.optionId : null}
+            disabled={Boolean(result) || run.busy}
+            labelledBy={intro ? `atq-${q.id}-text` : `atq-${q.id}`}
+          />
+          {result ? null : (
+            <button
+              type="button"
+              className="btn btn-primary atest-submit"
+              disabled={!run.selected || run.busy}
+              onClick={() => run.selected && void run.submit({ optionId: run.selected })}
+              data-testid="atest-submit"
+            >
+              {t('answer')}
+            </button>
+          )}
+        </>
+      ) : q.type === 'text_input' ? (
         <form
           className="atest-input-row"
           onSubmit={(e) => {
@@ -343,6 +391,11 @@ function Question({ run, intro, accent }: { run: TestRun; intro?: string; accent
         {result ? (
           <div className="atest-verdict" data-state={result.correct ? 'correct' : 'wrong'}>
             <p className="atest-verdict-title">{result.correct ? t('correct') : t('incorrect')}</p>
+            {result.caseHint ? (
+              <p className="atest-case" data-testid="atest-case">
+                {t('caseHint')}
+              </p>
+            ) : null}
             {result.correctAnswer && !result.correct ? (
               <p>{t('correctAnswer', { answer: result.correctAnswer })}</p>
             ) : null}

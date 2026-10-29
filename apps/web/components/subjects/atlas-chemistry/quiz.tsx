@@ -4,11 +4,20 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
-import { type AtlasQuizKind, HINT_LIMIT, pickHintRemovals } from '@syntara/shared';
+import {
+  ATLAS_QUIZ_MODES,
+  type AtlasQuizKind,
+  type AtlasQuizMode,
+  checkSymbol,
+  type ElementFamily,
+  familiesWithLessons,
+  HINT_LIMIT,
+  pickHintRemovals,
+} from '@syntara/shared';
 import { apiRequest } from '@/lib/api/browser';
 import type { components } from '@/lib/api/schema';
 import type { RunMistake, RunQuestion, RunSource, RunSummary } from '../../learn/test-run';
-import { GROUP_COLORS, useAtlasSubject } from './atlas-data';
+import { GROUP_COLORS, useAtlasData, useAtlasSubject } from './atlas-data';
 import { GuestInvite, PreviewNote, useAtlasViewer } from './gate';
 import { atlasHref, elementHref, scientistHref } from './routes';
 import { AtlasTestRun, type AtlasTestPlacement } from './test-view';
@@ -49,14 +58,28 @@ function useExplain(kind: AtlasQuizKind): Explain {
   };
 }
 
-const toQuestion = (q: Question): RunQuestion => ({
-  id: `q${q.index}`,
-  type: 'single_choice',
+const KIND_TYPE: Record<Question['answerKind'], RunQuestion['type']> = {
+  choice: 'single_choice',
+  boolean: 'true_false',
+  input: 'text_input',
+  table: 'table_pick',
+};
+
+/** Вопрос сервера → вопрос движка: вид ответа (REQ-TST-10), заголовок, схема Бора, подсветка периодов. */
+const toQuestion = (q: Question | Preview['questions'][number], id: string): RunQuestion => ({
+  id,
+  type: KIND_TYPE[q.answerKind],
   difficulty: q.difficulty,
+  intro: q.intro,
   text: q.text,
   options: q.options.map((o) => ({ id: o.id, text: o.title })),
   removed: q.removed,
+  shells: q.shells,
+  rows: q.rows,
 });
+
+const answerBody = (body: { optionId?: string; textAnswer?: string }) =>
+  body.textAnswer !== undefined ? { text: body.textAnswer } : { optionId: body.optionId };
 
 function summaryOf(session: Session, explain: Explain): RunSummary | null {
   const r = session.result;
@@ -86,19 +109,27 @@ function summaryOf(session: Session, explain: Explain): RunSummary | null {
  * Ученик: сессия на сервере (API-S-24…27; «50/50» — API-S-29, XP BR-XP-05 с весом подсказки 0,5). Завершённая сессия
  * (обновление страницы на результате) показывает результат без повторного завершения.
  */
-function studentSource(sessionId: string, locale: string, explain: Explain): RunSource {
+function studentSource(
+  sessionId: string,
+  locale: string,
+  explain: Explain,
+): RunSource & { session(): Session | null } {
   let done: Session | null = null;
+  let last: Session | null = null;
   const base = `/api/student/atlas-quiz/${sessionId}`;
   return {
     preview: false,
     adaptive: true,
+    /** Последнее состояние сессии — режим и семейство для «Пройти ещё раз» (REQ-TST-11). */
+    session: () => last,
     async load() {
       const res = await apiRequest<Session>(base, { locale });
       if (res.kind !== 'ok') return null;
       const s = res.data;
+      last = s;
       if (s.status === 'finished') done = s;
       return {
-        questions: s.question ? [toQuestion(s.question)] : [],
+        questions: s.question ? [toQuestion(s.question, `q${s.question.index}`)] : [],
         marks: s.answers,
         results: {},
         total: s.total,
@@ -108,7 +139,7 @@ function studentSource(sessionId: string, locale: string, explain: Explain): Run
     async answer(q, body) {
       const res = await apiRequest<Answer>(`${base}/answers`, {
         method: 'POST',
-        body: { optionId: body.optionId },
+        body: answerBody(body),
         locale,
       });
       if (res.kind !== 'ok') return null;
@@ -118,19 +149,22 @@ function studentSource(sessionId: string, locale: string, explain: Explain): Run
           correct: a.correct,
           hinted: a.hinted,
           correctOptionId: a.correctOptionId,
-          correctAnswer: null,
+          correctAnswer: a.correctAnswer,
+          caseHint: a.caseHint,
           explanation: a.answer ? explain.text(a.answer) : null,
           lessonHref: a.answer ? explain.href(a.answer.code) : null,
           accent: a.answer ? explain.accent(a.answer) : null,
           optionId: body.optionId ?? null,
-          textAnswer: null,
+          textAnswer: body.textAnswer ?? null,
         },
-        next: a.next ? toQuestion(a.next) : null,
+        next: a.next ? toQuestion(a.next, `q${a.next.index}`) : null,
       };
     },
     async hint() {
       const res = await apiRequest<Hint>(`${base}/hint`, { method: 'POST', locale });
-      return res.kind === 'ok' ? { removed: res.data.removedOptionIds, hintsLeft: res.data.hintsLeft } : null;
+      return res.kind === 'ok'
+        ? { removed: res.data.removedOptionIds, rows: res.data.rows, hintsLeft: res.data.hintsLeft }
+        : null;
     },
     async finish() {
       if (!done) {
@@ -144,19 +178,16 @@ function studentSource(sessionId: string, locale: string, explain: Explain): Run
 }
 
 /**
- * Учитель (API-T-32): те же вопросы по одному с правильным ответом — проверка и «50/50» в браузере, ничего не
- * записывается (решение владельца 2026-10-28; REQ-TST-04.5).
+ * Учитель (API-T-32, AC-TST-12): те же вопросы по одному с правильным ответом — проверка (символ — с учётом регистра)
+ * и «50/50» в браузере, ничего не записывается (решение владельца 2026-10-28; REQ-TST-04.5).
  */
-function teacherSource(questions: Preview['questions'], explain: Explain): RunSource {
-  const run: RunQuestion[] = questions.map((q, i) => ({
-    id: `p${i}`,
-    type: 'single_choice',
-    difficulty: q.difficulty,
-    text: q.text,
-    options: q.options.map((title, j) => ({ id: String(j), text: title })),
-    removed: [],
-  }));
-  const answers: Array<{ correct: boolean; hinted: boolean; selected: string }> = [];
+function teacherSource(
+  questions: Preview['questions'],
+  explain: Explain,
+  titleOf: (id: string) => string,
+): RunSource {
+  const run: RunQuestion[] = questions.map((q, i) => toQuestion(q, `p${i}`));
+  const answers: Array<{ correct: boolean; hinted: boolean; yours: string }> = [];
   let hintsLeft = HINT_LIMIT;
   return {
     preview: true,
@@ -165,33 +196,42 @@ function teacherSource(questions: Preview['questions'], explain: Explain): RunSo
       return { questions: run, marks: [], results: {}, total: run.length, hintsLeft };
     },
     async answer(q, body) {
-      const i = run.indexOf(q);
+      const i = run.findIndex((x) => x.id === q.id);
       const p = questions[i];
       if (!p) return null;
-      const correct = body.optionId === String(p.correct);
-      answers[i] = { correct, hinted: q.removed.length > 0, selected: body.optionId ?? '' };
+      const check = p.correctText !== null ? checkSymbol(body.textAnswer ?? '', p.correctText) : null;
+      const correct = check ? check === 'correct' : body.optionId === p.correctOptionId;
+      const hinted = q.removed.length > 0 || Boolean(q.rows?.length);
+      const yours =
+        body.textAnswer?.trim() ??
+        (q.type === 'table_pick'
+          ? titleOf(body.optionId ?? '')
+          : (q.options.find((o) => o.id === body.optionId)?.text ?? ''));
+      answers[i] = { correct, hinted, yours };
       return {
         result: {
           correct,
-          hinted: q.removed.length > 0,
-          correctOptionId: String(p.correct),
-          correctAnswer: null,
+          hinted,
+          correctOptionId: p.correctOptionId,
+          correctAnswer: p.correctAnswer,
+          caseHint: check === 'case',
           explanation: explain.text(p.answer),
           lessonHref: explain.href(p.answer.code),
           accent: explain.accent(p.answer),
           optionId: body.optionId ?? null,
-          textAnswer: null,
+          textAnswer: body.textAnswer ?? null,
         },
         next: run[i + 1] ?? null,
       };
     },
     async hint(q) {
-      const p = questions[run.indexOf(q)];
+      const p = questions[run.findIndex((x) => x.id === q.id)];
       if (!p || hintsLeft <= 0) return null;
       hintsLeft -= 1;
+      if (q.type === 'table_pick') return { removed: [], rows: p.hintRows, hintsLeft };
       const removed = pickHintRemovals(
         q.options.map((o) => o.id),
-        String(p.correct),
+        p.correctOptionId ?? '',
         (n) => Math.floor(Math.random() * n),
       );
       return { removed, hintsLeft };
@@ -212,7 +252,7 @@ function teacherSource(questions: Preview['questions'], explain: Explain): RunSo
         if (!a.correct)
           mistakes.push({
             question: p.text,
-            yours: p.options[Number(a.selected)] ?? '',
+            yours: a.yours,
             correct: p.answer.title,
             explanation: explain.text(p.answer),
             href: explain.href(p.answer.code),
@@ -249,12 +289,19 @@ export default function AtlasQuizScreen() {
   );
 }
 
+/** Режим и семейство попытки (REQ-TST-11). */
+interface Start {
+  mode: AtlasQuizMode;
+  family: ElementFamily | null;
+}
+
 /**
  * Квиз атласа: «Проверь знания» (elements) или игра «Кто этот учёный?» (scientists, решение А-5). Вопросы строит и
  * проверяет сервер (API-S-24…27): адаптивная сложность, правильный ответ — только после ответа (BR-QZ-01); XP — 1 за
- * верный ответ (с «50/50» — 0,5), не больше 20 в день (BR-XP-05, BR-TST-01). Прохождение и результат — общий экран
- * тестов в стиле атласа (test-view.tsx, docs/TESTS_TZ.md). Сессия — в адресе (?session=): обновление страницы и смена
- * языка продолжают квиз. Гостю — вход; учитель проходит так же, но ничего не записывается и XP не начисляются.
+ * верный ответ (с «50/50» — 0,5), не больше 20 в день (BR-XP-05, BR-TST-01). Квиз элементов — 9 типов вопросов
+ * (REQ-TST-10) и режимы на стартовом экране (REQ-TST-11). Прохождение и результат — общий экран тестов в стиле атласа
+ * (test-view.tsx, docs/TESTS_TZ.md). Сессия — в адресе (?session=): обновление страницы и смена языка продолжают
+ * квиз. Гостю — вход; учитель проходит так же, но ничего не записывается и XP не начисляются.
  */
 export function AtlasQuiz({ kind, extra }: { kind: AtlasQuizKind; extra?: React.ReactNode }) {
   const viewer = useAtlasViewer();
@@ -286,6 +333,17 @@ function usePlacement(onExit: () => void): AtlasTestPlacement {
   return { back: 'toAtlas', backHref: atlasHref(subjectId, 'home'), onExit, exitSaved: false };
 }
 
+/** Элементы с уроками — ячейки вопроса «Найдите на таблице» (REQ-TST-10.3). */
+function useLessonElements() {
+  return useAtlasData().data?.elements ?? [];
+}
+
+/** Заголовок вопроса: у квиза элементов он приходит с вопросом (REQ-TST-10), у игры про учёных — общий. */
+function useIntro(kind: AtlasQuizKind) {
+  const t = useTranslations('atlas');
+  return kind === 'scientists' ? t('scientistsQuiz.questionIntro') : undefined;
+}
+
 function StudentRun({
   kind,
   sessionId,
@@ -297,20 +355,26 @@ function StudentRun({
   onRestart: (id: string) => void;
   onExit: () => void;
 }) {
-  const t = useTranslations('atlas');
   const locale = useLocale();
   const subjectId = useAtlasSubject();
   const explain = useExplain(kind);
   const placement = usePlacement(onExit);
+  const elements = useLessonElements();
+  const intro = useIntro(kind);
   const [failed, setFailed] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- источник — на сессию и язык
   const source = useMemo(() => studentSource(sessionId, locale, explain), [sessionId, locale]);
 
-  /** Новая сессия: «Пройти ещё раз» — случайные вопросы, «Повторить ошибки» — только ошибки этой (REQ-TST-05.4). */
+  /** Новая сессия: «Пройти ещё раз» — тот же режим, «Повторить ошибки» — только ошибки этой (REQ-TST-05.4). */
   async function restart(retry: boolean) {
+    // «Пройти ещё раз» — в том же режиме (REQ-TST-11); после «Работы над ошибками» — «Быстрый».
+    const mode = source.session()?.mode ?? 'quick';
+    const family = source.session()?.family ?? null;
     const res = await apiRequest<Session>(`/api/student/subjects/${subjectId}/atlas-quiz`, {
       method: 'POST',
-      body: retry ? { kind, retry: sessionId } : { kind },
+      body: retry
+        ? { kind, retry: sessionId }
+        : { kind, mode: mode === 'mistakes' ? 'quick' : mode, ...(family ? { family } : {}) },
       locale,
     });
     if (res.kind !== 'ok') return setFailed(true);
@@ -322,7 +386,8 @@ function StudentRun({
     <AtlasTestRun
       source={source}
       placement={placement}
-      intro={kind === 'scientists' ? t('scientistsQuiz.questionIntro') : t('quiz.questionIntro')}
+      intro={intro}
+      elements={elements}
       onRetry={() => void restart(false)}
       onRetryMistakes={() => void restart(true)}
       testId="atlas-quiz"
@@ -339,22 +404,38 @@ function QuizError() {
   );
 }
 
-/** Учитель (API-T-32): пометка предпросмотра и тот же квиз; «Пройти ещё раз» — новые случайные вопросы. */
-function TeacherRun({ kind, onExit }: { kind: AtlasQuizKind; onExit: () => void }) {
+/** Учитель (API-T-32, AC-TST-12): пометка предпросмотра и тот же квиз в выбранном режиме; ничего не записывается. */
+function TeacherRun({
+  kind,
+  start,
+  onExit,
+  onQuick,
+}: {
+  kind: AtlasQuizKind;
+  start: Start;
+  onExit: () => void;
+  onQuick: () => void;
+}) {
   const t = useTranslations('atlas');
   const locale = useLocale();
   const subjectId = useAtlasSubject();
   const explain = useExplain(kind);
   const placement = usePlacement(onExit);
+  const elements = useLessonElements();
+  const intro = useIntro(kind);
   const [round, setRound] = useState(0);
   // «Повторить ошибки» у учителя — те же вопросы, в которых были ошибки (ничего не записывается).
   const [only, setOnly] = useState<Preview['questions'] | null>(null);
   const preview = useQuery({
-    queryKey: ['teacher', 'atlas', 'preview', subjectId, kind, locale, round],
+    queryKey: ['teacher', 'atlas', 'preview', subjectId, kind, start.mode, start.family, locale, round],
     queryFn: async () => {
-      const res = await apiRequest<Preview>(`/api/teacher/atlas/${subjectId}/preview?kind=${kind}`, {
-        locale,
+      const query = new URLSearchParams({
+        kind,
+        mode: start.mode,
+        ...(start.family ? { family: start.family } : {}),
       });
+      const res = await apiRequest<Preview>(`/api/teacher/atlas/${subjectId}/preview?${query}`, { locale });
+      if (res.kind === 'http' && res.status === 409) return null;
       if (res.kind !== 'ok') throw new Error('preview');
       return res.data;
     },
@@ -363,19 +444,26 @@ function TeacherRun({ kind, onExit }: { kind: AtlasQuizKind; onExit: () => void 
     refetchOnWindowFocus: false,
   });
   const questions = only ?? preview.data?.questions ?? null;
+  const titleOf = (id: string) => {
+    const e = elements.find((x) => x.topicId === id);
+    return e ? `${e.title} (${e.symbol})` : '';
+  };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- источник — на набор вопросов
-  const source = useMemo(() => (questions ? teacherSource(questions, explain) : null), [questions]);
+  const source = useMemo(() => (questions ? teacherSource(questions, explain, titleOf) : null), [questions]);
   return (
     <div style={{ width: '100%' }} data-testid="atlas-quiz-preview">
       <PreviewNote>{t('preview.note')}</PreviewNote>
       {preview.isError ? (
         <QuizError />
+      ) : preview.data === null ? (
+        <NoMistakes onQuick={onQuick} />
       ) : source && questions ? (
         <AtlasTestRun
           key={`${round}-${only ? 'm' : 'a'}-${questions.length}`}
           source={source}
           placement={placement}
-          intro={kind === 'scientists' ? t('scientistsQuiz.questionIntro') : t('quiz.questionIntro')}
+          intro={intro}
+          elements={elements}
           onRetry={() => {
             setOnly(null);
             setRound((r) => r + 1);
@@ -398,6 +486,77 @@ function setSessionParam(id: string | null) {
   window.history.replaceState(null, '', url);
 }
 
+/** «Работа над ошибками» без ошибок (REQ-TST-11): «Ошибок нет — отличная работа!» и кнопка «Быстрый». */
+function NoMistakes({ onQuick }: { onQuick: () => void }) {
+  const t = useTranslations('atlas.quiz.modes');
+  return (
+    <div className="atlas-quiz-empty" role="status" data-testid="atlas-quiz-no-mistakes">
+      <p>{t('noMistakes')}</p>
+      <button type="button" className="btn btn-primary" onClick={onQuick} data-testid="atlas-quiz-quick">
+        {t('quick')}
+      </button>
+    </div>
+  );
+}
+
+const MODE_TEXT: Record<AtlasQuizMode, string> = {
+  quick: 'quickText',
+  family: 'familyText',
+  mistakes: 'mistakesText',
+  table: 'tableText',
+};
+
+/** REQ-TST-11: выбор режима — радиокнопки в виде карточек атласа; «По семейству» — с выбором семейства (≥ 4 урока). */
+function Modes({
+  value,
+  onChange,
+  families,
+}: {
+  value: Start;
+  onChange: (next: Start) => void;
+  families: ElementFamily[];
+}) {
+  const t = useTranslations('atlas.quiz.modes');
+  const tg = useTranslations('atlas.group');
+  return (
+    <fieldset className="atlas-quiz-modes" data-testid="atlas-quiz-modes">
+      <legend className="atlas-sr-only">{t('title')}</legend>
+      {ATLAS_QUIZ_MODES.map((mode) => (
+        <label key={mode} className="atlas-quiz-mode" data-checked={value.mode === mode || undefined}>
+          <input
+            type="radio"
+            name="atlas-quiz-mode"
+            value={mode}
+            checked={value.mode === mode}
+            onChange={() =>
+              onChange({ mode, family: mode === 'family' ? (value.family ?? families[0] ?? null) : null })
+            }
+            data-testid={`atlas-quiz-mode-${mode}`}
+          />
+          <span className="atlas-quiz-mode-title">{t(mode)}</span>
+          <span className="atlas-quiz-mode-text">{t(MODE_TEXT[mode])}</span>
+        </label>
+      ))}
+      {value.mode === 'family' ? (
+        <label className="atlas-quiz-family">
+          <span>{t('familyPick')}</span>
+          <select
+            value={value.family ?? ''}
+            onChange={(e) => onChange({ mode: 'family', family: e.target.value as ElementFamily })}
+            data-testid="atlas-quiz-family"
+          >
+            {families.map((f) => (
+              <option key={f} value={f}>
+                {tg(f)}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+    </fieldset>
+  );
+}
+
 function Intro({
   kind,
   extra,
@@ -412,25 +571,39 @@ function Intro({
   const locale = useLocale();
   const subjectId = useAtlasSubject();
   const viewer = useAtlasViewer();
-  const [state, setState] = useState<'idle' | 'busy' | 'failed' | 'gate' | 'preview'>('idle');
+  const elements = useLessonElements();
+  const [state, setState] = useState<'idle' | 'busy' | 'failed' | 'gate' | 'preview' | 'noMistakes'>('idle');
+  const [choice, setChoice] = useState<Start>({ mode: 'quick', family: null });
   const sci = kind === 'scientists';
+  const families = useMemo(() => familiesWithLessons(elements.map((e) => e.group)), [elements]);
 
-  async function start() {
+  async function start(next: Start = choice) {
     if (viewer === 'guest') return setState('gate');
+    setChoice(next);
     if (viewer === 'teacher') return setState('preview');
     setState('busy');
     const res = await apiRequest<Session>(`/api/student/subjects/${subjectId}/atlas-quiz`, {
       method: 'POST',
-      body: { kind },
+      body: sci ? { kind } : { kind, mode: next.mode, ...(next.family ? { family: next.family } : {}) },
       locale,
     });
+    if (res.kind === 'http' && res.status === 409) return setState('noMistakes');
     if (res.kind !== 'ok') return setState('failed');
     setSessionParam(res.data.id);
     onStart(res.data.id);
   }
+  const quick = () => void start({ mode: 'quick', family: null });
 
   if (state === 'gate') return <GuestInvite />;
-  if (state === 'preview') return <TeacherRun kind={kind} onExit={() => setState('idle')} />;
+  if (state === 'preview')
+    return (
+      <TeacherRun
+        kind={kind}
+        start={choice}
+        onExit={() => setState('idle')}
+        onQuick={() => setChoice({ mode: 'quick', family: null })}
+      />
+    );
   return (
     <div
       className="quiz-intro fade-in-up"
@@ -449,19 +622,33 @@ function Intro({
       <p className="hero-subtitle" style={sci ? { marginBottom: '2rem', fontSize: '1.1rem' } : undefined}>
         {sci ? t('scientistsQuiz.subtitle') : t('quiz.subtitle')}
       </p>
-      <div className="atlas-quiz-actions">
-        <button
-          type="button"
-          className="btn btn-primary"
-          id={sci ? 'start-sci-quiz-btn' : 'start-quiz-btn'}
-          disabled={state === 'busy'}
-          onClick={() => void start()}
-          data-testid="atlas-quiz-start"
-        >
-          {t('quiz.start')}
-        </button>
-        {extra}
-      </div>
+      {sci ? null : (
+        <Modes
+          value={choice}
+          families={families}
+          onChange={(next) => {
+            setChoice(next);
+            if (state !== 'busy') setState('idle');
+          }}
+        />
+      )}
+      {state === 'noMistakes' ? (
+        <NoMistakes onQuick={quick} />
+      ) : (
+        <div className="atlas-quiz-actions">
+          <button
+            type="button"
+            className="btn btn-primary"
+            id={sci ? 'start-sci-quiz-btn' : 'start-quiz-btn'}
+            disabled={state === 'busy' || (choice.mode === 'family' && !choice.family)}
+            onClick={() => void start()}
+            data-testid="atlas-quiz-start"
+          >
+            {t('quiz.start')}
+          </button>
+          {extra}
+        </div>
+      )}
       {state === 'failed' ? (
         <p role="alert" style={{ marginTop: '1rem', color: 'var(--accent-red)' }}>
           {tf('serverError')}

@@ -4147,6 +4147,16 @@ export interface components {
              * @description REQ-TST-05.4 «Повторить ошибки»: своя завершённая сессия — вопросы только по её ошибкам
              */
             retry?: string;
+            /**
+             * @description REQ-TST-11: режим квиза элементов (по умолчанию quick)
+             * @enum {string}
+             */
+            mode?: "quick" | "family" | "mistakes" | "table";
+            /**
+             * @description REQ-TST-11 «По семейству»: семейство (≥ 4 элементов с уроками)
+             * @enum {string}
+             */
+            family?: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide";
         };
         AtlasAnswerMarkDto: {
             correct: boolean;
@@ -4159,13 +4169,29 @@ export interface components {
         AtlasQuizQuestionDto: {
             /** @description Номер вопроса с 1 */
             index: number;
+            /**
+             * @description REQ-TST-10: тип вопроса квиза элементов; null — игра про учёных и сессии до T2
+             * @enum {string|null}
+             */
+            type: "symbol-to-name" | "name-to-symbol" | "fact-true-false" | "description" | "bohr" | "table-click" | "config" | "fun-fact" | "type-symbol" | null;
+            /**
+             * @description Как отвечать: выбор варианта, «Верно/Неверно», ввод символа, клик по ячейке таблицы
+             * @enum {string}
+             */
+            answerKind: "choice" | "boolean" | "input" | "table";
             /** @enum {string} */
             difficulty: "easy" | "medium" | "hard";
+            /** @description Заголовок над текстом («Какой это элемент?») */
+            intro: string | null;
             text: string;
             /** @description Без признака правильного (BR-QZ-01) */
             options: components["schemas"]["AtlasQuizOptionDto"][];
             /** @description REQ-TST-04: варианты, убранные подсказкой «50/50» (пусто — подсказки нет) */
             removed: string[];
+            /** @description REQ-TST-10.2: схема Бора — электроны по оболочкам (без символа); null — не схема */
+            shells: number[] | null;
+            /** @description REQ-TST-10.3: «50/50» у таблицы — подсвеченные периоды (пусто — подсказки нет) */
+            rows: number[];
         };
         AtlasFamilyScoreDto: {
             /** @enum {string} */
@@ -4210,6 +4236,16 @@ export interface components {
             id: string;
             /** @enum {string} */
             kind: "elements" | "scientists";
+            /**
+             * @description REQ-TST-11: режим квиза
+             * @enum {string}
+             */
+            mode: "quick" | "family" | "mistakes" | "table";
+            /**
+             * @description REQ-TST-11 «По семейству»: семейство (для «Пройти ещё раз»)
+             * @enum {string|null}
+             */
+            family: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide" | null;
             /** @enum {string} */
             status: "in_progress" | "finished";
             total: number;
@@ -4226,8 +4262,10 @@ export interface components {
             result: components["schemas"]["AtlasQuizResultDto"] | null;
         };
         AtlasQuizAnswerBody: {
-            /** @description ID варианта из вопроса */
-            optionId: string;
+            /** @description ID варианта, «true»/«false» или ID элемента ячейки таблицы */
+            optionId?: string;
+            /** @description REQ-TST-10 «Впишите символ»: введённый символ */
+            text?: string;
         };
         AtlasAnswerInfoDto: {
             /** @description Код элемента или учёного */
@@ -4243,23 +4281,57 @@ export interface components {
             correct: boolean;
             /** @description REQ-TST-04: ответ дан с подсказкой «50/50» */
             hinted: boolean;
-            correctOptionId: string;
+            /** @description Правильный вариант (у таблицы — ID элемента); null — ответ вводом */
+            correctOptionId: string | null;
+            /** @description Правильный ответ словами — у ввода символа и таблицы (REQ-TST-10) */
+            correctAnswer: string | null;
+            /** @description REQ-TST-10 «Впишите символ»: верные буквы, но не тот регистр («ca») — «Обратите внимание на заглавную букву» */
+            caseHint: boolean;
             answer: components["schemas"]["AtlasAnswerInfoDto"] | null;
             /** @description Следующий вопрос; null — квиз пройден */
             next: components["schemas"]["AtlasQuizQuestionDto"] | null;
         };
         AtlasHintResultDto: {
-            /** @description Два неверных варианта */
+            /** @description Два неверных варианта (у таблицы — пусто) */
             removedOptionIds: string[];
+            /** @description REQ-TST-10.3: у таблицы — два подсвеченных периода (у выбора — пусто) */
+            rows: number[];
             hintsLeft: number;
         };
         PreviewQuestionDto: {
-            text: string;
-            options: string[];
+            /** @description Номер вопроса с 1 */
+            index: number;
+            /**
+             * @description REQ-TST-10: тип вопроса квиза элементов; null — игра про учёных и сессии до T2
+             * @enum {string|null}
+             */
+            type: "symbol-to-name" | "name-to-symbol" | "fact-true-false" | "description" | "bohr" | "table-click" | "config" | "fun-fact" | "type-symbol" | null;
+            /**
+             * @description Как отвечать: выбор варианта, «Верно/Неверно», ввод символа, клик по ячейке таблицы
+             * @enum {string}
+             */
+            answerKind: "choice" | "boolean" | "input" | "table";
             /** @enum {string} */
             difficulty: "easy" | "medium" | "hard";
-            /** @description Номер правильного варианта в options — проверка в браузере учителя */
-            correct: number;
+            /** @description Заголовок над текстом («Какой это элемент?») */
+            intro: string | null;
+            text: string;
+            /** @description Без признака правильного (BR-QZ-01) */
+            options: components["schemas"]["AtlasQuizOptionDto"][];
+            /** @description REQ-TST-04: варианты, убранные подсказкой «50/50» (пусто — подсказки нет) */
+            removed: string[];
+            /** @description REQ-TST-10.2: схема Бора — электроны по оболочкам (без символа); null — не схема */
+            shells: number[] | null;
+            /** @description REQ-TST-10.3: «50/50» у таблицы — подсвеченные периоды (пусто — подсказки нет) */
+            rows: number[];
+            /** @description Правильный вариант (у таблицы — ID элемента) — проверка в браузере учителя; null — ввод */
+            correctOptionId: string | null;
+            /** @description «Впишите символ»: правильный символ */
+            correctText: string | null;
+            /** @description Правильный ответ словами (ввод, таблица) */
+            correctAnswer: string | null;
+            /** @description «50/50» у таблицы — периоды для подсветки */
+            hintRows: number[];
             /** @description Правильный ответ — объяснение и «Открыть урок» */
             answer: components["schemas"]["AtlasAnswerInfoDto"];
         };
@@ -10189,7 +10261,7 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description quizEmpty: нет вопросов (или ошибок для «Повторить ошибки») */
+            /** @description quizEmpty: нет вопросов (или ошибок для «Повторить ошибки»); noMistakes: «Работа над ошибками» без ошибок */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -10424,6 +10496,9 @@ export interface operations {
     TeacherAtlasController_preview: {
         parameters: {
             query: {
+                family?: "alkali_metal" | "alkaline_earth" | "transition_metal" | "post_transition" | "metalloid" | "nonmetal" | "halogen" | "noble_gas" | "lanthanide" | "actinide";
+                /** @description REQ-TST-11 */
+                mode?: "quick" | "family" | "mistakes" | "table";
                 kind: "elements" | "scientists";
             };
             header?: never;
