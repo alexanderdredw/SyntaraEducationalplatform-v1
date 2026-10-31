@@ -1,6 +1,6 @@
 ---
 title: Arsenic
-description: A versatile semimetal essential for various scientific and industrial applications.
+description: A semimetal notorious as a poison, used in microelectronics and special alloys.
 funFact: 'Arsenic is called the "king of poisons": it has no taste or smell, which made it a favourite tool of plotters in the past.'
 illustrationAlt: 'Atom model: Arsenic (As) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

@@ -166,6 +166,7 @@ export class LessonService {
       return [
         {
           sectionId: section.id,
+          gender: s.gender ?? null,
           born: tr.born,
           country: tr.country,
           field: tr.field,

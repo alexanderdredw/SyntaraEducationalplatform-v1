@@ -158,6 +158,8 @@ export const ScientistsFile = z.strictObject({
     .array(
       z.strictObject({
         section: code,
+        /** Форма подписи связи с элементом: «открыл / открыла» (решение владельца 2026-10-31). */
+        gender: z.enum(['male', 'female'], 'пол: male, female'),
         born: localized(150),
         country: localized(150),
         field: localized(150),

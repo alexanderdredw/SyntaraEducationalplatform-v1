@@ -1,6 +1,6 @@
 ---
 title: Copper
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: One of the best conductors of electricity and the first metal mastered by humans.
 funFact: Copper is naturally antibacterial — bacteria on copper door handles die within a few hours.
 illustrationAlt: 'Atom model: Copper (Cu) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

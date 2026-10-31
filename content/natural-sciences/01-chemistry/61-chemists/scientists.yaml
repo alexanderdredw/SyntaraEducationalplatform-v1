@@ -2,12 +2,14 @@
 # ключевые факты (REQ-SCI-07), связанные элементы (REQ-SCI-08, BR-SCI-02), источники (REQ-SCI-13) и подсказки
 # «AI-помощника» по вкладкам (REQ-SCI-09 ред. 2). Годы жизни и главное открытие — в timeline.yaml.
 # section — код раздела урока; awards нет — поле не показывается (решение В-1).
+# gender: male | female — форма подписи связи (открыл/открыла), решение владельца 2026-10-31.
 # relation: discovered | predicted | named | structure | transmuted | electronegativity | named_after.
 review:
   kk: needs_review
   en: needs_review
 scientists:
   - section: lavoisier
+    gender: male
     born: { ru: Париж, kk: Париж, en: Paris }
     country: { ru: Франция, kk: Франция, en: France }
     field: { ru: Химия, kk: Химия, en: Chemistry }
@@ -72,6 +74,7 @@ scientists:
           - Why did Lavoisier consider mathematics important for chemistry?
 
   - section: dalton
+    gender: male
     born: { ru: Иглсфилд (Камберленд), kk: Иглсфилд (Камберленд), en: 'Eaglesfield, Cumberland' }
     country: { ru: Великобритания, kk: Ұлыбритания, en: United Kingdom }
     field:
@@ -141,6 +144,7 @@ scientists:
           - Why is colour blindness named after him?
 
   - section: nobel
+    gender: male
     born: { ru: Стокгольм, kk: Стокгольм, en: Stockholm }
     country: { ru: Швеция, kk: Швеция, en: Sweden }
     field: { ru: 'Химия, инженерное дело', kk: 'Химия, инженерия', en: 'Chemistry, engineering' }
@@ -204,6 +208,7 @@ scientists:
           - Which element is named after Nobel?
 
   - section: mendeleev
+    gender: male
     born: { ru: Тобольск, kk: Тобыл, en: Tobolsk }
     country: { ru: Российская империя, kk: Ресей империясы, en: Russian Empire }
     field: { ru: Химия, kk: Химия, en: Chemistry }
@@ -273,6 +278,7 @@ scientists:
           - What did Mendeleev study about oil?
 
   - section: curie
+    gender: female
     born: { ru: Варшава, kk: Варшава, en: Warsaw }
     country: { ru: 'Польша, Франция', kk: 'Польша, Франция', en: 'Poland, France' }
     field: { ru: 'Физика, химия', kk: 'Физика, химия', en: 'Physics, chemistry' }
@@ -345,6 +351,7 @@ scientists:
           - What did Curie receive her two Nobel Prizes for?
 
   - section: rutherford
+    gender: male
     born: { ru: Брайтуотер, kk: Брайтуотер, en: Brightwater }
     country:
       {
@@ -422,6 +429,7 @@ scientists:
           - What did Rutherford receive the Nobel Prize in Chemistry for?
 
   - section: bohr
+    gender: male
     born: { ru: Копенгаген, kk: Копенгаген, en: Copenhagen }
     country: { ru: Дания, kk: Дания, en: Denmark }
     field: { ru: Физика, kk: Физика, en: Physics }
@@ -490,6 +498,7 @@ scientists:
           - Who else in Bohr's family became a Nobel laureate?
 
   - section: pauling
+    gender: male
     born: { ru: Портленд (Орегон), kk: Портленд (Орегон), en: 'Portland, Oregon' }
     country: { ru: США, kk: АҚШ, en: United States }
     field: { ru: Химия, kk: Химия, en: Chemistry }
@@ -560,6 +569,7 @@ scientists:
           - What did Pauling say about vitamin C, and what is known about it now?
 
   - section: hodgkin
+    gender: female
     born: { ru: Каир, kk: Каир, en: Cairo }
     country: { ru: Великобритания, kk: Ұлыбритания, en: United Kingdom }
     field:

@@ -1,6 +1,6 @@
 ---
 title: Rubidium
-description: A versatile alkali metal essential for various scientific and industrial applications.
+description: A soft alkali metal used in atomic clocks and laser technology.
 funFact: Rubidium is so reactive that it can catch fire in air simply because of humidity.
 illustrationAlt: 'Atom model: Rubidium (Rb) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

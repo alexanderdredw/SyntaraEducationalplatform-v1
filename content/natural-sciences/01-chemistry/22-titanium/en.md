@@ -1,6 +1,6 @@
 ---
 title: Titanium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: An incredibly strong and light metal with exceptional corrosion resistance.
 funFact: Titanium burns even in an atmosphere of pure nitrogen.
 illustrationAlt: 'Atom model: Titanium (Ti) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

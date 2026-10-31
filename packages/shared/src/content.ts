@@ -239,6 +239,8 @@ export interface TopicSnapshot {
    */
   scientists?: Array<{
     section: string;
+    /** Форма подписи связи «открыл / открыла» (решение владельца 2026-10-31); нет — в старых снимках. */
+    gender?: ScientistGender;
     elements: Array<{ number: number; relation: ScientistRelation }>;
     sources: Array<{ title: string; url: string }>;
     translations: Partial<
@@ -257,6 +259,8 @@ export interface TopicSnapshot {
   }>;
 }
 
+/** Пол учёного — для согласования подписи связи с элементом. */
+export type ScientistGender = 'male' | 'female';
 /** Вид связи учёного с элементом (REQ-SCI-08, BR-SCI-02). */
 export type ScientistRelation =
   'discovered' | 'predicted' | 'named' | 'structure' | 'transmuted' | 'electronegativity' | 'named_after';

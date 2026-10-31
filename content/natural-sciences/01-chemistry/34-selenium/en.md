@@ -1,6 +1,6 @@
 ---
 title: Selenium
-description: A versatile nonmetal essential for various scientific and industrial applications.
+description: A photosensitive nonmetal that can convert light into electricity.
 funFact: 'Selenium is an excellent photoconductor: its electrical resistance falls thousands of times when it is lit.'
 illustrationAlt: 'Atom model: Selenium (Se) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

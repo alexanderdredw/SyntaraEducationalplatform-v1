@@ -1,6 +1,6 @@
 ---
 title: Vanadium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A hard metal used to make ultra-strong steel alloys and powerful batteries.
 funFact: 'Vanadium compounds come in four colours depending on the oxidation state: violet, green, blue and yellow.'
 illustrationAlt: 'Atom model: Vanadium (V) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

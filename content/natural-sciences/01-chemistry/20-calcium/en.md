@@ -1,6 +1,6 @@
 ---
 title: Calcium
-description: A versatile alkaline earth essential for various scientific applications.
+description: The most abundant metal in the human body, the basis of bones, teeth and building materials.
 funFact: An adult’s body contains about 1 kg of calcium — almost all of it in bones and teeth.
 illustrationAlt: 'Atom model: Calcium (Ca) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

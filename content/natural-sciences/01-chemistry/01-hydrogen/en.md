@@ -1,6 +1,6 @@
 ---
 title: Hydrogen
-description: A versatile nonmetal essential for various scientific applications.
+description: The lightest and most abundant element in the Universe, the basis of stars and life.
 funFact: Hydrogen is the only element whose most common form has no neutrons at all (protium).
 illustrationAlt: 'Atom model: Hydrogen (H) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

@@ -196,6 +196,12 @@ describe('content check', () => {
     expect(by('lavoisier').translations.ru!.awards).toBeUndefined();
     expect(by('nobel').translations.ru!.awards).toBeUndefined();
     expect(by('hodgkin').elements).toEqual([{ number: 27, relation: 'structure' }]);
+    // Форма подписи связи (решение владельца 2026-10-31): Кюри и Ходжкин — female, остальные — male.
+    expect(data.filter((s) => s.gender === 'female').map((s) => s.section)).toEqual([
+      'chemistry/chemists#curie',
+      'chemistry/chemists#hodgkin',
+    ]);
+    expect(data.every((s) => s.gender)).toBe(true);
     expect(by('rutherford').elements.map((e) => e.relation)).toEqual([
       'transmuted',
       'transmuted',
@@ -215,14 +221,16 @@ describe('content check', () => {
     );
   });
 
-  it('REQ-SCI-08 REQ-SCI-09 scientists.yaml: element numbers 1–118, exactly 3 prompts per tab', () => {
+  it('REQ-SCI-08 REQ-SCI-09 scientists.yaml: element numbers 1–118, exactly 3 prompts per tab, gender male | female', () => {
     const file = 'natural-sciences/01-chemistry/61-chemists/scientists.yaml';
     edit(file, '{ number: 102, relation: named_after }', '{ number: 119, relation: named_after }');
+    edit(file, 'gender: female', 'gender: she');
     edit(file, '          - Как Лавуазье объяснил горение?\n', '');
     expect(messages()).toEqual(
       expect.arrayContaining([
         expect.stringMatching(/scientists.yaml: scientists.2.elements.0.number — номер 1–118/),
         expect.stringMatching(/scientists.yaml: scientists.0.prompts.discovery.ru — ровно 3 подсказки/),
+        expect.stringMatching(/scientists.yaml: scientists.4.gender — пол: male, female/),
       ]),
     );
   });

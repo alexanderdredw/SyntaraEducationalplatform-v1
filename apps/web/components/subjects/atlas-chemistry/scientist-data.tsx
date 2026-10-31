@@ -62,7 +62,7 @@ export function RelatedElements({ scientist: s }: { scientist: Scientist }) {
           if (!p) return null;
           const lesson = lessons.get(number);
           const name = lesson?.title ?? tp(`elements.${p.symbol}`);
-          const rel = t(`sci.rel.${relation}`);
+          const rel = t(`sci.rel.${relation}`, { gender: s.data?.gender ?? 'other' });
           const style = { '--chip-color': GROUP_COLORS[p.family] ?? '#888' } as CSSProperties;
           const body = (
             <>

@@ -1,6 +1,6 @@
 ---
 title: Yttrium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A rare-earth metal, key to lasers, superconductors and phosphors.
 funFact: Yttrium is named after the Swedish village of Ytterby, where four new elements were found.
 illustrationAlt: 'Atom model: Yttrium (Y) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

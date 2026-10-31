@@ -1,6 +1,6 @@
 ---
 title: Manganese
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: An essential element in metallurgy that makes steel hard and wear-resistant.
 funFact: Manganese is so important for steelmaking that modern industry would simply stop without it — there is no substitute.
 illustrationAlt: 'Atom model: Manganese (Mn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

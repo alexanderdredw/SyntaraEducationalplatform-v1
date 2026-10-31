@@ -69,15 +69,15 @@ facts:
 
 # Описания тем (CHEM_MAP 3.6).
 descriptions:
-  # REQ-EXP-08 (docs/EXPLORE_TZ.md): согласование «Полуметалл, применяемый…»; KK и EN — без изменений.
+  # REQ-EXP-08 (docs/EXPLORE_TZ.md): согласование «Полуметалл, применяемый…»; EN — перевод RU (решение владельца 2026-10-31).
   boron:
     ru: 'Полуметалл, применяемый в стекловолокне, ядерных реакторах и удобрениях.'
     kk: 'Шыны талшықтарда, ядролық реакторларда және тыңайтқыштарда қолданылатын жартылай металл.'
-    en: 'A versatile semimetal essential for various scientific applications.'
+    en: 'A semimetal used in fibreglass, nuclear reactors and fertilisers.'
   arsenic:
     ru: 'Полуметалл с дурной славой яда, находящий применение в микроэлектронике и спецсплавах.'
     kk: 'Микроэлектроникада және арнайы қорытпаларда қолданылатын атышулы улы жартылай металл.'
-    en: 'A versatile semimetal essential for various scientific and industrial applications.'
+    en: 'A semimetal notorious as a poison, used in microelectronics and special alloys.'
   # Описания 22 элементов вместо шаблонных (утверждены владельцем 2026-10-29, docs/ATLAS_DESCRIPTIONS.md).
   carbon:
     ru: 'Основа всей жизни на Земле и органической химии, способная образовывать длинные цепи и кольца.'
@@ -175,6 +175,64 @@ descriptions:
     ru: Британский химик, получившая Нобелевскую премию по химии 1964 года за определение структур важных биомолекул (пенициллин, витамин B12).
     kk: Британдық химик, маңызды биомолекулалардың (пенициллин, В12 дәрумені) құрылымын анықтағаны үшін 1964 жылы химия бойынша Нобель сыйлығын алды.
     en: British chemist who won the 1964 Nobel Prize in Chemistry for determining the structures of important biomolecules (penicillin, vitamin B12).
+  # Решение владельца 2026-10-31 (отчёт И1, docs/EXPLORE_TZ.md, REQ-EXP-08): EN — перевод утверждённых RU-описаний
+  # вместо шаблона «A versatile …», KK — исправления по смыслу (кислород, хром, никель, селен, иттрий). needs_review.
+  hydrogen:
+    en: 'The lightest and most abundant element in the Universe, the basis of stars and life.'
+  nitrogen:
+    en: 'A gas that makes up 78% of the atmosphere, the basis of proteins and nucleic acids.'
+  oxygen:
+    kk: 'Аэробты тыныс алу мен жану үшін қажетті, тіршілікке аса маңызды газ.'
+  chlorine:
+    en: 'A toxic yellow-green halogen gas, the basis of water disinfection and PVC production.'
+  argon:
+    en: 'The third most abundant gas in the atmosphere, completely inert; used in welding and lamps.'
+  potassium:
+    en: 'A vital alkali metal that regulates the heart and nerves; a key fertiliser.'
+  calcium:
+    en: 'The most abundant metal in the human body, the basis of bones, teeth and building materials.'
+  scandium:
+    en: 'A light transition metal used in aerospace alloys and high-intensity lamps.'
+  titanium:
+    en: 'An incredibly strong and light metal with exceptional corrosion resistance.'
+  vanadium:
+    en: 'A hard metal used to make ultra-strong steel alloys and powerful batteries.'
+  chromium:
+    kk: 'Қатты, жылтыр металл, тот баспайтын болат пен сәндік қорғаныс жабындарының негізі.'
+    en: 'A hard, shiny metal, the basis of stainless steel and decorative protective coatings.'
+  manganese:
+    en: 'An essential element in metallurgy that makes steel hard and wear-resistant.'
+  iron:
+    en: 'The most important metal of human civilisation, the basis of steel and the carrier of oxygen in the blood.'
+  cobalt:
+    en: 'A metal "of the future", critical for electric car batteries and superhard alloys.'
+  nickel:
+    kk: 'Монеталарда, тот баспайтын болатта және суперқорытпаларда қолданылатын коррозияға төзімді металл.'
+    en: 'A corrosion-resistant metal used in coins, stainless steel and superalloys.'
+  copper:
+    en: 'One of the best conductors of electricity and the first metal mastered by humans.'
+  zinc:
+    en: 'A protector metal used to galvanise steel and to make brass and batteries.'
+  gallium:
+    en: 'A metal that melts in your hand, the basis of modern semiconductor electronics.'
+  germanium:
+    en: 'A semiconductor that played a key role in the first transistors and in modern optics.'
+  selenium:
+    kk: 'Жарықты электрге айналдыра алатын фотосезімтал бейметалл.'
+    en: 'A photosensitive nonmetal that can convert light into electricity.'
+  bromine:
+    en: 'The only nonmetal that is liquid at room temperature; highly corrosive and pungent.'
+  krypton:
+    en: 'A rare noble gas used in powerful lasers and energy-saving windows.'
+  rubidium:
+    en: 'A soft alkali metal used in atomic clocks and laser technology.'
+  strontium:
+    en: 'An alkaline earth metal that gives fireworks their bright red colour.'
+  yttrium:
+    kk: 'Лазерлер, асқын өткізгіштер және люминофорлар үшін маңызды сирек жер металы.'
+    en: 'A rare-earth metal, key to lasers, superconductors and phosphors.'
+  zirconium:
+    en: 'A metal uniquely transparent to neutrons, the basis of nuclear fuel cladding.'
 
 # Замены подстрок в текстах атласа: ключ, язык, было → стало (CHEM_MAP 3.5, 3.6). Не найдено — ошибка конвертера.
 replace:

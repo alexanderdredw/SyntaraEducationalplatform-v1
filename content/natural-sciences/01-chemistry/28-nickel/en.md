@@ -1,6 +1,6 @@
 ---
 title: Nickel
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A corrosion-resistant metal used in coins, stainless steel and superalloys.
 funFact: Many meteorites are made of an iron–nickel alloy — this is how people first came across metallic iron.
 illustrationAlt: 'Atom model: Nickel (Ni) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

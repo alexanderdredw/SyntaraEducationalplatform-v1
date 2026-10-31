@@ -236,7 +236,8 @@ test.describe('«Учёные» — лента, панель, изучено, о
     // REQ-SCI-08: подписи связей; азот с уроком — окно элемента, резерфордий без урока — ячейка таблицы.
     const chips = page.getByTestId('atlas-sci-element');
     await expect(chips).toHaveCount(3);
-    await expect(chips.first()).toContainText(S.rel.transmuted);
+    // Форма подписи — по полю gender (решение владельца 2026-10-31): «превратил» у Резерфорда, «открыла» у Кюри.
+    await expect(chips.first()).toContainText('превратил азот в кислород');
     await expect(chips.last()).toContainText(S.rel.named_after);
     await expect(chips.last()).toHaveAttribute('data-soon', 'true');
     await expectNoSeriousA11yViolations(page);
@@ -260,6 +261,7 @@ test.describe('«Учёные» — лента, панель, изучено, о
       await page.setViewportSize({ width, height: 800 });
       await page.goto(`${chem.base}/scientists/curie`);
       await expect(page.getByTestId('atlas-sci-elements')).toBeVisible();
+      await expect(chips.first()).toContainText('открыла');
       expect(await hasHorizontalScroll(page)).toBe(false);
     }
   });

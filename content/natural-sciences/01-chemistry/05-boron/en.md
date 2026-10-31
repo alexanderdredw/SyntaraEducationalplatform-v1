@@ -1,6 +1,6 @@
 ---
 title: Boron
-description: A versatile semimetal essential for various scientific applications.
+description: A semimetal used in fibreglass, nuclear reactors and fertilisers.
 funFact: Boron is the only metalloid in group 13 and one of the hardest elements.
 illustrationAlt: 'Atom model: Boron (B) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

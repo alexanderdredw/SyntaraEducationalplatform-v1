@@ -1,6 +1,6 @@
 ---
 title: Gallium
-description: A versatile post-transition metal essential for various scientific and industrial applications.
+description: A metal that melts in your hand, the basis of modern semiconductor electronics.
 funFact: Gallium was predicted by Mendeleev as "eka-aluminium" and discovered only 4 years later by spectroscopy.
 illustrationAlt: 'Atom model: Gallium (Ga) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

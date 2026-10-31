@@ -1,6 +1,6 @@
 ---
 title: Argon
-description: A versatile noble gas essential for various scientific applications.
+description: The third most abundant gas in the atmosphere, completely inert; used in welding and lamps.
 funFact: Argon makes up 0.93% of the Earth’s atmosphere — 23 times more than carbon dioxide.
 illustrationAlt: 'Atom model: Argon (Ar) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

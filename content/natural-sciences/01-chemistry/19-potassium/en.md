@@ -1,6 +1,6 @@
 ---
 title: Potassium
-description: A versatile alkali metal essential for various scientific applications.
+description: A vital alkali metal that regulates the heart and nerves; a key fertiliser.
 funFact: Potassium-40 is a naturally radioactive isotope found in bananas and in the human body.
 illustrationAlt: 'Atom model: Potassium (K) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

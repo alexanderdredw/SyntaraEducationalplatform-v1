@@ -1,6 +1,6 @@
 ---
 title: Chromium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A hard, shiny metal, the basis of stainless steel and decorative protective coatings.
 funFact: It is chromium that makes rubies red and emeralds green, although the metal itself is silvery.
 illustrationAlt: 'Atom model: Chromium (Cr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

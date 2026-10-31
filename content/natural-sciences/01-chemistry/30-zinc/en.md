@@ -1,6 +1,6 @@
 ---
 title: Zinc
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A protector metal used to galvanise steel and to make brass and batteries.
 funFact: Humans need zinc for immunity, growth and the senses of taste and smell.
 illustrationAlt: 'Atom model: Zinc (Zn) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

@@ -674,6 +674,7 @@ function readTopic(
         l !== 'ru' && (parsed.review?.[l as 'kk' | 'en'] ?? 'needs_review') !== 'reviewed';
       topic.scientists = parsed.scientists.map((s) => ({
         section: `${code}#${s.section}`,
+        gender: s.gender,
         elements: s.elements ?? [],
         sources: s.sources ?? [],
         translations: Object.fromEntries(

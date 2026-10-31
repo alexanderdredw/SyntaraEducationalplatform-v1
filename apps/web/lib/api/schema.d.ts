@@ -2630,6 +2630,11 @@ export interface components {
              * @description Раздел урока (учёный)
              */
             sectionId: string;
+            /**
+             * @description Форма подписи связи «открыл / открыла»; null — в старых снимках
+             * @enum {string|null}
+             */
+            gender: "male" | "female" | null;
             born: string;
             country: string;
             field: string;

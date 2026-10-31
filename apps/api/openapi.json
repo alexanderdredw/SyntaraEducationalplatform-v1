@@ -8089,6 +8089,15 @@
             "format": "uuid",
             "description": "Раздел урока (учёный)"
           },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "nullable": true,
+            "description": "Форма подписи связи «открыл / открыла»; null — в старых снимках"
+          },
           "born": {
             "type": "string"
           },
@@ -8132,6 +8141,7 @@
         },
         "required": [
           "sectionId",
+          "gender",
           "born",
           "country",
           "field",

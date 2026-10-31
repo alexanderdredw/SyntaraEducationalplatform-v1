@@ -1,6 +1,6 @@
 ---
 title: Scandium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A light transition metal used in aerospace alloys and high-intensity lamps.
 funFact: 'Scandium is one of the rarest and most expensive metals: the world produces only a few tonnes a year.'
 illustrationAlt: 'Atom model: Scandium (Sc) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

@@ -1,6 +1,6 @@
 ---
 title: Iron
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: The most important metal of human civilisation, the basis of steel and the carrier of oxygen in the blood.
 funFact: The Earth’s core is 80% iron, which creates the magnetic field that protects us from cosmic radiation.
 illustrationAlt: 'Atom model: Iron (Fe) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

@@ -1,6 +1,6 @@
 ---
 title: Cobalt
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A metal "of the future", critical for electric car batteries and superhard alloys.
 funFact: Cobalt is part of vitamin B12, one of the few natural organometallic compounds and essential for humans.
 illustrationAlt: 'Atom model: Cobalt (Co) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

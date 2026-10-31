@@ -1,6 +1,6 @@
 ---
 title: Chlorine
-description: A versatile halogen essential for various scientific applications.
+description: A toxic yellow-green halogen gas, the basis of water disinfection and PVC production.
 funFact: Chlorine was used as a chemical weapon in the First World War — the first mass gas attack took place in 1915.
 illustrationAlt: 'Atom model: Chlorine (Cl) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

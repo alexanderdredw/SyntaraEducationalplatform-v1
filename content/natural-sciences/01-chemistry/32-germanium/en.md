@@ -1,6 +1,6 @@
 ---
 title: Germanium
-description: A versatile semimetal essential for various scientific and industrial applications.
+description: A semiconductor that played a key role in the first transistors and in modern optics.
 funFact: The world’s first transistor (1947) was made of germanium, not silicon.
 illustrationAlt: 'Atom model: Germanium (Ge) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

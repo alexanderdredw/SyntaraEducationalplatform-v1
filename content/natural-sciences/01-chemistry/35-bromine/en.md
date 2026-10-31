@@ -1,6 +1,6 @@
 ---
 title: Bromine
-description: A versatile halogen essential for various scientific and industrial applications.
+description: The only nonmetal that is liquid at room temperature; highly corrosive and pungent.
 funFact: This is one of only two elements on the periodic table (along with mercury) that are liquid at room temperature.
 illustrationAlt: 'Atom model: Bromine (Br) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

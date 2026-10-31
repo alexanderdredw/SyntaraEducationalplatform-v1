@@ -1,5 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { type ScientistRelation, SUBJECT_MODULES, type SubjectModule } from '@syntara/shared';
+import {
+  type ScientistGender,
+  type ScientistRelation,
+  SUBJECT_MODULES,
+  type SubjectModule,
+} from '@syntara/shared';
 
 /** OpenAPI-описание тел и ответов модуля content (6.4, 6.5). Валидация — Zod-схемами packages/shared. */
 
@@ -220,6 +225,12 @@ class ScientistPromptsDto {
 /** Окно учёного (S1b): ключевые факты (REQ-SCI-07), элементы (REQ-SCI-08), источники (REQ-SCI-13), подсказки. */
 class ScientistDataDto {
   @ApiProperty({ format: 'uuid', description: 'Раздел урока (учёный)' }) sectionId: string;
+  @ApiProperty({
+    enum: ['male', 'female'],
+    nullable: true,
+    description: 'Форма подписи связи «открыл / открыла»; null — в старых снимках',
+  })
+  gender: ScientistGender | null;
   @ApiProperty() born: string;
   @ApiProperty() country: string;
   @ApiProperty() field: string;

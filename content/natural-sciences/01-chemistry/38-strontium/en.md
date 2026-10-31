@@ -1,6 +1,6 @@
 ---
 title: Strontium
-description: A versatile alkaline earth metal essential for various scientific and industrial applications.
+description: An alkaline earth metal that gives fireworks their bright red colour.
 funFact: Strontium salts give festive fireworks their rich red colour.
 illustrationAlt: 'Atom model: Strontium (Sr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

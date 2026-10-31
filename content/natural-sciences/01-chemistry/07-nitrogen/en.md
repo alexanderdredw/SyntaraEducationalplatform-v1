@@ -1,6 +1,6 @@
 ---
 title: Nitrogen
-description: A versatile nonmetal essential for various scientific applications.
+description: A gas that makes up 78% of the atmosphere, the basis of proteins and nucleic acids.
 funFact: Nitrogen makes up 78% of the air and is a building block of all amino acids and DNA.
 illustrationAlt: 'Atom model: Nitrogen (N) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review

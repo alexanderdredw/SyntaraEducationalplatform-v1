@@ -2327,11 +2327,11 @@
         "soonHint": "Скоро — показать ячейку в таблице"
       },
       "rel": {
-        "discovered": "открыла",
-        "predicted": "предсказал",
-        "named": "назвал",
-        "structure": "определила структуру соединения с",
-        "transmuted": "превратил азот в кислород",
+        "discovered": "{gender, select, female {открыла} other {открыл}}",
+        "predicted": "{gender, select, female {предсказала} other {предсказал}}",
+        "named": "{gender, select, female {назвала} other {назвал}}",
+        "structure": "{gender, select, female {определила} other {определил}} структуру соединения с",
+        "transmuted": "{gender, select, female {превратила} other {превратил}} азот в кислород",
         "electronegativity": "самая высокая электроотрицательность",
         "named_after": "назван в честь"
       },

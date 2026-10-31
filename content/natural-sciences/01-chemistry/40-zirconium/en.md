@@ -1,6 +1,6 @@
 ---
 title: Zirconium
-description: A versatile transition metal essential for various scientific and industrial applications.
+description: A metal uniquely transparent to neutrons, the basis of nuclear fuel cladding.
 funFact: Zirconium hardly absorbs neutrons, which makes it an essential material for building nuclear reactors.
 illustrationAlt: 'Atom model: Zirconium (Zr) — the nucleus and electron shells. Mendeleev Atlas illustration.'
 review: needs_review
